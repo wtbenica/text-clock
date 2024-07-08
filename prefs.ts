@@ -129,7 +129,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
         settingKey,
         row,
         "selected-item",
-        Gio.SettingsBindFlags.DEFAULT
+        Gio.SettingsBindFlags.SET
       );
     } catch (error) {
       console.error(`Error binding settings for ${title}:`, error);

@@ -15,16 +15,131 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ClockFormatter } from "../clock_formatter.js";
-import { WordPack } from "../word_pack.js";
+import { ClockFormatter } from "../dist/clock_formatter.js";
+import { WordPack } from "../dist/word_pack.js";
 
 const wordPack = new WordPack({
-  times: ["%s o'clock", "five past %s", "ten past %s", "quarter past %s", "twenty past %s", "twenty five past %s", "half past %s", "twenty five to %s", "twenty to %s", "quarter to %s", "ten to %s", "five to %s"],
-  names: ["midnight", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "noon"],
-  days: ["sunday the %s", "monday the %s", "tuesday the %s", "wednesday the %s", "thursday the %s", "friday the %s", "saturday the %s"],
+  times: [
+    "%s o'clock",
+    "one past %s",
+    "two past %s",
+    "three past %s",
+    "four past %s",
+    "five past %s",
+    "six past %s",
+    "seven past %s",
+    "eight past %s",
+    "nine past %s",
+    "ten past %s",
+    "eleven past %s",
+    "twelve past %s",
+    "thirteen past %s",
+    "fourteen past %s",
+    "quarter past %s",
+    "sixteen past %s",
+    "seventeen past %s",
+    "eighteen past %s",
+    "nineteen past %s",
+    "twenty past %s",
+    "twenty one past %s",
+    "twenty two past %s",
+    "twenty three past %s",
+    "twenty four past %s",
+    "twenty five past %s",
+    "twenty six past %s",
+    "twenty seven past %s",
+    "twenty eight past %s",
+    "twenty nine past %s",
+    "half past %s",
+    "twenty nine to %s",
+    "twenty eight to %s",
+    "twenty seven to %s",
+    "twenty six to %s",
+    "twenty five to %s",
+    "twenty four to %s",
+    "twenty three to %s",
+    "twenty two to %s",
+    "twenty one to %s",
+    "twenty to %s",
+    "nineteen to %s",
+    "eighteen to %s",
+    "seventeen to %s",
+    "sixteen to %s",
+    "quarter to %s",
+    "fourteen to %s",
+    "thirteen to %s",
+    "twelve to %s",
+    "eleven to %s",
+    "ten to %s",
+    "nine to %s",
+    "eight to %s",
+    "seven to %s",
+    "six to %s",
+    "five to %s",
+    "four to %s",
+    "three to %s",
+    "two to %s",
+    "one to %s",
+  ],
+  names: [
+    "midnight",
+    "one",
+    "two",
+    "three",
+    "four",
+    "five",
+    "six",
+    "seven",
+    "eight",
+    "nine",
+    "ten",
+    "eleven",
+    "noon",
+  ],
+  days: [
+    "sunday the %s",
+    "monday the %s",
+    "tuesday the %s",
+    "wednesday the %s",
+    "thursday the %s",
+    "friday the %s",
+    "saturday the %s",
+  ],
   midnight: "midnight",
   noon: "noon",
-  daysOfMonth: ["first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth", "eleventh", "twelfth", "thirteenth", "fourteenth", "fifteenth", "sixteenth", "seventeenth", "eighteenth", "nineteenth", "twentieth", "twenty first", "twenty second", "twenty third", "twenty fourth", "twenty fifth", "twenty sixth", "twenty seventh", "twenty eighth", "twenty ninth", "thirtieth", "thirty first"]
+  daysOfMonth: [
+    "first",
+    "second",
+    "third",
+    "fourth",
+    "fifth",
+    "sixth",
+    "seventh",
+    "eighth",
+    "ninth",
+    "tenth",
+    "eleventh",
+    "twelfth",
+    "thirteenth",
+    "fourteenth",
+    "fifteenth",
+    "sixteenth",
+    "seventeenth",
+    "eighteenth",
+    "nineteenth",
+    "twentieth",
+    "twenty first",
+    "twenty second",
+    "twenty third",
+    "twenty fourth",
+    "twenty fifth",
+    "twenty sixth",
+    "twenty seventh",
+    "twenty eighth",
+    "twenty ninth",
+    "thirtieth",
+    "thirty first",
+  ],
 });
 
 /**
@@ -58,9 +173,9 @@ const wordPack = new WordPack({
  * 23:59 | 8/1/2024 | no date -> "midnight"
  */
 
-describe('ClockFormatter', () => {
-  describe('getClockText', () => {
-    const clockFormatter = new ClockFormatter(wordPack);
+describe("ClockFormatter", () => {
+  describe("getClockText", () => {
+    const clockFormatter = new ClockFormatter(wordPack, 5);
 
     it('should return "midnight" when the time is 00:01 and there is no date', () => {
       const date = new Date(2024, 6, 6, 0, 1);
@@ -224,10 +339,73 @@ describe('ClockFormatter', () => {
       expect(result).toBe("midnight");
     }); // eleven
 
-    it('should return "seven o\'clock | thursday the first\" when the time is 07:00 and there is a date', () => {
+    it('should return "seven o\'clock | thursday the first" when the time is 07:00 and there is a date', () => {
       const date = new Date(2024, 7, 1, 7, 0);
       const result = clockFormatter.getClockText(date, true);
       expect(result).toBe("seven o'clock | thursday the first");
     });
   });
 });
+
+const times = [
+  "%s o'clock",
+  "one past %s",
+  "two past %s",
+  "three past %s",
+  "four past %s",
+  "five past %s",
+  "six past %s",
+  "seven past %s",
+  "eight past %s",
+  "nine past %s",
+  "ten past %s",
+  "eleven past %s",
+  "twelve past %s",
+  "thirteen past %s",
+  "fourteen past %s",
+  "quarter past %s",
+  "sixteen past %s",
+  "seventeen past %s",
+  "eighteen past %s",
+  "nineteen past %s",
+  "twenty past %s",
+  "twenty one past %s",
+  "twenty two past %s",
+  "twenty three past %s",
+  "twenty four past %s",
+  "twenty five past %s",
+  "twenty six past %s",
+  "twenty seven past %s",
+  "twenty eight past %s",
+  "twenty nine past %s",
+  "half past %s",
+  "thirty one past %s",
+  "thirty two past %s",
+  "thirty three past %s",
+  "thirty four past %s",
+  "thirty five past %s",
+  "thirty six past %s",
+  "thirty seven past %s",
+  "thirty eight past %s",
+  "thirty nine past %s",
+  "twenty to %s",
+  "nineteen to %s",
+  "eighteen to %s",
+  "seventeen to %s",
+  "sixteen to %s",
+  "quarter to %s",
+  "fourteen to %s",
+  "thirteen to %s",
+  "twelve to %s",
+  "eleven to %s",
+  "ten to %s",
+  "nine to %s",
+  "eight to %s",
+  "seven to %s",
+  "six to %s",
+  "five to %s",
+  "four to %s",
+  "three to %s",
+  "two to %s",
+  "one to %s",
+];

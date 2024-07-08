@@ -4,3 +4,5 @@ text-clock@benica.dev.shell-extension.zip
 /locale/
 /.vscode/
 .vscode/settings.json
+package-lock.json
+/dist/

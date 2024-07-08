@@ -32,7 +32,7 @@ export const PROPERTIES = {
 export interface ITextClock extends Clutter.Actor {
   _showDate?: boolean;
   _translatePack?: WordPack;
-  _fuzzyMinutes?: string;
+  _fuzzyMinutes?: number;
 }
 
 /**
@@ -64,7 +64,7 @@ export const TextClockLabel = GObject.registerClass(
         GObject.ParamFlags.READWRITE,
         "5"
       ),
-      "translate-pack": GObject.ParamSpec.jsobject(
+      "translate-pack": GObject.ParamSpec.jsobject<WordPack>(
         PROPERTIES.TRANSLATE_PACK,
         "Translate Pack",
         "The translation pack",
@@ -76,7 +76,7 @@ export const TextClockLabel = GObject.registerClass(
     _formatter?: ClockFormatter;
     _showDate?: boolean;
     _translatePack?: WordPack;
-    _fuzzyMinutes?: string;
+    _fuzzyMinutes?: number;
 
     constructor(props: any) {
       super(props);
@@ -142,6 +142,7 @@ export const TextClockLabel = GObject.registerClass(
      */
     set translatePack(value: WordPack) {
       this._translatePack = value;
+      this._formatter!.wordPack = this._translatePack;
       this.updateClock();
     }
 
@@ -149,9 +150,10 @@ export const TextClockLabel = GObject.registerClass(
      * The fuzziness of the clock
      * @param {string} value
      */
-    set fuzziness(value: string) {
+    set fuzzyMinutes(value: string) {
       console.log(`CALLING fuzziness ${value}`);
-      this._fuzzyMinutes = value;
+      this._fuzzyMinutes = Number(value);
+      this._formatter!.fuzziness = this._fuzzyMinutes;
       this.updateClock();
     }
 

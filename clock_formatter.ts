@@ -46,7 +46,7 @@ export class ClockFormatter {
     const hours = date.getHours();
     const minuteBucket =
       Math.round(minutes / this.fuzziness!) * this.fuzziness!;
-    const roundedHour = minuteBucket > 6 ? hours + 1 : hours;
+    const roundedHour = minuteBucket > 30 ? hours + 1 : hours;
     const adjustedHour = roundedHour === 12 ? 12 : roundedHour % 12;
     const hourName = this.#getHourName(adjustedHour, minuteBucket);
     const time = this.#getTimeString(hourName, minuteBucket);
@@ -95,7 +95,7 @@ export class ClockFormatter {
    */
   #getTimeString(hourName: string, minuteBucket: number) {
     if (
-      (minuteBucket === 0 || minuteBucket === 12) &&
+      (minuteBucket === 0 || minuteBucket === 60) &&
       (hourName === this.wordPack!.midnight || hourName === this.wordPack!.noon)
     ) {
       return hourName;
@@ -104,10 +104,11 @@ export class ClockFormatter {
     try {
       return this.wordPack!.times[minuteBucket].format(hourName);
     } catch (error) {
+      console.log("(1) Unable to format time string ", error);
       try {
         return this.wordPack!.times[minuteBucket].replace("%s", hourName);
       } catch (error2) {
-        console.log("Unable to format time string ", error2);
+        console.log("(2) Unable to format time string ", error2);
       }
     }
   }
@@ -120,7 +121,7 @@ export class ClockFormatter {
    * @returns {string} The formatted date string.
    */
   #getDisplayedDate(date: Date, minuteBucket: number) {
-    const extraDay = date.getHours() === 23 && minuteBucket === 12;
+    const extraDay = date.getHours() === 23 && minuteBucket === 60;
     const adjustedDate = new Date(date);
     if (extraDay) {
       adjustedDate.setDate(date.getDate() + 1);
