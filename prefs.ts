@@ -55,7 +55,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
       ),
       settingKey: SETTINGS.FUZZINESS,
       model: new Gtk.StringList({ strings: ["1", "5", "10", "15"] }),
-      selected: 1,
+      selected: this._settings!.get_enum(SETTINGS.FUZZINESS),
     });
   }
 
@@ -125,12 +125,10 @@ export default class TextClockPrefs extends ExtensionPreferences {
     });
     group.add(row);
     try {
-      this._settings!.bind(
-        settingKey,
-        row,
-        "selected-item",
-        Gio.SettingsBindFlags.SET
-      );
+      row.connect("notify::selected", (widget) => {
+        console.log("Selection changed");
+        this._settings!.set_enum(settingKey, widget.selected);
+      });
     } catch (error) {
       console.error(`Error binding settings for ${title}:`, error);
     }

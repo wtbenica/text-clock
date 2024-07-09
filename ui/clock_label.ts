@@ -107,7 +107,7 @@ export const TextClockLabel = GObject.registerClass(
         console.log(`this._fuzziness ? ${this._fuzzyMinutes}`);
         this._formatter = new ClockFormatter(
           this._translatePack!,
-          Number(this._fuzzyMinutes)
+          this._fuzzyMinutes
         );
         this.clutterText.yAlign = Clutter.ActorAlign.CENTER;
       } catch (error: any) {
@@ -152,7 +152,7 @@ export const TextClockLabel = GObject.registerClass(
      */
     set fuzzyMinutes(value: string) {
       console.log(`CALLING fuzziness ${value}`);
-      this._fuzzyMinutes = Number(value);
+      this._fuzzyMinutes = parseInt(value);
       this._formatter!.fuzziness = this._fuzzyMinutes;
       this.updateClock();
     }

@@ -1,6 +1,6 @@
 /.idea/
 /node_modules/
-text-clock@benica.dev.shell-extension.zip
+*.zip
 /locale/
 /.vscode/
 .vscode/settings.json
