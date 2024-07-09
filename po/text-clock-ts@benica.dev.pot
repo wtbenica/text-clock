@@ -1,0 +1,331 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-07-07 00:47-0700\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: clock_text.js:58
+msgctxt ""
+"Translate 'midnight' for exactly 12pm. Prefer 'midnight' over 'twelve', but "
+"'twelve' is acceptable if 'midnight' is uncommon."
+msgid "midnight"
+msgstr ""
+
+#: clock_text.js:61
+msgctxt ""
+"Translate 'noon' for exactly 12am. Prefer 'noon' over 'twelve', but 'twelve' "
+"is acceptable if 'noon' is uncommon."
+msgid "noon"
+msgstr ""
+
+#: clock_text.js:63 clock_text.js:88
+#, javascript-format
+msgid "%s o'clock"
+msgstr ""
+
+#: clock_text.js:66
+#, javascript-format
+msgid "five past %s"
+msgstr ""
+
+#: clock_text.js:68
+#, javascript-format
+msgid "ten past %s"
+msgstr ""
+
+#: clock_text.js:70
+#, javascript-format
+msgid "quarter past %s"
+msgstr ""
+
+#: clock_text.js:72
+#, javascript-format
+msgid "twenty past %s"
+msgstr ""
+
+#: clock_text.js:74
+#, javascript-format
+msgid "twenty five past %s"
+msgstr ""
+
+#: clock_text.js:76
+#, javascript-format
+msgid "half past %s"
+msgstr ""
+
+#: clock_text.js:78
+#, javascript-format
+msgid "twenty five to %s"
+msgstr ""
+
+#: clock_text.js:80
+#, javascript-format
+msgid "twenty to %s"
+msgstr ""
+
+#: clock_text.js:82
+#, javascript-format
+msgid "quarter to %s"
+msgstr ""
+
+#: clock_text.js:84
+#, javascript-format
+msgid "ten to %s"
+msgstr ""
+
+#: clock_text.js:86
+#, javascript-format
+msgid "five to %s"
+msgstr ""
+
+#: clock_text.js:94
+msgctxt ""
+"Translate 'midnight' for times like 12:05pm or 12:38pm. Prefer 'midnight' "
+"over 'twelve'. Ensure it fits in the translations of 'five to %s', 'twenty "
+"past %s', etc. Translate 'twelve' if 'midnight' can't be used there."
+msgid "midnight"
+msgstr ""
+
+#: clock_text.js:94
+msgid "one"
+msgstr ""
+
+#: clock_text.js:94
+msgid "two"
+msgstr ""
+
+#: clock_text.js:94
+msgid "three"
+msgstr ""
+
+#: clock_text.js:94
+msgid "four"
+msgstr ""
+
+#: clock_text.js:94
+msgid "five"
+msgstr ""
+
+#: clock_text.js:94
+msgid "six"
+msgstr ""
+
+#: clock_text.js:94
+msgid "seven"
+msgstr ""
+
+#: clock_text.js:94
+msgid "eight"
+msgstr ""
+
+#: clock_text.js:94
+msgid "nine"
+msgstr ""
+
+#: clock_text.js:94
+msgid "ten"
+msgstr ""
+
+#: clock_text.js:94
+msgid "eleven"
+msgstr ""
+
+#: clock_text.js:94
+msgctxt ""
+"Translate 'noon' for times like 12:05pm or 12:38pm. Prefer 'noon' over "
+"'twelve'. Ensure it fits with 'five to %s', 'twenty past %s', etc. Translate "
+"'twelve' if 'noon' can't be used there."
+msgid "noon"
+msgstr ""
+
+#: clock_text.js:137
+msgid "first"
+msgstr ""
+
+#: clock_text.js:137
+msgid "second"
+msgstr ""
+
+#: clock_text.js:137
+msgid "third"
+msgstr ""
+
+#: clock_text.js:137
+msgid "fourth"
+msgstr ""
+
+#: clock_text.js:137
+msgid "fifth"
+msgstr ""
+
+#: clock_text.js:137
+msgid "sixth"
+msgstr ""
+
+#: clock_text.js:137
+msgid "seventh"
+msgstr ""
+
+#: clock_text.js:137
+msgid "eighth"
+msgstr ""
+
+#: clock_text.js:137
+msgid "ninth"
+msgstr ""
+
+#: clock_text.js:137
+msgid "tenth"
+msgstr ""
+
+#: clock_text.js:137
+msgid "eleventh"
+msgstr ""
+
+#: clock_text.js:137
+msgid "twelfth"
+msgstr ""
+
+#: clock_text.js:137
+msgid "thirteenth"
+msgstr ""
+
+#: clock_text.js:137
+msgid "fourteenth"
+msgstr ""
+
+#: clock_text.js:137
+msgid "fifteenth"
+msgstr ""
+
+#: clock_text.js:137
+msgid "sixteenth"
+msgstr ""
+
+#: clock_text.js:137
+msgid "seventeenth"
+msgstr ""
+
+#: clock_text.js:137
+msgid "eighteenth"
+msgstr ""
+
+#: clock_text.js:137
+msgid "nineteenth"
+msgstr ""
+
+#: clock_text.js:137
+msgid "twentieth"
+msgstr ""
+
+#: clock_text.js:137
+msgid "twenty first"
+msgstr ""
+
+#: clock_text.js:137
+msgid "twenty second"
+msgstr ""
+
+#: clock_text.js:137
+msgid "twenty third"
+msgstr ""
+
+#: clock_text.js:137
+msgid "twenty fourth"
+msgstr ""
+
+#: clock_text.js:137
+msgid "twenty fifth"
+msgstr ""
+
+#: clock_text.js:137
+msgid "twenty sixth"
+msgstr ""
+
+#: clock_text.js:137
+msgid "twenty seventh"
+msgstr ""
+
+#: clock_text.js:137
+msgid "twenty eighth"
+msgstr ""
+
+#: clock_text.js:137
+msgid "twenty ninth"
+msgstr ""
+
+#: clock_text.js:137
+msgid "thirtieth"
+msgstr ""
+
+#: clock_text.js:137
+msgid "thirty first"
+msgstr ""
+
+#: clock_text.js:144
+#, javascript-format
+msgid "sunday the %s"
+msgstr ""
+
+#: clock_text.js:146
+#, javascript-format
+msgid "monday the %s"
+msgstr ""
+
+#: clock_text.js:148
+#, javascript-format
+msgid "tuesday the %s"
+msgstr ""
+
+#: clock_text.js:150
+#, javascript-format
+msgid "wednesday the %s"
+msgstr ""
+
+#: clock_text.js:152
+#, javascript-format
+msgid "thursday the %s"
+msgstr ""
+
+#: clock_text.js:154
+#, javascript-format
+msgid "friday the %s"
+msgstr ""
+
+#: clock_text.js:156
+#, javascript-format
+msgid "saturday the %s"
+msgstr ""
+
+#: prefs.js:29
+msgid "Text Clock"
+msgstr ""
+
+#: prefs.js:34
+msgid "Text Clock Settings"
+msgstr ""
+
+#: prefs.js:35
+msgid "Configure the Text Clock extension"
+msgstr ""
+
+#: prefs.js:40
+msgid "Show Date"
+msgstr ""
+
+#: prefs.js:41
+msgid "Show the date in the clock"
+msgstr ""
