@@ -1,7 +1,7 @@
 NAME=text-clock-ts
 DOMAIN=benica.dev
 
-.PHONY: all pack install clean
+.PHONY: all pack install clean test
 
 all: dist/extension.js
 
@@ -28,3 +28,8 @@ install: $(NAME).zip
 
 clean:
 	@rm -rf dist node_modules $(NAME).zip
+
+test: node_modules
+	@rm -rf dist
+	tsc
+	npm test

@@ -20,6 +20,7 @@
     "clock_formatter.ts",
     "constants.ts",
     "prefs_constants.ts",
-    "word_pack.ts"
+    "word_pack.ts",
+    "constants_en.ts"
   ],
 }

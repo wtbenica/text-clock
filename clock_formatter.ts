@@ -54,17 +54,6 @@ export class ClockFormatter {
       ? ` | ${this.#getDisplayedDate(date, minuteBucket)}`
       : "";
 
-    console.log(`getClockText(${date}, ${showDate}) => ${time + displayDate}`);
-    console.log(`minutes: ${minutes}`);
-    console.log(`hours: ${hours}`);
-    console.log(`fuzziness: ${this.fuzziness} ${typeof this.fuzziness}`);
-    console.log(`minuteBucket: ${minuteBucket}`);
-    console.log(`roundedHour: ${roundedHour}`);
-    console.log(`adjustedHour: ${adjustedHour}`);
-    console.log(`hourName: ${hourName}`);
-    console.log(`time: ${time}`);
-    console.log(`displayDate: ${displayDate}`);
-
     return time + displayDate;
   }
 
@@ -94,21 +83,26 @@ export class ClockFormatter {
    * @returns {string} The time string.
    */
   #getTimeString(hourName: string, minuteBucket: number) {
+    console.log(`\n\ngetTimeString(${hourName}, ${minuteBucket})`);
+    console.log(`this.wordPack!.times: ${this.wordPack!.times.length}`);
+    if (this.wordPack!.times.length < minuteBucket) {
+      console.log("Minutes out of range of times");
+    }
     if (
       (minuteBucket === 0 || minuteBucket === 60) &&
       (hourName === this.wordPack!.midnight || hourName === this.wordPack!.noon)
     ) {
+      console.log(`short circuiting: ${hourName}`);
       return hourName;
     }
 
     try {
       return this.wordPack!.times[minuteBucket].format(hourName);
     } catch (error) {
-      console.log("(1) Unable to format time string ", error);
       try {
         return this.wordPack!.times[minuteBucket].replace("%s", hourName);
       } catch (error2) {
-        console.log("(2) Unable to format time string ", error2);
+        console.log("Unable to format time string ", error2);
       }
     }
   }

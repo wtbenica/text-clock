@@ -80,31 +80,11 @@ export const TextClockLabel = GObject.registerClass(
 
     constructor(props: any) {
       super(props);
-      console.log(
-        `Give me props: ${props.showDate} | ${props.translatePack} | ${props.fuzzyMinutes}`
-      );
       this._showDate = props.showDate;
       this._translatePack = props.translatePack;
       this._fuzzyMinutes = props.fuzzyMinutes;
 
-      console.log(
-        `this._fuzziness ${this._fuzzyMinutes} | props.fuzziness ${
-          props.fuzzyMinutes
-        } | ${typeof props.fuzzyMinutes}`
-      );
-
       try {
-        console.log("CALLING constructor new ClockFormatter");
-        console.log(
-          `this._translatePack ? ${
-            this._translatePack === null
-              ? "null"
-              : this._translatePack === undefined
-              ? "undefined"
-              : "good"
-          }`
-        );
-        console.log(`this._fuzziness ? ${this._fuzzyMinutes}`);
         this._formatter = new ClockFormatter(
           this._translatePack!,
           this._fuzzyMinutes
@@ -132,7 +112,6 @@ export const TextClockLabel = GObject.registerClass(
      * @param {any} _
      */
     set clockUpdate(_: any) {
-      console.log("CALLING clockUpdate");
       this.updateClock();
     }
 
@@ -151,7 +130,6 @@ export const TextClockLabel = GObject.registerClass(
      * @param {string} value
      */
     set fuzzyMinutes(value: string) {
-      console.log(`CALLING fuzziness ${value}`);
       this._fuzzyMinutes = parseInt(value);
       this._formatter!.fuzziness = this._fuzzyMinutes;
       this.updateClock();
@@ -161,7 +139,6 @@ export const TextClockLabel = GObject.registerClass(
      * Updates the clock label text
      */
     updateClock() {
-      console.log("CALLING updateClock");
       try {
         const date = new Date();
         this.set_text(this._formatter?.getClockText(date, this._showDate!));

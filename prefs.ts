@@ -126,7 +126,6 @@ export default class TextClockPrefs extends ExtensionPreferences {
     group.add(row);
     try {
       row.connect("notify::selected", (widget) => {
-        console.log("Selection changed");
         this._settings!.set_enum(settingKey, widget.selected);
       });
     } catch (error) {
