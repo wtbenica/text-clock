@@ -15,44 +15,60 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { gettext as _ } from "resource:///org/gnome/shell/extensions/extension.js";
+
 /**
  * A class to store the words used to format a time and date as a string.
  *
- * @param {string[]} times - A list of strings that tells time using minutes and hours ("five past noon")
+ * @param {string[]} timesTenToThree - Times as "M past H" or "M to H", e.g. "five past noon"
+ * @param {string[]} timesTwoFifty - Times as "H M", e.g. "noon thirty"
  * @param {string[]} names - A list of strings that tells the hour ("one", "five", "noon")
  * @param {string[]} days - A list of strings that tells the day of the week ("monday")
  * @param {string} midnight - The word for midnight
  * @param {string} noon - The word for noon
+ * @param {string} twelve - The word for twelve
  * @param {string[]} daysOfMonth - A list of strings that tells the date ("first", "second", "third")
  */
 export class WordPack {
-  times: string[];
+  timesTenToThree: string[];
+  timesTwoFifty: string[];
   names: string[];
   days: string[];
+  dayOnly: string;
   midnight: string;
   noon: string;
+  twelve: string;
   daysOfMonth: string[];
 
   constructor({
-    times,
+    timesTenToThree,
+    timesTwoFifty,
     names,
     days,
+    dayOnly,
     midnight,
     noon,
+    twelve,
     daysOfMonth,
   }: {
-    times: string[];
+    timesTenToThree: string[];
+    timesTwoFifty: string[];
     names: string[];
     days: string[];
+    dayOnly: string;
     midnight: string;
     noon: string;
+    twelve: string;
     daysOfMonth: string[];
   }) {
-    this.times = times;
+    this.timesTenToThree = timesTenToThree;
+    this.timesTwoFifty = timesTwoFifty;
     this.names = names;
     this.days = days;
+    this.dayOnly = dayOnly;
     this.midnight = midnight;
     this.noon = noon;
+    this.twelve = twelve;
     this.daysOfMonth = daysOfMonth;
   }
 }

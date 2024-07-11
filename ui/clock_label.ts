@@ -19,20 +19,26 @@ import GObject from "gi://GObject";
 import Clutter from "gi://Clutter";
 import St from "gi://St";
 
-import { ClockFormatter } from "../clock_formatter.js";
+import { ClockFormatter, TimeFormat } from "../clock_formatter.js";
 import { WordPack } from "../word_pack.js";
+import { PrefItems, Errors } from "../constants_en.js";
+import { gettext as _ } from "resource:///org/gnome/shell/extensions/extension.js";
 
 export const PROPERTIES = {
   SHOW_DATE: "show-date",
   CLOCK_UPDATE: "clock-update",
   TRANSLATE_PACK: "translate-pack",
   FUZZINESS: "fuzzy-minutes",
+  SHOW_WEEKDAY: "show-weekday",
+  TIME_FORMAT: "time-format",
 };
 
 export interface ITextClock extends Clutter.Actor {
   _showDate?: boolean;
   _translatePack?: WordPack;
-  _fuzzyMinutes?: number;
+  _fuzzyMinutes?: string;
+  _showWeekday?: boolean;
+  _timeFormat?: string;
 }
 
 /**
@@ -43,12 +49,39 @@ export const TextClockLabel = GObject.registerClass(
   {
     GTypeName: "TextClockLabelTS",
     Properties: {
+      "translate-pack": GObject.ParamSpec.jsobject<WordPack>(
+        PROPERTIES.TRANSLATE_PACK,
+        "Translate Pack",
+        "The translation pack",
+        GObject.ParamFlags.READWRITE
+      ),
       "show-date": GObject.ParamSpec.boolean(
         PROPERTIES.SHOW_DATE,
-        "Show Date",
-        "Whether to show the date",
+        PrefItems.SHOW_DATE.title,
+        PrefItems.SHOW_DATE.subtitle,
         GObject.ParamFlags.READWRITE,
         true
+      ),
+      "fuzzy-minutes": GObject.ParamSpec.string(
+        PROPERTIES.FUZZINESS,
+        PrefItems.FUZZINESS.title,
+        PrefItems.FUZZINESS.subtitle,
+        GObject.ParamFlags.READWRITE,
+        "5"
+      ),
+      "show-weekday": GObject.ParamSpec.boolean(
+        PROPERTIES.SHOW_WEEKDAY,
+        PrefItems.SHOW_WEEKDAY.title,
+        PrefItems.SHOW_WEEKDAY.subtitle,
+        GObject.ParamFlags.READWRITE,
+        true
+      ),
+      "time-format": GObject.ParamSpec.string(
+        PROPERTIES.TIME_FORMAT,
+        PrefItems.TIME_FORMAT.title,
+        PrefItems.TIME_FORMAT.subtitle,
+        GObject.ParamFlags.READWRITE,
+        TimeFormat.PAST_OR_TO
       ),
       "clock-update": GObject.ParamSpec.string(
         PROPERTIES.CLOCK_UPDATE,
@@ -57,41 +90,32 @@ export const TextClockLabel = GObject.registerClass(
         GObject.ParamFlags.READWRITE,
         ""
       ),
-      "fuzzy-minutes": GObject.ParamSpec.string(
-        PROPERTIES.FUZZINESS,
-        "Fuzziness",
-        "The fuzziness of the clock",
-        GObject.ParamFlags.READWRITE,
-        "5"
-      ),
-      "translate-pack": GObject.ParamSpec.jsobject<WordPack>(
-        PROPERTIES.TRANSLATE_PACK,
-        "Translate Pack",
-        "The translation pack",
-        GObject.ParamFlags.READWRITE
-      ),
     },
   },
   class ClockLabel extends St.Label implements ITextClock {
     _formatter?: ClockFormatter;
     _showDate?: boolean;
     _translatePack?: WordPack;
-    _fuzzyMinutes?: number;
+    _fuzzyMinutes?: string;
+    _showWeekday?: boolean;
+    _timeFormat?: string;
 
     constructor(props: any) {
       super(props);
       this._showDate = props.showDate;
       this._translatePack = props.translatePack;
       this._fuzzyMinutes = props.fuzzyMinutes;
+      this._showWeekday = props.showWeekday;
+      this._timeFormat = props.timeFormat;
 
       try {
         this._formatter = new ClockFormatter(
           this._translatePack!,
-          this._fuzzyMinutes
+          parseInt(this._fuzzyMinutes!)
         );
         this.clutterText.yAlign = Clutter.ActorAlign.CENTER;
       } catch (error: any) {
-        logError(error, "Error initializing clock label");
+        logError(error, _(Errors.ERROR_INITIALIZING_CLOCK_LABEL));
       }
 
       this.updateClock();
@@ -108,10 +132,30 @@ export const TextClockLabel = GObject.registerClass(
     }
 
     /**
+     * Whether to show the weekday as part of the date
+     *
+     * @param {boolean} value
+     */
+    set showWeekday(value: boolean) {
+      this._showWeekday = value;
+      this.updateClock();
+    }
+
+    /**
      * The clock update signal
      * @param {any} _
      */
     set clockUpdate(_: any) {
+      this.updateClock();
+    }
+
+    /**
+     * THe format used to display the time
+     *
+     * @param {string} value
+     */
+    set timeFormat(value: string) {
+      this._timeFormat = value;
       this.updateClock();
     }
 
@@ -121,7 +165,7 @@ export const TextClockLabel = GObject.registerClass(
      */
     set translatePack(value: WordPack) {
       this._translatePack = value;
-      this._formatter!.wordPack = this._translatePack;
+      if (this._formatter) this._formatter!.wordPack = this._translatePack;
       this.updateClock();
     }
 
@@ -130,8 +174,9 @@ export const TextClockLabel = GObject.registerClass(
      * @param {string} value
      */
     set fuzzyMinutes(value: string) {
-      this._fuzzyMinutes = parseInt(value);
-      this._formatter!.fuzziness = this._fuzzyMinutes;
+      this._fuzzyMinutes = value;
+      if (this._formatter)
+        this._formatter!.fuzziness = parseInt(this._fuzzyMinutes);
       this.updateClock();
     }
 
@@ -141,9 +186,17 @@ export const TextClockLabel = GObject.registerClass(
     updateClock() {
       try {
         const date = new Date();
-        this.set_text(this._formatter?.getClockText(date, this._showDate!));
+        if (this._formatter)
+          this.set_text(
+            this._formatter?.getClockText(
+              date,
+              this._showDate!,
+              this._showWeekday!,
+              this._timeFormat!
+            )
+          );
       } catch (error: any) {
-        logError(error, "Error updating clock label");
+        logError(error, _(Errors.ERROR_UPDATING_CLOCK_LABEL));
       }
     }
   }

@@ -18,4 +18,7 @@
 export const SETTINGS = {
   SHOW_DATE: "show-date",
   FUZZINESS: "fuzziness",
+  SHOW_MONTH: "show-month",
+  SHOW_WEEKDAY: "show-weekday",
+  TIME_FORMAT: "time-format",
 };

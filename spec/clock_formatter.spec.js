@@ -23,6 +23,7 @@ const wordPack = new WordPack({
   times: En.minutes_past_to,
   names: En.hour_names,
   days: En.weekdays,
+  dayOnly: En.dayOnly,
   midnight: En.midnight,
   noon: En.noon,
   daysOfMonth: En.daysOfMonth,
