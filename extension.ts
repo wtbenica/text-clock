@@ -24,9 +24,9 @@ import {
 } from "resource:///org/gnome/shell/extensions/extension.js";
 import { panel } from "resource:///org/gnome/shell/ui/main.js";
 import { TextClockLabel, PROPERTIES, ITextClock } from "./ui/clock_label.js";
-import { TRANSLATE_PACK } from "./constants.js";
 import { SETTINGS } from "./prefs_constants.js";
 import { Errors } from "./constants_en.js";
+import { TRANSLATE_PACK } from "./constants.js";
 
 const CLOCK_STYLE_CLASS_NAME = "clock";
 

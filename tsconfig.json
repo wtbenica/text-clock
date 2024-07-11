@@ -18,9 +18,9 @@
     "prefs.ts",
     "ui/clock_label.ts",
     "clock_formatter.ts",
-    "constants.ts",
     "prefs_constants.ts",
     "word_pack.ts",
     "constants_en.ts",
+    "constants.ts",
   ],
 }

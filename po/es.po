@@ -6,840 +6,841 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-11 02:12-0700\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2024-07-11 02:14-0700\n"
+"Last-Translator: Wesley Benica <wesley@benica.dev>\n"
+"Language-Team: \n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.4.2\n"
 
 #: constants.js:21 constants.js:81 constants.js:84
 #, javascript-format
 msgid "%s o'clock"
-msgstr ""
+msgstr "%s en punto"
 
 #: constants.js:22
 #, javascript-format
 msgid "one past %s"
-msgstr ""
+msgstr "%s y uno"
 
 #: constants.js:23
 #, javascript-format
 msgid "two past %s"
-msgstr ""
+msgstr "%s y dos"
 
 #: constants.js:24
 #, javascript-format
 msgid "three past %s"
-msgstr ""
+msgstr "%s y tres"
 
 #: constants.js:25
 #, javascript-format
 msgid "four past %s"
-msgstr ""
+msgstr "%s y cuatro"
 
 #: constants.js:26
 #, javascript-format
 msgid "five past %s"
-msgstr ""
+msgstr "%s y cinco"
 
 #: constants.js:27
 #, javascript-format
 msgid "six past %s"
-msgstr ""
+msgstr "%s y seis"
 
 #: constants.js:28
 #, javascript-format
 msgid "seven past %s"
-msgstr ""
+msgstr "%s y siete"
 
 #: constants.js:29
 #, javascript-format
 msgid "eight past %s"
-msgstr ""
+msgstr "%s y ocho"
 
 #: constants.js:30
 #, javascript-format
 msgid "nine past %s"
-msgstr ""
+msgstr "%s y nueve"
 
 #: constants.js:31
 #, javascript-format
 msgid "ten past %s"
-msgstr ""
+msgstr "%s y diez"
 
 #: constants.js:32
 #, javascript-format
 msgid "eleven past %s"
-msgstr ""
+msgstr "%s y once"
 
 #: constants.js:33
 #, javascript-format
 msgid "twelve past %s"
-msgstr ""
+msgstr "%s y doce"
 
 #: constants.js:34
 #, javascript-format
 msgid "thirteen past %s"
-msgstr ""
+msgstr "%s y trece"
 
 #: constants.js:35
 #, javascript-format
 msgid "fourteen past %s"
-msgstr ""
+msgstr "%s y catorce"
 
 #: constants.js:36
 #, javascript-format
 msgid "quarter past %s"
-msgstr ""
+msgstr "%s y cuarto"
 
 #: constants.js:37
 #, javascript-format
 msgid "sixteen past %s"
-msgstr ""
+msgstr "%s y dieciséis"
 
 #: constants.js:38
 #, javascript-format
 msgid "seventeen past %s"
-msgstr ""
+msgstr "%s y diecisiete"
 
 #: constants.js:39
 #, javascript-format
 msgid "eighteen past %s"
-msgstr ""
+msgstr "%s y dieciocho"
 
 #: constants.js:40
 #, javascript-format
 msgid "nineteen past %s"
-msgstr ""
+msgstr "%s y diecinueve"
 
 #: constants.js:41 prefs.js:54
 #, javascript-format
 msgid "twenty past %s"
-msgstr ""
+msgstr "%s y veinte"
 
 #: constants.js:42
 #, javascript-format
 msgid "twenty one past %s"
-msgstr ""
+msgstr "%s y veintiuno"
 
 #: constants.js:43
 #, javascript-format
 msgid "twenty two past %s"
-msgstr ""
+msgstr "%s y veintidós"
 
 #: constants.js:44
 #, javascript-format
 msgid "twenty three past %s"
-msgstr ""
+msgstr "%s y veintitrés"
 
 #: constants.js:45
 #, javascript-format
 msgid "twenty four past %s"
-msgstr ""
+msgstr "%s y veinticuatro"
 
 #: constants.js:46
 #, javascript-format
 msgid "twenty five past %s"
-msgstr ""
+msgstr "%s y veinticinco"
 
 #: constants.js:47
 #, javascript-format
 msgid "twenty six past %s"
-msgstr ""
+msgstr "%s y veintiséis"
 
 #: constants.js:48
 #, javascript-format
 msgid "twenty seven past %s"
-msgstr ""
+msgstr "%s y veintisiete"
 
 #: constants.js:49
 #, javascript-format
 msgid "twenty eight past %s"
-msgstr ""
+msgstr "%s y veintiocho"
 
 #: constants.js:50
 #, javascript-format
 msgid "twenty nine past %s"
-msgstr ""
+msgstr "%s y veintinueve"
 
 #: constants.js:51
 #, javascript-format
 msgid "half past %s"
-msgstr ""
+msgstr "media %s"
 
 #: constants.js:52
 #, javascript-format
 msgid "twenty nine to %s"
-msgstr ""
+msgstr "veintinueve para %s"
 
 #: constants.js:53
 #, javascript-format
 msgid "twenty eight to %s"
-msgstr ""
+msgstr "veintiocho para %s"
 
 #: constants.js:54
 #, javascript-format
 msgid "twenty seven to %s"
-msgstr ""
+msgstr "vientisiete para %s"
 
 #: constants.js:55
 #, javascript-format
 msgid "twenty six to %s"
-msgstr ""
+msgstr "vientiocho para %s"
 
 #: constants.js:56
 #, javascript-format
 msgid "twenty five to %s"
-msgstr ""
+msgstr "veinticinco para %s"
 
 #: constants.js:57
 #, javascript-format
 msgid "twenty four to %s"
-msgstr ""
+msgstr "veinticuatro para %s"
 
 #: constants.js:58
 #, javascript-format
 msgid "twenty three to %s"
-msgstr ""
+msgstr "veintitrés para %s"
 
 #: constants.js:59
 #, javascript-format
 msgid "twenty two to %s"
-msgstr ""
+msgstr "veintidós para %s"
 
 #: constants.js:60
 #, javascript-format
 msgid "twenty one to %s"
-msgstr ""
+msgstr "veintiuno para %s"
 
 #: constants.js:61
 #, javascript-format
 msgid "twenty to %s"
-msgstr ""
+msgstr "veinte para %s"
 
 #: constants.js:62
 #, javascript-format
 msgid "nineteen to %s"
-msgstr ""
+msgstr "diecinueve para %s"
 
 #: constants.js:63
 #, javascript-format
 msgid "eighteen to %s"
-msgstr ""
+msgstr "dieciocho para %s"
 
 #: constants.js:64
 #, javascript-format
 msgid "seventeen to %s"
-msgstr ""
+msgstr "diecisiete para %s"
 
 #: constants.js:65
 #, javascript-format
 msgid "sixteen to %s"
-msgstr ""
+msgstr "dieciséis para %s"
 
 #: constants.js:66
 #, javascript-format
 msgid "quarter to %s"
-msgstr ""
+msgstr "cuarto para %s"
 
 #: constants.js:67
 #, javascript-format
 msgid "fourteen to %s"
-msgstr ""
+msgstr "catorce para %s"
 
 #: constants.js:68
 #, javascript-format
 msgid "thirteen to %s"
-msgstr ""
+msgstr "trece para %s"
 
 #: constants.js:69
 #, javascript-format
 msgid "twelve to %s"
-msgstr ""
+msgstr "doce para %s"
 
 #: constants.js:70
 #, javascript-format
 msgid "eleven to %s"
-msgstr ""
+msgstr "once para %s"
 
 #: constants.js:71
 #, javascript-format
 msgid "ten to %s"
-msgstr ""
+msgstr "diez para %s"
 
 #: constants.js:72
 #, javascript-format
 msgid "nine to %s"
-msgstr ""
+msgstr "nueve para %s"
 
 #: constants.js:73
 #, javascript-format
 msgid "eight to %s"
-msgstr ""
+msgstr "ocho para %s"
 
 #: constants.js:74
 #, javascript-format
 msgid "seven to %s"
-msgstr ""
+msgstr "siete para %s"
 
 #: constants.js:75
 #, javascript-format
 msgid "six to %s"
-msgstr ""
+msgstr "seis para %s"
 
 #: constants.js:76
 #, javascript-format
 msgid "five to %s"
-msgstr ""
+msgstr "cinco para %s"
 
 #: constants.js:77
 #, javascript-format
 msgid "four to %s"
-msgstr ""
+msgstr "cuatro para %s"
 
 #: constants.js:78
 #, javascript-format
 msgid "three to %s"
-msgstr ""
+msgstr "tres para %s"
 
 #: constants.js:79
 #, javascript-format
 msgid "two to %s"
-msgstr ""
+msgstr "dos para %s"
 
 #: constants.js:80
 #, javascript-format
 msgid "one to %s"
-msgstr ""
+msgstr "uno para %s"
 
 #: constants.js:85
 #, javascript-format
 msgid "%s oh one"
-msgstr ""
+msgstr "%s cero uno"
 
 #: constants.js:86
 #, javascript-format
 msgid "%s oh two"
-msgstr ""
+msgstr "%s cero dos"
 
 #: constants.js:87
 #, javascript-format
 msgid "%s oh three"
-msgstr ""
+msgstr "%s cero tres"
 
 #: constants.js:88
 #, javascript-format
 msgid "%s oh four"
-msgstr ""
+msgstr "%s cero cuatro"
 
 #: constants.js:89
 #, javascript-format
 msgid "%s oh five"
-msgstr ""
+msgstr "%s cero cinco"
 
 #: constants.js:90
 #, javascript-format
 msgid "%s oh six"
-msgstr ""
+msgstr "%s cero seis"
 
 #: constants.js:91
 #, javascript-format
 msgid "%s oh seven"
-msgstr ""
+msgstr "%s cero siete"
 
 #: constants.js:92
 #, javascript-format
 msgid "%s oh eight"
-msgstr ""
+msgstr "%s cero ocho"
 
 #: constants.js:93
 #, javascript-format
 msgid "%s oh nine"
-msgstr ""
+msgstr "%s cero nueve"
 
 #: constants.js:94
 #, javascript-format
 msgid "%s ten"
-msgstr ""
+msgstr "%s diez"
 
 #: constants.js:95
 #, javascript-format
 msgid "%s eleven"
-msgstr ""
+msgstr "%s once"
 
 #: constants.js:96
 #, javascript-format
 msgid "%s twelve"
-msgstr ""
+msgstr "%s doce"
 
 #: constants.js:97
 #, javascript-format
 msgid "%s thirteen"
-msgstr ""
+msgstr "%s trece"
 
 #: constants.js:98
 #, javascript-format
 msgid "%s fourteen"
-msgstr ""
+msgstr "%s catorce"
 
 #: constants.js:99
 #, javascript-format
 msgid "%s fifteen"
-msgstr ""
+msgstr "%s quince"
 
 #: constants.js:100
 #, javascript-format
 msgid "%s sixteen"
-msgstr ""
+msgstr "%s dieciséis"
 
 #: constants.js:101
 #, javascript-format
 msgid "%s seventeen"
-msgstr ""
+msgstr "%s diecisiete"
 
 #: constants.js:102
 #, javascript-format
 msgid "%s eighteen"
-msgstr ""
+msgstr "%s dieciocho"
 
 #: constants.js:103
 #, javascript-format
 msgid "%s nineteen"
-msgstr ""
+msgstr "%s diecinueve"
 
 #: constants.js:104 prefs.js:55
 #, javascript-format
 msgid "%s twenty"
-msgstr ""
+msgstr "%s veinte"
 
 #: constants.js:105
 #, javascript-format
 msgid "%s twenty one"
-msgstr ""
+msgstr "%s veintiuno"
 
 #: constants.js:106
 #, javascript-format
 msgid "%s twenty two"
-msgstr ""
+msgstr "%s veintidós"
 
 #: constants.js:107
 #, javascript-format
 msgid "%s twenty three"
-msgstr ""
+msgstr "%s veintitrés"
 
 #: constants.js:108
 #, javascript-format
 msgid "%s twenty four"
-msgstr ""
+msgstr "%s veinticuatro"
 
 #: constants.js:109
 #, javascript-format
 msgid "%s twenty five"
-msgstr ""
+msgstr "%s veinticinco"
 
 #: constants.js:110
 #, javascript-format
 msgid "%s twenty six"
-msgstr ""
+msgstr "%s veintiséis"
 
 #: constants.js:111
 #, javascript-format
 msgid "%s twenty seven"
-msgstr ""
+msgstr "%s veintisiete"
 
 #: constants.js:112
 #, javascript-format
 msgid "%s twenty eight"
-msgstr ""
+msgstr "%s veintiocho"
 
 #: constants.js:113
 #, javascript-format
 msgid "%s twenty nine"
-msgstr ""
+msgstr "%s veintinueve"
 
 #: constants.js:114
 #, javascript-format
 msgid "%s thirty"
-msgstr ""
+msgstr "%s treinta"
 
 #: constants.js:115
 #, javascript-format
 msgid "%s thirty one"
-msgstr ""
+msgstr "%s treinta y uno"
 
 #: constants.js:116
 #, javascript-format
 msgid "%s thirty two"
-msgstr ""
+msgstr "%s treinta y dos"
 
 #: constants.js:117
 #, javascript-format
 msgid "%s thirty three"
-msgstr ""
+msgstr "%s treinta y tres"
 
 #: constants.js:118
 #, javascript-format
 msgid "%s thirty four"
-msgstr ""
+msgstr "%s treinta y cuatro"
 
 #: constants.js:119
 #, javascript-format
 msgid "%s thirty five"
-msgstr ""
+msgstr "%s treinta y cinco"
 
 #: constants.js:120
 #, javascript-format
 msgid "%s thirty six"
-msgstr ""
+msgstr "%s treinta y seis"
 
 #: constants.js:121
 #, javascript-format
 msgid "%s thirty seven"
-msgstr ""
+msgstr "%s treinta y siete"
 
 #: constants.js:122
 #, javascript-format
 msgid "%s thirty eight"
-msgstr ""
+msgstr "%s treinta y ocho"
 
 #: constants.js:123
 #, javascript-format
 msgid "%s thirty nine"
-msgstr ""
+msgstr "%s treinta y nueve"
 
 #: constants.js:124
 #, javascript-format
 msgid "%s forty"
-msgstr ""
+msgstr "%s cuarenta"
 
 #: constants.js:125
 #, javascript-format
 msgid "%s forty one"
-msgstr ""
+msgstr "%s cuarenta y uno"
 
 #: constants.js:126
 #, javascript-format
 msgid "%s forty two"
-msgstr ""
+msgstr "%s cuarenta y dos"
 
 #: constants.js:127
 #, javascript-format
 msgid "%s forty three"
-msgstr ""
+msgstr "%s cuarenta y tres"
 
 #: constants.js:128
 #, javascript-format
 msgid "%s forty four"
-msgstr ""
+msgstr "%s cuarenta y cuatro"
 
 #: constants.js:129
 #, javascript-format
 msgid "%s forty five"
-msgstr ""
+msgstr "%s cuarenta y cinco"
 
 #: constants.js:130
 #, javascript-format
 msgid "%s forty six"
-msgstr ""
+msgstr "%s cuarenta y seis"
 
 #: constants.js:131
 #, javascript-format
 msgid "%s forty seven"
-msgstr ""
+msgstr "%s cuarenta y siete"
 
 #: constants.js:132
 #, javascript-format
 msgid "%s forty eight"
-msgstr ""
+msgstr "%s cuarenta y ocho"
 
 #: constants.js:133
 #, javascript-format
 msgid "%s forty nine"
-msgstr ""
+msgstr "%s cuarenta y nueve"
 
 #: constants.js:134
 #, javascript-format
 msgid "%s fifty"
-msgstr ""
+msgstr "%s cincuenta"
 
 #: constants.js:135
 #, javascript-format
 msgid "%s fifty one"
-msgstr ""
+msgstr "%s cincuenta y uno"
 
 #: constants.js:136
 #, javascript-format
 msgid "%s fifty two"
-msgstr ""
+msgstr "%s cincuenta y dos"
 
 #: constants.js:137
 #, javascript-format
 msgid "%s fifty three"
-msgstr ""
+msgstr "%s cincuenta y tres"
 
 #: constants.js:138
 #, javascript-format
 msgid "%s fifty four"
-msgstr ""
+msgstr "%s cincuenta y cuatro"
 
 #: constants.js:139
 #, javascript-format
 msgid "%s fifty five"
-msgstr ""
+msgstr "%s cincuenta y cinco"
 
 #: constants.js:140
 #, javascript-format
 msgid "%s fifty six"
-msgstr ""
+msgstr "%s cincuenta y seis"
 
 #: constants.js:141
 #, javascript-format
 msgid "%s fifty seven"
-msgstr ""
+msgstr "%s cincuenta y siete"
 
 #: constants.js:142
 #, javascript-format
 msgid "%s fifty eight"
-msgstr ""
+msgstr "%s cincuenta y ocho"
 
 #: constants.js:143
 #, javascript-format
 msgid "%s fifty nine"
-msgstr ""
+msgstr "%s cincuenta y nueve"
 
 #: constants.js:146 constants.js:170
 msgid "midnight"
-msgstr ""
+msgstr "doce"
 
 #: constants.js:147
 msgid "one"
-msgstr ""
+msgstr "la una"
 
 #: constants.js:148
 msgid "two"
-msgstr ""
+msgstr "las dos"
 
 #: constants.js:149
 msgid "three"
-msgstr ""
+msgstr "las tres"
 
 #: constants.js:150
 msgid "four"
-msgstr ""
+msgstr "las cuatro"
 
 #: constants.js:151
 msgid "five"
-msgstr ""
+msgstr "las cinco"
 
 #: constants.js:152
 msgid "six"
-msgstr ""
+msgstr "las seis"
 
 #: constants.js:153
 msgid "seven"
-msgstr ""
+msgstr "las siete"
 
 #: constants.js:154
 msgid "eight"
-msgstr ""
+msgstr "las ocho"
 
 #: constants.js:155
 msgid "nine"
-msgstr ""
+msgstr "las nueve"
 
 #: constants.js:156 prefs.js:54 prefs.js:55
 msgid "ten"
-msgstr ""
+msgstr "las diez"
 
 #: constants.js:157
 msgid "eleven"
-msgstr ""
+msgstr "las once"
 
 #: constants.js:158 constants.js:171
 msgid "noon"
-msgstr ""
+msgstr "doce"
 
 #: constants.js:161
 #, javascript-format
 msgid "sunday the %s"
-msgstr ""
+msgstr "domingo %s"
 
 #: constants.js:162
 #, javascript-format
 msgid "monday the %s"
-msgstr ""
+msgstr "lunes %s"
 
 #: constants.js:163
 #, javascript-format
 msgid "tuesday the %s"
-msgstr ""
+msgstr "martes %s"
 
 #: constants.js:164
 #, javascript-format
 msgid "wednesday the %s"
-msgstr ""
+msgstr "miércoles %s"
 
 #: constants.js:165
 #, javascript-format
 msgid "thursday the %s"
-msgstr ""
+msgstr "jueves %s"
 
 #: constants.js:166
 #, javascript-format
 msgid "friday the %s"
-msgstr ""
+msgstr "viernes %s"
 
 #: constants.js:167
 #, javascript-format
 msgid "saturday the %s"
-msgstr ""
+msgstr "sábado %s"
 
 #: constants.js:169
 #, javascript-format
 msgid "the %s"
-msgstr ""
+msgstr "%s"
 
 #: constants.js:172
 msgid "twelve"
-msgstr ""
+msgstr "doce"
 
 #: constants.js:174
 msgid "first"
-msgstr ""
+msgstr "primero"
 
 #: constants.js:175
 msgid "second"
-msgstr ""
+msgstr "dos"
 
 #: constants.js:176
 msgid "third"
-msgstr ""
+msgstr "tres"
 
 #: constants.js:177
 msgid "fourth"
-msgstr ""
+msgstr "cuatro"
 
 #: constants.js:178
 msgid "fifth"
-msgstr ""
+msgstr "cinco"
 
 #: constants.js:179
 msgid "sixth"
-msgstr ""
+msgstr "seis"
 
 #: constants.js:180
 msgid "seventh"
-msgstr ""
+msgstr "siete"
 
 #: constants.js:181
 msgid "eighth"
-msgstr ""
+msgstr "ocho"
 
 #: constants.js:182
 msgid "ninth"
-msgstr ""
+msgstr "nueve"
 
 #: constants.js:183
 msgid "tenth"
-msgstr ""
+msgstr "diez"
 
 #: constants.js:184
 msgid "eleventh"
-msgstr ""
+msgstr "once"
 
 #: constants.js:185
 msgid "twelfth"
-msgstr ""
+msgstr "doce"
 
 #: constants.js:186
 msgid "thirteenth"
-msgstr ""
+msgstr "trece"
 
 #: constants.js:187
 msgid "fourteenth"
-msgstr ""
+msgstr "catorce"
 
 #: constants.js:188
 msgid "fifteenth"
-msgstr ""
+msgstr "quince"
 
 #: constants.js:189
 msgid "sixteenth"
-msgstr ""
+msgstr "dieciséis"
 
 #: constants.js:190
 msgid "seventeenth"
-msgstr ""
+msgstr "diecisiete"
 
 #: constants.js:191
 msgid "eighteenth"
-msgstr ""
+msgstr "dieciocho"
 
 #: constants.js:192
 msgid "nineteenth"
-msgstr ""
+msgstr "diecinueve"
 
 #: constants.js:193
 msgid "twentieth"
-msgstr ""
+msgstr "veinte"
 
 #: constants.js:194
 msgid "twenty first"
-msgstr ""
+msgstr "veintiuno"
 
 #: constants.js:195
 msgid "twenty second"
-msgstr ""
+msgstr "veintidós"
 
 #: constants.js:196
 msgid "twenty third"
-msgstr ""
+msgstr "veintitrés"
 
 #: constants.js:197
 msgid "twenty fourth"
-msgstr ""
+msgstr "veinticuatro"
 
 #: constants.js:198
 msgid "twenty fifth"
-msgstr ""
+msgstr "veinticinco"
 
 #: constants.js:199
 msgid "twenty sixth"
-msgstr ""
+msgstr "veintiséis"
 
 #: constants.js:200
 msgid "twenty seventh"
-msgstr ""
+msgstr "veintisiete"
 
 #: constants.js:201
 msgid "twenty eighth"
-msgstr ""
+msgstr "veintiocho"
 
 #: constants.js:202
 msgid "twenty ninth"
-msgstr ""
+msgstr "veintinueve"
 
 #: constants.js:203
 msgid "thirtieth"
-msgstr ""
+msgstr "treinta"
 
 #: constants.js:204
 msgid "thirty first"
-msgstr ""
+msgstr "treinta y uno"
 
 #: prefs.js:28
 msgid "Text Clock"
-msgstr ""
+msgstr "Reloj de Texto"
 
 #: prefs.js:32
 msgid "Clock Settings"
-msgstr ""
+msgstr "Configuración del reloj"
 
 #: prefs.js:33
 msgid "Customize the appearance and behavior of the clock"
-msgstr ""
+msgstr "Personaliza la apariencia y comportamiento del reloj"
