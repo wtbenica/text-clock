@@ -31,6 +31,14 @@ type SettingBinding = {
   property: string;
 };
 
+type ComboRowSettings = {
+  title: string;
+  subtitle: string;
+  settingKey: string;
+  model: Gio.ListModel;
+  selected: number;
+  sensitive?: boolean;
+};
 export default class TextClockPrefs extends ExtensionPreferences {
   _settings?: Gio.Settings;
 
@@ -83,45 +91,23 @@ export default class TextClockPrefs extends ExtensionPreferences {
    * Add a combo row to a preferences group
    *
    * @param group The preferences group to add the row to
-   * @param title The title of the combo row
-   * @param subtitle The subtitle of the combo row
    * @param settingKey The key in the settings schema to bind the combo to
-   * @param model The strings for the combo row
-   * @param selected The index of the selected option
+   * @param props The properties of the combo row
    * @returns The combo row
    */
   #addComboRow(
     group: Adw.PreferencesGroup,
-    {
-      title,
-      subtitle,
-      settingKey,
-      model,
-      selected,
-      sensitive = true,
-    }: {
-      title: string;
-      subtitle: string;
-      settingKey: string;
-      model: Gio.ListModel;
-      selected: number;
-      sensitive?: boolean;
-    }
+    settingKey: string,
+    props: Partial<Adw.ComboRow.ConstructorProps>
   ): Adw.ComboRow {
-    const row = new Adw.ComboRow({
-      title,
-      subtitle,
-      model,
-      selected,
-      sensitive,
-    });
+    const row = new Adw.ComboRow(props);
     group.add(row);
     try {
       row.connect("notify::selected", (widget: Adw.ComboRow) => {
         this._settings!.set_enum(settingKey, widget.selected);
       });
     } catch (error) {
-      console.error(`Error binding settings for ${title}:`, error);
+      console.error(`Error binding settings for ${props.title}:`, error);
     }
     return row;
   }
@@ -130,37 +116,24 @@ export default class TextClockPrefs extends ExtensionPreferences {
    * Add a switch row to a preferences group
    *
    * @param group The preferences group to add the row to
-   * @param title The title of the switch row
-   * @param subtitle The subtitle of the switch row
+   * @param props The properties of the switch row
    * @param settingKey The key in the settings schema to bind the switch to
+   * @param settingBindings The settings to bind to the switch
    * @returns The switch row
    */
   #addSwitchRow(
     group: Adw.PreferencesGroup,
-    {
-      title,
-      subtitle,
-      settingKey,
-      settingBindings = [],
-    }: {
-      title: string;
-      subtitle: string;
-      settingKey: string;
-      settingBindings?: SettingBinding[];
-    }
+    props: Partial<Adw.SwitchRow.ConstructorProps>,
+    settingKey: string,
+    settingBindings?: SettingBinding[]
   ): Adw.SwitchRow {
-    const row = new Adw.SwitchRow({ title, subtitle });
+    const row = new Adw.SwitchRow(props);
     group.add(row);
 
-    this.#bindSettingsToProperty(row, settingKey, group, "active");
+    this.#bindSettingsToProperty(row, settingKey, "active");
 
-    settingBindings.forEach((binding) => {
-      this.#bindSettingsToProperty(
-        row,
-        binding.settingKey,
-        group,
-        binding.property
-      );
+    settingBindings?.forEach((binding) => {
+      this.#bindSettingsToProperty(row, binding.settingKey, binding.property);
     });
     return row;
   }
@@ -170,13 +143,11 @@ export default class TextClockPrefs extends ExtensionPreferences {
    *
    * @param widget The widget to bind the setting to
    * @param settingKey The key in the settings schema to bind
-   * @param group The preferences group to bind the setting to
    * @param property The property of the widget to bind the setting to
    */
   #bindSettingsToProperty(
     widget: Adw.ActionRow,
     settingKey: string,
-    group: Adw.PreferencesGroup,
     property: string
   ) {
     try {
@@ -203,12 +174,11 @@ export default class TextClockPrefs extends ExtensionPreferences {
     const fuzzinessComboInfo = {
       title: _(PrefItems.FUZZINESS.title),
       subtitle: _(PrefItems.FUZZINESS.subtitle),
-      settingKey: SETTINGS.FUZZINESS,
       model: new Gtk.StringList({ strings: ["1", "5", "10", "15"] }),
       selected: this._settings!.get_enum(SETTINGS.FUZZINESS),
     };
 
-    this.#addComboRow(group, fuzzinessComboInfo);
+    this.#addComboRow(group, SETTINGS.FUZZINESS, fuzzinessComboInfo);
   }
 
   /**
@@ -220,7 +190,6 @@ export default class TextClockPrefs extends ExtensionPreferences {
     const timeFormatComboInfo = {
       title: _(PrefItems.TIME_FORMAT.title),
       subtitle: _(PrefItems.TIME_FORMAT.subtitle),
-      settingKey: SETTINGS.TIME_FORMAT,
       model: new Gtk.StringList({
         strings: [
           _("twenty past %s").format(_("ten")),
@@ -229,7 +198,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
       }),
       selected: this._settings!.get_enum(SETTINGS.TIME_FORMAT),
     };
-    this.#addComboRow(group, timeFormatComboInfo);
+    this.#addComboRow(group, SETTINGS.TIME_FORMAT, timeFormatComboInfo);
   }
 
   /**
@@ -241,16 +210,14 @@ export default class TextClockPrefs extends ExtensionPreferences {
     const showWeekdaySwitchInfo = {
       title: _(PrefItems.SHOW_WEEKDAY.title),
       subtitle: _(PrefItems.SHOW_WEEKDAY.subtitle),
-      settingKey: SETTINGS.SHOW_WEEKDAY,
-      settingBindings: [
-        {
-          settingKey: SETTINGS.SHOW_DATE,
-          property: "sensitive",
-        },
-      ],
       sensitive: this._settings!.get_boolean(SETTINGS.SHOW_DATE),
     };
-    this.#addSwitchRow(group, showWeekdaySwitchInfo);
+    this.#addSwitchRow(group, showWeekdaySwitchInfo, SETTINGS.SHOW_WEEKDAY, [
+      {
+        settingKey: SETTINGS.SHOW_DATE,
+        property: "sensitive",
+      },
+    ]);
   }
 
   /**
@@ -262,8 +229,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
     const showDateSwitchInfo = {
       title: _(PrefItems.SHOW_DATE.title),
       subtitle: _(PrefItems.SHOW_DATE.subtitle),
-      settingKey: SETTINGS.SHOW_DATE,
     };
-    this.#addSwitchRow(group, showDateSwitchInfo);
+    this.#addSwitchRow(group, showDateSwitchInfo, SETTINGS.SHOW_DATE);
   }
 }
