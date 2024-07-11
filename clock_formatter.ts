@@ -16,12 +16,20 @@
  */
 
 import { WordPack } from "./word_pack.js";
+import { Errors } from "./constants_en.js";
+import { gettext as _ } from "resource:///org/gnome/shell/extensions/extension.js";
+
+export const TimeFormat = {
+  PAST_OR_TO: "past-or-to",
+  HOURS_MINUTES: "hour-oh-minute",
+};
 
 /**
  * A class to format a time and date as a string.
  *
  * @param {WordPack} wordPack - The word pack to use for converting time/date to text
  * @param {number} fuzziness - The number of minutes to round to (default 5)
+ * @param {boolean} showWeekday - Whether to show the weekday in the output (default true)
  * @returns {string} The formatted time/date string.
  */
 export class ClockFormatter {
@@ -39,19 +47,29 @@ export class ClockFormatter {
    *
    * @param {Date} date - The current date and time.
    * @param {boolean} showDate - Flag to indicate if the date should be included in the output.
+   * @param {boolean} showWeekday - Flag to indicate if the weekday should be included in the output.
+   * @param {string} timeFormat - The format of the time string. "past-or-to" or "hours-and-minute".
    * @returns {string} The formatted time/date string.
    */
-  getClockText(date: Date, showDate: boolean) {
+  getClockText(
+    date: Date,
+    showDate: boolean,
+    showWeekday: boolean,
+    timeFormat: string
+  ) {
     const minutes = date.getMinutes();
     const hours = date.getHours();
     const minuteBucket =
       Math.round(minutes / this.fuzziness!) * this.fuzziness!;
-    const roundedHour = minuteBucket > 30 ? hours + 1 : hours;
+    const roundedHour =
+      timeFormat === TimeFormat.PAST_OR_TO && minuteBucket > 30
+        ? hours + 1
+        : hours;
     const adjustedHour = roundedHour === 12 ? 12 : roundedHour % 12;
     const hourName = this.#getHourName(adjustedHour, minuteBucket);
-    const time = this.#getTimeString(hourName, minuteBucket);
+    const time = this.#getTimeString(hourName, minuteBucket, timeFormat);
     const displayDate = showDate
-      ? ` | ${this.#getDisplayedDate(date, minuteBucket)}`
+      ? ` | ${this.#getDisplayedDate(date, minuteBucket, showWeekday!)}`
       : "";
 
     return time + displayDate;
@@ -82,27 +100,31 @@ export class ClockFormatter {
    * @param {number} minuteBucket - The minute bucket (0-11).
    * @returns {string} The time string.
    */
-  #getTimeString(hourName: string, minuteBucket: number) {
-    console.log(`\n\ngetTimeString(${hourName}, ${minuteBucket})`);
-    console.log(`this.wordPack!.times: ${this.wordPack!.times.length}`);
-    if (this.wordPack!.times.length < minuteBucket) {
-      console.log("Minutes out of range of times");
-    }
+  #getTimeString(hourName: string, minuteBucket: number, timeFormat: string) {
     if (
       (minuteBucket === 0 || minuteBucket === 60) &&
       (hourName === this.wordPack!.midnight || hourName === this.wordPack!.noon)
     ) {
-      console.log(`short circuiting: ${hourName}`);
       return hourName;
     }
 
+    const times =
+      timeFormat === TimeFormat.PAST_OR_TO
+        ? this.wordPack!.timesTenToThree
+        : timeFormat === TimeFormat.HOURS_MINUTES
+        ? this.wordPack!.timesTwoFifty
+        : (() => {
+            logError(new Error(), `Invalid time format: ${timeFormat}`);
+            throw new Error(_(Errors.ERROR_INVALID_TIME_FORMAT));
+          })();
+
     try {
-      return this.wordPack!.times[minuteBucket].format(hourName);
+      return times[minuteBucket].format(hourName);
     } catch (error) {
       try {
-        return this.wordPack!.times[minuteBucket].replace("%s", hourName);
-      } catch (error2) {
-        console.log("Unable to format time string ", error2);
+        return times[minuteBucket].replace("%s", hourName);
+      } catch (error2: any) {
+        logError(error2, _(Errors.ERROR_UNABLE_TO_FORMAT_TIME_STRING));
       }
     }
   }
@@ -114,13 +136,15 @@ export class ClockFormatter {
    * @param {number} minuteBucket - The minute bucket (0-12).
    * @returns {string} The formatted date string.
    */
-  #getDisplayedDate(date: Date, minuteBucket: number) {
+  #getDisplayedDate(date: Date, minuteBucket: number, showWeekday: boolean) {
     const extraDay = date.getHours() === 23 && minuteBucket === 60;
     const adjustedDate = new Date(date);
     if (extraDay) {
       adjustedDate.setDate(date.getDate() + 1);
     }
-    const dayOfWeek = this.wordPack!.days[adjustedDate.getDay()];
+    const dayOfWeek = showWeekday
+      ? this.wordPack!.days[adjustedDate.getDay()]
+      : this.wordPack!.dayOnly;
     const dayOfMonth = adjustedDate.getDate();
     const ordinal = this.#getOrdinal(dayOfMonth);
 
@@ -129,8 +153,8 @@ export class ClockFormatter {
     } catch (error) {
       try {
         return dayOfWeek.replace("%s", ordinal);
-      } catch (error2) {
-        console.log("Unable to format date string ", error2);
+      } catch (error2: any) {
+        logError(error2, _(Errors.ERROR_UNABLE_TO_FORMAT_DATE_STRING));
       }
     }
     return dayOfWeek.format(ordinal);

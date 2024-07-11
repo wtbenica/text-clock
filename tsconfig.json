@@ -21,6 +21,6 @@
     "constants.ts",
     "prefs_constants.ts",
     "word_pack.ts",
-    "constants_en.ts"
+    "constants_en.ts",
   ],
 }

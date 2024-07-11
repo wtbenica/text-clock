@@ -18,11 +18,15 @@
 import Gio from "gi://Gio";
 import St from "gi://St";
 import GObject from "gi://GObject";
-import { Extension } from "resource:///org/gnome/shell/extensions/extension.js";
+import {
+  Extension,
+  gettext as _,
+} from "resource:///org/gnome/shell/extensions/extension.js";
 import { panel } from "resource:///org/gnome/shell/ui/main.js";
 import { TextClockLabel, PROPERTIES, ITextClock } from "./ui/clock_label.js";
 import { TRANSLATE_PACK } from "./constants.js";
 import { SETTINGS } from "./prefs_constants.js";
+import { Errors } from "./constants_en.js";
 
 const CLOCK_STYLE_CLASS_NAME = "clock";
 
@@ -43,6 +47,7 @@ export default class TextClock extends Extension {
   }
 
   enable() {
+    this.#initSettings();
     this.#retrieveDateMenu();
     this.#placeClockLabel();
     this.#bindSettingsToClockLabel();
@@ -54,6 +59,13 @@ export default class TextClock extends Extension {
   }
 
   // Private Methods
+  /**
+   * Initialize the settings object
+   */
+  #initSettings() {
+    this.#settings = this.getSettings();
+  }
+
   /**
    * Initialize class properties to null
    */
@@ -76,7 +88,7 @@ export default class TextClock extends Extension {
       this.#clock = _clock;
       this.#clockDisplay = _clockDisplay;
     } catch (error: any) {
-      logError(error, "Error retrieving date menu");
+      logError(error, _(Errors.ERROR_RETRIEVE_DATE_MENU));
     }
   }
 
@@ -88,21 +100,26 @@ export default class TextClock extends Extension {
       this.#topBox = new St.BoxLayout({
         style_class: CLOCK_STYLE_CLASS_NAME,
       });
+
       this.#clockLabel = new TextClockLabel({
         translatePack: TRANSLATE_PACK(),
-        fuzzyMinutes: "5",
-        showDate: true,
+        fuzzyMinutes: this.#settings!.get_string(SETTINGS.FUZZINESS),
+        showDate: this.#settings!.get_boolean(SETTINGS.SHOW_DATE),
+        showWeekday: this.#settings!.get_boolean(SETTINGS.SHOW_WEEKDAY),
+        timeFormat: this.#settings!.get_string(SETTINGS.TIME_FORMAT),
       });
       this.#topBox.add_child(this.#clockLabel!);
+
       const clockDisplayBox = this.#findClockDisplayBox();
       clockDisplayBox.insert_child_at_index(
         this.#topBox,
         clockDisplayBox.get_children().length - 1
       );
+
       this.#clockDisplay!.remove_style_class_name(CLOCK_STYLE_CLASS_NAME);
       this.#clockDisplay!.set_width(0);
     } catch (error: any) {
-      logError(error, "Error placing clock label");
+      logError(error, _(Errors.ERROR_PLACING_CLOCK_LABEL));
     }
   }
 
@@ -111,17 +128,28 @@ export default class TextClock extends Extension {
    */
   #bindSettingsToClockLabel() {
     try {
-      this.#settings = this.getSettings();
-      this.#settings.bind(
+      this.#settings!.bind(
         SETTINGS.SHOW_DATE,
         this.#clockLabel!,
         PROPERTIES.SHOW_DATE,
         Gio.SettingsBindFlags.DEFAULT
       );
-      this.#settings.bind(
+      this.#settings!.bind(
         SETTINGS.FUZZINESS,
         this.#clockLabel!,
         PROPERTIES.FUZZINESS,
+        Gio.SettingsBindFlags.DEFAULT
+      );
+      this.#settings!.bind(
+        SETTINGS.SHOW_WEEKDAY,
+        this.#clockLabel!,
+        PROPERTIES.SHOW_WEEKDAY,
+        Gio.SettingsBindFlags.DEFAULT
+      );
+      this.#settings!.bind(
+        SETTINGS.TIME_FORMAT,
+        this.#clockLabel!,
+        PROPERTIES.TIME_FORMAT,
         Gio.SettingsBindFlags.DEFAULT
       );
       this.#clock!.bind_property(
@@ -131,7 +159,7 @@ export default class TextClock extends Extension {
         GObject.BindingFlags.DEFAULT
       );
     } catch (error: any) {
-      logError(error, "Error binding settings to clock label");
+      logError(error, _(Errors.ERROR_BINDING_SETTINGS_TO_CLOCK_LABEL));
     }
   }
 
@@ -165,7 +193,7 @@ export default class TextClock extends Extension {
       ) as St.BoxLayout | undefined;
 
     if (!box) {
-      throw new Error("Could not find clock display box");
+      throw new Error(_(Errors.ERROR_COULD_NOT_FIND_CLOCK_DISPLAY_BOX));
     }
 
     return box;

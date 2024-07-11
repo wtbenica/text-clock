@@ -24,6 +24,7 @@ import {
   gettext as _,
 } from "resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js";
 import { SETTINGS } from "./prefs_constants.js";
+import { PrefItems, Errors } from "./constants_en.js";
 
 export default class TextClockPrefs extends ExtensionPreferences {
   _settings?: Gio.Settings;
@@ -37,22 +38,47 @@ export default class TextClockPrefs extends ExtensionPreferences {
     window.add(page);
 
     const group = new Adw.PreferencesGroup({
-      title: _("Text Clock Settings"),
-      description: _("Configure the Text Clock extension"),
+      title: _("Clock Settings"),
+      description: _("Customize the appearance and behavior of the clock"),
     });
     page.add(group);
 
     this.addSwitchRow(group, {
-      title: _("Show Date"),
-      subtitle: _("Show the date in the clock"),
+      title: _(PrefItems.SHOW_DATE.title),
+      subtitle: _(PrefItems.SHOW_DATE.subtitle),
       settingKey: SETTINGS.SHOW_DATE,
     });
 
+    const showWeekdayRow = this.addSwitchRow(group, {
+      title: _(PrefItems.SHOW_WEEKDAY.title),
+      subtitle: _(PrefItems.SHOW_WEEKDAY.subtitle),
+      settingKey: SETTINGS.SHOW_WEEKDAY,
+    });
+
+    showWeekdayRow.sensitive = this._settings.get_boolean(SETTINGS.SHOW_DATE);
+    this._settings.bind(
+      SETTINGS.SHOW_DATE,
+      showWeekdayRow,
+      "sensitive",
+      Gio.SettingsBindFlags.DEFAULT
+    );
+
     this.addComboRow(group, {
-      title: _("Fuzziness"),
-      subtitle: _(
-        "Minutes will be rounded to the nearest multiple of this value"
-      ),
+      title: _(PrefItems.TIME_FORMAT.title),
+      subtitle: _(PrefItems.TIME_FORMAT.subtitle),
+      settingKey: SETTINGS.TIME_FORMAT,
+      model: new Gtk.StringList({
+        strings: [
+          _("twenty past %s").format(_("ten")),
+          _("%s twenty").format(_("ten")),
+        ],
+      }),
+      selected: this._settings!.get_enum(SETTINGS.TIME_FORMAT),
+    });
+
+    this.addComboRow(group, {
+      title: _(PrefItems.FUZZINESS.title),
+      subtitle: _(PrefItems.FUZZINESS.subtitle),
       settingKey: SETTINGS.FUZZINESS,
       model: new Gtk.StringList({ strings: ["1", "5", "10", "15"] }),
       selected: this._settings!.get_enum(SETTINGS.FUZZINESS),
@@ -75,18 +101,31 @@ export default class TextClockPrefs extends ExtensionPreferences {
       subtitle,
       settingKey,
     }: { title: string; subtitle: string; settingKey: string }
-  ) {
+  ): Adw.SwitchRow {
     const row = new Adw.SwitchRow({ title, subtitle });
-    group.add(row);
+    this.addWidgetToGroup(row, settingKey, group, "active");
+    return row;
+  }
+
+  addWidgetToGroup(
+    widget: Adw.ActionRow,
+    settingKey: string,
+    group: Adw.PreferencesGroup,
+    property: string
+  ) {
+    group.add(widget);
     try {
       this._settings!.bind(
         settingKey,
-        row,
-        "active",
+        widget,
+        property,
         Gio.SettingsBindFlags.DEFAULT
       );
-    } catch (error) {
-      console.error(`Error binding settings for ${title}:`, error);
+    } catch (error: any) {
+      logError(
+        error,
+        `${_(Errors.ERROR_BINDING_SETTINGS_FOR_)} ${widget.title}`
+      );
     }
   }
 
@@ -116,7 +155,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
       model: Gio.ListModel;
       selected: number;
     }
-  ) {
+  ): Adw.ComboRow {
     const row = new Adw.ComboRow({
       title,
       subtitle,
@@ -131,5 +170,6 @@ export default class TextClockPrefs extends ExtensionPreferences {
     } catch (error) {
       console.error(`Error binding settings for ${title}:`, error);
     }
+    return row;
   }
 }
