@@ -22,7 +22,6 @@ import {
 } from "resource:///org/gnome/shell/extensions/extension.js";
 
 import { WordPack } from "./word_pack.js";
-import * as ConstantsEn from "./constants_en.js";
 
 export const TRANSLATE_PACK = () =>
   new WordPack({
