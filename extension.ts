@@ -23,10 +23,14 @@ import {
   gettext as _,
 } from "resource:///org/gnome/shell/extensions/extension.js";
 import { panel } from "resource:///org/gnome/shell/ui/main.js";
+import Clutter from "gi://Clutter";
+
 import { TextClockLabel, PROPERTIES, ITextClock } from "./ui/clock_label.js";
 import { SETTINGS } from "./prefs_constants.js";
 import { Errors } from "./constants_en.js";
 import { TRANSLATE_PACK } from "./constants.js";
+import { DateMenuButton } from "resource:///org/gnome/shell/ui/dateMenu.js";
+import GnomeDesktop from "gi://GnomeDesktop";
 
 const CLOCK_STYLE_CLASS_NAME = "clock";
 
@@ -35,8 +39,8 @@ const CLOCK_STYLE_CLASS_NAME = "clock";
  */
 export default class TextClock extends Extension {
   #settings?: Gio.Settings;
-  #dateMenu?: any;
-  #clock?: St.BoxLayout;
+  #dateMenu?: IDateMenuButton;
+  #clock?: GnomeDesktop.WallClock;
   #clockDisplay?: St.Label;
   #topBox?: St.BoxLayout;
   #clockLabel?: ITextClock;
@@ -59,16 +63,12 @@ export default class TextClock extends Extension {
   }
 
   // Private Methods
-  /**
-   * Initialize the settings object
-   */
+  // Initialize the settings object
   #initSettings() {
     this.#settings = this.getSettings();
   }
 
-  /**
-   * Initialize class properties to null
-   */
+  // Initialize class properties to null
   #resetProperties() {
     this.#settings = undefined;
     this.#dateMenu = undefined;
@@ -78,12 +78,10 @@ export default class TextClock extends Extension {
     this.#clockLabel = undefined;
   }
 
-  /**
-   * Retrieve the date menu from the status area
-   */
+  // Retrieve the date menu from the status area
   #retrieveDateMenu() {
     try {
-      this.#dateMenu = panel.statusArea.dateMenu;
+      this.#dateMenu = panel.statusArea.dateMenu as IDateMenuButton;
       const { _clock, _clockDisplay } = this.#dateMenu;
       this.#clock = _clock;
       this.#clockDisplay = _clockDisplay;
@@ -92,9 +90,7 @@ export default class TextClock extends Extension {
     }
   }
 
-  /**
-   * Place the clock label in the top box
-   */
+  // Place the clock label in the top box
   #placeClockLabel() {
     try {
       this.#topBox = new St.BoxLayout({
@@ -123,9 +119,7 @@ export default class TextClock extends Extension {
     }
   }
 
-  /**
-   * Bind the settings to the clock label
-   */
+  // Bind the settings to the clock label
   #bindSettingsToClockLabel() {
     try {
       this.#settings!.bind(
@@ -163,34 +157,26 @@ export default class TextClock extends Extension {
     }
   }
 
-  /**
-   * Destroys created objects
-   */
+  // Destroys created objects
   #cleanup() {
     if (this.#clockLabel!) this.#clockLabel!.destroy();
     if (this.#topBox) this.#topBox.destroy();
     this.#resetProperties();
   }
 
-  /**
-   * Restore the clock display to its original state
-   */
+  // Restore the clock display to its original state
   #restoreClockDisplay() {
     this.#clockDisplay!.add_style_class_name(CLOCK_STYLE_CLASS_NAME);
     this.#clockDisplay!.set_width(-1);
   }
 
-  /**
-   * Finds the St.BoxLayout child with style class 'clock-display-box'
-   */
+  // Finds the St.BoxLayout child with style class 'clock-display-box'
   #findClockDisplayBox() {
-    const box: St.BoxLayout | undefined = this.#dateMenu
-      .get_children()
-      .find(
-        (child: St.Widget) =>
-          child instanceof St.BoxLayout &&
-          child.has_style_class_name("clock-display-box")
-      ) as St.BoxLayout | undefined;
+    const box: St.BoxLayout | undefined = this.#dateMenu!.get_children().find(
+      (child: Clutter.Actor) =>
+        child instanceof St.BoxLayout &&
+        child.has_style_class_name("clock-display-box")
+    ) as St.BoxLayout | undefined;
 
     if (!box) {
       throw new Error(_(Errors.ERROR_COULD_NOT_FIND_CLOCK_DISPLAY_BOX));
@@ -198,4 +184,10 @@ export default class TextClock extends Extension {
 
     return box;
   }
+}
+
+// Interface to provide type safety for the date menu button
+interface IDateMenuButton extends DateMenuButton {
+  _clock: GnomeDesktop.WallClock;
+  _clockDisplay: St.Label;
 }
