@@ -21,6 +21,22 @@ import {
   pgettext as _p,
 } from "resource:///org/gnome/shell/extensions/extension.js";
 
+import { WordPack } from "../word_pack.js";
+import { daysOfWeek, dateOnly, daysOfMonth } from "./constants_dates.js";
+
+export const TRANSLATION_PACK: () => WordPack = () =>
+  new WordPack({
+    timesTenToThree: timesPastTo,
+    timesTwoFifty: timesCountMinutes,
+    names: hourNames,
+    days: daysOfWeek,
+    dayOnly: dateOnly,
+    midnight: midnight,
+    noon: noon,
+    twelve: twelve,
+    daysOfMonth: daysOfMonth,
+  });
+
 export const timesPastTo: string[] = [
   _("%s o'clock"),
   _("one past %s"),

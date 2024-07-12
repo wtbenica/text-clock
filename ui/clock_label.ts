@@ -19,12 +19,16 @@ import GObject from "gi://GObject";
 import Clutter from "gi://Clutter";
 import St from "gi://St";
 
-import { ClockFormatter, TimeFormat } from "../clock_formatter.js";
-import { WordPack } from "../word_pack.js";
-import { PrefItems, Errors } from "../constants/constants.js";
 import { gettext as _ } from "resource:///org/gnome/shell/extensions/extension.js";
 
-export const PROPERTIES = {
+import { WordPack } from "../word_pack.js";
+import { ClockFormatter, TimeFormat } from "../clock_formatter.js";
+import { PrefItems, Errors } from "../constants/constants.js";
+
+/**
+ * The properties of the clock label
+ */
+export const CLOCK_LABEL_PROPERTIES = {
   SHOW_DATE: "show-date",
   CLOCK_UPDATE: "clock-update",
   TRANSLATE_PACK: "translate-pack",
@@ -33,6 +37,9 @@ export const PROPERTIES = {
   TIME_FORMAT: "time-format",
 };
 
+/**
+ * The interface for TextClockLabel
+ */
 export interface ITextClock extends Clutter.Actor {
   _showDate: boolean;
   _translatePack: WordPack;
@@ -50,41 +57,41 @@ export const TextClockLabel = GObject.registerClass(
     GTypeName: "TextClockLabelTS",
     Properties: {
       "translate-pack": GObject.ParamSpec.jsobject<WordPack>(
-        PROPERTIES.TRANSLATE_PACK,
+        CLOCK_LABEL_PROPERTIES.TRANSLATE_PACK,
         "Translate Pack",
         "The translation pack",
         GObject.ParamFlags.READWRITE
       ),
       "show-date": GObject.ParamSpec.boolean(
-        PROPERTIES.SHOW_DATE,
+        CLOCK_LABEL_PROPERTIES.SHOW_DATE,
         PrefItems.SHOW_DATE.title,
         PrefItems.SHOW_DATE.subtitle,
         GObject.ParamFlags.READWRITE,
         true
       ),
       "fuzzy-minutes": GObject.ParamSpec.string(
-        PROPERTIES.FUZZINESS,
+        CLOCK_LABEL_PROPERTIES.FUZZINESS,
         PrefItems.FUZZINESS.title,
         PrefItems.FUZZINESS.subtitle,
         GObject.ParamFlags.READWRITE,
         "5"
       ),
       "show-weekday": GObject.ParamSpec.boolean(
-        PROPERTIES.SHOW_WEEKDAY,
+        CLOCK_LABEL_PROPERTIES.SHOW_WEEKDAY,
         PrefItems.SHOW_WEEKDAY.title,
         PrefItems.SHOW_WEEKDAY.subtitle,
         GObject.ParamFlags.READWRITE,
         true
       ),
       "time-format": GObject.ParamSpec.string(
-        PROPERTIES.TIME_FORMAT,
+        CLOCK_LABEL_PROPERTIES.TIME_FORMAT,
         PrefItems.TIME_FORMAT.title,
         PrefItems.TIME_FORMAT.subtitle,
         GObject.ParamFlags.READWRITE,
         TimeFormat.PAST_OR_TO
       ),
       "clock-update": GObject.ParamSpec.string(
-        PROPERTIES.CLOCK_UPDATE,
+        CLOCK_LABEL_PROPERTIES.CLOCK_UPDATE,
         "Clock Update",
         "The clock update signal",
         GObject.ParamFlags.READWRITE,
