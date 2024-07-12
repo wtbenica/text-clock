@@ -1,5 +1,10 @@
+type PrefsText = {
+  title: string;
+  subtitle: string;
+};
+
 // TODO: These need to be gettexted but because of how/where they're used, I'm not ready to undertake that
-export const PrefItems = {
+export const PrefItems: Record<string, PrefsText> = {
   SHOW_DATE: {
     title: "Show Date",
     subtitle: "Show the date in the clock",
@@ -18,7 +23,7 @@ export const PrefItems = {
   },
 };
 
-export const Errors = {
+export const Errors: Record<string, string> = {
   ERROR_RETRIEVE_DATE_MENU: "Error retrieving date menu",
   ERROR_PLACING_CLOCK_LABEL: "Error placing clock label",
   ERROR_BINDING_SETTINGS_TO_CLOCK_LABEL:

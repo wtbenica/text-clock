@@ -17,7 +17,6 @@
 
 import { WordPack } from "./word_pack.js";
 import { Errors } from "./constants_en.js";
-import { gettext as _ } from "resource:///org/gnome/shell/extensions/extension.js";
 
 export const TimeFormat = {
   PAST_OR_TO: "past-or-to",
@@ -114,8 +113,10 @@ export class ClockFormatter {
         : timeFormat === TimeFormat.HOURS_MINUTES
         ? this.wordPack.timesTwoFifty
         : (() => {
-            logError(new Error(), `Invalid time format: ${timeFormat}`);
-            throw new Error(_(Errors.ERROR_INVALID_TIME_FORMAT));
+            console.error(`${Errors.ERROR_INVALID_TIME_FORMAT} ${timeFormat}`);
+            throw new Error(
+              `${Errors.ERROR_INVALID_TIME_FORMAT} ${hourName} ${minuteBucket}`
+            );
           })();
 
     try {
@@ -124,7 +125,7 @@ export class ClockFormatter {
       try {
         return times[minuteBucket].replace("%s", hourName);
       } catch (error2: any) {
-        logError(error2, _(Errors.ERROR_UNABLE_TO_FORMAT_TIME_STRING));
+        console.error(Errors.ERROR_UNABLE_TO_FORMAT_TIME_STRING, error2);
       }
     }
   }
@@ -158,7 +159,7 @@ export class ClockFormatter {
       try {
         return dayOfWeek.replace("%s", ordinal);
       } catch (error2: any) {
-        logError(error2, _(Errors.ERROR_UNABLE_TO_FORMAT_DATE_STRING));
+        console.error(Errors.ERROR_UNABLE_TO_FORMAT_DATE_STRING, error2);
       }
     }
     return dayOfWeek.format(ordinal);

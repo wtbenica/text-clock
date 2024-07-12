@@ -15,17 +15,19 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as En from "../dist/constants_en.js";
-import { ClockFormatter } from "../dist/clock_formatter.js";
+import { ClockFormatter, TimeFormat } from "../dist/clock_formatter.js";
+import * as En from "./constants_en.js";
 import { WordPack } from "../dist/word_pack.js";
 
 const wordPack = new WordPack({
-  times: En.minutes_past_to,
+  timesTenToThree: En.minutes_past_to,
+  timesTwoFifty: En.hour_minute,
   names: En.hour_names,
   days: En.weekdays,
   dayOnly: En.dayOnly,
   midnight: En.midnight,
   noon: En.noon,
+  twelve: En.twelve,
   daysOfMonth: En.daysOfMonth,
 });
 
@@ -57,20 +59,21 @@ class ClockTestGroup {
           formatter: clockFormatter,
           date: this.tests[i].date,
           showDate: this.tests[i].showDate,
-          expected: this.expecteds[i]
+          expected: this.expecteds[i],
         });
       }
     });
   }
 
   #getMessageString({ date, showDate, expected }) {
-    return `${date.getHours()}:${date.getMinutes()} | ${showDate ? "date" : "no date"} => "${expected}"`;
+    return `${date.getHours()}:${date.getMinutes()} | ${showDate ? "date" : "no date"
+      } => "${expected}"`;
   }
 
   #testFormatter({ formatter, date, showDate, expected }) {
     const message = this.#getMessageString({ date, showDate, expected });
     it(message, () => {
-      const result = formatter.getClockText(date, showDate);
+      const result = formatter.getClockText(date, showDate, true, TimeFormat.PAST_OR_TO);
       expect(result).toBe(expected);
     });
   }
@@ -135,7 +138,7 @@ const fuzzy1Expecteds = [
   "ten to ten",
   "five to eleven | wednesday the thirty first",
   "seven o'clock | thursday the first",
-  "one past midnight"
+  "one past midnight",
 ];
 
 const testGroup1 = new ClockTestGroup({
@@ -215,7 +218,7 @@ const fuzzy10Expecteds = [
   "ten to ten",
   "eleven o'clock | wednesday the thirty first",
   "seven o'clock | thursday the first",
-  "midnight"
+  "midnight",
 ];
 
 const testGroup10 = new ClockTestGroup({
@@ -255,7 +258,7 @@ const fuzzy15Expecteds = [
   "quarter to ten",
   "eleven o'clock | wednesday the thirty first",
   "seven o'clock | thursday the first",
-  "midnight"
+  "midnight",
 ];
 
 const testGroup15 = new ClockTestGroup({
