@@ -29,12 +29,11 @@ export const TimeFormat = {
  *
  * @param {WordPack} wordPack - The word pack to use for converting time/date to text
  * @param {number} fuzziness - The number of minutes to round to (default 5)
- * @param {boolean} showWeekday - Whether to show the weekday in the output (default true)
  * @returns {string} The formatted time/date string.
  */
 export class ClockFormatter {
-  wordPack?: WordPack;
-  fuzziness?: number;
+  wordPack: WordPack;
+  fuzziness: number;
 
   constructor(wordPack: WordPack, fuzziness: number = 5) {
     this.wordPack = wordPack;
@@ -59,8 +58,7 @@ export class ClockFormatter {
   ) {
     const minutes = date.getMinutes();
     const hours = date.getHours();
-    const minuteBucket =
-      Math.round(minutes / this.fuzziness!) * this.fuzziness!;
+    const minuteBucket = Math.round(minutes / this.fuzziness) * this.fuzziness;
     const roundedHour =
       timeFormat === TimeFormat.PAST_OR_TO && minuteBucket > 30
         ? hours + 1
@@ -69,7 +67,7 @@ export class ClockFormatter {
     const hourName = this.#getHourName(adjustedHour, minuteBucket);
     const time = this.#getTimeString(hourName, minuteBucket, timeFormat);
     const displayDate = showDate
-      ? ` | ${this.#getDisplayedDate(date, minuteBucket, showWeekday!)}`
+      ? ` | ${this.#getDisplayedDate(date, minuteBucket, showWeekday)}`
       : "";
 
     return time + displayDate;
@@ -82,15 +80,17 @@ export class ClockFormatter {
    * @returns {string} The name of the hour for display.
    */
   #getHourName(hour: number, minuteBucket: number) {
-    if (minuteBucket === 0 || minuteBucket === 12) {
-      if (hour === 0) {
-        return this.wordPack!.midnight;
-      } else if (hour === 12) {
-        return this.wordPack!.noon;
-      }
+    const isTopOfTheHour = minuteBucket === 0 || minuteBucket === 60;
+    const isMidnight = hour === 0;
+    const isNoon = hour === 12;
+
+    if (isTopOfTheHour && isMidnight) {
+      return this.wordPack.midnight;
+    } else if (isTopOfTheHour && isNoon) {
+      return this.wordPack.noon;
     }
 
-    return this.wordPack!.names[hour];
+    return this.wordPack.names[hour];
   }
 
   /**
@@ -102,17 +102,17 @@ export class ClockFormatter {
    */
   #getTimeString(hourName: string, minuteBucket: number, timeFormat: string) {
     if (
-      (minuteBucket === 0 || minuteBucket === 60) &&
-      (hourName === this.wordPack!.midnight || hourName === this.wordPack!.noon)
+      this.#isTopOfTheHour(minuteBucket) &&
+      (hourName === this.wordPack.midnight || hourName === this.wordPack.noon)
     ) {
       return hourName;
     }
 
     const times =
       timeFormat === TimeFormat.PAST_OR_TO
-        ? this.wordPack!.timesTenToThree
+        ? this.wordPack.timesTenToThree
         : timeFormat === TimeFormat.HOURS_MINUTES
-        ? this.wordPack!.timesTwoFifty
+        ? this.wordPack.timesTwoFifty
         : (() => {
             logError(new Error(), `Invalid time format: ${timeFormat}`);
             throw new Error(_(Errors.ERROR_INVALID_TIME_FORMAT));
@@ -129,6 +129,10 @@ export class ClockFormatter {
     }
   }
 
+  #isTopOfTheHour(minuteBucket: number) {
+    return minuteBucket === 0 || minuteBucket === 60;
+  }
+
   /**
    * Formats the current date as a string like "monday the 1st", adjusting the date based if the time will be rounded up to midnight (the next day).
    *
@@ -143,8 +147,8 @@ export class ClockFormatter {
       adjustedDate.setDate(date.getDate() + 1);
     }
     const dayOfWeek = showWeekday
-      ? this.wordPack!.days[adjustedDate.getDay()]
-      : this.wordPack!.dayOnly;
+      ? this.wordPack.days[adjustedDate.getDay()]
+      : this.wordPack.dayOnly;
     const dayOfMonth = adjustedDate.getDate();
     const ordinal = this.#getOrdinal(dayOfMonth);
 
@@ -167,6 +171,6 @@ export class ClockFormatter {
    * @returns {string} The ordinal string.
    */
   #getOrdinal(n: number) {
-    return this.wordPack!.daysOfMonth[n - 1];
+    return this.wordPack.daysOfMonth[n - 1];
   }
 }
