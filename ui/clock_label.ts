@@ -21,7 +21,7 @@ import St from "gi://St";
 
 import { ClockFormatter, TimeFormat } from "../clock_formatter.js";
 import { WordPack } from "../word_pack.js";
-import { PrefItems, Errors } from "../constants_en.js";
+import { PrefItems, Errors } from "../constants/constants.js";
 import { gettext as _ } from "resource:///org/gnome/shell/extensions/extension.js";
 
 export const PROPERTIES = {

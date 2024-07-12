@@ -24,7 +24,7 @@ import {
   gettext as _,
 } from "resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js";
 import { SETTINGS } from "./prefs_constants.js";
-import { PrefItems, Errors } from "./constants_en.js";
+import { PrefItems, Errors } from "./constants/constants.js";
 
 // Represents a binding between a setting and a property of a widget.
 // This is used to dynamically update the widget's property based on the value of the setting.

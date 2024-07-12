@@ -1,9 +1,34 @@
+/*
+ * Copyright (c) 2024 Wesley T Benica
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/**
+ * Holds the title and subtitle for a preference item
+ *
+ * @param title: { string } The title of the preference item
+ * @param subtitle: {string} The subtitle of the preference item
+ */
 type PrefsText = {
   title: string;
   subtitle: string;
 };
 
-// TODO: These need to be gettexted but because of how/where they're used, I'm not ready to undertake that
+/**
+ * The title and subtitles for each preference row
+ */
 export const PrefItems: Record<string, PrefsText> = {
   SHOW_DATE: {
     title: "Show Date",
@@ -23,6 +48,9 @@ export const PrefItems: Record<string, PrefsText> = {
   },
 };
 
+/**
+ * The error messages for the extension
+ */
 export const Errors: Record<string, string> = {
   ERROR_RETRIEVE_DATE_MENU: "Error retrieving date menu",
   ERROR_PLACING_CLOCK_LABEL: "Error placing clock label",

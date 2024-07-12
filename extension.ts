@@ -15,24 +15,51 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import Clutter from "gi://Clutter";
 import Gio from "gi://Gio";
-import St from "gi://St";
 import GObject from "gi://GObject";
+import St from "gi://St";
+
+import { DateMenuButton } from "resource:///org/gnome/shell/ui/dateMenu.js";
+import { panel } from "resource:///org/gnome/shell/ui/main.js";
 import {
   Extension,
   gettext as _,
 } from "resource:///org/gnome/shell/extensions/extension.js";
-import { panel } from "resource:///org/gnome/shell/ui/main.js";
-import Clutter from "gi://Clutter";
 
 import { TextClockLabel, PROPERTIES, ITextClock } from "./ui/clock_label.js";
 import { SETTINGS } from "./prefs_constants.js";
-import { Errors } from "./constants_en.js";
-import { TRANSLATE_PACK } from "./constants.js";
-import { DateMenuButton } from "resource:///org/gnome/shell/ui/dateMenu.js";
+import { Errors } from "./constants/constants.js";
+import { WordPack } from "./word_pack.js";
+import {
+  timesPastTo,
+  timesCountMinutes,
+  hourNames,
+  midnight,
+  noon,
+  twelve,
+} from "./constants/constants_times.js";
+import {
+  dateOnly,
+  daysOfWeek,
+  daysOfMonth,
+} from "./constants/constants_dates.js";
 import GnomeDesktop from "gi://GnomeDesktop";
 
 const CLOCK_STYLE_CLASS_NAME = "clock";
+
+const TRANSLATE_PACK = () =>
+  new WordPack({
+    timesTenToThree: timesPastTo,
+    timesTwoFifty: timesCountMinutes,
+    names: hourNames,
+    days: daysOfWeek,
+    dayOnly: dateOnly,
+    midnight: midnight,
+    noon: noon,
+    twelve: twelve,
+    daysOfMonth: daysOfMonth,
+  });
 
 /**
  * TextClock extension for GNOME Shell

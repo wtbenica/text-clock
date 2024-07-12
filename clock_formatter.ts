@@ -16,7 +16,7 @@
  */
 
 import { WordPack } from "./word_pack.js";
-import { Errors } from "./constants_en.js";
+import { Errors } from "./constants/constants.js";
 
 export const TimeFormat = {
   PAST_OR_TO: "past-or-to",
