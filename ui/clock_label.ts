@@ -34,11 +34,11 @@ export const PROPERTIES = {
 };
 
 export interface ITextClock extends Clutter.Actor {
-  _showDate?: boolean;
-  _translatePack?: WordPack;
-  _fuzzyMinutes?: string;
-  _showWeekday?: boolean;
-  _timeFormat?: string;
+  _showDate: boolean;
+  _translatePack: WordPack;
+  _fuzzyMinutes: string;
+  _showWeekday: boolean;
+  _timeFormat: string;
 }
 
 /**
@@ -94,24 +94,24 @@ export const TextClockLabel = GObject.registerClass(
   },
   class ClockLabel extends St.Label implements ITextClock {
     _formatter?: ClockFormatter;
-    _showDate?: boolean;
-    _translatePack?: WordPack;
-    _fuzzyMinutes?: string;
-    _showWeekday?: boolean;
-    _timeFormat?: string;
+    _showDate: boolean;
+    _translatePack: WordPack;
+    _fuzzyMinutes: string;
+    _showWeekday: boolean;
+    _timeFormat: string;
 
     constructor(props: any) {
       super(props);
-      this._showDate = props.showDate;
       this._translatePack = props.translatePack;
+      this._showDate = props.showDate;
       this._fuzzyMinutes = props.fuzzyMinutes;
       this._showWeekday = props.showWeekday;
       this._timeFormat = props.timeFormat;
 
       try {
         this._formatter = new ClockFormatter(
-          this._translatePack!,
-          parseInt(this._fuzzyMinutes!)
+          this._translatePack,
+          parseInt(this._fuzzyMinutes)
         );
         this.clutterText.yAlign = Clutter.ActorAlign.CENTER;
       } catch (error: any) {
@@ -143,9 +143,10 @@ export const TextClockLabel = GObject.registerClass(
 
     /**
      * The clock update signal
-     * @param {any} _
+     *
+     * @param {string} _
      */
-    set clockUpdate(_: any) {
+    set clockUpdate(_: string) {
       this.updateClock();
     }
 
@@ -161,6 +162,7 @@ export const TextClockLabel = GObject.registerClass(
 
     /**
      * The translation pack
+     *
      * @param {WordPack} value
      */
     set translatePack(value: WordPack) {
@@ -171,6 +173,7 @@ export const TextClockLabel = GObject.registerClass(
 
     /**
      * The fuzziness of the clock
+     *
      * @param {string} value
      */
     set fuzzyMinutes(value: string) {
@@ -190,9 +193,9 @@ export const TextClockLabel = GObject.registerClass(
           this.set_text(
             this._formatter?.getClockText(
               date,
-              this._showDate!,
-              this._showWeekday!,
-              this._timeFormat!
+              this._showDate,
+              this._showWeekday,
+              this._timeFormat
             )
           );
       } catch (error: any) {
