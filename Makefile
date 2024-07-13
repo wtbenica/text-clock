@@ -1,4 +1,4 @@
-NAME=text-clock-ts
+NAME=text-clock
 DOMAIN=benica.dev
 
 .PHONY: all pack install clean test

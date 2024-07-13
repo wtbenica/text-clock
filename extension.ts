@@ -15,30 +15,30 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Clutter from "gi://Clutter";
-import Gio from "gi://Gio";
-import GObject from "gi://GObject";
-import St from "gi://St";
-import GnomeDesktop from "gi://GnomeDesktop";
+import Clutter from 'gi://Clutter';
+import Gio from 'gi://Gio';
+import GObject from 'gi://GObject';
+import St from 'gi://St';
+import GnomeDesktop from 'gi://GnomeDesktop';
 
-import { DateMenuButton } from "resource:///org/gnome/shell/ui/dateMenu.js";
-import { panel } from "resource:///org/gnome/shell/ui/main.js";
+import { DateMenuButton } from 'resource:///org/gnome/shell/ui/dateMenu.js';
+import { panel } from 'resource:///org/gnome/shell/ui/main.js';
 import {
   Extension,
   gettext as _,
-} from "resource:///org/gnome/shell/extensions/extension.js";
+} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 import {
   TextClockLabel,
   CLOCK_LABEL_PROPERTIES,
   ITextClock,
-} from "./ui/clock_label.js";
-import { SETTINGS } from "./prefs_constants.js";
-import { WordPack } from "./word_pack.js";
-import { Errors } from "./constants/constants.js";
-import { TRANSLATION_PACK } from "./constants/constants_times.js";
+} from './ui/clock_label.js';
+import { SETTINGS } from './prefs_constants.js';
+import { WordPack } from './word_pack.js';
+import { Errors } from './constants/constants.js';
+import { TRANSLATION_PACK } from './constants/constants_times.js';
 
-const CLOCK_STYLE_CLASS_NAME = "clock";
+const CLOCK_STYLE_CLASS_NAME = 'clock';
 
 /**
  * TextClock extension for GNOME Shell
@@ -50,7 +50,7 @@ export default class TextClock extends Extension {
   #clockDisplay?: St.Label;
   #topBox?: St.BoxLayout;
   #clockLabel?: ITextClock;
-  #translationPack?: WordPack;
+  #translatePack?: WordPack;
 
   // Lifecycle Methods
   constructor(metadata: any) {
@@ -83,7 +83,7 @@ export default class TextClock extends Extension {
     this.#clockDisplay = undefined;
     this.#topBox = undefined;
     this.#clockLabel = undefined;
-    this.#translationPack = undefined;
+    this.#translatePack = undefined;
   }
 
   // Retrieve the date menu from the status area
@@ -100,7 +100,7 @@ export default class TextClock extends Extension {
 
   // Place the clock label in the top box
   #placeClockLabel() {
-    this.#translationPack = TRANSLATION_PACK();
+    this.#translatePack = TRANSLATION_PACK();
 
     try {
       // Create the top box
@@ -110,7 +110,7 @@ export default class TextClock extends Extension {
 
       // Create the clock label and add it to the top box
       this.#clockLabel = new TextClockLabel({
-        translationPack: this.#translationPack,
+        translatePack: this.#translatePack,
         fuzzyMinutes: this.#settings!.get_string(SETTINGS.FUZZINESS),
         showDate: this.#settings!.get_boolean(SETTINGS.SHOW_DATE),
         showWeekday: this.#settings!.get_boolean(SETTINGS.SHOW_WEEKDAY),
@@ -161,7 +161,7 @@ export default class TextClock extends Extension {
         Gio.SettingsBindFlags.DEFAULT
       );
       this.#clock!.bind_property(
-        "clock",
+        'clock',
         this.#clockLabel!,
         CLOCK_LABEL_PROPERTIES.CLOCK_UPDATE,
         GObject.BindingFlags.DEFAULT
@@ -189,7 +189,7 @@ export default class TextClock extends Extension {
     const box: St.BoxLayout | undefined = this.#dateMenu!.get_children().find(
       (child: Clutter.Actor) =>
         child instanceof St.BoxLayout &&
-        child.has_style_class_name("clock-display-box")
+        child.has_style_class_name('clock-display-box')
     ) as St.BoxLayout | undefined;
 
     if (!box) {
