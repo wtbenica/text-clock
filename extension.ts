@@ -36,12 +36,16 @@ import {
 import { SETTINGS } from './prefs_constants.js';
 import { WordPack } from './word_pack.js';
 import { Errors } from './constants/constants.js';
-import { TRANSLATION_PACK } from './constants/constants_times.js';
+import { TRANSLATE_PACK } from './constants/constants_times.js';
 
 const CLOCK_STYLE_CLASS_NAME = 'clock';
 
 /**
  * TextClock extension for GNOME Shell
+ *
+ * A GNOME Shell extension that hides the clock in the top bar and adds a new
+ * clock label that displays the time as text, e.g. "five past noon". It can also
+ * display the date and weekday, e.g. "five past noon | Monday the first".
  */
 export default class TextClock extends Extension {
   #settings?: Gio.Settings;
@@ -100,7 +104,7 @@ export default class TextClock extends Extension {
 
   // Place the clock label in the top box
   #placeClockLabel() {
-    this.#translatePack = TRANSLATION_PACK();
+    this.#translatePack = TRANSLATE_PACK();
 
     try {
       // Create the top box
@@ -200,7 +204,9 @@ export default class TextClock extends Extension {
   }
 }
 
-// Interface to provide type safety for the date menu button
+/**
+ * Interface to provide type safety for the date menu button
+ */
 interface IDateMenuButton extends DateMenuButton {
   _clock: GnomeDesktop.WallClock;
   _clockDisplay: St.Label;

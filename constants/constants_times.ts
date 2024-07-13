@@ -24,7 +24,10 @@ import {
 import { WordPack } from '../word_pack.js';
 import { daysOfWeek, dateOnly, daysOfMonth } from './constants_dates.js';
 
-export const TRANSLATION_PACK: () => WordPack = () =>
+/**
+ * @returns a word pack that contains the strings for telling the time and date
+ */
+export const TRANSLATE_PACK: () => WordPack = () =>
   new WordPack({
     timesTenToThree: timesPastTo(),
     timesTwoFifty: timesCountMinutes(),
@@ -37,6 +40,9 @@ export const TRANSLATION_PACK: () => WordPack = () =>
     daysOfMonth: daysOfMonth(),
   });
 
+/**
+ * @returns a list of strings for telling the time as "M past H(%s)" or "M to H(%s)"
+ */
 export const timesPastTo: () => string[] = () => [
   _("%s o'clock"),
   _('one past %s'),
@@ -101,6 +107,9 @@ export const timesPastTo: () => string[] = () => [
   _("%s o'clock"),
 ];
 
+/**
+ * @returns a list of strings for telling the time as "H M"
+ */
 export const timesCountMinutes: () => string[] = () => [
   _("%s o'clock"),
   _('%s oh one'),
@@ -164,6 +173,9 @@ export const timesCountMinutes: () => string[] = () => [
   _('%s fifty nine'),
 ];
 
+/**
+ * @returns a list of strings that tells the hour
+ */
 export const hourNames: () => string[] = () => [
   _('midnight'),
   _('one'),
@@ -180,8 +192,17 @@ export const hourNames: () => string[] = () => [
   _('noon'),
 ];
 
+/**
+ * @returns the string for the word "midnight"
+ */
 export const midnight: () => string = () => _('midnight');
 
+/**
+ * @returns the string for the word "noon"
+ */
 export const noon: () => string = () => _('noon');
 
+/**
+ * @returns the string for the word "twelve"
+ */
 export const twelve: () => string = () => _('twelve');

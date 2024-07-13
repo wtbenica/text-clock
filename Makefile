@@ -24,9 +24,9 @@ pack: $(NAME).zip
 install: $(NAME).zip
 	@touch ~/.local/share/gnome-shell/extensions/$(NAME)@$(DOMAIN)
 	@rm -rf ~/.local/share/gnome-shell/extensions/$(NAME)@$(DOMAIN)
-	# make locale if it doesn't exist
+	@# make locale if it doesn't exist
 	@test -d locale || mkdir locale
-	# for each .mo file in ./po, create a directory in locale with the same name and copy the .mo file there as ${NAME}@${DOMAIN}.mo
+	@# for each .mo file in ./po, create a directory in locale with the same name and copy the .mo file there as ${NAME}@${DOMAIN}.mo
 	@for file in po/*.mo; do \
 		lang=$$(basename $$file .mo); \
 		mkdir -p locale/$$lang/LC_MESSAGES; \
