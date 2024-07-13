@@ -6,7 +6,6 @@
   "url": "https://github.com/wtbenica/text-clock",
   "settings-schema": "org.gnome.shell.extensions.text-clock",
   "gettext-domain": "text-clock@benica.dev",
-  "version-name": "0.1.0",
   "donations": {
     "github": "wtbenica"
   }
