@@ -15,12 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { WordPack } from "./word_pack.js";
-import { Errors } from "./constants/constants.js";
+import { WordPack } from './constants/word_pack.js';
+import { Errors } from './constants/constants.js';
 
 export const TimeFormat = {
-  PAST_OR_TO: "past-or-to",
-  HOURS_MINUTES: "hour-oh-minute",
+  PAST_OR_TO: 'past-or-to',
+  HOURS_MINUTES: 'hour-oh-minute',
 };
 
 /**
@@ -67,7 +67,7 @@ export class ClockFormatter {
     const time = this.#getTimeString(hourName, minuteBucket, timeFormat);
     const displayDate = showDate
       ? ` | ${this.#getDisplayedDate(date, minuteBucket, showWeekday)}`
-      : "";
+      : '';
 
     return time + displayDate;
   }
@@ -123,7 +123,7 @@ export class ClockFormatter {
       return times[minuteBucket].format(hourName);
     } catch (error) {
       try {
-        return times[minuteBucket].replace("%s", hourName);
+        return times[minuteBucket].replace('%s', hourName);
       } catch (error2: any) {
         console.error(Errors.ERROR_UNABLE_TO_FORMAT_TIME_STRING, error2);
       }
@@ -157,7 +157,7 @@ export class ClockFormatter {
       return dayOfWeek.format(ordinal);
     } catch (error) {
       try {
-        return dayOfWeek.replace("%s", ordinal);
+        return dayOfWeek.replace('%s', ordinal);
       } catch (error2: any) {
         console.error(Errors.ERROR_UNABLE_TO_FORMAT_DATE_STRING, error2);
       }

@@ -21,7 +21,7 @@ import {
   pgettext as _p,
 } from 'resource:///org/gnome/shell/extensions/extension.js';
 
-import { WordPack } from '../word_pack.js';
+import { WordPack } from './word_pack.js';
 import { daysOfWeek, dateOnly, daysOfMonth } from './constants_dates.js';
 
 /**

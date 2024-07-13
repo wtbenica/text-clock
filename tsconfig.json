@@ -16,9 +16,9 @@
   "files": [
     "extension.ts",
     "prefs.ts",
-    "prefs_constants.ts",
+    "constants/constants_prefs.ts",
     "clock_formatter.ts",
-    "word_pack.ts",
+    "constants/word_pack.ts",
     "constants/constants.ts",
     "constants/constants_times.ts",
     "constants/constants_dates.ts",

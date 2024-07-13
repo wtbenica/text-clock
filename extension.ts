@@ -33,8 +33,8 @@ import {
   CLOCK_LABEL_PROPERTIES,
   ITextClock,
 } from './ui/clock_label.js';
-import { SETTINGS } from './prefs_constants.js';
-import { WordPack } from './word_pack.js';
+import { SETTINGS } from './constants/constants_prefs.js';
+import { WordPack } from './constants/word_pack.js';
 import { Errors } from './constants/constants.js';
 import { TRANSLATE_PACK } from './constants/constants_times.js';
 
