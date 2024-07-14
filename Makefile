@@ -18,7 +18,7 @@ node_modules: package.json
 	@$(MAKE) patch-dts-files
 	
 # Compile TypeScript files into JavaScript
-	$(DIST_DIR)/extension.js $(DIST_DIR)/prefs.js: node_modules
+$(DIST_DIR)/extension.js $(DIST_DIR)/prefs.js: node_modules
 	@echo "Compiling TypeScript files..."
 	@tsc || { echo "TypeScript compilation failed"; exit 1; }
 
