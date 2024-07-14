@@ -15,16 +15,16 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Gio from "gi://Gio";
-import Adw from "gi://Adw";
-import Gtk from "gi://Gtk";
+import Gio from 'gi://Gio';
+import Adw from 'gi://Adw';
+import Gtk from 'gi://Gtk';
 
 import {
   ExtensionPreferences,
   gettext as _,
-} from "resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js";
-import { SETTINGS } from "./prefs_constants.js";
-import { PrefItems, Errors } from "./constants/constants.js";
+} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
+import { SETTINGS } from './constants/constants_prefs.js';
+import { PrefItems, Errors } from './constants/constants.js';
 
 // Represents a binding between a setting and a property of a widget.
 // This is used to dynamically update the widget's property based on the value of the setting.
@@ -66,7 +66,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
   // @returns The page
   #createAndAddPageToWindow(window: Adw.PreferencesWindow) {
     const page = new Adw.PreferencesPage({
-      title: _("Text Clock"),
+      title: _('Text Clock'),
     });
     window.add(page);
     return page;
@@ -78,8 +78,8 @@ export default class TextClockPrefs extends ExtensionPreferences {
   // @returns The group
   #createAndAddGroupToPage(page: Adw.PreferencesPage) {
     const group = new Adw.PreferencesGroup({
-      title: _("Clock Settings"),
-      description: _("Customize the appearance and behavior of the clock"),
+      title: _('Clock Settings'),
+      description: _('Customize the appearance and behavior of the clock'),
     });
     page.add(group);
     return group;
@@ -99,7 +99,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
     const row = new Adw.ComboRow(props);
     group.add(row);
     try {
-      row.connect("notify::selected", (widget: Adw.ComboRow) => {
+      row.connect('notify::selected', (widget: Adw.ComboRow) => {
         this._settings!.set_enum(settingKey, widget.selected);
       });
     } catch (error) {
@@ -124,7 +124,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
     const row = new Adw.SwitchRow(props);
     group.add(row);
 
-    this.#bindSettingsToProperty(row, settingKey, "active");
+    this.#bindSettingsToProperty(row, settingKey, 'active');
 
     settingBindings?.forEach((binding) => {
       this.#bindSettingsToProperty(row, binding.settingKey, binding.property);
@@ -164,7 +164,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
     const fuzzinessComboInfo = {
       title: _(PrefItems.FUZZINESS.title),
       subtitle: _(PrefItems.FUZZINESS.subtitle),
-      model: new Gtk.StringList({ strings: ["1", "5", "10", "15"] }),
+      model: new Gtk.StringList({ strings: ['1', '5', '10', '15'] }),
       selected: this._settings!.get_enum(SETTINGS.FUZZINESS),
     };
 
@@ -180,8 +180,8 @@ export default class TextClockPrefs extends ExtensionPreferences {
       subtitle: _(PrefItems.TIME_FORMAT.subtitle),
       model: new Gtk.StringList({
         strings: [
-          _("twenty past %s").format(_("ten")),
-          _("%s twenty").format(_("ten")),
+          _('twenty past %s').format(_('ten')),
+          _('%s twenty').format(_('ten')),
         ],
       }),
       selected: this._settings!.get_enum(SETTINGS.TIME_FORMAT),
@@ -201,7 +201,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
     this.#addSwitchRow(group, showWeekdaySwitchInfo, SETTINGS.SHOW_WEEKDAY, [
       {
         settingKey: SETTINGS.SHOW_DATE,
-        property: "sensitive",
+        property: 'sensitive',
       },
     ]);
   }

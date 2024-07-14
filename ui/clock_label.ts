@@ -15,26 +15,26 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import GObject from "gi://GObject";
-import Clutter from "gi://Clutter";
-import St from "gi://St";
+import GObject from 'gi://GObject';
+import Clutter from 'gi://Clutter';
+import St from 'gi://St';
 
-import { gettext as _ } from "resource:///org/gnome/shell/extensions/extension.js";
+import { gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.js';
 
-import { WordPack } from "../word_pack.js";
-import { ClockFormatter, TimeFormat } from "../clock_formatter.js";
-import { PrefItems, Errors } from "../constants/constants.js";
+import { WordPack } from '../constants/word_pack.js';
+import { ClockFormatter, TimeFormat } from '../clock_formatter.js';
+import { PrefItems, Errors } from '../constants/constants.js';
 
 /**
  * The properties of the clock label
  */
 export const CLOCK_LABEL_PROPERTIES = {
-  SHOW_DATE: "show-date",
-  CLOCK_UPDATE: "clock-update",
-  TRANSLATE_PACK: "translate-pack",
-  FUZZINESS: "fuzzy-minutes",
-  SHOW_WEEKDAY: "show-weekday",
-  TIME_FORMAT: "time-format",
+  SHOW_DATE: 'show-date',
+  CLOCK_UPDATE: 'clock-update',
+  TRANSLATE_PACK: 'translate-pack',
+  FUZZINESS: 'fuzzy-minutes',
+  SHOW_WEEKDAY: 'show-weekday',
+  TIME_FORMAT: 'time-format',
 };
 
 /**
@@ -54,48 +54,48 @@ export interface ITextClock extends Clutter.Actor {
  */
 export const TextClockLabel = GObject.registerClass(
   {
-    GTypeName: "TextClockLabelTS",
+    GTypeName: 'TextClockLabel',
     Properties: {
-      "translate-pack": GObject.ParamSpec.jsobject<WordPack>(
+      'translate-pack': GObject.ParamSpec.jsobject<WordPack>(
         CLOCK_LABEL_PROPERTIES.TRANSLATE_PACK,
-        "Translate Pack",
-        "The translation pack",
+        'Translate Pack',
+        'The translation pack',
         GObject.ParamFlags.READWRITE
       ),
-      "show-date": GObject.ParamSpec.boolean(
+      'show-date': GObject.ParamSpec.boolean(
         CLOCK_LABEL_PROPERTIES.SHOW_DATE,
         PrefItems.SHOW_DATE.title,
         PrefItems.SHOW_DATE.subtitle,
         GObject.ParamFlags.READWRITE,
         true
       ),
-      "fuzzy-minutes": GObject.ParamSpec.string(
+      'fuzzy-minutes': GObject.ParamSpec.string(
         CLOCK_LABEL_PROPERTIES.FUZZINESS,
         PrefItems.FUZZINESS.title,
         PrefItems.FUZZINESS.subtitle,
         GObject.ParamFlags.READWRITE,
-        "5"
+        '5'
       ),
-      "show-weekday": GObject.ParamSpec.boolean(
+      'show-weekday': GObject.ParamSpec.boolean(
         CLOCK_LABEL_PROPERTIES.SHOW_WEEKDAY,
         PrefItems.SHOW_WEEKDAY.title,
         PrefItems.SHOW_WEEKDAY.subtitle,
         GObject.ParamFlags.READWRITE,
         true
       ),
-      "time-format": GObject.ParamSpec.string(
+      'time-format': GObject.ParamSpec.string(
         CLOCK_LABEL_PROPERTIES.TIME_FORMAT,
         PrefItems.TIME_FORMAT.title,
         PrefItems.TIME_FORMAT.subtitle,
         GObject.ParamFlags.READWRITE,
         TimeFormat.PAST_OR_TO
       ),
-      "clock-update": GObject.ParamSpec.string(
+      'clock-update': GObject.ParamSpec.string(
         CLOCK_LABEL_PROPERTIES.CLOCK_UPDATE,
-        "Clock Update",
-        "The clock update signal",
+        'Clock Update',
+        'The clock update signal',
         GObject.ParamFlags.READWRITE,
-        ""
+        ''
       ),
     },
   },
