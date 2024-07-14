@@ -20,6 +20,7 @@ The Text Clock extension for GNOME Shell changes the top bar clock to show the t
 #### Installation
 
 **_GNOME Extensions_**
+
 Once the extension is approved on [extensions.gnome.org](https://extensions.gnome.org), that should be your preferred method of installing. Until then, though, the extension can be installed manually.
 
 **_Manual Installation_**
