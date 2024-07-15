@@ -46,7 +46,7 @@
       </description>
     </key>
     <key name='show-weekday' type='b'>
-      <default>false</default>
+      <default>true</default>
       <summary>Show the weekday</summary>
       <description>
             Whether to show the weekday in addition to the date.
