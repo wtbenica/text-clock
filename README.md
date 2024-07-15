@@ -2,145 +2,133 @@
 
 ![Screenshot of Text Clock](media/screenshot.png 'Screenshot of Text Clock Extension')
 
-#### Overview
+### Overview
 
-Text Clock modifies the GNOME Shell top bar clock to show the time as text,
+**Text Clock** modifies the GNOME Shell top bar clock to show the time as text.
 
 #### Key Features
 
 - **GNOME Shell Integration:** Replaces the standard clock in the top bar.
-- **Time Format Options:** Shows time as relative minutes ("ten to three", "five
-  past noon") or exact hours and minutes ("four thirty", "eleven oh seven").
-- **Optional Date Display:** Users can choose whether to also show the date.
-- **Fuzziness:** Displays the exact time or fuzzy time, rounded to five, ten, or
-  fifteen minute intervals.
+- **Time Format Options:** Choose between relative minutes ("ten to three", "five past noon") or hours and minutes ("four thirty", "eleven oh seven").
+- **Optional Date Display:** Time-only or time and date display.
+- **Fuzziness:** Displays the exact time or fuzzy time, rounded to five, ten, or fifteen minute intervals.
 
 ---
 
-#### Getting Started
+### Getting Started
 
-##### Installation
+#### Installation
 
-###### GNOME Extensions
+###### Note on Availability
 
-This extension is not yet available on the GNOME Extensions store. To install,
-follow the _Manual Installation_ instructions below.
+This extension is not yet available on [extensions.gnome.org](https://extensions.gnome.org). Please follow the manual installation instructions provided below.
 
 ###### Manual Installation
 
-1. Before installing Text Clock manually, ensure you have the following
-   dependencies installed (installation instructions below):
+Before proceeding with the manual installation of _Text Clock_, ensure the following dependencies are installed:
 
-   - **Node.js:** Required for compiling TypeScript files.
-   - **Git:** Required for cloning the repository.
-   - **npm:** Required for installing Node.js packages.
-   - **Glib-compile-schemas:** Required for compiling GSettings schemas.
-   - **Perl:** Required for patching TypeScript definition files during
-     installation.
+- `npm`
+- `perl`
+- `make`
+- `git` (only needed if cloning the repository)
 
-2. Warnings before installing:
+###### Pre-Installation Notes:
 
-   - **Backup:** It's a good practice to backup your existing GNOME Shell
-     extensions before running the `make install` command to prevent accidental
-     loss of data.
+- **Backup**: As a precaution, you may want to backup your existing GNOME Shell extensions before installation.
 
-   - **Path Expansion:** The Makefile uses `$(HOME)` for path expansion to
-     ensure compatibility across different environments. Please ensure that your
-     environment correctly expands `$(HOME)` to your home directory.
+- **Path Expansion**: The Makefile uses `$(HOME)` for path expansion. Please ensure that your system correctly expands `$(HOME)` to your home directory.
 
-3. To install the Text Clock extension, run the following commands in your
-   terminal:
+###### Installation Instructions
+
+1. Clone the **Text Clock** repository from GitHub with the following command:
 
    ```bash
    git clone https://github.com/benica-dev/text-clock.git
-   cd text-clock
+   ```
+
+   Alternatively, you can download a ZIP file from the [GitHub page](https://github.com/wtbenica/text-clock) and extract it to your preferred directory.
+
+2. Next, navigate to the `text-clock-main` directory (or your chosen directory) and run:
+
+   ```bash
    make install
    ```
 
-   This command clones the repository, installs necessary Node.js packages,
-   compiles the extension, and integrates it into your GNOME environment.
+   This installs necessary Node.js packages, compiles the extension, and integrates it into your GNOME environment.
 
-   For the installation to take effect, a restart of GNOME Shell is necessary.
-   On X11, you can restart GNOME Shell by pressing Alt+F2, typing r, and then
-   pressing Enter. On Wayland, however, you will need to log out and then log
-   back in.
+   Restart GNOME Shell for the changes to take effect, On X11, press Alt+F2, type `r`, and then press Enter. On Wayland, log out and back in.
 
-4. After the installation, you can clean up the build artifacts by running:
+3. After installation, you may delete the repository or the downloaded and extracted files. To clean up the build artifacts, run:
    ```bash
    make clean
    ```
-   If you like, you can also remove the cloned repository by running:
-   ```bash
-   cd ..
-   rm -rf text-clock
-   ```
-   **Warning:** The command `rm -rf text-clock` will forcefully remove the
-   `text-clock` directory and all its contents without prompting for
-   confirmation. Use this command with caution, and ensure you are in the
-   correct directory and have the command entered correctly before executing it.
 
-##### Usage
+#### Usage
 
-Upon installation, enable the Text Clock extension via the GNOME Extensions App.
-The time will then be displayed in textual format in the top bar.
+###### GUI Method
 
----
+To enable the extension, use a GUI tool like _GNOME Extensions_ or _Extensions Manager_, If you don't have one installed, it can be obtained through your distribution's package manager. These tools also provide easy access to the extension's preferences.
 
-#### Contributing
+###### Command Line
 
-Contributions are welcome and valued. For bug reports, feature suggestions, or
-contributions, please initiate contact by opening an issue or submitting a pull
-request.
+To enable the extension from the command line:
+
+```bash
+gnome-extensions enable text-clock@benica.dev
+```
+
+To access the preferences, run:
+
+```bash
+gnome-extensions prefs text-clock@benica.dev
+```
 
 ---
 
-#### License
+### Contributing
 
-Text Clock is open-sourced under the GNU General Public License v3.0 or later
-(GPL-3.0-or-later). For more information, please see the LICENSE file.
+Contributions, including bug reports and feature suggestions, are welcome. Please use the issue tracker or submit a pull request.
 
 ---
 
-#### Dependency Installation Instructions
+### License
 
-These instructions provide guidance on installing the necessary dependencies.
-They have not been tested on all distributions, so please refer to your
-distribution's package manager for the exact package names if you encounter any
-issues.
+Text Clock is open-sourced under the GNU General Public License v3.0 or later (GPL-3.0-or-later). See the LICENSE file for more details.
 
-##### Debian/Ubuntu
+---
+
+### Dependency Installation
+
+Below are instructions for installing the required dependencies. These instructions may vary slightly depending on your Linux distribution.
+
+###### Debian/Ubuntu
 
 ```bash
 sudo apt update
-sudo apt install nodejs npm git libglib2.0-bin perl
+sudo apt install npm perl make git
 ```
 
-##### Fedora
+###### Fedora
 
 ```bash
 sudo dnf check-update
-sudo dnf install nodejs npm git glib2-devel perl
+sudo dnf install npm perl make git
 ```
 
-##### Arch Linux
+###### Arch Linux
 
 ```bash
 sudo pacman -Syu
-sudo pacman -S nodejs npm git glib2 perl
+sudo pacman -S npm perl make git
 ```
 
-##### openSUSE
+###### openSUSE
 
 ```bash
 sudo zypper refresh
-sudo zypper install nodejs npm git glib2-devel perl
+sudo zypper install npm perl make git
 ```
 
-##### Other Distributions
+###### Other Distributions
 
-For users of other Linux distributions not explicitly mentioned above, please
-install the dependencies using your distribution's package manager. The required
-packages are generally named `nodejs`, `npm`, `git`, `glib2` (or its development
-packages), and `perl`. You may need to search for the exact package names if
-they differ from those listed here. If you encounter any issues, feel free to
-open an issue for assistance.
+For other Linux distributions, please use your package manager to install `npm`, `perl`, `make`, and `git`. If you encounter any issues, feel free to open an issue for assistance.
