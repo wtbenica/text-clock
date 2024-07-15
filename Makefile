@@ -49,8 +49,13 @@ prepare_locale: $(MO_FILES)
 		cp $$file $(LOCALE_DIR)/$$lang/LC_MESSAGES/$(NAME)@$(DOMAIN).mo || { echo "Copying $$file failed"; exit 1; }; \
 	done
 
+# Ensure the local GNOME Shell extensions directory exists
+create_ext_dir:
+	@echo "Ensuring GNOME Shell extensions directory exists..."
+	@test -d $(GNOME_SHELL_EXT_DIR) || mkdir -p $(GNOME_SHELL_EXT_DIR) || { echo "Creating GNOME Shell extensions directory failed"; exit 1; }
+
 # Install the extension by moving the dist folder to the GNOME extensions directory
-install: $(NAME).zip prepare_locale
+install: create_ext_dir $(NAME).zip prepare_locale
 	@echo "Installing the extension..."
 	@touch $(GNOME_SHELL_EXT_DIR)/$(NAME)@$(DOMAIN)
 	@rm -rf $(GNOME_SHELL_EXT_DIR)/$(NAME)@$(DOMAIN)
