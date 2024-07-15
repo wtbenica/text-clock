@@ -118,15 +118,14 @@ sudo dnf install npm perl make git
 ###### Arch Linux
 
 ```bash
-sudo pacman -Syu
-sudo pacman -S npm perl make git
+sudo pacman -Syu npm perl make git
 ```
 
 ###### openSUSE
 
 ```bash
 sudo zypper refresh
-sudo zypper install npm perl make git
+sudo zypper install --no-recommends npm perl make git
 ```
 
 ###### Other Distributions
