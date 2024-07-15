@@ -58,7 +58,7 @@ Before proceeding with the manual installation of _Text Clock_, ensure the follo
 
    Restart GNOME Shell for the changes to take effect, On X11, press Alt+F2, type `r`, and then press Enter. On Wayland, log out and back in.
 
-3. After installation, you may delete the repository or the downloaded and extracted files. To clean up the build artifacts, run:
+3. After installation, you may delete the repository or the downloaded and extracted files. To only clean up the build artifacts, run:
    ```bash
    make clean
    ```
