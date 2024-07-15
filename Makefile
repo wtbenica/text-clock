@@ -20,7 +20,7 @@ node_modules: package.json
 # Compile TypeScript files into JavaScript
 $(DIST_DIR)/extension.js $(DIST_DIR)/prefs.js: node_modules
 	@echo "Compiling TypeScript files..."
-	@tsc || { echo "TypeScript compilation failed"; exit 1; }
+	@npx tsc || { echo "TypeScript compilation failed"; exit 1; }
 
 # Compile GSettings schemas
 schemas/gschemas.compiled: schemas/org.gnome.shell.extensions.$(NAME).gschema.xml
@@ -72,7 +72,7 @@ clean:
 # Run tests after ensuring TypeScript compilation
 test: clean node_modules
 	@echo "Running tests..."
-	@tsc
+	@npx tsc
 	@npm test
 
 # Patch TypeScript definition files to correct import paths
