@@ -27,7 +27,7 @@ import {
 export const dateOnly: () => string = () =>
   _p(
     'This is how someone would say the day of the month only. As in, "My rent is due on the %s."',
-    'the %s'
+    'the %s',
   );
 
 /**
@@ -36,31 +36,31 @@ export const dateOnly: () => string = () =>
 export const daysOfWeek: () => string[] = () => [
   _p(
     'The day of the week and the date. The date will be substituted in the %s. For example, "Sunday the fifth".',
-    'sunday the %s'
+    'sunday the %s',
   ),
   _p(
     'The day of the week and the date. The date will be substituted in the %s. For example, "Monday the sixth".',
-    'monday the %s'
+    'monday the %s',
   ),
   _p(
     'The day of the week and the date. The date will be substituted in the %s. For example, "Tuesday the seventh".',
-    'tuesday the %s'
+    'tuesday the %s',
   ),
   _p(
     'The day of the week and the date. The date will be substituted in the %s. For example, "Wednesday the eighth".',
-    'wednesday the %s'
+    'wednesday the %s',
   ),
   _p(
     'The day of the week and the date. The date will be substituted in the %s. For example, "Thursday the ninth".',
-    'thursday the %s'
+    'thursday the %s',
   ),
   _p(
     'The day of the week and the date. The date will be substituted in the %s. For example, "Friday the tenth".',
-    'friday the %s'
+    'friday the %s',
   ),
   _p(
     'The day of the week and the date. The date will be substituted in the %s. For example, "Saturday the eleventh".',
-    'saturday the %s'
+    'saturday the %s',
   ),
 ];
 
