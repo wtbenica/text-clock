@@ -13,24 +13,23 @@
 - **Optional Date Display:** Time-only or time and date display.
 - **Fuzziness:** Displays the exact time or fuzzy time, rounded to five, ten, or fifteen minute intervals.
 
----
+#### Compatibility
+
+**Text Clock** is compatible with GNOME Shell 45 and later.
 
 ### Getting Started
 
 #### Installation
 
-###### Note on Availability
+This extension is not yet available on [extensions.gnome.org](https://extensions.gnome.org) but can be installed following the manual installation instructions provided below.
 
-This extension is not yet available on [extensions.gnome.org](https://extensions.gnome.org). Please follow the manual installation instructions provided below.
+###### Required Dependencies
 
-###### Manual Installation
-
-Before proceeding with the manual installation of _Text Clock_, ensure the following dependencies are installed:
+To use the Makefile for installation, you will need the following dependencies:
 
 - `npm`
 - `perl`
 - `make`
-- `git` (only needed if cloning the repository)
 
 ###### Pre-Installation Notes:
 
@@ -40,15 +39,17 @@ Before proceeding with the manual installation of _Text Clock_, ensure the follo
 
 ###### Installation Instructions
 
-1. Clone the **Text Clock** repository from GitHub with the following command:
+1. Clone the **Text Clock** repository from GitHub. There are a few ways to do that. For help deciding which method to use, see [GitHub's documentation on cloning repositories](https://docs.github.com/en/get-started/getting-started-with-git/about-remote-repositories).
 
-   ```bash
-   git clone https://github.com/benica-dev/text-clock.git
-   ```
+   | Method     | Command                                                  |
+   | ---------- | -------------------------------------------------------- |
+   | HTTPS      | `git clone https://github.com/benica-dev/text-clock.git` |
+   | SSH        | `git clone git@github.com:wtbenica/text-clock.git`       |
+   | GitHub CLI | `gh repo clone wtbenica/text-clock`                      |
 
-   Alternatively, you can download a ZIP file from the [GitHub page](https://github.com/wtbenica/text-clock) and extract it to your preferred directory.
+   Also, you can download a ZIP file from the [GitHub page](https://github.com/wtbenica/text-clock).
 
-2. Next, navigate to the `text-clock-main` directory (or your chosen directory) and run:
+2. Navigate to the cloned or extracted directory that contains the Makefile and run:
 
    ```bash
    make install
@@ -58,7 +59,7 @@ Before proceeding with the manual installation of _Text Clock_, ensure the follo
 
    Restart GNOME Shell for the changes to take effect, On X11, press Alt+F2, type `r`, and then press Enter. On Wayland, log out and back in.
 
-3. After installation, you may delete the repository or the downloaded and extracted files. To only clean up the build artifacts, run:
+3. After installation, you may delete the cloned repository. To only clean up the build artifacts, run:
    ```bash
    make clean
    ```
@@ -105,29 +106,29 @@ Below are instructions for installing the required dependencies. These instructi
 
 ```bash
 sudo apt update
-sudo apt install npm perl make git
+sudo apt install npm perl make
 ```
 
 ###### Fedora
 
 ```bash
 sudo dnf check-update
-sudo dnf install npm perl make git
+sudo dnf install npm perl make
 ```
 
 ###### Arch Linux
 
 ```bash
-sudo pacman -Syu npm perl make git
+sudo pacman -Syu npm perl make
 ```
 
 ###### openSUSE
 
 ```bash
 sudo zypper refresh
-sudo zypper install --no-recommends npm perl make git
+sudo zypper install --no-recommends npm perl make
 ```
 
 ###### Other Distributions
 
-For other Linux distributions, please use your package manager to install `npm`, `perl`, `make`, and `git`. If you encounter any issues, feel free to open an issue for assistance.
+For other Linux distributions, please use your package manager to install `npm`, `perl`, and `make`. If you encounter any issues, feel free to open an issue for assistance.
