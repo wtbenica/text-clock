@@ -1,6 +1,7 @@
 NAME=text-clock
 DOMAIN=benica.dev
 MO_FILES=$(wildcard po/*.mo)
+ZIP_FILE=$(NAME)@${DOMAIN}.zip
 DIST_DIR=dist
 LOCALE_DIR=locale
 GNOME_SHELL_EXT_DIR=$(HOME)/.local/share/gnome-shell/extensions
@@ -28,15 +29,15 @@ schemas/gschemas.compiled: schemas/org.gnome.shell.extensions.$(NAME).gschema.xm
 	@glib-compile-schemas schemas || { echo "GSettings schema compilation failed"; exit 1; }
 
 # Package the extension into a zip file, including schemas, metadata, and locale,
-$(NAME).zip: $(DIST_DIR)/extension.js $(DIST_DIR)/prefs.js schemas/gschemas.compiled prepare_locale
+${ZIP_FILE}: $(DIST_DIR)/extension.js $(DIST_DIR)/prefs.js schemas/gschemas.compiled prepare_locale
 	@echo "Packaging the extension..."
 	@cp -r schemas $(DIST_DIR)/ || { echo "Copying schemas failed"; exit 1; }
 	@cp metadata.json $(DIST_DIR)/ || { echo "Copying metadata.json failed"; exit 1; }
 	@cp -r $(LOCALE_DIR) $(DIST_DIR)/ || { echo "Copying locale directory failed"; exit 1; }
-	@(cd $(DIST_DIR) && zip ../$(NAME).zip -9r .) || { echo "Zipping extension failed"; exit 1; }
+	@(cd $(DIST_DIR) && zip ../${ZIP_FILE} -9r .) || { echo "Zipping extension failed"; exit 1; }
 
 # Phony target for packaging the extension
-pack: $(NAME).zip
+pack: ${ZIP_FILE}
 	@echo "Packing the extension..."
 
 # Prepare locale directory and copy .mo files for internationalization
@@ -55,7 +56,7 @@ create_ext_dir:
 	@test -d $(GNOME_SHELL_EXT_DIR) || mkdir -p $(GNOME_SHELL_EXT_DIR) || { echo "Creating GNOME Shell extensions directory failed"; exit 1; }
 
 # Install the extension by moving the dist folder to the GNOME extensions directory
-install: create_ext_dir $(NAME).zip prepare_locale
+install: create_ext_dir ${ZIP_FILE} prepare_locale
 	@echo "Installing the extension..."
 	@touch $(GNOME_SHELL_EXT_DIR)/$(NAME)@$(DOMAIN)
 	@rm -rf $(GNOME_SHELL_EXT_DIR)/$(NAME)@$(DOMAIN)
@@ -65,8 +66,8 @@ install: create_ext_dir $(NAME).zip prepare_locale
 # Clean up build artifacts and dependencies
 clean:
 	@echo "Cleaning up..."
-	@rm -rf $(DIST_DIR) node_modules $(NAME).zip
-	@rm -f schemas/gschemas.compiled
+	@echo "Removing zip file: $(ZIP_FILE)"
+	@rm -rf $(DIST_DIR) node_modules ${ZIP_FILE}
 	@rm -rf $(LOCALE_DIR)
 
 # Run tests after ensuring TypeScript compilation

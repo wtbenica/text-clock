@@ -21,7 +21,19 @@
 
 #### Installation
 
-This extension is not yet available on [extensions.gnome.org](https://extensions.gnome.org) but can be installed following the manual installation instructions provided below.
+This extension is not yet available on [extensions.gnome.org](https://extensions.gnome.org) but can be installed from a ZIP file or installed from source.
+
+#### Installation from ZIP File
+
+For a simpler installation process without the need for compiling, you can directly download the extension as a ZIP file:
+
+1. Download this [ZIP file](https://github.com/wtbenica/text-clock/releases/download/v1.0.0/text-clock@benica.dev.zip) from Github.
+2. Extract the ZIP file to `~/.local/share/gnome-shell/extensions/`.
+3. Restart GNOME Shell for the changes to take effect. On X11, press Alt+F2, type `r`, and then press Enter. On Wayland, log out and back in.
+
+This method is recommended for users who prefer a quick and easy installation.
+
+#### Installation from Source
 
 ###### Required Dependencies
 
@@ -37,9 +49,9 @@ To use the Makefile for installation, you will need the following dependencies:
 
 - **Path Expansion**: The Makefile uses `$(HOME)` for path expansion. Please ensure that your system correctly expands `$(HOME)` to your home directory.
 
-###### Installation Instructions
+###### Installation
 
-1. Clone the **Text Clock** repository from GitHub. There are a few ways to do that. For help deciding which method to use, see [GitHub's documentation on cloning repositories](https://docs.github.com/en/get-started/getting-started-with-git/about-remote-repositories).
+1. The source files are hosted on GitHub. You can download the source files as a [ZIP file](https://github.com/wtbenica/text-clock/archive/refs/tags/v1.0.0.zip) or clone the repository using Git:
 
    | Method     | Command                                                  |
    | ---------- | -------------------------------------------------------- |
@@ -47,7 +59,7 @@ To use the Makefile for installation, you will need the following dependencies:
    | SSH        | `git clone git@github.com:wtbenica/text-clock.git`       |
    | GitHub CLI | `gh repo clone wtbenica/text-clock`                      |
 
-   Also, you can download a ZIP file from the [GitHub page](https://github.com/wtbenica/text-clock).
+   Refer to [GitHub's documentation on cloning repositories](https://docs.github.com/en/get-started/getting-started-with-git/about-remote-repositories) for more information.
 
 2. Navigate to the cloned or extracted directory that contains the Makefile and run:
 
