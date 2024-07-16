@@ -27,7 +27,7 @@ This extension is not yet available on [extensions.gnome.org](https://extensions
 
 For a simpler installation process without the need for compiling, you can directly download the extension as a ZIP file:
 
-1. Download this [ZIP file](https://github.com/wtbenica/text-clock/releases/download/v1.0.0/text-clock@benica.dev.zip) from Github.
+1. Download this [ZIP file](https://github.com/wtbenica/text-clock/releases/download/v1.0.1/text-clock@benica.dev.zip) from Github.
 2. Extract the ZIP file to `~/.local/share/gnome-shell/extensions/`.
 3. Restart GNOME Shell for the changes to take effect. On X11, press Alt+F2, type `r`, and then press Enter. On Wayland, log out and back in.
 
