@@ -53,7 +53,7 @@ export class ClockFormatter {
     date: Date,
     showDate: boolean,
     showWeekday: boolean,
-    timeFormat: string
+    timeFormat: string,
   ) {
     const minutes = date.getMinutes();
     const hours = date.getHours();
@@ -111,13 +111,14 @@ export class ClockFormatter {
       timeFormat === TimeFormat.PAST_OR_TO
         ? this.wordPack.timesTenToThree
         : timeFormat === TimeFormat.HOURS_MINUTES
-        ? this.wordPack.timesTwoFifty
-        : (() => {
-            console.error(`${Errors.ERROR_INVALID_TIME_FORMAT} ${timeFormat}`);
-            throw new Error(
-              `${Errors.ERROR_INVALID_TIME_FORMAT} ${hourName} ${minuteBucket}`
-            );
-          })();
+          ? this.wordPack.timesTwoFifty
+          : (() => {
+              console.error(
+                `${Errors.ERROR_INVALID_TIME_FORMAT} ${timeFormat}`,
+              );
+
+              return this.wordPack.timesTenToThree;
+            })();
 
     try {
       return times[minuteBucket].format(hourName);
@@ -125,7 +126,7 @@ export class ClockFormatter {
       try {
         return times[minuteBucket].replace('%s', hourName);
       } catch (error2: any) {
-        console.error(Errors.ERROR_UNABLE_TO_FORMAT_TIME_STRING, error2);
+        logError(error2, Errors.ERROR_UNABLE_TO_FORMAT_TIME_STRING);
       }
     }
   }
@@ -159,7 +160,7 @@ export class ClockFormatter {
       try {
         return dayOfWeek.replace('%s', ordinal);
       } catch (error2: any) {
-        console.error(Errors.ERROR_UNABLE_TO_FORMAT_DATE_STRING, error2);
+        logError(error2, Errors.ERROR_UNABLE_TO_FORMAT_DATE_STRING);
       }
     }
     return dayOfWeek.format(ordinal);

@@ -126,7 +126,7 @@ export default class TextClock extends Extension {
       const clockDisplayBox = this.#findClockDisplayBox();
       clockDisplayBox.insert_child_at_index(
         this.#topBox,
-        clockDisplayBox.get_children().length - 1
+        clockDisplayBox.get_children().length - 1,
       );
 
       // Remove the style class and hide the original clock display
@@ -144,31 +144,31 @@ export default class TextClock extends Extension {
         SETTINGS.SHOW_DATE,
         this.#clockLabel!,
         CLOCK_LABEL_PROPERTIES.SHOW_DATE,
-        Gio.SettingsBindFlags.DEFAULT
+        Gio.SettingsBindFlags.DEFAULT,
       );
       this.#settings!.bind(
         SETTINGS.FUZZINESS,
         this.#clockLabel!,
         CLOCK_LABEL_PROPERTIES.FUZZINESS,
-        Gio.SettingsBindFlags.DEFAULT
+        Gio.SettingsBindFlags.DEFAULT,
       );
       this.#settings!.bind(
         SETTINGS.SHOW_WEEKDAY,
         this.#clockLabel!,
         CLOCK_LABEL_PROPERTIES.SHOW_WEEKDAY,
-        Gio.SettingsBindFlags.DEFAULT
+        Gio.SettingsBindFlags.DEFAULT,
       );
       this.#settings!.bind(
         SETTINGS.TIME_FORMAT,
         this.#clockLabel!,
         CLOCK_LABEL_PROPERTIES.TIME_FORMAT,
-        Gio.SettingsBindFlags.DEFAULT
+        Gio.SettingsBindFlags.DEFAULT,
       );
       this.#clock!.bind_property(
         'clock',
         this.#clockLabel!,
         CLOCK_LABEL_PROPERTIES.CLOCK_UPDATE,
-        GObject.BindingFlags.DEFAULT
+        GObject.BindingFlags.DEFAULT,
       );
     } catch (error: any) {
       logError(error, _(Errors.ERROR_BINDING_SETTINGS_TO_CLOCK_LABEL));
@@ -193,7 +193,7 @@ export default class TextClock extends Extension {
     const box: St.BoxLayout | undefined = this.#dateMenu!.get_children().find(
       (child: Clutter.Actor) =>
         child instanceof St.BoxLayout &&
-        child.has_style_class_name('clock-display-box')
+        child.has_style_class_name('clock-display-box'),
     ) as St.BoxLayout | undefined;
 
     if (!box) {

@@ -58,6 +58,8 @@ export default class TextClockPrefs extends ExtensionPreferences {
     this.#addTimeFormatComboRow(group);
 
     this.#createFuzzinessComboRow(group);
+
+    this.#setCleanupOnWindowClose(window);
   }
 
   // Create a page and add it to the window
@@ -94,7 +96,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
   #addComboRow(
     group: Adw.PreferencesGroup,
     settingKey: string,
-    props: Partial<Adw.ComboRow.ConstructorProps>
+    props: Partial<Adw.ComboRow.ConstructorProps>,
   ): Adw.ComboRow {
     const row = new Adw.ComboRow(props);
     group.add(row);
@@ -102,8 +104,8 @@ export default class TextClockPrefs extends ExtensionPreferences {
       row.connect('notify::selected', (widget: Adw.ComboRow) => {
         this._settings!.set_enum(settingKey, widget.selected);
       });
-    } catch (error) {
-      console.error(`Error binding settings for ${props.title}:`, error);
+    } catch (error: any) {
+      logError(error, `Error binding settings for ${props.title}:`);
     }
     return row;
   }
@@ -119,14 +121,14 @@ export default class TextClockPrefs extends ExtensionPreferences {
     group: Adw.PreferencesGroup,
     props: Partial<Adw.SwitchRow.ConstructorProps>,
     settingKey: string,
-    settingBindings?: SettingBinding[]
+    settingBindings?: SettingBinding[],
   ): Adw.SwitchRow {
     const row = new Adw.SwitchRow(props);
     group.add(row);
 
     this.#bindSettingsToProperty(row, settingKey, 'active');
 
-    settingBindings?.forEach((binding) => {
+    settingBindings?.forEach(binding => {
       this.#bindSettingsToProperty(row, binding.settingKey, binding.property);
     });
     return row;
@@ -140,19 +142,19 @@ export default class TextClockPrefs extends ExtensionPreferences {
   #bindSettingsToProperty(
     widget: Adw.ActionRow,
     settingKey: string,
-    property: string
+    property: string,
   ) {
     try {
       this._settings!.bind(
         settingKey,
         widget,
         property,
-        Gio.SettingsBindFlags.DEFAULT
+        Gio.SettingsBindFlags.DEFAULT,
       );
     } catch (error: any) {
       logError(
         error,
-        `${_(Errors.ERROR_BINDING_SETTINGS_FOR_)} ${widget.title}`
+        `${_(Errors.ERROR_BINDING_SETTINGS_FOR_)} ${widget.title}`,
       );
     }
   }
@@ -215,5 +217,22 @@ export default class TextClockPrefs extends ExtensionPreferences {
       subtitle: _(PrefItems.SHOW_DATE.subtitle),
     };
     this.#addSwitchRow(group, showDateSwitchInfo, SETTINGS.SHOW_DATE);
+  }
+
+  // Set the cleanup function to run when the window is closed
+  #setCleanupOnWindowClose(window: Adw.PreferencesWindow) {
+    let id: number;
+
+    id = window.connect('close-request', () => {
+      try {
+        if (this._settings) {
+          this._settings = undefined;
+        }
+      } catch (error: any) {
+        logError(error, 'Error during cleanup:');
+      } finally {
+        window.disconnect(id);
+      }
+    });
   }
 }
