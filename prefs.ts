@@ -42,22 +42,20 @@ type SettingBinding = {
  * Preferences Window for the Text Clock extension
  */
 export default class TextClockPrefs extends ExtensionPreferences {
-  _settings?: Gio.Settings;
-
   fillPreferencesWindow(window: Adw.PreferencesWindow) {
-    this._settings = this.getSettings();
+    const settings = this.getSettings();
 
     const page = this.#createAndAddPageToWindow(window);
 
     const group = this.#createAndAddGroupToPage(page);
 
-    this.#addShowDateSwitchRow(group);
+    this.#addShowDateSwitchRow(group, settings);
 
-    this.#addShowWeekdaySwitchRow(group);
+    this.#addShowWeekdaySwitchRow(group, settings);
 
-    this.#addTimeFormatComboRow(group);
+    this.#addTimeFormatComboRow(group, settings);
 
-    this.#createFuzzinessComboRow(group);
+    this.#createFuzzinessComboRow(group, settings);
   }
 
   // Create a page and add it to the window
@@ -93,14 +91,15 @@ export default class TextClockPrefs extends ExtensionPreferences {
   // @returns The combo row
   #addComboRow(
     group: Adw.PreferencesGroup,
+    settings: Gio.Settings,
     settingKey: string,
-    props: Partial<Adw.ComboRow.ConstructorProps>
+    props: Partial<Adw.ComboRow.ConstructorProps>,
   ): Adw.ComboRow {
     const row = new Adw.ComboRow(props);
     group.add(row);
     try {
       row.connect('notify::selected', (widget: Adw.ComboRow) => {
-        this._settings!.set_enum(settingKey, widget.selected);
+        settings!.set_enum(settingKey, widget.selected);
       });
     } catch (error) {
       console.error(`Error binding settings for ${props.title}:`, error);
@@ -118,16 +117,22 @@ export default class TextClockPrefs extends ExtensionPreferences {
   #addSwitchRow(
     group: Adw.PreferencesGroup,
     props: Partial<Adw.SwitchRow.ConstructorProps>,
+    settings: Gio.Settings,
     settingKey: string,
-    settingBindings?: SettingBinding[]
+    settingBindings?: SettingBinding[],
   ): Adw.SwitchRow {
     const row = new Adw.SwitchRow(props);
     group.add(row);
 
-    this.#bindSettingsToProperty(row, settingKey, 'active');
+    this.#bindSettingsToProperty(row, settings, settingKey, 'active');
 
-    settingBindings?.forEach((binding) => {
-      this.#bindSettingsToProperty(row, binding.settingKey, binding.property);
+    settingBindings?.forEach(binding => {
+      this.#bindSettingsToProperty(
+        row,
+        settings,
+        binding.settingKey,
+        binding.property,
+      );
     });
     return row;
   }
@@ -139,20 +144,21 @@ export default class TextClockPrefs extends ExtensionPreferences {
   // @param property The property of the widget to bind the setting to
   #bindSettingsToProperty(
     widget: Adw.ActionRow,
+    settings: Gio.Settings,
     settingKey: string,
-    property: string
+    property: string,
   ) {
     try {
-      this._settings!.bind(
+      settings!.bind(
         settingKey,
         widget,
         property,
-        Gio.SettingsBindFlags.DEFAULT
+        Gio.SettingsBindFlags.DEFAULT,
       );
     } catch (error: any) {
       logError(
         error,
-        `${_(Errors.ERROR_BINDING_SETTINGS_FOR_)} ${widget.title}`
+        `${_(Errors.ERROR_BINDING_SETTINGS_FOR_)} ${widget.title}`,
       );
     }
   }
@@ -160,21 +166,24 @@ export default class TextClockPrefs extends ExtensionPreferences {
   // Create a combo row for the fuzziness setting and add it to the group
   //
   // @param group The preferences group to add the row to
-  #createFuzzinessComboRow(group: Adw.PreferencesGroup) {
+  #createFuzzinessComboRow(
+    group: Adw.PreferencesGroup,
+    settings: Gio.Settings,
+  ) {
     const fuzzinessComboInfo = {
       title: _(PrefItems.FUZZINESS.title),
       subtitle: _(PrefItems.FUZZINESS.subtitle),
       model: new Gtk.StringList({ strings: ['1', '5', '10', '15'] }),
-      selected: this._settings!.get_enum(SETTINGS.FUZZINESS),
+      selected: settings!.get_enum(SETTINGS.FUZZINESS),
     };
 
-    this.#addComboRow(group, SETTINGS.FUZZINESS, fuzzinessComboInfo);
+    this.#addComboRow(group, settings, SETTINGS.FUZZINESS, fuzzinessComboInfo);
   }
 
   // Create a combo row for the time format setting and add it to the group
   //
   // @param group The preferences group to add the row to
-  #addTimeFormatComboRow(group: Adw.PreferencesGroup) {
+  #addTimeFormatComboRow(group: Adw.PreferencesGroup, settings: Gio.Settings) {
     const timeFormatComboInfo = {
       title: _(PrefItems.TIME_FORMAT.title),
       subtitle: _(PrefItems.TIME_FORMAT.subtitle),
@@ -184,36 +193,51 @@ export default class TextClockPrefs extends ExtensionPreferences {
           _('%s twenty').format(_('ten')),
         ],
       }),
-      selected: this._settings!.get_enum(SETTINGS.TIME_FORMAT),
+      selected: settings!.get_enum(SETTINGS.TIME_FORMAT),
     };
-    this.#addComboRow(group, SETTINGS.TIME_FORMAT, timeFormatComboInfo);
+
+    this.#addComboRow(
+      group,
+      settings,
+      SETTINGS.TIME_FORMAT,
+      timeFormatComboInfo,
+    );
   }
 
   // Create a switch row for the show weekday setting and add it to the group
   //
   // @param group The preferences group to add the row to
-  #addShowWeekdaySwitchRow(group: Adw.PreferencesGroup) {
+  #addShowWeekdaySwitchRow(
+    group: Adw.PreferencesGroup,
+    settings: Gio.Settings,
+  ) {
     const showWeekdaySwitchInfo = {
       title: _(PrefItems.SHOW_WEEKDAY.title),
       subtitle: _(PrefItems.SHOW_WEEKDAY.subtitle),
-      sensitive: this._settings!.get_boolean(SETTINGS.SHOW_DATE),
+      sensitive: settings!.get_boolean(SETTINGS.SHOW_DATE),
     };
-    this.#addSwitchRow(group, showWeekdaySwitchInfo, SETTINGS.SHOW_WEEKDAY, [
-      {
-        settingKey: SETTINGS.SHOW_DATE,
-        property: 'sensitive',
-      },
-    ]);
+    this.#addSwitchRow(
+      group,
+      showWeekdaySwitchInfo,
+      settings,
+      SETTINGS.SHOW_WEEKDAY,
+      [
+        {
+          settingKey: SETTINGS.SHOW_DATE,
+          property: 'sensitive',
+        },
+      ],
+    );
   }
 
   // Create a switch row for the show date setting and add it to the group
   //
   // @param group The preferences group to add the row to
-  #addShowDateSwitchRow(group: Adw.PreferencesGroup) {
+  #addShowDateSwitchRow(group: Adw.PreferencesGroup, settings: Gio.Settings) {
     const showDateSwitchInfo = {
       title: _(PrefItems.SHOW_DATE.title),
       subtitle: _(PrefItems.SHOW_DATE.subtitle),
     };
-    this.#addSwitchRow(group, showDateSwitchInfo, SETTINGS.SHOW_DATE);
+    this.#addSwitchRow(group, showDateSwitchInfo, settings, SETTINGS.SHOW_DATE);
   }
 }
