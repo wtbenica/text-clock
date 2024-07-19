@@ -224,15 +224,8 @@ export default class TextClockPrefs extends ExtensionPreferences {
     let id: number;
 
     id = window.connect('close-request', () => {
-      try {
-        if (this._settings) {
-          this._settings = undefined;
-        }
-      } catch (error: any) {
-        logError(error, 'Error during cleanup:');
-      } finally {
-        window.disconnect(id);
-      }
+      this._settings = undefined;
+      window.disconnect(id);
     });
   }
 }
