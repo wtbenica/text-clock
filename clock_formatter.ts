@@ -62,8 +62,7 @@ export class ClockFormatter {
       timeFormat === TimeFormat.PAST_OR_TO && minuteBucket > 30
         ? hours + 1
         : hours;
-    const adjustedHour = roundedHour === 12 ? 12 : roundedHour % 12;
-    const hourName = this.#getHourName(adjustedHour, minuteBucket);
+    const hourName = this.#getHourName(roundedHour, minuteBucket, timeFormat);
     const time = this.#getTimeString(hourName, minuteBucket, timeFormat);
     const displayDate = showDate
       ? ` | ${this.#getDisplayedDate(date, minuteBucket, showWeekday)}`
@@ -78,18 +77,30 @@ export class ClockFormatter {
    * @param {number} displayHour - The hour to be displayed, adjusted for context (0-12).
    * @returns {string} The name of the hour for display.
    */
-  #getHourName(hour: number, minuteBucket: number) {
+  #getHourName(hour: number, minuteBucket: number, timeFormat: string) {
     const isTopOfTheHour = minuteBucket === 0 || minuteBucket === 60;
     const isMidnight = hour === 0;
     const isNoon = hour === 12;
 
-    if (isTopOfTheHour && isMidnight) {
-      return this.wordPack.midnight;
-    } else if (isTopOfTheHour && isNoon) {
-      return this.wordPack.noon;
+    if (isMidnight) {
+      if (isTopOfTheHour) {
+        return this.wordPack.midnight;
+      } else if (timeFormat === TimeFormat.PAST_OR_TO) {
+        return this.wordPack.midnightFormatOne;
+      } else {
+        return this.wordPack.midnightFormatTwo;
+      }
+    } else if (isNoon) {
+      if (isTopOfTheHour) {
+        return this.wordPack.noon;
+      } else if (timeFormat === TimeFormat.PAST_OR_TO) {
+        return this.wordPack.noonFormatOne;
+      } else {
+        return this.wordPack.noonFormatTwo;
+      }
+    } else {
+      return this.wordPack.names[hour];
     }
-
-    return this.wordPack.names[hour];
   }
 
   /**
@@ -109,9 +120,9 @@ export class ClockFormatter {
 
     const times =
       timeFormat === TimeFormat.PAST_OR_TO
-        ? this.wordPack.timesTenToThree
+        ? this.wordPack.timesFormatOne
         : timeFormat === TimeFormat.HOURS_MINUTES
-          ? this.wordPack.timesTwoFifty
+          ? this.wordPack.timesFormatTwo
           : (() => {
               console.error(
                 `${Errors.ERROR_INVALID_TIME_FORMAT} ${timeFormat}`,
