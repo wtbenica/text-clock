@@ -19,10 +19,14 @@ import {
   gettext as _,
   ngettext,
   pgettext as _p,
-} from 'resource:///org/gnome/shell/extensions/extension.js';
+} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
 import { WordPack } from './word_pack.js';
-import { daysOfWeek, dateOnly, daysOfMonth } from './constants_dates.js';
+import {
+  daysOfWeek,
+  dateOnly,
+  daysOfMonth,
+} from './constants_dates_prefs.js';
 
 /**
  * @returns a word pack that contains the strings for telling the time and date

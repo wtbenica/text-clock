@@ -19,7 +19,7 @@ node_modules: package.json
 	@$(MAKE) patch-dts-files
 	
 # Compile TypeScript files into JavaScript
-$(DIST_DIR)/extension.js $(DIST_DIR)/prefs.js: node_modules
+$(DIST_DIR)/extension.js $(DIST_DIR)/prefs.js: node_modules prepare_constants_times_prefs
 	@echo "Compiling TypeScript files..."
 	@npx tsc || { echo "TypeScript compilation failed"; exit 1; }
 
@@ -82,3 +82,11 @@ patch-dts-files:
 	@perl -pi -e 's/from \x27\.(.*?)(?<!\.js)\x27;/from \x27.\1.js\x27;/g' node_modules/@girs/gnome-shell/dist/ui/workspace.d.ts || { echo "Patching workspace.d.ts failed"; exit 1; }
 	@perl -pi -e 's/from \x27\.(.*?)(?<!\.js)\x27;/from \x27.\1.js\x27;/g' node_modules/@girs/gnome-shell/dist/ui/workspacesView.d.ts || { echo "Patching workspacesView.d.ts failed"; exit 1; }
 	
+# Copy strings for use in prefs
+prepare_constants_times_prefs:
+	@echo "Preparing constants_times_prefs.ts..."
+	@cp constants_times_extension.ts constants_times_prefs.ts
+	@sed -i 's|resource:///org/gnome/shell/extensions/extension.js|resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js|g' constants_times_prefs.ts || { echo "Modifying import paths in constants_times_prefs.ts failed"; exit 1; }
+	@sed -i 's|constants_dates_extension.js|constants_dates_prefs.js|g' constants_times_prefs.ts || { echo "Modifying import paths in constants_times_prefs.ts failed"; exit 1; }
+	@cp constants_dates_extension.ts constants_dates_prefs.ts
+	@sed -i 's|resource:///org/gnome/shell/extensions/extension.js|resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js|g' constants_dates_prefs.ts || { echo "Modifying import paths in constants_times_prefs.ts failed"; exit 1; }

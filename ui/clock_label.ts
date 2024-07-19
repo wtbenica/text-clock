@@ -21,9 +21,9 @@ import St from 'gi://St';
 
 import { gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.js';
 
-import { WordPack } from '../constants/word_pack.js';
+import { WordPack } from '../word_pack.js';
 import { ClockFormatter, TimeFormat } from '../clock_formatter.js';
-import { PrefItems, Errors } from '../constants/constants.js';
+import { PrefItems, Errors } from '../constants.js';
 
 /**
  * The properties of the clock label
@@ -60,42 +60,42 @@ export const TextClockLabel = GObject.registerClass(
         CLOCK_LABEL_PROPERTIES.TRANSLATE_PACK,
         'Translate Pack',
         'The translation pack',
-        GObject.ParamFlags.READWRITE
+        GObject.ParamFlags.READWRITE,
       ),
       'show-date': GObject.ParamSpec.boolean(
         CLOCK_LABEL_PROPERTIES.SHOW_DATE,
         PrefItems.SHOW_DATE.title,
         PrefItems.SHOW_DATE.subtitle,
         GObject.ParamFlags.READWRITE,
-        true
+        true,
       ),
       'fuzzy-minutes': GObject.ParamSpec.string(
         CLOCK_LABEL_PROPERTIES.FUZZINESS,
         PrefItems.FUZZINESS.title,
         PrefItems.FUZZINESS.subtitle,
         GObject.ParamFlags.READWRITE,
-        '5'
+        '5',
       ),
       'show-weekday': GObject.ParamSpec.boolean(
         CLOCK_LABEL_PROPERTIES.SHOW_WEEKDAY,
         PrefItems.SHOW_WEEKDAY.title,
         PrefItems.SHOW_WEEKDAY.subtitle,
         GObject.ParamFlags.READWRITE,
-        true
+        true,
       ),
       'time-format': GObject.ParamSpec.string(
         CLOCK_LABEL_PROPERTIES.TIME_FORMAT,
         PrefItems.TIME_FORMAT.title,
         PrefItems.TIME_FORMAT.subtitle,
         GObject.ParamFlags.READWRITE,
-        TimeFormat.PAST_OR_TO
+        TimeFormat.PAST_OR_TO,
       ),
       'clock-update': GObject.ParamSpec.string(
         CLOCK_LABEL_PROPERTIES.CLOCK_UPDATE,
         'Clock Update',
         'The clock update signal',
         GObject.ParamFlags.READWRITE,
-        ''
+        '',
       ),
     },
   },
@@ -118,7 +118,7 @@ export const TextClockLabel = GObject.registerClass(
       try {
         this._formatter = new ClockFormatter(
           this._translatePack,
-          parseInt(this._fuzzyMinutes)
+          parseInt(this._fuzzyMinutes),
         );
         this.clutterText.yAlign = Clutter.ActorAlign.CENTER;
       } catch (error: any) {
@@ -202,12 +202,12 @@ export const TextClockLabel = GObject.registerClass(
               date,
               this._showDate,
               this._showWeekday,
-              this._timeFormat
-            )
+              this._timeFormat,
+            ),
           );
       } catch (error: any) {
         logError(error, _(Errors.ERROR_UPDATING_CLOCK_LABEL));
       }
     }
-  }
+  },
 );

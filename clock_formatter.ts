@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { WordPack } from './constants/word_pack.js';
-import { Errors } from './constants/constants.js';
+import { WordPack } from './word_pack.js';
+import { Errors } from './constants.js';
 
 export const TimeFormat = {
   PAST_OR_TO: 'past-or-to',
@@ -53,7 +53,7 @@ export class ClockFormatter {
     date: Date,
     showDate: boolean,
     showWeekday: boolean,
-    timeFormat: string
+    timeFormat: string,
   ) {
     const minutes = date.getMinutes();
     const hours = date.getHours();
@@ -111,13 +111,15 @@ export class ClockFormatter {
       timeFormat === TimeFormat.PAST_OR_TO
         ? this.wordPack.timesTenToThree
         : timeFormat === TimeFormat.HOURS_MINUTES
-        ? this.wordPack.timesTwoFifty
-        : (() => {
-            console.error(`${Errors.ERROR_INVALID_TIME_FORMAT} ${timeFormat}`);
-            throw new Error(
-              `${Errors.ERROR_INVALID_TIME_FORMAT} ${hourName} ${minuteBucket}`
-            );
-          })();
+          ? this.wordPack.timesTwoFifty
+          : (() => {
+              console.error(
+                `${Errors.ERROR_INVALID_TIME_FORMAT} ${timeFormat}`,
+              );
+              throw new Error(
+                `${Errors.ERROR_INVALID_TIME_FORMAT} ${hourName} ${minuteBucket}`,
+              );
+            })();
 
     try {
       return times[minuteBucket].format(hourName);

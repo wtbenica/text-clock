@@ -15,8 +15,6 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { gettext as _ } from "resource:///org/gnome/shell/extensions/extension.js";
-
 /**
  * A class to store the words used to format a time and date as a string.
  *

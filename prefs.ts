@@ -23,8 +23,10 @@ import {
   ExtensionPreferences,
   gettext as _,
 } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
-import { SETTINGS } from './constants/constants_prefs.js';
-import { PrefItems, Errors } from './constants/constants.js';
+
+import { SETTINGS, PrefItems, Errors } from './constants.js';
+import { TRANSLATE_PACK } from './constants_times_prefs.js';
+import { ClockFormatter } from './clock_formatter.js';
 
 // Represents a binding between a setting and a property of a widget.
 // This is used to dynamically update the widget's property based on the value of the setting.
@@ -187,12 +189,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
     const timeFormatComboInfo = {
       title: _(PrefItems.TIME_FORMAT.title),
       subtitle: _(PrefItems.TIME_FORMAT.subtitle),
-      model: new Gtk.StringList({
-        strings: [
-          _('twenty past %s').format(_('ten')),
-          _('%s twenty').format(_('ten')),
-        ],
-      }),
+      model: this.#getTimeFormatsList(settings),
       selected: settings!.get_enum(SETTINGS.TIME_FORMAT),
     };
 
@@ -202,6 +199,33 @@ export default class TextClockPrefs extends ExtensionPreferences {
       SETTINGS.TIME_FORMAT,
       timeFormatComboInfo,
     );
+  }
+
+  #getTimeFormatsList(settings: Gio.Settings): Gtk.StringList {
+    const clockFormatter = new ClockFormatter(
+      TRANSLATE_PACK(),
+      parseInt(settings!.get_string(SETTINGS.FUZZINESS)),
+    );
+
+    const date = new Date();
+
+    const timePastOrTo = clockFormatter.getClockText(
+      date,
+      false,
+      false,
+      'past-or-to',
+    );
+
+    const timeHourMinute = clockFormatter.getClockText(
+      date,
+      false,
+      false,
+      'hour-oh-minute',
+    );
+
+    return new Gtk.StringList({
+      strings: [timePastOrTo, timeHourMinute],
+    });
   }
 
   // Create a switch row for the show weekday setting and add it to the group
