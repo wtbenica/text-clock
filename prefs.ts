@@ -38,7 +38,7 @@ import {
   midnight,
   noon,
 } from './constants_times_extension.js';
-import { daysOfWeek, dateOnly, daysOfMonth } from './constants_dates_prefs.js';
+import { weekdays, dateOnly, daysOfMonth } from './constants_dates_prefs.js';
 
 /**
  * @returns a word pack that contains the strings for telling the time and date
@@ -52,7 +52,7 @@ export const TRANSLATE_PACK: () => WordPack = () =>
     midnightFormatTwo: midnightFormatTwo(),
     noonFormatTwo: noonFormatTwo(),
     names: hourNames(),
-    days: daysOfWeek(),
+    days: weekdays(),
     dayOnly: dateOnly(),
     midnight: midnight(),
     noon: noon(),

@@ -33,7 +33,7 @@ export const dateOnly: () => string = () =>
 /**
  * The date format for showing the day of the week and the date, e.g. "Sunday the fifth"
  */
-export const daysOfWeek: () => string[] = () => [
+export const weekdays: () => string[] = () => [
   _p(
     'The day of the week and the date. The date will be substituted in the %s. For example, "Sunday the fifth".',
     'sunday the %s',

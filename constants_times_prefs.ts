@@ -24,7 +24,7 @@ import {
 /**
  * @returns a list of strings for telling the time as "M past H(%s)" or "M to H(%s)"
  */
-export const timesPastTo: () => string[] = () => [
+export const timesFormatOne: () => string[] = () => [
   _p('format one', "%s o'clock"),
   _p('format one', 'one past %s'),
   _p('format one', 'two past %s'),
@@ -88,14 +88,15 @@ export const timesPastTo: () => string[] = () => [
   _p('format one', "%s o'clock"),
 ];
 
-export const midnightPastTo: () => string = () => _p('format one', 'midnight');
+export const midnightFormatOne: () => string = () =>
+  _p('format one', 'midnight');
 
-export const noonPastTo: () => string = () => _p('format one', 'noon');
+export const noonFormatOne: () => string = () => _p('format one', 'noon');
 
 /**
  * @returns a list of strings for telling the time as "H M"
  */
-export const timesCountMinutes: () => string[] = () => [
+export const timesFormatTwo: () => string[] = () => [
   _p('format two', "%s o'clock"),
   _p('format two', '%s oh one'),
   _p('format two', '%s oh two'),
@@ -159,10 +160,9 @@ export const timesCountMinutes: () => string[] = () => [
   _p('format two', "%s o'clock"),
 ];
 
-export const midnightHourMinute: () => string = () =>
-  _p('format two', 'twelve');
+export const midnightFormatTwo: () => string = () => _p('format two', 'twelve');
 
-export const noonHourMinute: () => string = () => _p('format two', 'twelve');
+export const noonFormatTwo: () => string = () => _p('format two', 'twelve');
 
 /**
  * @returns a list of strings that tells the hour
