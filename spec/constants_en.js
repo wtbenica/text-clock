@@ -1,4 +1,4 @@
-export const minutes_past_to = [
+export const timeFormatOne = [
   "%s o'clock",
   'one past %s',
   'two past %s',
@@ -105,6 +105,8 @@ export const noon = 'noon';
 
 export const twelve = 'twelve';
 
+export const dayOnly = 'the %s';
+
 export const daysOfMonth = [
   'first',
   'second',
@@ -139,7 +141,7 @@ export const daysOfMonth = [
   'thirty first',
 ];
 
-export const hour_minute = [
+export const timeFormatTwo = [
   "%s o'clock",
   '%s oh one',
   '%s oh two',

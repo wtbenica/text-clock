@@ -28,16 +28,27 @@ import { SETTINGS, PrefItems, Errors } from './constants.js';
 import { TRANSLATE_PACK } from './constants_times_prefs.js';
 import { ClockFormatter } from './clock_formatter.js';
 
-// Represents a binding between a setting and a property of a widget.
-// This is used to dynamically update the widget's property based on the value of the setting.
-//
-// It is currenty only used in the `addSwitchRow` method.
-//
-// @property settingKey The key of the setting in the settings schema.
-// @property property The name of the property in the widget to bind the setting to.
+/**
+ * Represents a binding between a setting and a property of a widget.
+ * This is used to dynamically update the widget's property based on the value of the setting.
+ *
+ * It is currenty only used in the `addSwitchRow` method.
+ *
+ * @property settingKey The key of the setting in the settings schema.
+ * @property property The name of the property in the widget to bind the setting to.
+ */
 type SettingBinding = {
   settingKey: string;
   property: string;
+};
+
+/**
+ * The time format options for the Text Clock extension
+ * @enum {string}
+ */
+export const TimeFormat = {
+  FORMAT_ONE: 'format-one',
+  FORMAT_TWO: 'format-two',
 };
 
 /**
@@ -209,22 +220,22 @@ export default class TextClockPrefs extends ExtensionPreferences {
 
     const date = new Date();
 
-    const timePastOrTo = clockFormatter.getClockText(
+    const timeFormatOne = clockFormatter.getClockText(
       date,
       false,
       false,
-      'past-or-to',
+      TimeFormat.FORMAT_ONE,
     );
 
-    const timeHourMinute = clockFormatter.getClockText(
+    const timeFormatTwo = clockFormatter.getClockText(
       date,
       false,
       false,
-      'hour-oh-minute',
+      TimeFormat.FORMAT_TWO,
     );
 
     return new Gtk.StringList({
-      strings: [timePastOrTo, timeHourMinute],
+      strings: [timeFormatOne, timeFormatTwo],
     });
   }
 

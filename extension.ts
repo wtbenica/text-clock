@@ -55,11 +55,6 @@ export default class TextClock extends Extension {
   #clockLabel?: ITextClock;
   #translatePack?: WordPack;
 
-  // Lifecycle Methods
-  constructor(metadata: any) {
-    super(metadata);
-  }
-
   enable() {
     this.#initSettings();
     this.#retrieveDateMenu();

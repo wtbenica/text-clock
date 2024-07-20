@@ -26,8 +26,8 @@
   </enum>
 
   <enum id="org.gnome.shell.extensions.text-clock.time-format">
-    <value value="0" nick="past-or-to"/>
-    <value value="1" nick="hour-oh-minute"/>
+    <value value="0" nick="format-one"/>
+    <value value="1" nick="format-two"/>
   </enum>
 
   <schema id='org.gnome.shell.extensions.text-clock' path='/org/gnome/shell/extensions/text-clock/'>
@@ -53,7 +53,7 @@
       </description>
     </key>
     <key name="time-format" enum="org.gnome.shell.extensions.text-clock.time-format">
-      <default>"past-or-to"</default>
+      <default>"format-one"</default>
       <summary>Time format</summary>
       <description>
             The format to use for the time display.

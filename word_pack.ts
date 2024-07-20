@@ -15,13 +15,16 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { TimeFormat } from './clock_formatter.js';
+import { Errors } from './constants.js';
+
 /**
  * A class to store the words used to format a time and date as a string.
  *
- * @param {string[]} timesFormatOne - The words for the first time format. 'past-or-to'
+ * @param {string[]} timesFormatOne - The words for the first time format. 'format-one'
  * @param {string} midnightFormatOne - The word for midnight in the first time format.
  * @param {string} noonFormatOne - The word for noon in the first time format.
- * @param {string[]} timesFormatTwo - The words for the second time format. 'hour-oh-minute'
+ * @param {string[]} timesFormatTwo - The words for the second time format. 'format-two'
  * @param {string} midnightFormatTwo - The word for midnight in the second time format.
  * @param {string} noonFormatTwo - The word for noon in the second time format.
  * @param {string[]} names - The names of the months.
@@ -84,5 +87,22 @@ export class WordPack {
     this.midnight = midnight;
     this.noon = noon;
     this.daysOfMonth = daysOfMonth;
+  }
+
+  /**
+   * Returns the the correct times for the given time format
+   * @param {string} timeFormat - The time format.
+   */
+  getTimes(timeFormat: string): string[] {
+    return timeFormat === TimeFormat.FORMAT_ONE
+      ? this.timesFormatOne
+      : timeFormat === TimeFormat.FORMAT_TWO
+        ? this.timesFormatTwo
+        : (() => {
+            console.error(`${Errors.ERROR_INVALID_TIME_FORMAT} ${timeFormat}`);
+            throw new Error(
+              `${Errors.ERROR_INVALID_TIME_FORMAT} ${timeFormat}`,
+            );
+          })();
   }
 }

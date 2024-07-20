@@ -18,11 +18,6 @@
 import { WordPack } from './word_pack.js';
 import { Errors } from './constants.js';
 
-export const TimeFormat = {
-  PAST_OR_TO: 'past-or-to',
-  HOURS_MINUTES: 'hour-oh-minute',
-};
-
 /**
  * A class to format a time and date as a string.
  *
@@ -46,7 +41,7 @@ export class ClockFormatter {
    * @param {Date} date - The current date and time.
    * @param {boolean} showDate - Flag to indicate if the date should be included in the output.
    * @param {boolean} showWeekday - Flag to indicate if the weekday should be included in the output.
-   * @param {string} timeFormat - The format of the time string. "past-or-to" or "hours-and-minute".
+   * @param {string} timeFormat - The format of the time string. "format-one" or "hours-and-minute".
    * @returns {string} The formatted time/date string.
    */
   getClockText(
@@ -58,10 +53,10 @@ export class ClockFormatter {
     const minutes = date.getMinutes();
     const hours = date.getHours();
     const minuteBucket = Math.round(minutes / this.fuzziness) * this.fuzziness;
-    const roundedHour =
-      timeFormat === TimeFormat.PAST_OR_TO && minuteBucket > 30
-        ? hours + 1
-        : hours;
+    const shouldRoundUp =
+      (timeFormat === TimeFormat.FORMAT_ONE && minuteBucket > 30) ||
+      minuteBucket === 60;
+    const roundedHour = (shouldRoundUp ? hours + 1 : hours) % 24;
     const hourName = this.#getHourName(roundedHour, minuteBucket, timeFormat);
     const time = this.#getTimeString(hourName, minuteBucket, timeFormat);
     const displayDate = showDate
@@ -74,18 +69,20 @@ export class ClockFormatter {
   /**
    * Returns the name of the hour suitable for display, considering special cases like "midnight" and "noon".
    *
-   * @param {number} displayHour - The hour to be displayed, adjusted for context (0-12).
+   * @param {number} hour - The hour of the day (0-23).
+   * @param {number} minuteBucket - The minute bucket (0-60).
+   * @param {string} timeFormat - The format of the time string. "format-one" or "hours-and-minute".
    * @returns {string} The name of the hour for display.
    */
   #getHourName(hour: number, minuteBucket: number, timeFormat: string) {
-    const isTopOfTheHour = minuteBucket === 0 || minuteBucket === 60;
+    const isTopOfTheHour = this.#isTopOfTheHour(minuteBucket);
     const isMidnight = hour === 0;
     const isNoon = hour === 12;
 
     if (isMidnight) {
-      if (isTopOfTheHour) {
+      if (this.#isTopOfTheHour(minuteBucket)) {
         return this.wordPack.midnight;
-      } else if (timeFormat === TimeFormat.PAST_OR_TO) {
+      } else if (timeFormat === TimeFormat.FORMAT_ONE) {
         return this.wordPack.midnightFormatOne;
       } else {
         return this.wordPack.midnightFormatTwo;
@@ -93,7 +90,7 @@ export class ClockFormatter {
     } else if (isNoon) {
       if (isTopOfTheHour) {
         return this.wordPack.noon;
-      } else if (timeFormat === TimeFormat.PAST_OR_TO) {
+      } else if (timeFormat === TimeFormat.FORMAT_ONE) {
         return this.wordPack.noonFormatOne;
       } else {
         return this.wordPack.noonFormatTwo;
@@ -111,38 +108,33 @@ export class ClockFormatter {
    * @returns {string} The time string.
    */
   #getTimeString(hourName: string, minuteBucket: number, timeFormat: string) {
-    if (
-      this.#isTopOfTheHour(minuteBucket) &&
-      (hourName === this.wordPack.midnight || hourName === this.wordPack.noon)
-    ) {
+    const hourNameEquivalentToTwelve: boolean =
+      hourName in
+      [
+        this.wordPack.names[0],
+        this.wordPack.names[12],
+        this.wordPack.midnight,
+        this.wordPack.noon,
+      ];
+
+    const isNoonOrMidnightExactly: boolean =
+      this.#isTopOfTheHour(minuteBucket) && hourNameEquivalentToTwelve;
+
+    if (isNoonOrMidnightExactly) {
       return hourName;
     }
 
-    const times =
-      timeFormat === TimeFormat.PAST_OR_TO
-        ? this.wordPack.timesFormatOne
-        : timeFormat === TimeFormat.HOURS_MINUTES
-          ? this.wordPack.timesFormatTwo
-          : (() => {
-              console.error(
-                `${Errors.ERROR_INVALID_TIME_FORMAT} ${timeFormat}`,
-              );
-              throw new Error(
-                `${Errors.ERROR_INVALID_TIME_FORMAT} ${hourName} ${minuteBucket}`,
-              );
-            })();
+    const times: string[] = this.wordPack.getTimes(timeFormat);
 
-    try {
-      return times[minuteBucket].format(hourName);
-    } catch (error) {
-      try {
-        return times[minuteBucket].replace('%s', hourName);
-      } catch (error2: any) {
-        console.error(Errors.ERROR_UNABLE_TO_FORMAT_TIME_STRING, error2);
-      }
-    }
+    this.#formatString(times[minuteBucket], hourName);
   }
 
+  /**
+   * Returns whether the given minute bucket is at the top of the hour (0 or 60).
+   *
+   * @param {number} minuteBucket - The minute bucket (0-60).
+   * @returns {boolean} True if the minute bucket is at the top of the hour, false otherwise.
+   */
   #isTopOfTheHour(minuteBucket: number) {
     return minuteBucket === 0 || minuteBucket === 60;
   }
@@ -155,36 +147,50 @@ export class ClockFormatter {
    * @returns {string} The formatted date string.
    */
   #getDisplayedDate(date: Date, minuteBucket: number, showWeekday: boolean) {
-    const extraDay = date.getHours() === 23 && minuteBucket === 60;
+    const isNextDay = date.getHours() === 23 && minuteBucket === 60;
     const adjustedDate = new Date(date);
-    if (extraDay) {
+    if (isNextDay) {
       adjustedDate.setDate(date.getDate() + 1);
     }
-    const dayOfWeek = showWeekday
+
+    const weekdayString = showWeekday
       ? this.wordPack.days[adjustedDate.getDay()]
       : this.wordPack.dayOnly;
-    const dayOfMonth = adjustedDate.getDate();
-    const ordinal = this.#getOrdinal(dayOfMonth);
 
+    const dateString = this.#getDateString(adjustedDate.getDate());
+
+    return this.#formatString(weekdayString, dateString);
+  }
+
+  /**
+   * Attempts to format the given string template with the given arguments.
+   *
+   * If the format method is not available, it will attempt to replace the first instance of "%s" with the argument.
+   *
+   * @param {string} template - The template string to format.
+   * @param {string} arg - The argument to insert into the template.
+   * @returns {string} The formatted string.
+   */
+  #formatString(template: string, arg: string) {
     try {
-      return dayOfWeek.format(ordinal);
+      return template.format(arg);
     } catch (error) {
       try {
-        return dayOfWeek.replace('%s', ordinal);
+        return template.replace('%s', arg);
       } catch (error2: any) {
         console.error(Errors.ERROR_UNABLE_TO_FORMAT_DATE_STRING, error2);
       }
     }
-    return dayOfWeek.format(ordinal);
+    return template;
   }
 
   /**
-   * Returns the ordinal string for the given number.
+   * Returns the date string for the given number.
    *
    * @param {number} n - The number to convert to an ordinal.
    * @returns {string} The ordinal string.
    */
-  #getOrdinal(n: number) {
+  #getDateString(n: number) {
     return this.wordPack.daysOfMonth[n - 1];
   }
 }

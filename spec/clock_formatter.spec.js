@@ -20,10 +20,10 @@ import * as En from './constants_en.js';
 import { WordPack } from '../dist/word_pack.js';
 
 const wordPack = new WordPack({
-  timesFormatOne: En.minutes_past_to,
+  timesFormatOne: En.timeFormatOne,
   midnightFormatOne: En.midnight,
   noonFormatOne: En.noon,
-  timesFormatTwo: En.hour_minute,
+  timesFormatTwo: En.timeFormatTwo,
   midnightFormatTwo: En.twelve,
   noonFormatTwo: En.twelve,
   names: En.hour_names,

@@ -88,7 +88,7 @@ export const TextClockLabel = GObject.registerClass(
         PrefItems.TIME_FORMAT.title,
         PrefItems.TIME_FORMAT.subtitle,
         GObject.ParamFlags.READWRITE,
-        TimeFormat.PAST_OR_TO,
+        TimeFormat.FORMAT_ONE,
       ),
       'clock-update': GObject.ParamSpec.string(
         CLOCK_LABEL_PROPERTIES.CLOCK_UPDATE,

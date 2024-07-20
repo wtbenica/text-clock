@@ -182,6 +182,7 @@ export const timesCountMinutes: () => string[] = () => [
   _p('format two', '%s fifty seven'),
   _p('format two', '%s fifty eight'),
   _p('format two', '%s fifty nine'),
+  _p('format two', "%s o'clock"),
 ];
 
 export const midnightHourMinute: () => string = () =>
