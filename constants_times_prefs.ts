@@ -21,32 +21,6 @@ import {
   pgettext as _p,
 } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
-import { WordPack } from './word_pack.js';
-import {
-  daysOfWeek,
-  dateOnly,
-  daysOfMonth,
-} from './constants_dates_prefs.js';
-
-/**
- * @returns a word pack that contains the strings for telling the time and date
- */
-export const TRANSLATE_PACK: () => WordPack = () =>
-  new WordPack({
-    timesFormatOne: timesPastTo(),
-    midnightFormatOne: midnightPastTo(),
-    noonFormatOne: noonPastTo(),
-    timesFormatTwo: timesCountMinutes(),
-    midnightFormatTwo: midnightHourMinute(),
-    noonFormatTwo: noonHourMinute(),
-    names: hourNames(),
-    days: daysOfWeek(),
-    dayOnly: dateOnly(),
-    midnight: midnight(),
-    noon: noon(),
-    daysOfMonth: daysOfMonth(),
-  });
-
 /**
  * @returns a list of strings for telling the time as "M past H(%s)" or "M to H(%s)"
  */

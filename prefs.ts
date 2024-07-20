@@ -25,8 +25,39 @@ import {
 } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
 import { SETTINGS, PrefItems, Errors } from './constants.js';
-import { TRANSLATE_PACK } from './constants_times_prefs.js';
-import { ClockFormatter } from './clock_formatter.js';
+import { ClockFormatter, TimeFormat } from './clock_formatter.js';
+import { WordPack } from './word_pack.js';
+import {
+  timesFormatOne,
+  midnightFormatOne,
+  noonFormatOne,
+  timesFormatTwo,
+  midnightFormatTwo,
+  noonFormatTwo,
+  hourNames,
+  midnight,
+  noon,
+} from './constants_times_extension.js';
+import { daysOfWeek, dateOnly, daysOfMonth } from './constants_dates_prefs.js';
+
+/**
+ * @returns a word pack that contains the strings for telling the time and date
+ */
+export const TRANSLATE_PACK: () => WordPack = () =>
+  new WordPack({
+    timesFormatOne: timesFormatOne(),
+    midnightFormatOne: midnightFormatOne(),
+    noonFormatOne: noonFormatOne(),
+    timesFormatTwo: timesFormatTwo(),
+    midnightFormatTwo: midnightFormatTwo(),
+    noonFormatTwo: noonFormatTwo(),
+    names: hourNames(),
+    days: daysOfWeek(),
+    dayOnly: dateOnly(),
+    midnight: midnight(),
+    noon: noon(),
+    daysOfMonth: daysOfMonth(),
+  });
 
 /**
  * Represents a binding between a setting and a property of a widget.
@@ -40,15 +71,6 @@ import { ClockFormatter } from './clock_formatter.js';
 type SettingBinding = {
   settingKey: string;
   property: string;
-};
-
-/**
- * The time format options for the Text Clock extension
- * @enum {string}
- */
-export const TimeFormat = {
-  FORMAT_ONE: 'format-one',
-  FORMAT_TWO: 'format-two',
 };
 
 /**

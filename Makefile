@@ -6,7 +6,7 @@ DIST_DIR=dist
 LOCALE_DIR=locale
 GNOME_SHELL_EXT_DIR=$(HOME)/.local/share/gnome-shell/extensions
 
-.PHONY: all pack install clean test prepare_locale patch-dts-files
+.PHONY: all pack install clean test prepare_locale patch-dts-files modify_files
 
 # Default target: build the main JavaScript file for the extension
 all: $(DIST_DIR)/extension.js
@@ -71,10 +71,11 @@ clean:
 	@rm -rf $(LOCALE_DIR)
 
 # Run tests after ensuring TypeScript compilation
-test: clean node_modules
+test: clean node_modules prepare_constants_test
 	@echo "Running tests..."
-	@npx tsc
+	@npx tsc -p tsconfig.test.json || { echo "TypeScript compilation failed"; exit 1; }
 	@npm test
+	@rm constants_dates_test.ts constants_times_test.ts
 
 # Patch TypeScript definition files to correct import paths
 patch-dts-files:
@@ -90,3 +91,22 @@ prepare_constants_times_prefs:
 	@sed -i 's|constants_dates_extension.js|constants_dates_prefs.js|g' constants_times_prefs.ts || { echo "Modifying import paths in constants_times_prefs.ts failed"; exit 1; }
 	@cp constants_dates_extension.ts constants_dates_prefs.ts
 	@sed -i 's|resource:///org/gnome/shell/extensions/extension.js|resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js|g' constants_dates_prefs.ts || { echo "Modifying import paths in constants_times_prefs.ts failed"; exit 1; }
+
+# Modify files for use in tests
+prepare_constants_test: prepare_dates_test prepare_times_test
+	@npm run format > /dev/null 2>&1
+
+# Copy and modify date strings for use in tests
+prepare_dates_test:
+	@if [ -f constants_dates_test.ts ]; then rm constants_dates_test.ts; fi
+	@sed '/^import {/,+4d' constants_dates_extension.ts > constants_dates_test.ts
+	@sed -E '/_p\(/,+1d' constants_dates_test.ts > temp_file && mv temp_file constants_dates_test.ts
+	@sed '/^[TAB ]*),/d' constants_dates_test.ts > temp_file && mv temp_file constants_dates_test.ts
+	@sed -E '{N; s/,\s+\)\;/\;/;}' constants_dates_test.ts > temp_file && mv temp_file constants_dates_test.ts
+	@sed -E "s/_\('([^']*)'\)/'\1'/g" constants_dates_test.ts > temp_file && mv temp_file constants_dates_test.ts
+
+# Copy and modify time strings for use in tests
+prepare_times_test:
+	@if [ -f constants_times_test.ts ]; then rm constants_times_test.ts; fi
+	@sed '/^import {/,+4d' constants_times_extension.ts > constants_times_test.ts
+	@sed -E "s/_p\('[^']*',\s*('[^']*'|\"%s o'clock\")\)/\1/g" constants_times_test.ts > temp_file && mv temp_file constants_times_test.ts

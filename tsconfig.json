@@ -22,6 +22,7 @@
     "constants_times_extension.ts",
     "constants_dates_extension.ts",
     "constants_times_prefs.ts",
+    "constants_dates_prefs.ts",
     "ui/clock_label.ts",
   ],
 }

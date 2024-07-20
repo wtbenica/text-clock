@@ -35,9 +35,43 @@ import {
 } from './ui/clock_label.js';
 import { WordPack } from './word_pack.js';
 import { SETTINGS, Errors } from './constants.js';
-import { TRANSLATE_PACK } from './constants_times_extension.js';
+import {
+  timesFormatOne,
+  midnightFormatOne,
+  noonFormatOne,
+  timesFormatTwo,
+  midnightFormatTwo,
+  noonFormatTwo,
+  hourNames,
+  midnight,
+  noon,
+} from './constants_times_extension.js';
+import {
+  weekdays,
+  dateOnly,
+  daysOfMonth,
+} from './constants_dates_extension.js';
 
 const CLOCK_STYLE_CLASS_NAME = 'clock';
+
+/**
+ * @returns a word pack that contains the strings for telling the time and date
+ */
+export const TRANSLATE_PACK: () => WordPack = () =>
+  new WordPack({
+    timesFormatOne: timesFormatOne(),
+    midnightFormatOne: midnightFormatOne(),
+    noonFormatOne: noonFormatOne(),
+    timesFormatTwo: timesFormatTwo(),
+    midnightFormatTwo: midnightFormatTwo(),
+    noonFormatTwo: noonFormatTwo(),
+    names: hourNames(),
+    days: weekdays(),
+    dayOnly: dateOnly(),
+    midnight: midnight(),
+    noon: noon(),
+    daysOfMonth: daysOfMonth(),
+  });
 
 /**
  * TextClock extension for GNOME Shell

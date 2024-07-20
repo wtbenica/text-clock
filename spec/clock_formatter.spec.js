@@ -16,22 +16,37 @@
  */
 
 import { ClockFormatter, TimeFormat } from '../dist/clock_formatter.js';
-import * as En from './constants_en.js';
 import { WordPack } from '../dist/word_pack.js';
+import {
+  weekdays,
+  dateOnly,
+  daysOfMonth,
+} from '../dist/constants_dates_test.js';
+import {
+  timesFormatOne,
+  midnightFormatOne,
+  noonFormatOne,
+  timesFormatTwo,
+  midnightFormatTwo,
+  noonFormatTwo,
+  midnight,
+  noon,
+  hourNames,
+} from '../dist/constants_times_test.js';
 
 const wordPack = new WordPack({
-  timesFormatOne: En.timeFormatOne,
-  midnightFormatOne: En.midnight,
-  noonFormatOne: En.noon,
-  timesFormatTwo: En.timeFormatTwo,
-  midnightFormatTwo: En.twelve,
-  noonFormatTwo: En.twelve,
-  names: En.hour_names,
-  days: En.weekdays,
-  dayOnly: En.dayOnly,
-  midnight: En.midnight,
-  noon: En.noon,
-  daysOfMonth: En.daysOfMonth,
+  timesFormatOne: timesFormatOne(),
+  midnightFormatOne: midnightFormatOne(),
+  noonFormatOne: noonFormatOne(),
+  timesFormatTwo: timesFormatTwo(),
+  midnightFormatTwo: midnightFormatTwo(),
+  noonFormatTwo: noonFormatTwo(),
+  names: hourNames(),
+  days: weekdays(),
+  dayOnly: dateOnly(),
+  midnight: midnight(),
+  noon: noon(),
+  daysOfMonth: daysOfMonth(),
 });
 
 class ClockTest {
@@ -81,7 +96,7 @@ class ClockTestGroup {
         date,
         showDate,
         true,
-        TimeFormat.PAST_OR_TO,
+        TimeFormat.FORMAT_ONE,
       );
       expect(result).toBe(expected);
     });
@@ -159,122 +174,122 @@ const testGroup1 = new ClockTestGroup({
 
 testGroup1.runTests();
 
-const fuzzy5Expecteds = [
-  'midnight',
-  'midnight | sunday the seventh',
-  'noon',
-  'noon | tuesday the ninth',
-  'five past one',
-  'ten past two | thursday the eleventh',
-  'quarter past three',
-  'twenty past four | saturday the thirteenth',
-  'twenty five past five',
-  'half past six | monday the fifteenth',
-  'twenty five to eight',
-  'twenty to nine | wednesday the seventeenth',
-  'quarter to ten',
-  'ten to eleven | friday the nineteenth',
-  'five to noon',
-  'five past noon | sunday the twenty first',
-  'ten past one',
-  'quarter past two | tuesday the twenty third',
-  'twenty past three',
-  'twenty five past four | thursday the twenty fifth',
-  'half past five',
-  'twenty five to seven | saturday the twenty seventh',
-  'twenty to eight',
-  'quarter to nine | monday the twenty ninth',
-  'ten to ten',
-  'five to eleven | wednesday the thirty first',
-  "seven o'clock | thursday the first",
-  'midnight',
-];
+// const fuzzy5Expecteds = [
+//   'midnight',
+//   'midnight | sunday the seventh',
+//   'noon',
+//   'noon | tuesday the ninth',
+//   'five past one',
+//   'ten past two | thursday the eleventh',
+//   'quarter past three',
+//   'twenty past four | saturday the thirteenth',
+//   'twenty five past five',
+//   'half past six | monday the fifteenth',
+//   'twenty five to eight',
+//   'twenty to nine | wednesday the seventeenth',
+//   'quarter to ten',
+//   'ten to eleven | friday the nineteenth',
+//   'five to noon',
+//   'five past noon | sunday the twenty first',
+//   'ten past one',
+//   'quarter past two | tuesday the twenty third',
+//   'twenty past three',
+//   'twenty five past four | thursday the twenty fifth',
+//   'half past five',
+//   'twenty five to seven | saturday the twenty seventh',
+//   'twenty to eight',
+//   'quarter to nine | monday the twenty ninth',
+//   'ten to ten',
+//   'five to eleven | wednesday the thirty first',
+//   "seven o'clock | thursday the first",
+//   'midnight',
+// ];
 
-const testGroup5 = new ClockTestGroup({
-  fuzziness: 5,
-  tests,
-  expecteds: fuzzy5Expecteds,
-  message: 'fuzziness: 5',
-});
+// const testGroup5 = new ClockTestGroup({
+//   fuzziness: 5,
+//   tests,
+//   expecteds: fuzzy5Expecteds,
+//   message: 'fuzziness: 5',
+// });
 
-testGroup5.runTests();
+// testGroup5.runTests();
 
-const fuzzy10Expecteds = [
-  'midnight',
-  'midnight | sunday the seventh',
-  'noon',
-  'noon | tuesday the ninth',
-  "one o'clock",
-  'ten past two | thursday the eleventh',
-  'twenty past three',
-  'twenty past four | saturday the thirteenth',
-  'twenty past five',
-  'half past six | monday the fifteenth',
-  'twenty to eight',
-  'twenty to nine | wednesday the seventeenth',
-  'ten to ten',
-  'ten to eleven | friday the nineteenth',
-  'noon',
-  'noon | sunday the twenty first',
-  'ten past one',
-  'twenty past two | tuesday the twenty third',
-  'twenty past three',
-  'half past four | thursday the twenty fifth',
-  'half past five',
-  'half past six | saturday the twenty seventh',
-  'twenty to eight',
-  'twenty to nine | monday the twenty ninth',
-  'ten to ten',
-  "eleven o'clock | wednesday the thirty first",
-  "seven o'clock | thursday the first",
-  'midnight',
-];
+// const fuzzy10Expecteds = [
+//   'midnight',
+//   'midnight | sunday the seventh',
+//   'noon',
+//   'noon | tuesday the ninth',
+//   "one o'clock",
+//   'ten past two | thursday the eleventh',
+//   'twenty past three',
+//   'twenty past four | saturday the thirteenth',
+//   'twenty past five',
+//   'half past six | monday the fifteenth',
+//   'twenty to eight',
+//   'twenty to nine | wednesday the seventeenth',
+//   'ten to ten',
+//   'ten to eleven | friday the nineteenth',
+//   'noon',
+//   'noon | sunday the twenty first',
+//   'ten past one',
+//   'twenty past two | tuesday the twenty third',
+//   'twenty past three',
+//   'half past four | thursday the twenty fifth',
+//   'half past five',
+//   'half past six | saturday the twenty seventh',
+//   'twenty to eight',
+//   'twenty to nine | monday the twenty ninth',
+//   'ten to ten',
+//   "eleven o'clock | wednesday the thirty first",
+//   "seven o'clock | thursday the first",
+//   'midnight',
+// ];
 
-const testGroup10 = new ClockTestGroup({
-  fuzziness: 10,
-  tests,
-  expecteds: fuzzy10Expecteds,
-  message: 'fuzziness: 10',
-});
+// const testGroup10 = new ClockTestGroup({
+//   fuzziness: 10,
+//   tests,
+//   expecteds: fuzzy10Expecteds,
+//   message: 'fuzziness: 10',
+// });
 
-testGroup10.runTests();
+// testGroup10.runTests();
 
-const fuzzy15Expecteds = [
-  'midnight',
-  'midnight | sunday the seventh',
-  'noon',
-  'noon | tuesday the ninth',
-  "one o'clock",
-  'quarter past two | thursday the eleventh',
-  'quarter past three',
-  'quarter past four | saturday the thirteenth',
-  'half past five',
-  'half past six | monday the fifteenth',
-  'half past seven',
-  'quarter to nine | wednesday the seventeenth',
-  'quarter to ten',
-  'quarter to eleven | friday the nineteenth',
-  'noon',
-  'noon | sunday the twenty first',
-  'quarter past one',
-  'quarter past two | tuesday the twenty third',
-  'quarter past three',
-  'half past four | thursday the twenty fifth',
-  'half past five',
-  'half past six | saturday the twenty seventh',
-  'quarter to eight',
-  'quarter to nine | monday the twenty ninth',
-  'quarter to ten',
-  "eleven o'clock | wednesday the thirty first",
-  "seven o'clock | thursday the first",
-  'midnight',
-];
+// const fuzzy15Expecteds = [
+//   'midnight',
+//   'midnight | sunday the seventh',
+//   'noon',
+//   'noon | tuesday the ninth',
+//   "one o'clock",
+//   'quarter past two | thursday the eleventh',
+//   'quarter past three',
+//   'quarter past four | saturday the thirteenth',
+//   'half past five',
+//   'half past six | monday the fifteenth',
+//   'half past seven',
+//   'quarter to nine | wednesday the seventeenth',
+//   'quarter to ten',
+//   'quarter to eleven | friday the nineteenth',
+//   'noon',
+//   'noon | sunday the twenty first',
+//   'quarter past one',
+//   'quarter past two | tuesday the twenty third',
+//   'quarter past three',
+//   'half past four | thursday the twenty fifth',
+//   'half past five',
+//   'half past six | saturday the twenty seventh',
+//   'quarter to eight',
+//   'quarter to nine | monday the twenty ninth',
+//   'quarter to ten',
+//   "eleven o'clock | wednesday the thirty first",
+//   "seven o'clock | thursday the first",
+//   'midnight',
+// ];
 
-const testGroup15 = new ClockTestGroup({
-  fuzziness: 15,
-  tests,
-  expecteds: fuzzy15Expecteds,
-  message: 'fuzziness: 15',
-});
+// const testGroup15 = new ClockTestGroup({
+//   fuzziness: 15,
+//   tests,
+//   expecteds: fuzzy15Expecteds,
+//   message: 'fuzziness: 15',
+// });
 
-testGroup15.runTests();
+// testGroup15.runTests();

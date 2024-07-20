@@ -1,4 +1,24 @@
-export const timeFormatOne = [
+/*
+ * Copyright (c) 2024 Wesley Benica
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/**
+ * @returns a list of strings for telling the time as "M past H(%s)" or "M to H(%s)"
+ */
+export const timesFormatOne: () => string[] = () => [
   "%s o'clock",
   'one past %s',
   'two past %s',
@@ -62,86 +82,14 @@ export const timeFormatOne = [
   "%s o'clock",
 ];
 
-export const hour_names = [
-  'twelve',
-  'one',
-  'two',
-  'three',
-  'four',
-  'five',
-  'six',
-  'seven',
-  'eight',
-  'nine',
-  'ten',
-  'eleven',
-  'twelve',
-  'one',
-  'two',
-  'three',
-  'four',
-  'five',
-  'six',
-  'seven',
-  'eight',
-  'nine',
-  'ten',
-  'eleven',
-];
+export const midnightFormatOne: () => string = () => 'midnight';
 
-export const weekdays = [
-  'sunday the %s',
-  'monday the %s',
-  'tuesday the %s',
-  'wednesday the %s',
-  'thursday the %s',
-  'friday the %s',
-  'saturday the %s',
-];
+export const noonFormatOne: () => string = () => 'noon';
 
-export const midnight = 'midnight';
-
-export const noon = 'noon';
-
-export const twelve = 'twelve';
-
-export const dayOnly = 'the %s';
-
-export const daysOfMonth = [
-  'first',
-  'second',
-  'third',
-  'fourth',
-  'fifth',
-  'sixth',
-  'seventh',
-  'eighth',
-  'ninth',
-  'tenth',
-  'eleventh',
-  'twelfth',
-  'thirteenth',
-  'fourteenth',
-  'fifteenth',
-  'sixteenth',
-  'seventeenth',
-  'eighteenth',
-  'nineteenth',
-  'twentieth',
-  'twenty first',
-  'twenty second',
-  'twenty third',
-  'twenty fourth',
-  'twenty fifth',
-  'twenty sixth',
-  'twenty seventh',
-  'twenty eighth',
-  'twenty ninth',
-  'thirtieth',
-  'thirty first',
-];
-
-export const timeFormatTwo = [
+/**
+ * @returns a list of strings for telling the time as "H M"
+ */
+export const timesFormatTwo: () => string[] = () => [
   "%s o'clock",
   '%s oh one',
   '%s oh two',
@@ -204,3 +152,47 @@ export const timeFormatTwo = [
   '%s fifty nine',
   "%s o'clock",
 ];
+
+export const midnightFormatTwo: () => string = () => 'twelve';
+
+export const noonFormatTwo: () => string = () => 'twelve';
+
+/**
+ * @returns a list of strings that tells the hour
+ */
+export const hourNames: () => string[] = () => [
+  'midnight',
+  'one',
+  'two',
+  'three',
+  'four',
+  'five',
+  'six',
+  'seven',
+  'eight',
+  'nine',
+  'ten',
+  'eleven',
+  'noon',
+  'one',
+  'two',
+  'three',
+  'four',
+  'five',
+  'six',
+  'seven',
+  'eight',
+  'nine',
+  'ten',
+  'eleven',
+];
+
+/**
+ * @returns the string for the word "midnight"
+ */
+export const midnight: () => string = () => 'midnight';
+
+/**
+ * @returns the string for the word "noon"
+ */
+export const noon: () => string = () => 'noon';

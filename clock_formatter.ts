@@ -19,6 +19,15 @@ import { WordPack } from './word_pack.js';
 import { Errors } from './constants.js';
 
 /**
+ * The time format options for the Text Clock extension
+ * @enum {string}
+ */
+export const TimeFormat = {
+  FORMAT_ONE: 'format-one',
+  FORMAT_TWO: 'format-two',
+};
+
+/**
  * A class to format a time and date as a string.
  *
  * @param {WordPack} wordPack - The word pack to use for converting time/date to text
@@ -49,7 +58,7 @@ export class ClockFormatter {
     showDate: boolean,
     showWeekday: boolean,
     timeFormat: string,
-  ) {
+  ): string {
     const minutes = date.getMinutes();
     const hours = date.getHours();
     const minuteBucket = Math.round(minutes / this.fuzziness) * this.fuzziness;
@@ -63,6 +72,17 @@ export class ClockFormatter {
       ? ` | ${this.#getDisplayedDate(date, minuteBucket, showWeekday)}`
       : '';
 
+    if (Math.random() < 0.05) {
+      console.log(`minutes: ${minutes}`);
+      console.log(`hours: ${hours}`);
+      console.log(`minuteBucket: ${minuteBucket}`);
+      console.log(`shouldRoundUp: ${shouldRoundUp}`);
+      console.log(`roundedHour: ${roundedHour}`);
+      console.log(`hourName: ${hourName}`);
+      console.log(`time: ${time}`);
+      console.log(`displayDate: ${displayDate}`);
+    }
+
     return time + displayDate;
   }
 
@@ -74,7 +94,7 @@ export class ClockFormatter {
    * @param {string} timeFormat - The format of the time string. "format-one" or "hours-and-minute".
    * @returns {string} The name of the hour for display.
    */
-  #getHourName(hour: number, minuteBucket: number, timeFormat: string) {
+  #getHourName(hour: number, minuteBucket: number, timeFormat: string): string {
     const isTopOfTheHour = this.#isTopOfTheHour(minuteBucket);
     const isMidnight = hour === 0;
     const isNoon = hour === 12;
@@ -107,7 +127,11 @@ export class ClockFormatter {
    * @param {number} minuteBucket - The minute bucket (0-11).
    * @returns {string} The time string.
    */
-  #getTimeString(hourName: string, minuteBucket: number, timeFormat: string) {
+  #getTimeString(
+    hourName: string,
+    minuteBucket: number,
+    timeFormat: string,
+  ): string {
     const hourNameEquivalentToTwelve: boolean =
       hourName in
       [
@@ -126,7 +150,7 @@ export class ClockFormatter {
 
     const times: string[] = this.wordPack.getTimes(timeFormat);
 
-    this.#formatString(times[minuteBucket], hourName);
+    return this.#formatString(times[minuteBucket], hourName);
   }
 
   /**
@@ -135,7 +159,7 @@ export class ClockFormatter {
    * @param {number} minuteBucket - The minute bucket (0-60).
    * @returns {boolean} True if the minute bucket is at the top of the hour, false otherwise.
    */
-  #isTopOfTheHour(minuteBucket: number) {
+  #isTopOfTheHour(minuteBucket: number): boolean {
     return minuteBucket === 0 || minuteBucket === 60;
   }
 
@@ -146,7 +170,11 @@ export class ClockFormatter {
    * @param {number} minuteBucket - The minute bucket (0-12).
    * @returns {string} The formatted date string.
    */
-  #getDisplayedDate(date: Date, minuteBucket: number, showWeekday: boolean) {
+  #getDisplayedDate(
+    date: Date,
+    minuteBucket: number,
+    showWeekday: boolean,
+  ): string {
     const isNextDay = date.getHours() === 23 && minuteBucket === 60;
     const adjustedDate = new Date(date);
     if (isNextDay) {
@@ -171,7 +199,8 @@ export class ClockFormatter {
    * @param {string} arg - The argument to insert into the template.
    * @returns {string} The formatted string.
    */
-  #formatString(template: string, arg: string) {
+  #formatString(template: string, arg: string): string {
+    console.log(`template: ${template} | arg: ${arg}`);
     try {
       return template.format(arg);
     } catch (error) {
@@ -181,6 +210,7 @@ export class ClockFormatter {
         console.error(Errors.ERROR_UNABLE_TO_FORMAT_DATE_STRING, error2);
       }
     }
+    console.log('NO EXCEPTIONS!');
     return template;
   }
 
@@ -190,7 +220,7 @@ export class ClockFormatter {
    * @param {number} n - The number to convert to an ordinal.
    * @returns {string} The ordinal string.
    */
-  #getDateString(n: number) {
+  #getDateString(n: number): string {
     return this.wordPack.daysOfMonth[n - 1];
   }
 }
