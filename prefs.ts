@@ -235,10 +235,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
   }
 
   #getTimeFormatsList(settings: Gio.Settings): Gtk.StringList {
-    const clockFormatter = new ClockFormatter(
-      TRANSLATE_PACK(),
-      parseInt(settings!.get_string(SETTINGS.FUZZINESS)),
-    );
+    const clockFormatter = new ClockFormatter(TRANSLATE_PACK());
 
     const date = new Date();
 
@@ -247,6 +244,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
       false,
       false,
       TimeFormat.FORMAT_ONE,
+      parseInt(settings!.get_string(SETTINGS.FUZZINESS)),
     );
 
     const timeFormatTwo = clockFormatter.getClockText(
@@ -254,6 +252,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
       false,
       false,
       TimeFormat.FORMAT_TWO,
+      parseInt(settings!.get_string(SETTINGS.FUZZINESS)),
     );
 
     return new Gtk.StringList({

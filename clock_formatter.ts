@@ -36,11 +36,9 @@ export const TimeFormat = {
  */
 export class ClockFormatter {
   wordPack: WordPack;
-  fuzziness: number;
 
-  constructor(wordPack: WordPack, fuzziness: number = 5) {
+  constructor(wordPack: WordPack) {
     this.wordPack = wordPack;
-    this.fuzziness = fuzziness;
   }
 
   /**
@@ -58,10 +56,11 @@ export class ClockFormatter {
     showDate: boolean,
     showWeekday: boolean,
     timeFormat: string,
+    fuzziness: number,
   ): string {
     const minutes = date.getMinutes();
     const hours = date.getHours();
-    const minuteBucket = Math.round(minutes / this.fuzziness) * this.fuzziness;
+    const minuteBucket = Math.round(minutes / fuzziness) * fuzziness;
     const shouldRoundUp =
       (timeFormat === TimeFormat.FORMAT_ONE && minuteBucket > 30) ||
       minuteBucket === 60;
@@ -71,17 +70,6 @@ export class ClockFormatter {
     const displayDate = showDate
       ? ` | ${this.#getDisplayedDate(date, minuteBucket, showWeekday)}`
       : '';
-
-    if (Math.random() < 0.05) {
-      console.log(`minutes: ${minutes}`);
-      console.log(`hours: ${hours}`);
-      console.log(`minuteBucket: ${minuteBucket}`);
-      console.log(`shouldRoundUp: ${shouldRoundUp}`);
-      console.log(`roundedHour: ${roundedHour}`);
-      console.log(`hourName: ${hourName}`);
-      console.log(`time: ${time}`);
-      console.log(`displayDate: ${displayDate}`);
-    }
 
     return time + displayDate;
   }
@@ -132,17 +120,15 @@ export class ClockFormatter {
     minuteBucket: number,
     timeFormat: string,
   ): string {
-    const hourNameEquivalentToTwelve: boolean =
-      hourName in
-      [
-        this.wordPack.names[0],
-        this.wordPack.names[12],
-        this.wordPack.midnight,
-        this.wordPack.noon,
-      ];
+    const twelves = [
+      this.wordPack.names[0],
+      this.wordPack.names[12],
+      this.wordPack.midnight,
+      this.wordPack.noon,
+    ];
 
     const isNoonOrMidnightExactly: boolean =
-      this.#isTopOfTheHour(minuteBucket) && hourNameEquivalentToTwelve;
+      this.#isTopOfTheHour(minuteBucket) && twelves.includes(hourName);
 
     if (isNoonOrMidnightExactly) {
       return hourName;
@@ -200,17 +186,15 @@ export class ClockFormatter {
    * @returns {string} The formatted string.
    */
   #formatString(template: string, arg: string): string {
-    console.log(`template: ${template} | arg: ${arg}`);
     try {
       return template.format(arg);
     } catch (error) {
       try {
         return template.replace('%s', arg);
       } catch (error2: any) {
-        console.error(Errors.ERROR_UNABLE_TO_FORMAT_DATE_STRING, error2);
+        logError(error2, Errors.ERROR_UNABLE_TO_FORMAT_DATE_STRING);
       }
     }
-    console.log('NO EXCEPTIONS!');
     return template;
   }
 

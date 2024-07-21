@@ -116,10 +116,7 @@ export const TextClockLabel = GObject.registerClass(
       this._timeFormat = props.timeFormat;
 
       try {
-        this._formatter = new ClockFormatter(
-          this._translatePack,
-          parseInt(this._fuzzyMinutes),
-        );
+        this._formatter = new ClockFormatter(this._translatePack);
         this.clutterText.yAlign = Clutter.ActorAlign.CENTER;
       } catch (error: any) {
         logError(error, _(Errors.ERROR_INITIALIZING_CLOCK_LABEL));
@@ -185,8 +182,6 @@ export const TextClockLabel = GObject.registerClass(
      */
     set fuzzyMinutes(value: string) {
       this._fuzzyMinutes = value;
-      if (this._formatter)
-        this._formatter!.fuzziness = parseInt(this._fuzzyMinutes);
       this.updateClock();
     }
 
@@ -203,6 +198,7 @@ export const TextClockLabel = GObject.registerClass(
               this._showDate,
               this._showWeekday,
               this._timeFormat,
+              parseInt(this._fuzzyMinutes),
             ),
           );
       } catch (error: any) {

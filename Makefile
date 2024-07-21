@@ -71,11 +71,13 @@ clean:
 	@rm -rf $(LOCALE_DIR)
 
 # Run tests after ensuring TypeScript compilation
-test: clean node_modules prepare_constants_test
+test: node_modules prepare_constants_test
 	@echo "Running tests..."
 	@npx tsc -p tsconfig.test.json || { echo "TypeScript compilation failed"; exit 1; }
 	@npm test
 	@rm constants_dates_test.ts constants_times_test.ts
+	@rm -rf dist
+
 
 # Patch TypeScript definition files to correct import paths
 patch-dts-files:
@@ -110,3 +112,11 @@ prepare_times_test:
 	@if [ -f constants_times_test.ts ]; then rm constants_times_test.ts; fi
 	@sed '/^import {/,+4d' constants_times_extension.ts > constants_times_test.ts
 	@sed -E "s/_p\('[^']*',\s*('[^']*'|\"%s o'clock\")\)/\1/g" constants_times_test.ts > temp_file && mv temp_file constants_times_test.ts
+
+# Generate a new POT file
+pot:
+	@echo "Generating a new POT file..."
+	@# if dist directory dne, transpile the TypeScript files
+	@test -d dist || npx tsc || { echo "TypeScript compilation failed"; exit 1; }
+	@xgettext --from-code=UTF-8 --keyword=p_ --keyword=_ --output=po/text-clock@benica.dev.pot dist/constants_*_extension.js || { echo "Generating POT file failed"; exit 1; }
+	@rm -rf dist
