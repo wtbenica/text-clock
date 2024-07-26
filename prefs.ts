@@ -37,7 +37,7 @@ import {
   hourNames,
   midnight,
   noon,
-} from './constants_times_extension.js';
+} from './constants_times_prefs.js';
 import { weekdays, dateOnly, daysOfMonth } from './constants_dates_prefs.js';
 
 /**
@@ -93,10 +93,12 @@ export default class TextClockPrefs extends ExtensionPreferences {
     this.#createFuzzinessComboRow(group, settings);
   }
 
-  // Create a page and add it to the window
-  //
-  // @param window The window to add the page to
-  // @returns The page
+  /**
+   * Create a page and add it to the window
+   *
+   * @param window The window to add the page to
+   * @returns The page
+   */
   #createAndAddPageToWindow(window: Adw.PreferencesWindow) {
     const page = new Adw.PreferencesPage({
       title: _('Text Clock'),
@@ -105,10 +107,12 @@ export default class TextClockPrefs extends ExtensionPreferences {
     return page;
   }
 
-  // Create a group and add it to the page
-  //
-  // @param page The page to add the group to
-  // @returns The group
+  /**
+   * Create a group and add it to the page
+   *
+   * @param page The page to add the group to
+   * @returns The group
+   */
   #createAndAddGroupToPage(page: Adw.PreferencesPage) {
     const group = new Adw.PreferencesGroup({
       title: _('Clock Settings'),
@@ -118,12 +122,14 @@ export default class TextClockPrefs extends ExtensionPreferences {
     return group;
   }
 
-  // Add a combo row to a preferences group
-  //
-  // @param group The preferences group to add the row to
-  // @param settingKey The key in the settings schema to bind the combo to
-  // @param props The properties of the combo row
-  // @returns The combo row
+  /**
+   * Add a combo row to a preferences group
+   *
+   * @param group The preferences group to add the row to
+   * @param settingKey The key in the settings schema to bind the combo to
+   * @param props The properties of the combo row
+   * @returns The combo row
+   */
   #addComboRow(
     group: Adw.PreferencesGroup,
     settings: Gio.Settings,
@@ -142,13 +148,15 @@ export default class TextClockPrefs extends ExtensionPreferences {
     return row;
   }
 
-  // Add a switch row to a preferences group
-  //
-  // @param group The preferences group to add the row to
-  // @param props The properties of the switch row
-  // @param settingKey The key in the settings schema to bind the switch to
-  // @param settingBindings The settings to bind to the switch
-  // @returns The switch row
+  /**
+   * Add a switch row to a preferences group
+   *
+   * @param group The preferences group to add the row to
+   * @param props The properties of the switch row
+   * @param settingKey The key in the settings schema to bind the switch to
+   * @param settingBindings The settings to bind to the switch
+   * @returns The switch row
+   */
   #addSwitchRow(
     group: Adw.PreferencesGroup,
     props: Partial<Adw.SwitchRow.ConstructorProps>,
@@ -172,11 +180,13 @@ export default class TextClockPrefs extends ExtensionPreferences {
     return row;
   }
 
-  // Bind a setting to a property of a widget
-  //
-  // @param widget The widget to bind the setting to
-  // @param settingKey The key in the settings schema to bind
-  // @param property The property of the widget to bind the setting to
+  /**
+   * Bind a setting to a property of a widget
+   *
+   * @param widget The widget to bind the setting to
+   * @param settingKey The key in the settings schema to bind
+   * @param property The property of the widget to bind the setting to
+   */
   #bindSettingsToProperty(
     widget: Adw.ActionRow,
     settings: Gio.Settings,
@@ -198,9 +208,11 @@ export default class TextClockPrefs extends ExtensionPreferences {
     }
   }
 
-  // Create a combo row for the fuzziness setting and add it to the group
-  //
-  // @param group The preferences group to add the row to
+  /**
+   * Create a combo row for the fuzziness setting and add it to the group
+   * @param group The preferences group to add the row to
+   * @param settings The settings schema
+   */
   #createFuzzinessComboRow(
     group: Adw.PreferencesGroup,
     settings: Gio.Settings,
@@ -215,9 +227,12 @@ export default class TextClockPrefs extends ExtensionPreferences {
     this.#addComboRow(group, settings, SETTINGS.FUZZINESS, fuzzinessComboInfo);
   }
 
-  // Create a combo row for the time format setting and add it to the group
-  //
-  // @param group The preferences group to add the row to
+  /**
+   * Create a combo row for the time format setting and add it to the group
+   *
+   * @param group The preferences group to add the row to
+   * @param settings The settings schema
+   */
   #addTimeFormatComboRow(group: Adw.PreferencesGroup, settings: Gio.Settings) {
     const timeFormatComboInfo = {
       title: _(PrefItems.TIME_FORMAT.title),
@@ -234,6 +249,12 @@ export default class TextClockPrefs extends ExtensionPreferences {
     );
   }
 
+  /**
+   * Get a list of the localized time format string templates
+   *
+   * @param settings The settings schema
+   * @returns A list of the localized time format string templates
+   */
   #getTimeFormatsList(settings: Gio.Settings): Gtk.StringList {
     const clockFormatter = new ClockFormatter(TRANSLATE_PACK());
 
@@ -260,9 +281,12 @@ export default class TextClockPrefs extends ExtensionPreferences {
     });
   }
 
-  // Create a switch row for the show weekday setting and add it to the group
-  //
-  // @param group The preferences group to add the row to
+  /**
+   * Create a switch row for the show weekday setting and add it to the group
+   *
+   * @param group The preferences group to add the row to
+   * @param settings The settings schema
+   */
   #addShowWeekdaySwitchRow(
     group: Adw.PreferencesGroup,
     settings: Gio.Settings,
@@ -286,9 +310,12 @@ export default class TextClockPrefs extends ExtensionPreferences {
     );
   }
 
-  // Create a switch row for the show date setting and add it to the group
-  //
-  // @param group The preferences group to add the row to
+  /**
+   * Create a switch row for the show date setting and add it to the group
+   *
+   * @param group The preferences group to add the row to
+   * @param settings The settings schema
+   */
   #addShowDateSwitchRow(group: Adw.PreferencesGroup, settings: Gio.Settings) {
     const showDateSwitchInfo = {
       title: _(PrefItems.SHOW_DATE.title),

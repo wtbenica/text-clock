@@ -1,10 +1,7 @@
 {
     "extends": "./tsconfig.json",
     "files": [
-        "clock_formatter.ts",
-        "word_pack.ts",
         "constants_dates_test.ts",
         "constants_times_test.ts",
-        "constants.ts",
     ]
 }
