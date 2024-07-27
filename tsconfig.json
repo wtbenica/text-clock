@@ -16,12 +16,13 @@
   "files": [
     "extension.ts",
     "prefs.ts",
-    "constants/constants_prefs.ts",
     "clock_formatter.ts",
-    "constants/word_pack.ts",
-    "constants/constants.ts",
-    "constants/constants_times.ts",
-    "constants/constants_dates.ts",
+    "word_pack.ts",
+    "constants.ts",
+    "constants_times_extension.ts",
+    "constants_dates_extension.ts",
+    "constants_times_prefs.ts",
+    "constants_dates_prefs.ts",
     "ui/clock_label.ts",
   ],
 }

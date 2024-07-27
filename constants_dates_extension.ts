@@ -18,14 +18,14 @@
 import {
   gettext as _,
   ngettext,
-  pgettext as _p,
+  pgettext,
 } from 'resource:///org/gnome/shell/extensions/extension.js';
 
 /**
  * The date format for showing the date only, e.g. "the sixth"
  */
 export const dateOnly: () => string = () =>
-  _p(
+  pgettext(
     'This is how someone would say the day of the month only. As in, "My rent is due on the %s."',
     'the %s',
   );
@@ -33,32 +33,32 @@ export const dateOnly: () => string = () =>
 /**
  * The date format for showing the day of the week and the date, e.g. "Sunday the fifth"
  */
-export const daysOfWeek: () => string[] = () => [
-  _p(
+export const weekdays: () => string[] = () => [
+  pgettext(
     'The day of the week and the date. The date will be substituted in the %s. For example, "Sunday the fifth".',
     'sunday the %s',
   ),
-  _p(
+  pgettext(
     'The day of the week and the date. The date will be substituted in the %s. For example, "Monday the sixth".',
     'monday the %s',
   ),
-  _p(
+  pgettext(
     'The day of the week and the date. The date will be substituted in the %s. For example, "Tuesday the seventh".',
     'tuesday the %s',
   ),
-  _p(
+  pgettext(
     'The day of the week and the date. The date will be substituted in the %s. For example, "Wednesday the eighth".',
     'wednesday the %s',
   ),
-  _p(
+  pgettext(
     'The day of the week and the date. The date will be substituted in the %s. For example, "Thursday the ninth".',
     'thursday the %s',
   ),
-  _p(
+  pgettext(
     'The day of the week and the date. The date will be substituted in the %s. For example, "Friday the tenth".',
     'friday the %s',
   ),
-  _p(
+  pgettext(
     'The day of the week and the date. The date will be substituted in the %s. For example, "Saturday the eleventh".',
     'saturday the %s',
   ),

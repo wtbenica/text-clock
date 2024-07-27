@@ -64,3 +64,11 @@ export const Errors: Record<string, string> = {
   ERROR_UNABLE_TO_FORMAT_DATE_STRING: 'Unable to format date string',
   ERROR_INVALID_TIME_FORMAT: 'Invalid time format',
 };
+
+export const SETTINGS = {
+  SHOW_DATE: 'show-date',
+  FUZZINESS: 'fuzziness',
+  SHOW_MONTH: 'show-month',
+  SHOW_WEEKDAY: 'show-weekday',
+  TIME_FORMAT: 'time-format',
+};

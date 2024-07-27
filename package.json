@@ -18,7 +18,8 @@
     "@girs/gnome-shell": "^46.0.0-beta8"
   },
   "scripts": {
-    "test": "jasmine"
+    "test": "jasmine",
+    "format": "prettier --write \"**/*.ts\""
   },
   "type": "module",
   "devDependencies": {
