@@ -91,18 +91,21 @@ export class WordPack {
 
   /**
    * Returns the the correct times for the given time format
+   *
    * @param {string} timeFormat - The time format.
    */
   getTimes(timeFormat: string): string[] {
-    return timeFormat === TimeFormat.FORMAT_ONE
-      ? this.timesFormatOne
-      : timeFormat === TimeFormat.FORMAT_TWO
-        ? this.timesFormatTwo
-        : (() => {
-            console.error(`${Errors.ERROR_INVALID_TIME_FORMAT} ${timeFormat}`);
-            throw new Error(
-              `${Errors.ERROR_INVALID_TIME_FORMAT} ${timeFormat}`,
-            );
-          })();
+    if (timeFormat === TimeFormat.FORMAT_TWO) {
+      return this.timesFormatTwo;
+    }
+
+    if (timeFormat !== TimeFormat.FORMAT_ONE) {
+      const error: Error = new Error(
+        `${Errors.ERROR_INVALID_TIME_FORMAT} ${timeFormat}`,
+      );
+      logError(error, `${Errors.ERROR_INVALID_TIME_FORMAT} ${timeFormat}`);
+    }
+
+    return this.timesFormatOne;
   }
 }

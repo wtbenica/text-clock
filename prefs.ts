@@ -97,6 +97,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
    * Create a page and add it to the window
    *
    * @param window The window to add the page to
+   *
    * @returns The page
    */
   #createAndAddPageToWindow(window: Adw.PreferencesWindow) {
@@ -111,6 +112,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
    * Create a group and add it to the page
    *
    * @param page The page to add the group to
+   *
    * @returns The group
    */
   #createAndAddGroupToPage(page: Adw.PreferencesPage) {
@@ -128,6 +130,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
    * @param group The preferences group to add the row to
    * @param settingKey The key in the settings schema to bind the combo to
    * @param props The properties of the combo row
+   *
    * @returns The combo row
    */
   #addComboRow(
@@ -142,8 +145,8 @@ export default class TextClockPrefs extends ExtensionPreferences {
       row.connect('notify::selected', (widget: Adw.ComboRow) => {
         settings!.set_enum(settingKey, widget.selected);
       });
-    } catch (error) {
-      console.error(`Error binding settings for ${props.title}:`, error);
+    } catch (error: any) {
+      logError(error, `Error binding settings for ${props.title}:`);
     }
     return row;
   }
@@ -155,6 +158,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
    * @param props The properties of the switch row
    * @param settingKey The key in the settings schema to bind the switch to
    * @param settingBindings The settings to bind to the switch
+   *
    * @returns The switch row
    */
   #addSwitchRow(
@@ -212,11 +216,13 @@ export default class TextClockPrefs extends ExtensionPreferences {
    * Create a combo row for the fuzziness setting and add it to the group
    * @param group The preferences group to add the row to
    * @param settings The settings schema
+   *
+   * @returns The combo row
    */
   #createFuzzinessComboRow(
     group: Adw.PreferencesGroup,
     settings: Gio.Settings,
-  ) {
+  ): Adw.ComboRow {
     const fuzzinessComboInfo = {
       title: _(PrefItems.FUZZINESS.title),
       subtitle: _(PrefItems.FUZZINESS.subtitle),
@@ -224,7 +230,12 @@ export default class TextClockPrefs extends ExtensionPreferences {
       selected: settings!.get_enum(SETTINGS.FUZZINESS),
     };
 
-    this.#addComboRow(group, settings, SETTINGS.FUZZINESS, fuzzinessComboInfo);
+    return this.#addComboRow(
+      group,
+      settings,
+      SETTINGS.FUZZINESS,
+      fuzzinessComboInfo,
+    );
   }
 
   /**
@@ -232,8 +243,13 @@ export default class TextClockPrefs extends ExtensionPreferences {
    *
    * @param group The preferences group to add the row to
    * @param settings The settings schema
+   *
+   * @returns The combo row
    */
-  #addTimeFormatComboRow(group: Adw.PreferencesGroup, settings: Gio.Settings) {
+  #addTimeFormatComboRow(
+    group: Adw.PreferencesGroup,
+    settings: Gio.Settings,
+  ): Adw.ComboRow {
     const timeFormatComboInfo = {
       title: _(PrefItems.TIME_FORMAT.title),
       subtitle: _(PrefItems.TIME_FORMAT.subtitle),
@@ -241,7 +257,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
       selected: settings!.get_enum(SETTINGS.TIME_FORMAT),
     };
 
-    this.#addComboRow(
+    return this.#addComboRow(
       group,
       settings,
       SETTINGS.TIME_FORMAT,
@@ -253,6 +269,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
    * Get a list of the localized time format string templates
    *
    * @param settings The settings schema
+   *
    * @returns A list of the localized time format string templates
    */
   #getTimeFormatsList(settings: Gio.Settings): Gtk.StringList {
@@ -286,17 +303,19 @@ export default class TextClockPrefs extends ExtensionPreferences {
    *
    * @param group The preferences group to add the row to
    * @param settings The settings schema
+   *
+   * @returns The switch row
    */
   #addShowWeekdaySwitchRow(
     group: Adw.PreferencesGroup,
     settings: Gio.Settings,
-  ) {
+  ): Adw.SwitchRow {
     const showWeekdaySwitchInfo = {
       title: _(PrefItems.SHOW_WEEKDAY.title),
       subtitle: _(PrefItems.SHOW_WEEKDAY.subtitle),
       sensitive: settings!.get_boolean(SETTINGS.SHOW_DATE),
     };
-    this.#addSwitchRow(
+    return this.#addSwitchRow(
       group,
       showWeekdaySwitchInfo,
       settings,
@@ -315,12 +334,22 @@ export default class TextClockPrefs extends ExtensionPreferences {
    *
    * @param group The preferences group to add the row to
    * @param settings The settings schema
+   *
+   * @returns The switch row
    */
-  #addShowDateSwitchRow(group: Adw.PreferencesGroup, settings: Gio.Settings) {
+  #addShowDateSwitchRow(
+    group: Adw.PreferencesGroup,
+    settings: Gio.Settings,
+  ): Adw.SwitchRow {
     const showDateSwitchInfo = {
       title: _(PrefItems.SHOW_DATE.title),
       subtitle: _(PrefItems.SHOW_DATE.subtitle),
     };
-    this.#addSwitchRow(group, showDateSwitchInfo, settings, SETTINGS.SHOW_DATE);
+    return this.#addSwitchRow(
+      group,
+      showDateSwitchInfo,
+      settings,
+      SETTINGS.SHOW_DATE,
+    );
   }
 }

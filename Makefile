@@ -79,7 +79,7 @@ locale/: $(MO_FILES)
 	@echo "Preparing locale..."
 	@mkdir -p $(LOCALE_DIR) || { echo "Creating locale directory failed"; exit 1; }
 	@for file in $(MO_FILES); do \
-		lang=$(shell basename $$file .mo); \
+		lang=$$(basename $$file .mo); \
 		mkdir -p $(LOCALE_DIR)/$$lang/LC_MESSAGES || { echo "Creating message directory for $$lang failed"; exit 1; }; \
 		cp $$file $(LOCALE_DIR)/$$lang/LC_MESSAGES/$(NAME)@$(DOMAIN).mo || { echo "Copying $$file failed"; exit 1; }; \
 	done
