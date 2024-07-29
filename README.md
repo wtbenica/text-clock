@@ -29,11 +29,11 @@ This extension is available on [extensions.gnome.org](https://extensions.gnome.o
 
 You'll need a browser extension:
 
-- **Chrome-based browsers:** [Chrome Web Store](https://chrome.google.com/webstore/detail/gnome-shell-integration/gphhapmejobijbbhgpjhcjognlahblep).
+- _Chrome-based browsers:_ [Chrome Web Store](https://chrome.google.com/webstore/detail/gnome-shell-integration/gphhapmejobijbbhgpjhcjognlahblep).
 
-- **Firefox:** [Mozilla Add-ons site](https://addons.mozilla.org/firefox/addon/gnome-shell-integration/).
+- _Firefox:_ [Mozilla Add-ons site](https://addons.mozilla.org/firefox/addon/gnome-shell-integration/).
 
-- **Opera:** [Deactivated](https://gnome.pages.gitlab.gnome.org/gnome-browser-integration/images/opera-conversation.png). Use one of the manual methods below.
+- _Opera:_ [Deactivated](https://gnome.pages.gitlab.gnome.org/gnome-browser-integration/images/opera-conversation.png). Use one of the manual methods below.
 
 And a [native host connector](https://gnome.pages.gitlab.gnome.org/gnome-browser-integration/pages/installation-guide.html).
 
