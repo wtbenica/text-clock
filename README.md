@@ -1,4 +1,4 @@
-## Text Clock GNOME Extension
+## Text Clock GNOME Extension v1.0.2
 
 ![Screenshot of Text Clock](media/screenshot.png 'Screenshot of Text Clock Extension')
 
@@ -21,17 +21,31 @@
 
 #### Installation
 
-This extension is not yet available on [extensions.gnome.org](https://extensions.gnome.org) but can be installed from a ZIP file or installed from source.
+You can install the extension from the GNOME Extensions website or manually from the source code.
+
+#### GNOME Extensions
+
+This extension is available on [extensions.gnome.org](https://extensions.gnome.org/extension/7186/text-clock/) for easy installation.
+
+You'll need a browser extension:
+
+- **Chrome-based browsers:** [Chrome Web Store](https://chrome.google.com/webstore/detail/gnome-shell-integration/gphhapmejobijbbhgpjhcjognlahblep).
+
+- **Firefox:** [Mozilla Add-ons site](https://addons.mozilla.org/firefox/addon/gnome-shell-integration/).
+
+- **Opera:** [Deactivated](https://gnome.pages.gitlab.gnome.org/gnome-browser-integration/images/opera-conversation.png). Use one of the manual methods below.
+
+And a [native host connector](https://gnome.pages.gitlab.gnome.org/gnome-browser-integration/pages/installation-guide.html).
+
+[_Extension Manager_](https://github.com/mjakeman/extension-manager) is also recommended for searching and managing extensions.
 
 #### Installation from ZIP File
 
-For a simpler installation process without the need for compiling, you can directly download the extension as a ZIP file:
+You can directly download the extension as a ZIP file:
 
-1. Download this [ZIP file](https://github.com/wtbenica/text-clock/releases/download/v1.0.1/text-clock@benica.dev.zip) from Github.
+1. Download this [ZIP file](https://github.com/wtbenica/text-clock/releases/download/v1.0.2/text-clock@benica.dev.zip) from Github.
 2. Extract the ZIP file to `~/.local/share/gnome-shell/extensions/`.
 3. Restart GNOME Shell for the changes to take effect. On X11, press Alt+F2, type `r`, and then press Enter. On Wayland, log out and back in.
-
-This method is recommended for users who prefer a quick and easy installation.
 
 #### Installation from Source
 
@@ -51,7 +65,7 @@ To use the Makefile for installation, you will need the following dependencies:
 
 ###### Installation
 
-1. The source files are hosted on GitHub. You can download the source files as a [ZIP file](https://github.com/wtbenica/text-clock/archive/refs/tags/v1.0.0.zip) or clone the repository using Git:
+1. The source files are hosted on GitHub. You can download the source files as a [ZIP file](https://github.com/wtbenica/text-clock/archive/refs/tags/v1.0.2.zip) or clone the repository using Git:
 
    | Method     | Command                                                  |
    | ---------- | -------------------------------------------------------- |
@@ -80,7 +94,7 @@ To use the Makefile for installation, you will need the following dependencies:
 
 ###### GUI Method
 
-To enable the extension, use a GUI tool like _GNOME Extensions_ or _Extensions Manager_, If you don't have one installed, it can be obtained through your distribution's package manager. These tools also provide easy access to the extension's preferences.
+To enable the extension, use a GUI tool like _GNOME Extensions_ or [_Extensions Manager_](https://github.com/mjakeman/extension-manager), If you don't have one installed, it can be obtained through your distribution's package manager. These tools also provide easy access to the extension's preferences.
 
 ###### Command Line
 
