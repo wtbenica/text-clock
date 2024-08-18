@@ -27,6 +27,7 @@ import {
   Extension,
   gettext as _,
 } from 'resource:///org/gnome/shell/extensions/extension.js';
+import { Panel } from 'resource:///org/gnome/shell/ui/panel.js';
 
 import {
   TextClockLabel,
@@ -88,12 +89,17 @@ export default class TextClock extends Extension {
   #topBox?: St.BoxLayout;
   #clockLabel?: ITextClock;
   #translatePack?: WordPack;
+  #panel?: IPanel;
 
   enable() {
+    this.#panel = panel as IPanel;
     this.#initSettings();
     this.#retrieveDateMenu();
+    this.#createClockLabel();
     this.#placeClockLabel();
     this.#bindSettingsToClockLabel();
+
+    this.#settings!.connect('changed', this.#placeClockLabel.bind(this));
   }
 
   disable() {
@@ -121,7 +127,7 @@ export default class TextClock extends Extension {
   // Retrieve the date menu from the status area
   #retrieveDateMenu() {
     try {
-      this.#dateMenu = panel.statusArea.dateMenu as IDateMenuButton;
+      this.#dateMenu = this.#panel!.statusArea.dateMenu as IDateMenuButton;
       const { _clock, _clockDisplay } = this.#dateMenu;
       this.#clock = _clock;
       this.#clockDisplay = _clockDisplay;
@@ -130,8 +136,7 @@ export default class TextClock extends Extension {
     }
   }
 
-  // Place the clock label in the top box
-  #placeClockLabel() {
+  #createClockLabel() {
     this.#translatePack = TRANSLATE_PACK();
 
     try {
@@ -148,18 +153,39 @@ export default class TextClock extends Extension {
         showWeekday: this.#settings!.get_boolean(SETTINGS.SHOW_WEEKDAY),
         timeFormat: this.#settings!.get_string(SETTINGS.TIME_FORMAT),
       });
-      this.#topBox.add_child(this.#clockLabel!);
 
-      // Insert the top box into the last position of the clock display box
-      const clockDisplayBox = this.#findClockDisplayBox();
-      clockDisplayBox.insert_child_at_index(
-        this.#topBox,
-        clockDisplayBox.get_children().length - 1,
-      );
+      this.#topBox.add_child(this.#clockLabel!);
 
       // Remove the style class and hide the original clock display
       this.#clockDisplay!.remove_style_class_name(CLOCK_STYLE_CLASS_NAME);
       this.#clockDisplay!.set_width(0);
+    } catch (error: any) {
+      logError(error, _(Errors.ERROR_PLACING_CLOCK_LABEL));
+    }
+  }
+
+  // Place the clock label in the top box
+  #placeClockLabel() {
+    try {
+      if (this.#topBox!.get_parent()) {
+        this.#topBox!.get_parent()!.remove_child(this.#topBox!);
+      }
+
+      const alignment = this.#settings!.get_string(SETTINGS.ALIGNMENT);
+
+      if (alignment === 'center') {
+        // // Insert the top box into the last position of the clock display box
+        const clockDisplayBox = this.#findClockDisplayBox();
+        clockDisplayBox.insert_child_at_index(
+          this.#topBox!,
+          clockDisplayBox.get_children().length - 1,
+        );
+      } else {
+        const area =
+          alignment === 'left' ? this.#panel!._leftBox : this.#panel!._rightBox;
+
+        area.insert_child_at_index(this.#topBox!, 0);
+      }
     } catch (error: any) {
       logError(error, _(Errors.ERROR_PLACING_CLOCK_LABEL));
     }
@@ -238,4 +264,13 @@ export default class TextClock extends Extension {
 interface IDateMenuButton extends DateMenuButton {
   _clock: GnomeDesktop.WallClock;
   _clockDisplay: St.Label;
+}
+
+/**
+ * Interface to provide type safety for the panel
+ */
+interface IPanel extends Panel {
+  _leftBox: St.BoxLayout;
+  _centerBox: St.BoxLayout;
+  _rightBox: St.BoxLayout;
 }

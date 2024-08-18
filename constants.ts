@@ -46,6 +46,15 @@ export const PrefItems: Record<string, PrefsText> = {
     title: 'Fuzziness',
     subtitle: 'Round the minutes to the nearest multiple of this number',
   },
+  ALIGNMENT: {
+    title: 'Alignment',
+    subtitle:
+      'Place the clock in the left, center, or right section of the top bar',
+  },
+  POSITION: {
+    title: 'Position',
+    subtitle: "Adjust the clock's position within the selected sec",
+  },
 };
 
 /**
@@ -71,4 +80,5 @@ export const SETTINGS = {
   SHOW_MONTH: 'show-month',
   SHOW_WEEKDAY: 'show-weekday',
   TIME_FORMAT: 'time-format',
+  ALIGNMENT: 'alignment',
 };

@@ -30,6 +30,12 @@
     <value value="1" nick="format-two"/>
   </enum>
 
+  <enum id="org.gnome.shell.extensions.text-clock.alignment">
+    <value value="0" nick="left"/>
+    <value value="1" nick="center"/>
+    <value value="2" nick="right"/>
+  </enum>
+
   <schema id='org.gnome.shell.extensions.text-clock' path='/org/gnome/shell/extensions/text-clock/'>
     <key name='show-date' type='b'>
       <default>true</default>
@@ -57,6 +63,13 @@
       <summary>Time format</summary>
       <description>
             The format to use for the time display.
+      </description>
+    </key>
+    <key name="alignment" enum="org.gnome.shell.extensions.text-clock.alignment">
+      <default>"center"</default>
+      <summary>Alignment</summary>
+      <description>
+            The alignment of the clock in the top bar.
       </description>
     </key>
   </schema>

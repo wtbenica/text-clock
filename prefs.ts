@@ -90,7 +90,11 @@ export default class TextClockPrefs extends ExtensionPreferences {
 
     this.#addTimeFormatComboRow(group, settings);
 
-    this.#createFuzzinessComboRow(group, settings);
+    this.#addFuzzinessComboRow(group, settings);
+
+    this.#addAlignmentComboRow(group, settings);
+
+    this.#addPositionActionRow(group, settings);
   }
 
   /**
@@ -185,6 +189,61 @@ export default class TextClockPrefs extends ExtensionPreferences {
   }
 
   /**
+   * Add a spin row to a preferences group
+   *
+   * @param group The preferences group to add the row to
+   * @param settingKey The key in the settings schema to bind the spin to
+   * @param props The properties of the spin row
+   *
+   * @returns The spin row
+   */
+  #addSpinRow(
+    group: Adw.PreferencesGroup,
+    settings: Gio.Settings,
+    settingKey: string,
+    props: Partial<Adw.SpinRow.ConstructorProps>,
+  ): Adw.SpinRow {
+    const row = new Adw.SpinRow(props);
+    group.add(row);
+    try {
+      row.connect('notify::value', (widget: Adw.SpinRow) => {
+        settings!.set_int(settingKey, widget.value);
+      });
+    } catch (error: any) {
+      logError(error, `Error binding settings for ${props.title}:`);
+    }
+    return row;
+  }
+
+  /**
+   * Create a spin row for the position setting and add it to the group
+   * @param group The preferences group to add the row to
+   * @param props The properties of the spin row
+   * @param settings The settings schema
+   * @param settingKey The key in the settings schema to bind the spin to
+   * @returns The spin row
+   */
+  #addActionRow(
+    group: Adw.PreferencesGroup,
+    props: Partial<Adw.ActionRow.ConstructorProps>,
+    settings: Gio.Settings,
+    settingKey: string,
+    suffix: Gtk.Widget | undefined,
+  ): Adw.ActionRow {
+    const row = new Adw.ActionRow(props);
+
+    if (suffix) {
+      row.add_suffix(suffix);
+    }
+
+    this.#bindSettingsToProperty(row, settings, settingKey, 'active');
+
+    group.add(row);
+
+    return row;
+  }
+
+  /**
    * Bind a setting to a property of a widget
    *
    * @param widget The widget to bind the setting to
@@ -219,7 +278,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
    *
    * @returns The combo row
    */
-  #createFuzzinessComboRow(
+  #addFuzzinessComboRow(
     group: Adw.PreferencesGroup,
     settings: Gio.Settings,
   ): Adw.ComboRow {
@@ -276,6 +335,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
     const clockFormatter = new ClockFormatter(TRANSLATE_PACK());
 
     const date = new Date();
+    date.setMinutes(23);
 
     const timeFormatOne = clockFormatter.getClockText(
       date,
@@ -350,6 +410,82 @@ export default class TextClockPrefs extends ExtensionPreferences {
       showDateSwitchInfo,
       settings,
       SETTINGS.SHOW_DATE,
+    );
+  }
+
+  /**
+   * Create a combo row for the alignment setting and add it to the group
+   * @param group The preferences group to add the row to
+   * @param settings The settings schema
+   */
+  #addAlignmentComboRow(
+    group: Adw.PreferencesGroup,
+    settings: Gio.Settings,
+  ): Adw.ComboRow {
+    const alignmentComboInfo = {
+      title: _(PrefItems.ALIGNMENT.title),
+      subtitle: _(PrefItems.ALIGNMENT.subtitle),
+      model: new Gtk.StringList({ strings: ['Left', 'Center', 'Right'] }),
+      selected: settings!.get_enum(SETTINGS.ALIGNMENT),
+    };
+
+    return this.#addComboRow(
+      group,
+      settings,
+      SETTINGS.ALIGNMENT,
+      alignmentComboInfo,
+    );
+  }
+
+  /**
+   * Create an action row for the position setting with left and right arrows
+   * @param group The preferences group to add the row to
+   * @param settings The settings schema
+   */
+  #addPositionActionRow(
+    group: Adw.PreferencesGroup,
+    settings: Gio.Settings,
+  ): Adw.ActionRow {
+    const positionActionInfo = {
+      title: PrefItems.POSITION.title,
+      subtitle: PrefItems.POSITION.subtitle,
+    };
+
+    const leftButton = new Gtk.Button({
+      label: '←',
+      margin_top: 6,
+      margin_bottom: 6,
+    });
+    const rightButton = new Gtk.Button({
+      label: '→',
+      margin_top: 6,
+      margin_bottom: 6,
+    });
+
+    leftButton.connect('clicked', () => {
+      let currentValue = settings.get_int(SETTINGS.ALIGNMENT);
+      settings.set_int(SETTINGS.ALIGNMENT, Math.max(currentValue - 1, 0));
+    });
+
+    rightButton.connect('clicked', () => {
+      let currentValue = settings.get_int(SETTINGS.ALIGNMENT);
+      settings.set_int(SETTINGS.ALIGNMENT, Math.min(currentValue + 1, 100));
+    });
+
+    const buttonBox = new Gtk.Box({
+      spacing: 6,
+      margin_bottom: 6,
+      margin_top: 6,
+    });
+    buttonBox.append(leftButton);
+    buttonBox.append(rightButton);
+
+    return this.#addActionRow(
+      group,
+      positionActionInfo,
+      settings,
+      SETTINGS.ALIGNMENT,
+      buttonBox,
     );
   }
 }
