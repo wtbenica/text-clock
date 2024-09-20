@@ -1,4 +1,4 @@
-## Text Clock GNOME Extension v1.0.2
+## Text Clock GNOME Extension v1.0.3
 
 ![Screenshot of Text Clock](media/screenshot.png 'Screenshot of Text Clock Extension')
 
