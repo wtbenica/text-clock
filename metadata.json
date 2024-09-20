@@ -2,9 +2,9 @@
   "name": "Text Clock",
   "description": "A simple text clock for the GNOME Shell",
   "uuid": "text-clock@benica.dev",
-  "shell-version": ["45", "46"],
+  "shell-version": ["45", "46", "47"],
   "url": "https://github.com/wtbenica/text-clock",
-  "version-name": "1.0.2",
+  "version-name": "1.0.3",
   "settings-schema": "org.gnome.shell.extensions.text-clock",
   "gettext-domain": "text-clock@benica.dev",
   "donations": {
