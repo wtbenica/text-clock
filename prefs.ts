@@ -77,7 +77,7 @@ type SettingBinding = {
  * Preferences Window for the Text Clock extension
  */
 export default class TextClockPrefs extends ExtensionPreferences {
-  fillPreferencesWindow(window: Adw.PreferencesWindow) {
+  async fillPreferencesWindow(window: Adw.PreferencesWindow): Promise<void> {
     const settings = this.getSettings();
 
     const page = this.#createAndAddPageToWindow(window);
@@ -91,6 +91,8 @@ export default class TextClockPrefs extends ExtensionPreferences {
     this.#addTimeFormatComboRow(group, settings);
 
     this.#createFuzzinessComboRow(group, settings);
+
+    return Promise.resolve();
   }
 
   /**

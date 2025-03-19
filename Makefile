@@ -94,11 +94,10 @@ po/text-clock@benica.dev.pot: dist/constants_dates_extension.js dist/constants_t
 # Patch and Prepare Section
 ################################
 
-# Patch TypeScript definition files - remove .js extension from import paths
+# Patch TypeScript definition files - add .js extension to relative import paths
 patch-dts-files:
 	@echo "Patching TypeScript definition files..."
-	perl -pi -e 's/from \x27\.(.*?)(?<!\.js)\x27;/from \x27.\1.js\x27;/g' node_modules/@girs/gnome-shell/dist/ui/workspace.d.ts || { echo "Patching workspace.d.ts failed"; exit 1; }
-	perl -pi -e 's/from \x27\.(.*?)(?<!\.js)\x27;/from \x27.\1.js\x27;/g' node_modules/@girs/gnome-shell/dist/ui/workspacesView.d.ts || { echo "Patching workspacesView.d.ts failed"; exit 1; }
+	find node_modules/@girs/gnome-shell/dist/ui -name "*.d.ts" -print0 | xargs -0 perl -pi -e 's/from \x27\.(.*?)(?<!\.js)\x27;/from \x27.\1.js\x27;/g' || { echo "Patching d.ts files failed"; exit 1; }
 
 # Copy and modify the Times constants file to use with preferences
 constants_times_prefs.ts: constants_times_extension.ts

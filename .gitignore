@@ -11,3 +11,5 @@ package-lock.json
 /.nycrc
 .prettierrc
 *_old.*
+prefs.ts
+constants_*_test.ts
