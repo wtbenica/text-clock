@@ -13,3 +13,4 @@ package-lock.json
 *_old.*
 prefs.ts
 constants_*_test.ts
+yarn.lock

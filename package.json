@@ -1,10 +1,10 @@
 {
   "name": "text-clock",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "private": "true",
   "repository": {
     "type": "git",
-    "url": "git+https://gihub.com/wtbenica/text-clock.git"
+    "url": "git+https://github.com/wtbenica/text-clock.git"
   },
   "author": "Wesley Benica <wesley@benica.dev>",
   "license": "LGPL-3.0-or-later",
@@ -14,7 +14,7 @@
   "homepage": "https://github.com/wtbenica/text-clock#readme",
   "sideEffects": false,
   "dependencies": {
-    "@girs/gnome-shell": "^48.0.0-next.2"
+    "@girs/gnome-shell": "48.0.4"
   },
   "scripts": {
     "test": "jasmine",
@@ -22,10 +22,10 @@
   },
   "type": "module",
   "devDependencies": {
-    "eslint": "^9.6.0",
-    "eslint-plugin-jsdoc": "^48.5.2",
-    "jasmine": "^5.1.0",
-    "prettier": "^3.3.3",
-    "typescript": "^5.5.3"
+    "eslint": "9.35.0",
+    "eslint-plugin-jsdoc": "^55.3.0",
+    "jasmine": "5.10.0",
+    "prettier": "3.6.2",
+    "typescript": "5.9.2"
   }
 }
