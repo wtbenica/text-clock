@@ -15,6 +15,9 @@ coverage/
 *.js
 *.js.map
 
+# Exception: Keep ESLint config
+!eslint.config.js
+
 # Generated test files (if you switch to generated names)
 constants_*_test.generated.ts
 
