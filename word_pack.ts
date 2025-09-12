@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TimeFormat } from './clock_formatter.js';
-import { Errors } from './constants.js';
+import { TimeFormat } from "./clock_formatter.js";
+import { Errors } from "./constants/index.js";
 
 /**
  * A class to store the words used to format a time and date as a string.

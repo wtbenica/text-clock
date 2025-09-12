@@ -21,15 +21,16 @@
     "build:dist": "tsc -p . && mkdir -p dist && cp -r media metadata.json schemas locale dist/ && cp -r ui dist/ || true",
     "test": "jasmine",
     "format": "prettier --write \"**/*.ts\"",
-    "lint": "eslint '**/*.ts' || true",
+    "lint": "eslint \"**/*.ts\"",
     "clean": "rm -rf node_modules dist *.zip yarn.lock package-lock.json",
     "install:ext": "make install",
     "pack": "make pack"
   },
   "type": "module",
   "devDependencies": {
-    "eslint": "9.35.0",
-    "eslint-plugin-jsdoc": "56.1.2",
+    "@typescript-eslint/eslint-plugin": "^8.43.0",
+    "@typescript-eslint/parser": "^8.43.0",
+    "eslint": "^9.35.0",
     "jasmine": "5.10.0",
     "prettier": "3.6.2",
     "typescript": "5.9.2"

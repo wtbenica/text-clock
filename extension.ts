@@ -15,26 +15,26 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Clutter from 'gi://Clutter';
-import Gio from 'gi://Gio';
-import GObject from 'gi://GObject';
-import St from 'gi://St';
-import GnomeDesktop from 'gi://GnomeDesktop';
+import Clutter from "gi://Clutter";
+import Gio from "gi://Gio";
+import GObject from "gi://GObject";
+import St from "gi://St";
+import GnomeDesktop from "gi://GnomeDesktop";
 
-import { DateMenuButton } from 'resource:///org/gnome/shell/ui/dateMenu.js';
-import { panel } from 'resource:///org/gnome/shell/ui/main.js';
+import { DateMenuButton } from "resource:///org/gnome/shell/ui/dateMenu.js";
+import { panel } from "resource:///org/gnome/shell/ui/main.js";
 import {
   Extension,
   gettext as _,
-} from 'resource:///org/gnome/shell/extensions/extension.js';
+} from "resource:///org/gnome/shell/extensions/extension.js";
 
 import {
   TextClockLabel,
   CLOCK_LABEL_PROPERTIES,
   ITextClock,
-} from './ui/clock_label.js';
-import { WordPack } from './word_pack.js';
-import { SETTINGS, Errors } from './constants.js';
+} from "./ui/clock_label.js";
+import { WordPack } from "./word_pack.js";
+import { SETTINGS, Errors } from "./constants/index.js";
 import {
   timesFormatOne,
   midnightFormatOne,
@@ -45,14 +45,14 @@ import {
   hourNames,
   midnight,
   noon,
-} from './constants_times_extension.js';
+} from "./constants/times/extension.js";
 import {
   weekdays,
   dateOnly,
   daysOfMonth,
-} from './constants_dates_extension.js';
+} from "./constants/dates/extension.js";
 
-const CLOCK_STYLE_CLASS_NAME = 'clock';
+const CLOCK_STYLE_CLASS_NAME = "clock";
 
 /**
  * @returns a word pack that contains the strings for telling the time and date
@@ -193,7 +193,7 @@ export default class TextClock extends Extension {
         Gio.SettingsBindFlags.DEFAULT,
       );
       this.#clock!.bind_property(
-        'clock',
+        "clock",
         this.#clockLabel!,
         CLOCK_LABEL_PROPERTIES.CLOCK_UPDATE,
         GObject.BindingFlags.DEFAULT,
@@ -221,7 +221,7 @@ export default class TextClock extends Extension {
     const box: St.BoxLayout | undefined = this.#dateMenu!.get_children().find(
       (child: Clutter.Actor) =>
         child instanceof St.BoxLayout &&
-        child.has_style_class_name('clock-display-box'),
+        child.has_style_class_name("clock-display-box"),
     ) as St.BoxLayout | undefined;
 
     if (!box) {

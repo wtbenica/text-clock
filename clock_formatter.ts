@@ -15,16 +15,16 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { WordPack } from './word_pack.js';
-import { Errors } from './constants.js';
+import { WordPack } from "./word_pack.js";
+import { Errors } from "./constants/index.js";
 
 /**
  * The time format options for the Text Clock extension
  * @enum {string}
  */
 export const TimeFormat = {
-  FORMAT_ONE: 'format-one',
-  FORMAT_TWO: 'format-two',
+  FORMAT_ONE: "format-one",
+  FORMAT_TWO: "format-two",
 };
 
 /**
@@ -69,7 +69,7 @@ export class ClockFormatter {
     const time = this.#getTimeString(hourName, minuteBucket, timeFormat);
     const displayDate = showDate
       ? ` | ${this.#getDisplayedDate(date, minuteBucket, showWeekday)}`
-      : '';
+      : "";
 
     return time + displayDate;
   }
@@ -190,7 +190,7 @@ export class ClockFormatter {
       return template.format(arg);
     } catch (error) {
       try {
-        return template.replace('%s', arg);
+        return template.replace("%s", arg);
       } catch (error2: any) {
         logError(error2, Errors.ERROR_UNABLE_TO_FORMAT_DATE_STRING);
       }

@@ -24,7 +24,7 @@ import {
   gettext as _,
 } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
-import { SETTINGS, PrefItems, Errors } from './constants.js';
+import { SETTINGS, PrefItems, Errors } from './constants/index.js';
 import { ClockFormatter, TimeFormat } from './clock_formatter.js';
 import { WordPack } from './word_pack.js';
 import {
@@ -37,8 +37,8 @@ import {
   hourNames,
   midnight,
   noon,
-} from './constants_times_prefs.js';
-import { weekdays, dateOnly, daysOfMonth } from './constants_dates_prefs.js';
+} from './constants/times/prefs.js';
+import { weekdays, dateOnly, daysOfMonth } from './constants/dates/prefs.js';
 
 /**
  * @returns a word pack that contains the strings for telling the time and date

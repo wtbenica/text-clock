@@ -85,7 +85,7 @@ locale/: $(MO_FILES)
 	done
 
 # Generate a new POT file
-po/text-clock@benica.dev.pot: dist/constants_dates_extension.js dist/constants_times_extension.js
+po/text-clock@benica.dev.pot: dist/constants/dates/extension.js dist/constants/times/extension.js
 	@echo "Generating a new POT file..."
 	yarn tsc -p tsconfig.pot.json || { echo "TypeScript compilation failed"; exit 1; }
 	xgettext --from-code=UTF-8 --keyword=_ --output=po/text-clock@benica.dev.pot dist/constants_*_extension.js || { echo "Generating POT file failed"; exit 1; }
@@ -100,13 +100,13 @@ patch-dts-files:
 	find node_modules/@girs/gnome-shell/dist/ui -name "*.d.ts" -print0 | xargs -0 perl -pi -e 's/from \x27\.(.*?)(?<!\.js)\x27;/from \x27.\1.js\x27;/g' || { echo "Patching d.ts files failed"; exit 1; }
 
 # Copy and modify the Times constants file to use with preferences
-constants_times_prefs.ts: constants_times_extension.ts
-	$(call copy_and_modify,constants_times_extension.ts,constants_times_prefs.ts,\
+constants/times/prefs.ts: constants/times/extension.ts
+	$(call copy_and_modify,constants/times/extension.ts,constants/times/prefs.ts,\
 		's|resource:///org/gnome/shell/extensions/extension.js|resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js|g')
 
 # Copy and modify the dates constants file to use with preferences
-constants_dates_prefs.ts: constants_dates_extension.ts
-	$(call copy_and_modify,constants_dates_extension.ts,constants_dates_prefs.ts,\
+constants/dates/prefs.ts: constants/dates/extension.ts
+	$(call copy_and_modify,constants/dates/extension.ts,constants/dates/prefs.ts,\
 		's|resource:///org/gnome/shell/extensions/extension.js|resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js|g')
 
 ################################
@@ -114,7 +114,7 @@ constants_dates_prefs.ts: constants_dates_extension.ts
 ################################
 
 # Run tests
-test: node_modules/ constants_dates_test.ts constants_times_test.ts
+test: node_modules/ constants/dates/test.ts constants/times/test.ts
 	@echo "Running tests..."
 	yarn tsc -p tsconfig.test.json || { echo "TypeScript compilation failed"; exit 1; }
 	yarn test
@@ -122,23 +122,23 @@ test: node_modules/ constants_dates_test.ts constants_times_test.ts
 	rm -rf dist || { echo "Removing dist directory failed"; exit 1; }
 
 # Copy and modify the dates constants file for testing
-constants_dates_test.ts: constants_dates_extension.ts
+constants/dates/test.ts: constants/dates/extension.ts
 	set -e; \
-	cp constants_dates_extension.ts constants_dates_test.ts; \
-	sed -i '/^import /,+4d' constants_dates_test.ts; \
-	sed -i '/pgettext(/,+1d' constants_dates_test.ts; \
-	sed -i '/^[TAB ]*),/d' constants_dates_test.ts; \
-	ed -i '{N; s/,\s\+)\;/\;/;}' constants_dates_test.ts; \
-	sed -i "s/_('\([^']*\)')/'\1'/g" constants_dates_test.ts; \
+	cp constants/dates/extension.ts constants/dates/test.ts; \
+	sed -i '/^import /,+4d' constants/dates/test.ts; \
+	sed -i '/pgettext(/,+1d' constants/dates/test.ts; \
+	sed -i '/^[TAB ]*),/d' constants/dates/test.ts; \
+	ed -i '{N; s/,\s\+)\;/\;/;}' constants/dates/test.ts; \
+	sed -i "s/_('\([^']*\)')/'\1'/g" constants/dates/test.ts; \
 	yarn format > /dev/null 2>&1
 
 # Copy and modify the times constants file for testing
-constants_times_test.ts: constants_times_extension.ts
+constants/times/test.ts: constants/times/extension.ts
 	set -e; \
-	cp constants_times_extension.ts constants_times_test.ts; \
-	sed -i '/^import /,+4d' constants_times_test.ts; \
-	sed -i "s/pgettext('[^']*',\s*\('[^']*'\))/\1/g" constants_times_test.ts; \
-	sed -i "s/pgettext('[^']*',\s*\(\"%s o'clock\"\))/\1/g" constants_times_test.ts; \
+	cp constants/times/extension.ts constants/times/test.ts; \
+	sed -i '/^import /,+4d' constants/times/test.ts; \
+	sed -i "s/pgettext('[^']*',\s*\('[^']*'\))/\1/g" constants/times/test.ts; \
+	sed -i "s/pgettext('[^']*',\s*\(\"%s o'clock\"\))/\1/g" constants/times/test.ts; \
 	yarn format > /dev/null 2>&1
 
 ################################

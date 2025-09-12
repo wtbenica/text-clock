@@ -116,6 +116,8 @@ gnome-extensions prefs text-clock@benica.dev
 
 Contributions, including bug reports and feature suggestions, are welcome. Please use the issue tracker or submit a pull request.
 
+Note: constants have been moved into `constants/` with `dates/` and `times/` subfolders. Runtime variants that are used by the extension and prefs live under those folders as `extension.ts` and `prefs.ts` respectively.
+
 ---
 
 ### License
