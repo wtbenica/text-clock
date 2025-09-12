@@ -14,3 +14,4 @@ package-lock.json
 prefs.ts
 constants_*_test.ts
 yarn.lock
+gschemas.compiled

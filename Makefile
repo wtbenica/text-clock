@@ -158,3 +158,6 @@ clean:
 	rm -f schemas/gschemas.compiled || { echo "Removing compiled GSettings schemas failed"; exit 1; }
 	@echo "Removing node modules..."
 	rm -rf node_modules/ || { echo "Removing node_modules directory failed"; exit 1; }
+	@echo "Removing yarn.lock file..."
+	rm -f yarn.lock || { echo "Removing yarn.lock file failed"; exit 1; }
+	@echo "Cleaning up complete."
