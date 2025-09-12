@@ -1,0 +1,19 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "types": [
+            "jasmine"
+        ],
+        "skipLibCheck": true,
+        "allowJs": true,
+        "allowImportingTsExtensions": true,
+        "noEmit": true
+    },
+    "files": [
+        "../clock_formatter.ts",
+        "../word_pack.ts",
+        "../constants/index.ts",
+        "../constants/dates/core.ts",
+        "../constants/times/core.ts",
+    ]
+}

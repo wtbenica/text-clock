@@ -1,7 +1,0 @@
-{
-    "extends": "./tsconfig.json",
-    "files": [
-        "constants_dates_test.ts",
-        "constants_times_test.ts",
-    ]
-}

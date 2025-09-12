@@ -15,20 +15,26 @@
   "homepage": "https://github.com/wtbenica/text-clock#readme",
   "sideEffects": false,
   "dependencies": {
-    "@girs/gnome-shell": "48.0.4"
+    "@girs/gnome-shell": "48.0.4",
+    "ts-node": "^10.9.2"
   },
   "scripts": {
-    "build": "tsc -p .",
-    "build:dist": "tsc -p . && mkdir -p dist && cp -r media metadata.json schemas locale dist/ && cp -r ui dist/ || true",
+    "build": "tsc -p config/tsconfig.json",
+    "build:dist": "tsc -p config/tsconfig.json && mkdir -p dist && cp -r media metadata.json schemas locale dist/ && cp -r ui dist/ || true",
+    "dev": "tsc -p config/tsconfig.json --watch",
     "test": "jasmine",
+    "test:watch": "jasmine --watch",
     "format": "prettier --write \"**/*.ts\"",
-    "lint": "eslint \"**/*.ts\"",
+    "lint": "eslint -c config/eslint.config.js \"**/*.ts\"",
+    "lint:fix": "eslint -c config/eslint.config.js \"**/*.ts\" --fix",
+    "validate": "yarn lint && yarn test && yarn build",
     "clean": "rm -rf node_modules dist *.zip yarn.lock package-lock.json",
     "install:ext": "make install",
     "pack": "make pack"
   },
   "type": "module",
   "devDependencies": {
+    "@types/jasmine": "^5.1.9",
     "@typescript-eslint/eslint-plugin": "^8.43.0",
     "@typescript-eslint/parser": "^8.43.0",
     "eslint": "^9.35.0",

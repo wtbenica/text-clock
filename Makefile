@@ -61,7 +61,7 @@ create_ext_dir:
 # Compile TypeScript files into JavaScript
 $(DIST_DIR)/extension.js: $(TS_FILES)
 	@echo "Compiling TypeScript files..."
-	yarn tsc || { echo "TypeScript compilation failed"; exit 1; }
+	yarn tsc -p config/tsconfig.json || { echo "TypeScript compilation failed"; exit 1; }
 
 # Ensure node modules are installed based on package.json before proceeding
 node_modules/: package.json
@@ -87,7 +87,7 @@ locale/: $(MO_FILES)
 # Generate a new POT file
 po/text-clock@benica.dev.pot: dist/constants/dates/extension.js dist/constants/times/extension.js
 	@echo "Generating a new POT file..."
-	yarn tsc -p tsconfig.pot.json || { echo "TypeScript compilation failed"; exit 1; }
+	yarn tsc -p config/tsconfig.pot.json || { echo "TypeScript compilation failed"; exit 1; }
 	xgettext --from-code=UTF-8 --keyword=_ --output=po/text-clock@benica.dev.pot dist/constants_*_extension.js || { echo "Generating POT file failed"; exit 1; }
 
 ################################
@@ -113,33 +113,12 @@ constants/dates/prefs.ts: constants/dates/extension.ts
 # Testing Section
 ################################
 
-# Run tests
-test: node_modules/ constants/dates/test.ts constants/times/test.ts
+
+# Run tests (simplified)
+test: node_modules/
 	@echo "Running tests..."
-	yarn tsc -p tsconfig.test.json || { echo "TypeScript compilation failed"; exit 1; }
+	yarn tsc -p config/tsconfig.test.json || { echo "TypeScript compilation failed"; exit 1; }
 	yarn test
-	rm constants_dates_test.ts constants_times_test.ts || { echo "Removing test files failed"; exit 1; }
-	rm -rf dist || { echo "Removing dist directory failed"; exit 1; }
-
-# Copy and modify the dates constants file for testing
-constants/dates/test.ts: constants/dates/extension.ts
-	set -e; \
-	cp constants/dates/extension.ts constants/dates/test.ts; \
-	sed -i '/^import /,+4d' constants/dates/test.ts; \
-	sed -i '/pgettext(/,+1d' constants/dates/test.ts; \
-	sed -i '/^[TAB ]*),/d' constants/dates/test.ts; \
-	ed -i '{N; s/,\s\+)\;/\;/;}' constants/dates/test.ts; \
-	sed -i "s/_('\([^']*\)')/'\1'/g" constants/dates/test.ts; \
-	yarn format > /dev/null 2>&1
-
-# Copy and modify the times constants file for testing
-constants/times/test.ts: constants/times/extension.ts
-	set -e; \
-	cp constants/times/extension.ts constants/times/test.ts; \
-	sed -i '/^import /,+4d' constants/times/test.ts; \
-	sed -i "s/pgettext('[^']*',\s*\('[^']*'\))/\1/g" constants/times/test.ts; \
-	sed -i "s/pgettext('[^']*',\s*\(\"%s o'clock\"\))/\1/g" constants/times/test.ts; \
-	yarn format > /dev/null 2>&1
 
 ################################
 # Clean 
