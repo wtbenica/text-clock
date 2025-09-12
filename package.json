@@ -1,6 +1,7 @@
 {
   "name": "text-clock",
-  "version": "1.0.5",
+  "version": "1.0.6",
+  "description": "A simple text clock for the GNOME Shell",
   "private": "true",
   "repository": {
     "type": "git",

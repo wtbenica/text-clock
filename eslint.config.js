@@ -26,18 +26,18 @@ export default [
     rules: {
       // Recommended ESLint rules
       ...js.configs.recommended.rules,
-      
+
       // Basic TypeScript rules
       '@typescript-eslint/no-unused-vars': 'warn',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/explicit-function-return-type': 'off',
-      
+
       // Allow console for development
       'no-console': 'off',
-      
+
       // Turn off unused vars for function parameters (common in type definitions)
       'no-unused-vars': 'off',
-      
+
       // Disable some rules that conflict with prettier
       'no-extra-semi': 'off',
     },
