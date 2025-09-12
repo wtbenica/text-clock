@@ -17,8 +17,14 @@
     "@girs/gnome-shell": "48.0.4"
   },
   "scripts": {
+    "build": "tsc -p .",
+    "build:dist": "tsc -p . && mkdir -p dist && cp -r media metadata.json schemas locale dist/ && cp -r ui dist/ || true",
     "test": "jasmine",
-    "format": "prettier --write \"**/*.ts\""
+    "format": "prettier --write \"**/*.ts\"",
+    "lint": "eslint '**/*.ts' || true",
+    "clean": "rm -rf node_modules dist *.zip yarn.lock package-lock.json",
+    "install:ext": "make install",
+    "pack": "make pack"
   },
   "type": "module",
   "devDependencies": {

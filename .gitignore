@@ -1,3 +1,25 @@
+node_modules/
+dist/
+*.zip
+*.tgz
+/.vscode/
+.DS_Store
+.cache/
+coverage/
+/*.log
+# Editor and OS files
+*.swp
+*~
+
+# TypeScript outputs
+*.js
+*.js.map
+
+# Generated test files (if you switch to generated names)
+constants_*_test.generated.ts
+
+# Ignore local credential files
+.env
 /.idea/
 /node_modules/
 *.zip

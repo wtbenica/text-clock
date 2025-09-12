@@ -61,12 +61,12 @@ create_ext_dir:
 # Compile TypeScript files into JavaScript
 $(DIST_DIR)/extension.js: $(TS_FILES)
 	@echo "Compiling TypeScript files..."
-	npx tsc || { echo "TypeScript compilation failed"; exit 1; }
+	yarn tsc || { echo "TypeScript compilation failed"; exit 1; }
 
 # Ensure node modules are installed based on package.json before proceeding
 node_modules/: package.json
 	@echo "Installing node modules..."
-	npm install || { echo "npm install failed"; exit 1; }
+	yarn install --frozen-lockfile || { echo "yarn install failed"; exit 1; }
 	@$(MAKE) patch-dts-files
 
 # Compile GSettings schemas
@@ -87,7 +87,7 @@ locale/: $(MO_FILES)
 # Generate a new POT file
 po/text-clock@benica.dev.pot: dist/constants_dates_extension.js dist/constants_times_extension.js
 	@echo "Generating a new POT file..."
-	npx tsc -p tsconfig.pot.json || { echo "TypeScript compilation failed"; exit 1; }
+	yarn tsc -p tsconfig.pot.json || { echo "TypeScript compilation failed"; exit 1; }
 	xgettext --from-code=UTF-8 --keyword=_ --output=po/text-clock@benica.dev.pot dist/constants_*_extension.js || { echo "Generating POT file failed"; exit 1; }
 
 ################################
@@ -116,8 +116,8 @@ constants_dates_prefs.ts: constants_dates_extension.ts
 # Run tests
 test: node_modules/ constants_dates_test.ts constants_times_test.ts
 	@echo "Running tests..."
-	npx tsc -p tsconfig.test.json || { echo "TypeScript compilation failed"; exit 1; }
-	npm test
+	yarn tsc -p tsconfig.test.json || { echo "TypeScript compilation failed"; exit 1; }
+	yarn test
 	rm constants_dates_test.ts constants_times_test.ts || { echo "Removing test files failed"; exit 1; }
 	rm -rf dist || { echo "Removing dist directory failed"; exit 1; }
 
@@ -130,7 +130,7 @@ constants_dates_test.ts: constants_dates_extension.ts
 	sed -i '/^[TAB ]*),/d' constants_dates_test.ts; \
 	ed -i '{N; s/,\s\+)\;/\;/;}' constants_dates_test.ts; \
 	sed -i "s/_('\([^']*\)')/'\1'/g" constants_dates_test.ts; \
-	npm run format > /dev/null 2>&1
+	yarn format > /dev/null 2>&1
 
 # Copy and modify the times constants file for testing
 constants_times_test.ts: constants_times_extension.ts
@@ -139,7 +139,7 @@ constants_times_test.ts: constants_times_extension.ts
 	sed -i '/^import /,+4d' constants_times_test.ts; \
 	sed -i "s/pgettext('[^']*',\s*\('[^']*'\))/\1/g" constants_times_test.ts; \
 	sed -i "s/pgettext('[^']*',\s*\(\"%s o'clock\"\))/\1/g" constants_times_test.ts; \
-	npm run format > /dev/null 2>&1
+	yarn format > /dev/null 2>&1
 
 ################################
 # Clean 

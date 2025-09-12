@@ -53,7 +53,7 @@ You can directly download the extension as a ZIP file:
 
 To use the Makefile for installation, you will need the following dependencies:
 
-- `npm`
+- `node` (includes `npm`) or install `yarn` as an alternative package manager
 - `perl`
 - `make`
 
@@ -130,31 +130,43 @@ Below are instructions for installing the required dependencies. These instructi
 
 ###### Debian/Ubuntu
 
+Install Node.js (which provides npm) and other tools. Optionally install Yarn if you prefer it as the package manager.
+
 ```bash
 sudo apt update
-sudo apt install npm perl make
+# Install Node.js + npm
+sudo apt install nodejs npm perl make
+# Optional: install yarn (recommended for reproducible installs)
+# npm install --global yarn
 ```
 
 ###### Fedora
 
 ```bash
 sudo dnf check-update
-sudo dnf install npm perl make
+# Install Node.js + npm
+sudo dnf install nodejs npm perl make
+# Optional: install yarn
+# npm install --global yarn
 ```
 
 ###### Arch Linux
 
 ```bash
-sudo pacman -Syu npm perl make
+sudo pacman -Syu nodejs npm perl make
+# Optional: install yarn
+# npm install --global yarn
 ```
 
 ###### openSUSE
 
 ```bash
 sudo zypper refresh
-sudo zypper install --no-recommends npm perl make
+sudo zypper install --no-recommends nodejs npm perl make
+# Optional: install yarn
+# npm install --global yarn
 ```
 
 ###### Other Distributions
 
-For other Linux distributions, please use your package manager to install `npm`, `perl`, and `make`. If you encounter any issues, feel free to open an issue for assistance.
+For other Linux distributions, please use your package manager to install Node.js (npm), `perl`, and `make`. If you prefer Yarn, install it instead of using npm. If you encounter any issues, feel free to open an issue for assistance.
