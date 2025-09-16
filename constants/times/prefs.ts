@@ -1,20 +1,15 @@
-import {
-    gettext as _,
-    ngettext,
-    pgettext,
-} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
+import { prefsGettext } from "../../utils/gettext-utils.js";
+import { createTimeConstants } from "../times/core.js";
 
-import { createTimeConstants } from '../times/core.js';
-
-const fns = { _: _, ngettext: ngettext as any, pgettext };
+const fns = prefsGettext;
 export const {
-    timesFormatOne,
-    midnightFormatOne,
-    noonFormatOne,
-    timesFormatTwo,
-    midnightFormatTwo,
-    noonFormatTwo,
-    hourNames,
-    midnight,
-    noon,
+  timesFormatOne,
+  midnightFormatOne,
+  noonFormatOne,
+  timesFormatTwo,
+  midnightFormatTwo,
+  noonFormatTwo,
+  hourNames,
+  midnight,
+  noon,
 } = createTimeConstants(fns);

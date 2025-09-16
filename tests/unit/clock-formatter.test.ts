@@ -159,17 +159,18 @@ describe('ClockFormatter', () => {
   });
 
   describe('edge cases', () => {
-    it('should handle invalid time gracefully', () => {
+    it('should throw error for invalid date', () => {
       const date = new Date('invalid');
       expect(() => {
         formatter.getClockText(date, false, false, TimeFormat.FORMAT_ONE, 5);
-      }).not.toThrow();
+      }).toThrow('ClockFormatter.getClockText: Invalid date provided');
     });
 
-    it('should handle zero fuzziness', () => {
+    it('should throw error for zero fuzziness', () => {
       const date = new Date('2024-01-01T15:17:00');
-      const result = formatter.getClockText(date, false, false, TimeFormat.FORMAT_ONE, 0);
-      expect(result).toBeDefined();
+      expect(() => {
+        formatter.getClockText(date, false, false, TimeFormat.FORMAT_ONE, 0);
+      }).toThrow('Fuzziness must be a positive number');
     });
 
     it('should handle large fuzziness values', () => {

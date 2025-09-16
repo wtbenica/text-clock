@@ -1,9 +1,5 @@
-import {
-  gettext as _,
-  ngettext,
-  pgettext,
-} from "resource:///org/gnome/shell/extensions/extension.js";
+import { extensionGettext } from "../../utils/gettext-utils.js";
 import { createDateConstants } from "../dates/core.js";
 
-const fns = { _: _, ngettext: ngettext as any, pgettext };
+const fns = extensionGettext;
 export const { dateOnly, weekdays, daysOfMonth } = createDateConstants(fns);

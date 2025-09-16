@@ -17,6 +17,7 @@
 
 import { WordPack } from "./word_pack.js";
 import { Errors } from "./constants/index.js";
+import { validateDate, logExtensionError } from "./utils/error-utils.js";
 
 /**
  * The time format options for the Text Clock extension
@@ -36,6 +37,7 @@ export enum TimeFormat {
  */
 export class ClockFormatter {
   wordPack: WordPack;
+  #cachedHourNames: Map<string, string> = new Map();
 
   constructor(wordPack: WordPack) {
     this.wordPack = wordPack;
@@ -48,7 +50,8 @@ export class ClockFormatter {
    * @param {Date} date - The current date and time.
    * @param {boolean} showDate - Flag to indicate if the date should be included in the output.
    * @param {boolean} showWeekday - Flag to indicate if the weekday should be included in the output.
-   * @param {string} timeFormat - The format of the time string. "format-one" or "hours-and-minute".
+   * @param {TimeFormat} timeFormat - The format of the time string.
+   * @param {number} fuzziness - The number of minutes to round to (default 5)
    * @returns {string} The formatted time/date string.
    */
   getClockText(
@@ -58,6 +61,12 @@ export class ClockFormatter {
     timeFormat: TimeFormat,
     fuzziness: number,
   ): string {
+    // Validate inputs
+    validateDate(date, "ClockFormatter.getClockText");
+    if (fuzziness <= 0) {
+      throw new Error("Fuzziness must be a positive number");
+    }
+
     const minutes = date.getMinutes();
     const hours = date.getHours();
     const minuteBucket = Math.round(minutes / fuzziness) * fuzziness;
@@ -79,33 +88,46 @@ export class ClockFormatter {
    *
    * @param {number} hour - The hour of the day (0-23).
    * @param {number} minuteBucket - The minute bucket (0-60).
-   * @param {string} timeFormat - The format of the time string. "format-one" or "hours-and-minute".
+   * @param {TimeFormat} timeFormat - The format of the time string.
    * @returns {string} The name of the hour for display.
    */
-  #getHourName(hour: number, minuteBucket: number, timeFormat: string): string {
+  #getHourName(hour: number, minuteBucket: number, timeFormat: TimeFormat): string {
+    // Create cache key
+    const cacheKey = `${hour}-${minuteBucket}-${timeFormat}`;
+    
+    // Check cache first
+    if (this.#cachedHourNames.has(cacheKey)) {
+      return this.#cachedHourNames.get(cacheKey)!;
+    }
+
     const isTopOfTheHour = this.#isTopOfTheHour(minuteBucket);
     const isMidnight = hour === 0;
     const isNoon = hour === 12;
 
+    let hourName: string;
     if (isMidnight) {
       if (this.#isTopOfTheHour(minuteBucket)) {
-        return this.wordPack.midnight;
+        hourName = this.wordPack.midnight;
       } else if (timeFormat === TimeFormat.FORMAT_ONE) {
-        return this.wordPack.midnightFormatOne;
+        hourName = this.wordPack.midnightFormatOne;
       } else {
-        return this.wordPack.midnightFormatTwo;
+        hourName = this.wordPack.midnightFormatTwo;
       }
     } else if (isNoon) {
       if (isTopOfTheHour) {
-        return this.wordPack.noon;
+        hourName = this.wordPack.noon;
       } else if (timeFormat === TimeFormat.FORMAT_ONE) {
-        return this.wordPack.noonFormatOne;
+        hourName = this.wordPack.noonFormatOne;
       } else {
-        return this.wordPack.noonFormatTwo;
+        hourName = this.wordPack.noonFormatTwo;
       }
     } else {
-      return this.wordPack.names[hour];
+      hourName = this.wordPack.names[hour];
     }
+
+    // Cache the result
+    this.#cachedHourNames.set(cacheKey, hourName);
+    return hourName;
   }
 
   /**
@@ -113,12 +135,13 @@ export class ClockFormatter {
    *
    * @param {string} hourName - The name of the hour.
    * @param {number} minuteBucket - The minute bucket (0-11).
+   * @param {TimeFormat} timeFormat - The format of the time string.
    * @returns {string} The time string.
    */
   #getTimeString(
     hourName: string,
     minuteBucket: number,
-    timeFormat: string,
+    timeFormat: TimeFormat,
   ): string {
     const twelves = [
       this.wordPack.names[0],
@@ -192,7 +215,7 @@ export class ClockFormatter {
       try {
         return template.replace("%s", arg);
       } catch (error2: any) {
-        logError(error2, Errors.ERROR_UNABLE_TO_FORMAT_DATE_STRING);
+        logExtensionError(error2, "Failed to format date string template");
       }
     }
     return template;
