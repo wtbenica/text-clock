@@ -3,13 +3,13 @@ import { createTimeConstants } from "../times/core.js";
 
 const fns = prefsGettext;
 export const {
-  timesFormatOne,
-  midnightFormatOne,
-  noonFormatOne,
-  timesFormatTwo,
-  midnightFormatTwo,
-  noonFormatTwo,
-  hourNames,
-  midnight,
-  noon,
+    timesFormatOne,
+    midnightFormatOne,
+    noonFormatOne,
+    timesFormatTwo,
+    midnightFormatTwo,
+    noonFormatTwo,
+    hourNames,
+    midnight,
+    noon,
 } = createTimeConstants(fns);

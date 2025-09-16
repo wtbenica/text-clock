@@ -22,11 +22,11 @@
 // Conditionally import gettext - use a fallback for test environment
 let _: (msgid: string) => string;
 try {
-  // This will work in the GNOME Shell environment
-  ({ gettext: _ } = imports.gettext);
+    // This will work in the GNOME Shell environment
+    ({ gettext: _ } = imports.gettext);
 } catch {
-  // Fallback for test environment or when GNOME Shell imports aren't available
-  _ = (msgid: string) => msgid;
+    // Fallback for test environment or when GNOME Shell imports aren't available
+    _ = (msgid: string) => msgid;
 }
 
 /**
@@ -37,27 +37,27 @@ try {
  * @param level - Log level ('error', 'warn', 'info', 'debug')
  */
 export function logExtensionError(
-  error: Error | string | unknown,
-  context?: string,
-  level: 'error' | 'warn' | 'info' | 'debug' = 'error'
+    error: Error | string | unknown,
+    context?: string,
+    level: 'error' | 'warn' | 'info' | 'debug' = 'error'
 ): void {
-  const errorMessage = error instanceof Error ? error.message : String(error);
-  const fullMessage = context ? `${context}: ${errorMessage}` : errorMessage;
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const fullMessage = context ? `${context}: ${errorMessage}` : errorMessage;
 
-  switch (level) {
-    case 'error':
-      logError(new Error(fullMessage), fullMessage);
-      break;
-    case 'warn':
-      console.warn(`[TextClock] ${fullMessage}`);
-      break;
-    case 'info':
-      console.info(`[TextClock] ${fullMessage}`);
-      break;
-    case 'debug':
-      console.debug(`[TextClock] ${fullMessage}`);
-      break;
-  }
+    switch (level) {
+        case 'error':
+            logError(new Error(fullMessage), fullMessage);
+            break;
+        case 'warn':
+            console.warn(`[TextClock] ${fullMessage}`);
+            break;
+        case 'info':
+            console.info(`[TextClock] ${fullMessage}`);
+            break;
+        case 'debug':
+            console.debug(`[TextClock] ${fullMessage}`);
+            break;
+    }
 }
 
 /**
@@ -69,16 +69,16 @@ export function logExtensionError(
  * @returns The result of the function or the fallback value
  */
 export function safeExecute<T>(
-  fn: () => T,
-  errorContext: string,
-  fallbackValue?: T
+    fn: () => T,
+    errorContext: string,
+    fallbackValue?: T
 ): T | undefined {
-  try {
-    return fn();
-  } catch (error) {
-    logExtensionError(error, errorContext);
-    return fallbackValue;
-  }
+    try {
+        return fn();
+    } catch (error) {
+        logExtensionError(error, errorContext);
+        return fallbackValue;
+    }
 }
 
 /**
@@ -89,12 +89,12 @@ export function safeExecute<T>(
  * @throws Error if the value is null or undefined
  */
 export function validateRequired<T>(
-  value: T | null | undefined,
-  valueName: string
+    value: T | null | undefined,
+    valueName: string
 ): asserts value is T {
-  if (value === null || value === undefined) {
-    throw new Error(`Required value '${valueName}' is null or undefined`);
-  }
+    if (value === null || value === undefined) {
+        throw new Error(`Required value '${valueName}' is null or undefined`);
+    }
 }
 
 /**
@@ -105,9 +105,9 @@ export function validateRequired<T>(
  * @throws Error if the date is invalid
  */
 export function validateDate(date: Date, context: string = 'Date validation'): void {
-  if (!date || isNaN(date.getTime())) {
-    throw new Error(`${context}: Invalid date provided`);
-  }
+    if (!date || isNaN(date.getTime())) {
+        throw new Error(`${context}: Invalid date provided`);
+    }
 }
 
 /**
@@ -118,15 +118,15 @@ export function validateDate(date: Date, context: string = 'Date validation'): v
  * @returns A function that executes fn with error handling
  */
 export function withErrorHandling<T extends any[], R>(
-  operation: string,
-  fn: (...args: T) => R
+    operation: string,
+    fn: (...args: T) => R
 ): (...args: T) => R | undefined {
-  return (...args: T): R | undefined => {
-    try {
-      return fn(...args);
-    } catch (error) {
-      logExtensionError(error, `Failed during ${operation}`);
-      return undefined;
-    }
-  };
+    return (...args: T): R | undefined => {
+        try {
+            return fn(...args);
+        } catch (error) {
+            logExtensionError(error, `Failed during ${operation}`);
+            return undefined;
+        }
+    };
 }

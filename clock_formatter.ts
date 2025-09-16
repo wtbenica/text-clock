@@ -94,7 +94,7 @@ export class ClockFormatter {
   #getHourName(hour: number, minuteBucket: number, timeFormat: TimeFormat): string {
     // Create cache key
     const cacheKey = `${hour}-${minuteBucket}-${timeFormat}`;
-    
+
     // Check cache first
     if (this.#cachedHourNames.has(cacheKey)) {
       return this.#cachedHourNames.get(cacheKey)!;

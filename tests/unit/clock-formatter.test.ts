@@ -7,7 +7,7 @@ const createMockWordPack = (): WordPack => {
   const timesFormatOne = Array.from({ length: 61 }, (_, minute) => {
     if (minute === 0 || minute === 60) return '%s exactly';
     if (minute === 5) return 'five past %s';
-    if (minute === 10) return 'ten past %s'; 
+    if (minute === 10) return 'ten past %s';
     if (minute === 15) return 'quarter past %s';
     if (minute === 20) return 'twenty past %s';
     if (minute === 25) return 'twenty-five past %s';
@@ -135,11 +135,11 @@ describe('ClockFormatter', () => {
 
     it('should handle different fuzziness levels', () => {
       const date = new Date('2024-01-01T15:17:00'); // 3:17 PM
-      
+
       // With 5-minute fuzziness, should round to 15
       const result5 = formatter.getClockText(date, false, false, TimeFormat.FORMAT_ONE, 5);
       expect(result5).toBe('quarter past three');
-      
+
       // With 10-minute fuzziness, should round to 20
       const result10 = formatter.getClockText(date, false, false, TimeFormat.FORMAT_ONE, 10);
       expect(result10).toBe('twenty past three');

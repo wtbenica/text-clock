@@ -25,9 +25,9 @@ import { gettext as _, ngettext, pgettext } from "resource:///org/gnome/shell/ex
  * Gettext function interface for GNOME Shell extensions
  */
 export interface GettextFunctions {
-  _: (msgid: string) => string;
-  ngettext: (msgid: string, msgid_plural: string, n: number) => string;
-  pgettext: (msgctxt: string, msgid: string) => string;
+    _: (msgid: string) => string;
+    ngettext: (msgid: string, msgid_plural: string, n: number) => string;
+    pgettext: (msgctxt: string, msgid: string) => string;
 }
 
 /**
@@ -36,11 +36,11 @@ export interface GettextFunctions {
  * @returns Object containing gettext functions
  */
 export function createGettextFunctions(): GettextFunctions {
-  return {
-    _: _,
-    ngettext: ngettext as any,
-    pgettext: pgettext,
-  };
+    return {
+        _: _,
+        ngettext: ngettext as any,
+        pgettext: pgettext,
+    };
 }
 
 /**

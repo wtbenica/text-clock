@@ -9,7 +9,10 @@
     "lib": [
       "ES2022"
     ],
-    "types": ["@girs/gjs", "@girs/gnome-shell/ambient"],
+    "types": [
+      "@girs/gjs",
+      "@girs/gnome-shell/ambient"
+    ],
     "skipLibCheck": true
   },
   "include": [
