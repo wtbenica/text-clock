@@ -1,42 +1,42 @@
 {
   "name": "text-clock",
   "version": "1.0.6",
-  "description": "A simple text clock for the GNOME Shell",
   "private": "true",
+  "description": "A simple text clock for the GNOME Shell",
+  "homepage": "https://github.com/wtbenica/text-clock#readme",
+  "bugs": {
+    "url": "https://github.com/wtbenica/text-clock/issues"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/wtbenica/text-clock.git"
   },
-  "author": "Wesley Benica <wesley@benica.dev>",
   "license": "LGPL-3.0-or-later",
-  "bugs": {
-    "url": "https://github.com/wtbenica/text-clock/issues"
-  },
-  "homepage": "https://github.com/wtbenica/text-clock#readme",
+  "author": "Wesley Benica <wesley@benica.dev>",
   "sideEffects": false,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p config/tsconfig.json",
+    "build:dist": "tsc -p config/tsconfig.json && mkdir -p dist && cp -r media metadata.json schemas locale dist/ && cp -r ui dist/ || true",
+    "clean": "rm -rf node_modules dist *.zip yarn.lock package-lock.json",
+    "dev": "tsc -p config/tsconfig.json --watch",
+    "format": "prettier --write \"**/*.ts\"",
+    "install:ext": "make install",
+    "lint": "eslint -c config/eslint.config.js \"**/*.ts\"",
+    "lint:fix": "eslint -c config/eslint.config.js \"**/*.ts\" --fix",
+    "pack": "make pack",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch",
+    "validate": "yarn lint && yarn test && yarn build"
+  },
   "dependencies": {
     "@girs/gnome-shell": "48.0.4",
     "ts-node": "^10.9.2"
   },
-  "scripts": {
-    "build": "tsc -p config/tsconfig.json",
-    "build:dist": "tsc -p config/tsconfig.json && mkdir -p dist && cp -r media metadata.json schemas locale dist/ && cp -r ui dist/ || true",
-    "dev": "tsc -p config/tsconfig.json --watch",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "format": "prettier --write \"**/*.ts\"",
-    "lint": "eslint -c config/eslint.config.js \"**/*.ts\"",
-    "lint:fix": "eslint -c config/eslint.config.js \"**/*.ts\" --fix",
-    "validate": "yarn lint && yarn test && yarn build",
-    "clean": "rm -rf node_modules dist *.zip yarn.lock package-lock.json",
-    "install:ext": "make install",
-    "pack": "make pack"
-  },
-  "type": "module",
   "devDependencies": {
     "@types/jest": "30.0.0",
-    "@types/node": "24.5.0",
+    "@types/node": "24.5.1",
     "@typescript-eslint/eslint-plugin": "8.44.0",
     "@typescript-eslint/parser": "8.44.0",
     "eslint": "^9.35.0",
