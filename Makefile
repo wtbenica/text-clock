@@ -92,6 +92,8 @@ po/text-clock@benica.dev.pot: dist/constants/dates/extension.js dist/constants/t
 
 ################################
 # Patch and Prepare Section
+# This section includes tasks for patching files and preparing constants for 
+# testing (probably deprecated at this point)
 ################################
 
 # Patch TypeScript definition files - add .js extension to relative import paths
@@ -112,7 +114,6 @@ constants/dates/prefs.ts: constants/dates/extension.ts
 ################################
 # Testing Section
 ################################
-
 
 # Run tests (simplified)
 test: node_modules/
