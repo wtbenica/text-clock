@@ -22,8 +22,9 @@
     "build": "tsc -p config/tsconfig.json",
     "build:dist": "tsc -p config/tsconfig.json && mkdir -p dist && cp -r media metadata.json schemas locale dist/ && cp -r ui dist/ || true",
     "dev": "tsc -p config/tsconfig.json --watch",
-    "test": "jasmine",
-    "test:watch": "jasmine --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "format": "prettier --write \"**/*.ts\"",
     "lint": "eslint -c config/eslint.config.js \"**/*.ts\"",
     "lint:fix": "eslint -c config/eslint.config.js \"**/*.ts\" --fix",
@@ -34,12 +35,14 @@
   },
   "type": "module",
   "devDependencies": {
-    "@types/jasmine": "^5.1.9",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.11.19",
     "@typescript-eslint/eslint-plugin": "8.44.0",
     "@typescript-eslint/parser": "8.44.0",
     "eslint": "^9.35.0",
-    "jasmine": "5.10.0",
+    "jest": "^29.7.0",
     "prettier": "3.6.2",
+    "ts-jest": "^29.1.2",
     "typescript": "5.9.2"
   }
 }

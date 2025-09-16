@@ -188,7 +188,7 @@ export class ClockFormatter {
   #formatString(template: string, arg: string): string {
     try {
       return template.format(arg);
-    } catch (error) {
+    } catch {
       try {
         return template.replace("%s", arg);
       } catch (error2: any) {
