@@ -22,9 +22,9 @@ import { Errors } from "./constants/index.js";
  * The time format options for the Text Clock extension
  * @enum {string}
  */
-export const TimeFormat = {
-  FORMAT_ONE: "format-one",
-  FORMAT_TWO: "format-two",
+export enum TimeFormat {
+  FORMAT_ONE = "format-one",
+  FORMAT_TWO = "format-two",
 };
 
 /**
@@ -55,7 +55,7 @@ export class ClockFormatter {
     date: Date,
     showDate: boolean,
     showWeekday: boolean,
-    timeFormat: string,
+    timeFormat: TimeFormat,
     fuzziness: number,
   ): string {
     const minutes = date.getMinutes();

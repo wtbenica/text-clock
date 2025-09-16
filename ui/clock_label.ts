@@ -105,7 +105,7 @@ export const TextClockLabel = GObject.registerClass(
     _translatePack: WordPack;
     _fuzzyMinutes: string;
     _showWeekday: boolean;
-    _timeFormat: string;
+    _timeFormat: TimeFormat;
 
     constructor(props: any) {
       super(props);
@@ -159,7 +159,7 @@ export const TextClockLabel = GObject.registerClass(
      *
      * @param {string} value
      */
-    set timeFormat(value: string) {
+    set timeFormat(value: TimeFormat) {
       this._timeFormat = value;
       this.updateClock();
     }
