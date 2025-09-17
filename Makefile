@@ -28,7 +28,7 @@ endef
 # Phony Targets
 ################################
 
-.PHONY: all pack install pot create_ext_dir patch-dts-files clean test prepare_constants_test validate build build-dist
+.PHONY: all pack install pot create_ext_dir clean test validate build build-dist
 
 ################################
 # Main Build Targets
@@ -86,9 +86,12 @@ $(DIST_DIR)/extension.js: $(TS_FILES) node_modules/
 
 # Ensure node modules are installed based on package.json before proceeding
 node_modules/: package.json
-	@echo "Installing node modules..."
-	yarn install --frozen-lockfile || { echo "yarn install failed"; exit 1; }
-	@$(MAKE) patch-dts-files
+		@echo "Installing node modules..."
+		@if [ -f yarn.lock ]; then \
+			yarn install --immutable || { echo "yarn install failed"; exit 1; }; \
+		else \
+			yarn install || { echo "yarn install failed"; exit 1; }; \
+		fi
 
 # Compile GSettings schemas
 schemas/gschemas.compiled: schemas/org.gnome.shell.extensions.$(NAME).gschema.xml
@@ -111,26 +114,6 @@ po/text-clock@benica.dev.pot: dist/constants/dates/extension.js dist/constants/t
 	yarn tsc -p config/tsconfig.pot.json || { echo "TypeScript compilation failed"; exit 1; }
 	xgettext --from-code=UTF-8 --keyword=_ --output=po/text-clock@benica.dev.pot dist/constants_*_extension.js || { echo "Generating POT file failed"; exit 1; }
 
-################################
-# Patch and Prepare Section
-# This section includes tasks for patching files and preparing constants for 
-# testing (probably deprecated at this point)
-################################
-
-# Patch TypeScript definition files - add .js extension to relative import paths
-patch-dts-files:
-	@echo "Patching TypeScript definition files..."
-	find node_modules/@girs/gnome-shell/dist/ui -name "*.d.ts" -print0 | xargs -0 perl -pi -e 's/from \x27\.(.*?)(?<!\.js)\x27;/from \x27.\1.js\x27;/g' || { echo "Patching d.ts files failed"; exit 1; }
-
-# Copy and modify the Times constants file to use with preferences
-constants/times/prefs.ts: constants/times/extension.ts
-	$(call copy_and_modify,constants/times/extension.ts,constants/times/prefs.ts,\
-		's|resource:///org/gnome/shell/extensions/extension.js|resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js|g')
-
-# Copy and modify the dates constants file to use with preferences
-constants/dates/prefs.ts: constants/dates/extension.ts
-	$(call copy_and_modify,constants/dates/extension.ts,constants/dates/prefs.ts,\
-		's|resource:///org/gnome/shell/extensions/extension.js|resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js|g')
 
 ################################
 # Testing Section

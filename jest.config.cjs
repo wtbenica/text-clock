@@ -7,6 +7,10 @@ module.exports = {
   transform: {
     '^.+\\.ts$': ['ts-jest', {
       useESM: true,
+      diagnostics: {
+        warnOnly: true,
+        ignoreCodes: [151001]
+      }
     }],
   },
   moduleFileExtensions: ['ts', 'js', 'json'],
