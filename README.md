@@ -3,8 +3,7 @@
 [![Release](https://img.shields.io/github/v/release/wtbenica/text-clock?label=release)](https://github.com/wtbenica/text-clock/releases)
 [![License](https://img.shields.io/github/license/wtbenica/text-clock)](LICENSE)
 [![Issues](https://img.shields.io/github/issues/wtbenica/text-clock)](https://github.com/wtbenica/text-clock/issues)
-[![Dependabot Status](https://img.shields.io/dependabot/gh/wtbenica/text-clock?label=dependabot)](https://github.com/wtbenica/text-clock/security/dependabot)
-
+![Dependabot alerts](https://img.shields.io/github/issues-raw/wtbenica/text-clock/dependabot)
 ![CI](https://github.com/wtbenica/text-clock/actions/workflows/validate.yml/badge.svg)
 
 ![Screenshot of Text Clock](media/screenshot.png 'Screenshot of Text Clock Extension')
