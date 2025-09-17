@@ -26,6 +26,7 @@ try {
     ({ gettext: _ } = imports.gettext);
 } catch {
     // Fallback for test environment or when GNOME Shell imports aren't available
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _ = (msgid: string) => msgid;
 }
 

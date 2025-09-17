@@ -25,7 +25,6 @@
  */
 
 import { WordPack } from "./word_pack.js";
-import { Errors } from "./constants/index.js";
 import { validateDate, logExtensionError } from "./utils/error-utils.js";
 
 /**

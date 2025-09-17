@@ -18,6 +18,8 @@ export default [
         log: 'readonly',
         print: 'readonly',
         printerr: 'readonly',
+        imports: 'readonly',
+        console: 'readonly',
       },
     },
     plugins: {
