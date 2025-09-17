@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Wesley Benica
+ * Copyright (c) 2024 Weimport { ClockFormatter, TimeFormat, Fuzziness } from "../clock_formatter.js";ley Benica
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ import {
 } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
 import { SETTINGS, PrefItems, Errors } from '../constants/index.js';
-import { ClockFormatter, TimeFormat } from '../clock_formatter.js';
+import { ClockFormatter, TimeFormat, Fuzziness } from '../clock_formatter.js';
 import { WordPack } from '../word_pack.js';
 import {
   timesFormatOne,
@@ -58,6 +58,23 @@ export const TRANSLATE_PACK: () => WordPack = () =>
     noon: noon(),
     daysOfMonth: daysOfMonth(),
   });
+
+/**
+ * Converts a fuzziness string setting to the corresponding Fuzziness enum value
+ *
+ * @param fuzzinessString - The fuzziness value as a string from settings
+ * @returns The corresponding Fuzziness enum value, defaults to FIVE_MINUTES
+ */
+function parseFuzziness(fuzzinessString: string): Fuzziness {
+  const fuzzinessValue = parseInt(fuzzinessString);
+  switch (fuzzinessValue) {
+    case 1: return Fuzziness.ONE_MINUTE;
+    case 5: return Fuzziness.FIVE_MINUTES;
+    case 10: return Fuzziness.TEN_MINUTES;
+    case 15: return Fuzziness.FIFTEEN_MINUTES;
+    default: return Fuzziness.FIVE_MINUTES; // Default fallback
+  }
+}
 
 /**
  * Represents a binding between a setting and a property of a widget.
@@ -228,16 +245,28 @@ export default class TextClockPrefs extends ExtensionPreferences {
     const fuzzinessComboInfo = {
       title: _(PrefItems.FUZZINESS.title),
       subtitle: _(PrefItems.FUZZINESS.subtitle),
-      model: new Gtk.StringList({ strings: ['1', '5', '10', '15'] }),
-      selected: settings!.get_enum(SETTINGS.FUZZINESS),
+      model: new Gtk.StringList({
+        strings: [
+          `${Fuzziness.ONE_MINUTE} minute`,
+          `${Fuzziness.FIVE_MINUTES} minutes`,
+          `${Fuzziness.TEN_MINUTES} minutes`,
+          `${Fuzziness.FIFTEEN_MINUTES} minutes`
+        ]
+      }),
+      selected: this.#getFuzzinessIndex(settings.get_string(SETTINGS.FUZZINESS)),
     };
 
-    return this.#addComboRow(
-      group,
-      settings,
-      SETTINGS.FUZZINESS,
-      fuzzinessComboInfo,
-    );
+    const row = new Adw.ComboRow(fuzzinessComboInfo);
+    group.add(row);
+    try {
+      row.connect('notify::selected', (widget: Adw.ComboRow) => {
+        const fuzzinessValues = [Fuzziness.ONE_MINUTE, Fuzziness.FIVE_MINUTES, Fuzziness.TEN_MINUTES, Fuzziness.FIFTEEN_MINUTES];
+        settings!.set_string(SETTINGS.FUZZINESS, fuzzinessValues[widget.selected].toString());
+      });
+    } catch (error: any) {
+      logError(error, `Error binding settings for ${fuzzinessComboInfo.title}:`);
+    }
+    return row;
   }
 
   /**
@@ -278,13 +307,14 @@ export default class TextClockPrefs extends ExtensionPreferences {
     const clockFormatter = new ClockFormatter(TRANSLATE_PACK());
 
     const date = new Date();
+    const fuzziness = parseFuzziness(settings.get_string(SETTINGS.FUZZINESS));
 
     const timeFormatOne = clockFormatter.getClockText(
       date,
       false,
       false,
       TimeFormat.FORMAT_ONE,
-      parseInt(settings!.get_string(SETTINGS.FUZZINESS)),
+      fuzziness,
     );
 
     const timeFormatTwo = clockFormatter.getClockText(
@@ -292,7 +322,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
       false,
       false,
       TimeFormat.FORMAT_TWO,
-      parseInt(settings!.get_string(SETTINGS.FUZZINESS)),
+      fuzziness,
     );
 
     return new Gtk.StringList({
@@ -353,5 +383,22 @@ export default class TextClockPrefs extends ExtensionPreferences {
       settings,
       SETTINGS.SHOW_DATE,
     );
+  }
+
+  /**
+   * Get the index for the fuzziness combo box based on the current setting
+   *
+   * @param fuzzinessString - The current fuzziness setting as a string
+   * @returns The index for the combo box selection
+   */
+  #getFuzzinessIndex(fuzzinessString: string): number {
+    const fuzzinessValue = parseInt(fuzzinessString);
+    switch (fuzzinessValue) {
+      case Fuzziness.ONE_MINUTE: return 0;
+      case Fuzziness.FIVE_MINUTES: return 1;
+      case Fuzziness.TEN_MINUTES: return 2;
+      case Fuzziness.FIFTEEN_MINUTES: return 3;
+      default: return 1; // Default to 5 minutes
+    }
   }
 }

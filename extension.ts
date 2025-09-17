@@ -33,6 +33,7 @@ import {
   CLOCK_LABEL_PROPERTIES,
   ITextClock,
 } from "./ui/clock_label.js";
+import { Fuzziness } from "./clock_formatter.js";
 import { WordPack } from "./word_pack.js";
 import { SETTINGS, Errors } from "./constants/index.js";
 import {
@@ -53,6 +54,23 @@ import {
 } from "./constants/dates/extension.js";
 
 const CLOCK_STYLE_CLASS_NAME = "clock";
+
+/**
+ * Converts a fuzziness string setting to the corresponding Fuzziness enum value
+ *
+ * @param fuzzinessString - The fuzziness value as a string from settings
+ * @returns The corresponding Fuzziness enum value, defaults to FIVE_MINUTES
+ */
+function parseFuzziness(fuzzinessString: string): Fuzziness {
+  const fuzzinessValue = parseInt(fuzzinessString);
+  switch (fuzzinessValue) {
+    case 1: return Fuzziness.ONE_MINUTE;
+    case 5: return Fuzziness.FIVE_MINUTES;
+    case 10: return Fuzziness.TEN_MINUTES;
+    case 15: return Fuzziness.FIFTEEN_MINUTES;
+    default: return Fuzziness.FIVE_MINUTES; // Default fallback
+  }
+}
 
 /**
  * @returns a word pack that contains the strings for telling the time and date
@@ -143,7 +161,7 @@ export default class TextClock extends Extension {
       // Create the clock label and add it to the top box
       this.#clockLabel = new TextClockLabel({
         translatePack: this.#translatePack,
-        fuzzyMinutes: this.#settings!.get_string(SETTINGS.FUZZINESS),
+        fuzzyMinutes: parseFuzziness(this.#settings!.get_string(SETTINGS.FUZZINESS)),
         showDate: this.#settings!.get_boolean(SETTINGS.SHOW_DATE),
         showWeekday: this.#settings!.get_boolean(SETTINGS.SHOW_WEEKDAY),
         timeFormat: this.#settings!.get_string(SETTINGS.TIME_FORMAT),

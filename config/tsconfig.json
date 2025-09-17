@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
     "outDir": "../dist",
     "sourceMap": false,
     "strict": true,
@@ -9,6 +9,13 @@
     "lib": [
       "ES2022"
     ],
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "types": [
+      "@girs/gjs",
+      "@girs/gnome-shell/ambient"
+    ],
+    "skipLibCheck": true
   },
   "include": [
     "../ambient.d.ts",

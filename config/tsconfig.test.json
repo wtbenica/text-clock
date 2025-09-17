@@ -2,11 +2,14 @@
     "extends": "./tsconfig.json",
     "compilerOptions": {
         "types": [
-            "jasmine"
+            "jest",
+            "@types/jest"
         ],
         "skipLibCheck": true,
         "allowJs": true,
         "allowImportingTsExtensions": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
         "noEmit": true
     },
     "files": [

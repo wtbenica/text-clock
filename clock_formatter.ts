@@ -1,7 +1,16 @@
 /*
  * Copyright (c) 2024 Wesley Benica
  *
- * This program is free software: you can redistribute it and/or modify
+ * This program is fre  getClockText(
+    date: Date,
+    showDate: boolean,
+    showWeekday: boolean,
+    timeFormat: TimeFormat,
+    fuzziness: Fuzziness,
+  ): string {
+    // Validate inputs
+    validateDate(date, "ClockFormatter.getClockText");
+    // Fuzziness is now guaranteed to be valid by the enum typeyou can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -16,26 +25,41 @@
  */
 
 import { WordPack } from "./word_pack.js";
-import { Errors } from "./constants/index.js";
+import { validateDate, logExtensionError } from "./utils/error-utils.js";
 
 /**
  * The time format options for the Text Clock extension
  * @enum {string}
  */
-export const TimeFormat = {
-  FORMAT_ONE: "format-one",
-  FORMAT_TWO: "format-two",
+export enum TimeFormat {
+  FORMAT_ONE = "format-one",
+  FORMAT_TWO = "format-two",
+};
+
+/**
+ * Fuzziness options for time rounding in the Text Clock extension
+ * @enum {number}
+ */
+export enum Fuzziness {
+  ONE_MINUTE = 1,
+  FIVE_MINUTES = 5,
+  TEN_MINUTES = 10,
+  FIFTEEN_MINUTES = 15,
 };
 
 /**
  * A class to format a time and date as a string.
  *
- * @param {WordPack} wordPack - The word pack to use for converting time/date to text
- * @param {number} fuzziness - The number of minutes to round to (default 5)
- * @returns {string} The formatted time/date string.
+ * This class provides functionality to convert Date objects into human-readable
+ * time strings like "five past noon" or "quarter to three", with optional date
+ * information like "five past noon | Monday the 1st".
+ *
+ * @constructor
+ * @param {WordPack} wordPack - The word pack containing localized strings for time/date formatting
  */
 export class ClockFormatter {
   wordPack: WordPack;
+  #cachedHourNames: Map<string, string> = new Map();
 
   constructor(wordPack: WordPack) {
     this.wordPack = wordPack;
@@ -48,16 +72,23 @@ export class ClockFormatter {
    * @param {Date} date - The current date and time.
    * @param {boolean} showDate - Flag to indicate if the date should be included in the output.
    * @param {boolean} showWeekday - Flag to indicate if the weekday should be included in the output.
-   * @param {string} timeFormat - The format of the time string. "format-one" or "hours-and-minute".
+   * @param {TimeFormat} timeFormat - The format of the time string.
+   * @param {Fuzziness} fuzziness - The number of minutes to round to.
    * @returns {string} The formatted time/date string.
    */
   getClockText(
     date: Date,
     showDate: boolean,
     showWeekday: boolean,
-    timeFormat: string,
-    fuzziness: number,
+    timeFormat: TimeFormat,
+    fuzziness: Fuzziness,
   ): string {
+    // Validate inputs
+    validateDate(date, "ClockFormatter.getClockText");
+    if (fuzziness <= 0) {
+      throw new Error("Fuzziness must be a positive number");
+    }
+
     const minutes = date.getMinutes();
     const hours = date.getHours();
     const minuteBucket = Math.round(minutes / fuzziness) * fuzziness;
@@ -79,33 +110,46 @@ export class ClockFormatter {
    *
    * @param {number} hour - The hour of the day (0-23).
    * @param {number} minuteBucket - The minute bucket (0-60).
-   * @param {string} timeFormat - The format of the time string. "format-one" or "hours-and-minute".
+   * @param {TimeFormat} timeFormat - The format of the time string.
    * @returns {string} The name of the hour for display.
    */
-  #getHourName(hour: number, minuteBucket: number, timeFormat: string): string {
+  #getHourName(hour: number, minuteBucket: number, timeFormat: TimeFormat): string {
+    // Create cache key
+    const cacheKey = `${hour}-${minuteBucket}-${timeFormat}`;
+
+    // Check cache first
+    if (this.#cachedHourNames.has(cacheKey)) {
+      return this.#cachedHourNames.get(cacheKey)!;
+    }
+
     const isTopOfTheHour = this.#isTopOfTheHour(minuteBucket);
     const isMidnight = hour === 0;
     const isNoon = hour === 12;
 
+    let hourName: string;
     if (isMidnight) {
       if (this.#isTopOfTheHour(minuteBucket)) {
-        return this.wordPack.midnight;
+        hourName = this.wordPack.midnight;
       } else if (timeFormat === TimeFormat.FORMAT_ONE) {
-        return this.wordPack.midnightFormatOne;
+        hourName = this.wordPack.midnightFormatOne;
       } else {
-        return this.wordPack.midnightFormatTwo;
+        hourName = this.wordPack.midnightFormatTwo;
       }
     } else if (isNoon) {
       if (isTopOfTheHour) {
-        return this.wordPack.noon;
+        hourName = this.wordPack.noon;
       } else if (timeFormat === TimeFormat.FORMAT_ONE) {
-        return this.wordPack.noonFormatOne;
+        hourName = this.wordPack.noonFormatOne;
       } else {
-        return this.wordPack.noonFormatTwo;
+        hourName = this.wordPack.noonFormatTwo;
       }
     } else {
-      return this.wordPack.names[hour];
+      hourName = this.wordPack.names[hour];
     }
+
+    // Cache the result
+    this.#cachedHourNames.set(cacheKey, hourName);
+    return hourName;
   }
 
   /**
@@ -113,12 +157,13 @@ export class ClockFormatter {
    *
    * @param {string} hourName - The name of the hour.
    * @param {number} minuteBucket - The minute bucket (0-11).
+   * @param {TimeFormat} timeFormat - The format of the time string.
    * @returns {string} The time string.
    */
   #getTimeString(
     hourName: string,
     minuteBucket: number,
-    timeFormat: string,
+    timeFormat: TimeFormat,
   ): string {
     const twelves = [
       this.wordPack.names[0],
@@ -188,11 +233,11 @@ export class ClockFormatter {
   #formatString(template: string, arg: string): string {
     try {
       return template.format(arg);
-    } catch (error) {
+    } catch {
       try {
         return template.replace("%s", arg);
       } catch (error2: any) {
-        logError(error2, Errors.ERROR_UNABLE_TO_FORMAT_DATE_STRING);
+        logExtensionError(error2, "Failed to format date string template");
       }
     }
     return template;

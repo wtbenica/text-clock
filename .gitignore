@@ -1,41 +1,42 @@
+### Node / Package artifacts
 node_modules/
+package-lock.json
+/*.log
+
+### Yarn (cache / install state)
+.yarn/cache/
+/.yarn/install-state.gz
+
+### Build outputs
 dist/
 *.zip
 *.tgz
-/.vscode/
-.DS_Store
-.cache/
-coverage/
-/*.log
-# Editor and OS files
-*.swp
-*~
+gschemas.compiled
 
-# TypeScript outputs
+### Test / Coverage
+coverage/
+/.nyc_output/
+
+### TypeScript / JS outputs
 *.js
 *.js.map
 
-# Exception: Keep ESLint config
-!eslint.config.js
+### Editor / OS files
+.vscode/
+.vscode/settings.json
+/.idea/
+.DS_Store
+*.swp
+*~
 
-# Generated test files (if you switch to generated names)
+### Locale / generated
+/locale/
 constants_*_test.generated.ts
 
-# Ignore local credential files
+### Misc
 .env
-/.idea/
-/node_modules/
-*.zip
-/locale/
-/.vscode/
-.vscode/settings.json
-package-lock.json
-/dist/
-/.nyc_output/
-/coverage/
-/.nycrc
 .prettierrc
 *_old.*
-constants_*_test.ts
-yarn.lock
-gschemas.compiled
+
+### Keep ESLint config in repo
+!eslint.config.js
