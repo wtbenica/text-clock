@@ -1,7 +1,16 @@
 /*
  * Copyright (c) 2024 Wesley Benica
  *
- * This program is free software: you can redistribute it and/or modify
+ * This program is fre  getClockText(
+    date: Date,
+    showDate: boolean,
+    showWeekday: boolean,
+    timeFormat: TimeFormat,
+    fuzziness: Fuzziness,
+  ): string {
+    // Validate inputs
+    validateDate(date, "ClockFormatter.getClockText");
+    // Fuzziness is now guaranteed to be valid by the enum typeyou can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -29,11 +38,25 @@ export enum TimeFormat {
 };
 
 /**
+ * Fuzziness options for time rounding in the Text Clock extension
+ * @enum {number}
+ */
+export enum Fuzziness {
+  ONE_MINUTE = 1,
+  FIVE_MINUTES = 5,
+  TEN_MINUTES = 10,
+  FIFTEEN_MINUTES = 15,
+};
+
+/**
  * A class to format a time and date as a string.
  *
- * @param {WordPack} wordPack - The word pack to use for converting time/date to text
- * @param {number} fuzziness - The number of minutes to round to (default 5)
- * @returns {string} The formatted time/date string.
+ * This class provides functionality to convert Date objects into human-readable
+ * time strings like "five past noon" or "quarter to three", with optional date
+ * information like "five past noon | Monday the 1st".
+ *
+ * @constructor
+ * @param {WordPack} wordPack - The word pack containing localized strings for time/date formatting
  */
 export class ClockFormatter {
   wordPack: WordPack;
@@ -51,7 +74,7 @@ export class ClockFormatter {
    * @param {boolean} showDate - Flag to indicate if the date should be included in the output.
    * @param {boolean} showWeekday - Flag to indicate if the weekday should be included in the output.
    * @param {TimeFormat} timeFormat - The format of the time string.
-   * @param {number} fuzziness - The number of minutes to round to (default 5)
+   * @param {Fuzziness} fuzziness - The number of minutes to round to.
    * @returns {string} The formatted time/date string.
    */
   getClockText(
@@ -59,7 +82,7 @@ export class ClockFormatter {
     showDate: boolean,
     showWeekday: boolean,
     timeFormat: TimeFormat,
-    fuzziness: number,
+    fuzziness: Fuzziness,
   ): string {
     // Validate inputs
     validateDate(date, "ClockFormatter.getClockText");

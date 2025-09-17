@@ -22,7 +22,7 @@ import St from "gi://St";
 import { gettext as _ } from "resource:///org/gnome/shell/extensions/extension.js";
 
 import { WordPack } from "../word_pack.js";
-import { ClockFormatter, TimeFormat } from "../clock_formatter.js";
+import { ClockFormatter, TimeFormat, Fuzziness } from "../clock_formatter.js";
 import { PrefItems, Errors } from "../constants/index.js";
 
 /**
@@ -43,7 +43,7 @@ export const CLOCK_LABEL_PROPERTIES = {
 export interface ITextClock extends Clutter.Actor {
   _showDate: boolean;
   _translatePack: WordPack;
-  _fuzzyMinutes: string;
+  _fuzzyMinutes: Fuzziness;
   _showWeekday: boolean;
   _timeFormat: string;
 }
@@ -69,12 +69,14 @@ export const TextClockLabel = GObject.registerClass(
         GObject.ParamFlags.READWRITE,
         true,
       ),
-      "fuzzy-minutes": GObject.ParamSpec.string(
+      "fuzzy-minutes": GObject.ParamSpec.uint(
         CLOCK_LABEL_PROPERTIES.FUZZINESS,
         PrefItems.FUZZINESS.title,
         PrefItems.FUZZINESS.subtitle,
         GObject.ParamFlags.READWRITE,
-        "5",
+        Fuzziness.ONE_MINUTE,
+        Fuzziness.FIFTEEN_MINUTES,
+        Fuzziness.FIVE_MINUTES,
       ),
       "show-weekday": GObject.ParamSpec.boolean(
         CLOCK_LABEL_PROPERTIES.SHOW_WEEKDAY,
@@ -103,7 +105,7 @@ export const TextClockLabel = GObject.registerClass(
     _formatter?: ClockFormatter;
     _showDate: boolean;
     _translatePack: WordPack;
-    _fuzzyMinutes: string;
+    _fuzzyMinutes: Fuzziness;
     _showWeekday: boolean;
     _timeFormat: TimeFormat;
 
@@ -111,7 +113,7 @@ export const TextClockLabel = GObject.registerClass(
       super(props);
       this._translatePack = props.translatePack;
       this._showDate = props.showDate;
-      this._fuzzyMinutes = props.fuzzyMinutes;
+      this._fuzzyMinutes = props.fuzzyMinutes || Fuzziness.FIVE_MINUTES;
       this._showWeekday = props.showWeekday;
       this._timeFormat = props.timeFormat;
 
@@ -178,9 +180,9 @@ export const TextClockLabel = GObject.registerClass(
     /**
      * The fuzziness of the clock
      *
-     * @param {string} value
+     * @param {Fuzziness} value
      */
-    set fuzzyMinutes(value: string) {
+    set fuzzyMinutes(value: Fuzziness) {
       this._fuzzyMinutes = value;
       this.updateClock();
     }
@@ -198,7 +200,7 @@ export const TextClockLabel = GObject.registerClass(
               this._showDate,
               this._showWeekday,
               this._timeFormat,
-              parseInt(this._fuzzyMinutes),
+              this._fuzzyMinutes,
             ),
           );
       } catch (error: any) {

@@ -1,4 +1,4 @@
-import { ClockFormatter, TimeFormat } from '../../clock_formatter.js';
+import { ClockFormatter, TimeFormat, Fuzziness } from "../../clock_formatter.js";
 import { WordPack } from '../../word_pack.js';
 
 // Mock translation strings for testing
@@ -169,13 +169,13 @@ describe('ClockFormatter', () => {
     it('should throw error for zero fuzziness', () => {
       const date = new Date('2024-01-01T15:17:00');
       expect(() => {
-        formatter.getClockText(date, false, false, TimeFormat.FORMAT_ONE, 0);
+        formatter.getClockText(date, false, false, TimeFormat.FORMAT_ONE, 0 as any);
       }).toThrow('Fuzziness must be a positive number');
     });
 
     it('should handle large fuzziness values', () => {
       const date = new Date('2024-01-01T15:17:00');
-      const result = formatter.getClockText(date, false, false, TimeFormat.FORMAT_ONE, 60);
+      const result = formatter.getClockText(date, false, false, TimeFormat.FORMAT_ONE, Fuzziness.FIFTEEN_MINUTES);
       expect(result).toBeDefined();
     });
   });
