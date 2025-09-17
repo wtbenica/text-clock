@@ -64,11 +64,16 @@ const CLOCK_STYLE_CLASS_NAME = "clock";
 function parseFuzziness(fuzzinessString: string): Fuzziness {
   const fuzzinessValue = parseInt(fuzzinessString);
   switch (fuzzinessValue) {
-    case 1: return Fuzziness.ONE_MINUTE;
-    case 5: return Fuzziness.FIVE_MINUTES;
-    case 10: return Fuzziness.TEN_MINUTES;
-    case 15: return Fuzziness.FIFTEEN_MINUTES;
-    default: return Fuzziness.FIVE_MINUTES; // Default fallback
+    case 1:
+      return Fuzziness.ONE_MINUTE;
+    case 5:
+      return Fuzziness.FIVE_MINUTES;
+    case 10:
+      return Fuzziness.TEN_MINUTES;
+    case 15:
+      return Fuzziness.FIFTEEN_MINUTES;
+    default:
+      return Fuzziness.FIVE_MINUTES; // Default fallback
   }
 }
 
@@ -161,7 +166,9 @@ export default class TextClock extends Extension {
       // Create the clock label and add it to the top box
       this.#clockLabel = new TextClockLabel({
         translatePack: this.#translatePack,
-        fuzzyMinutes: parseFuzziness(this.#settings!.get_string(SETTINGS.FUZZINESS)),
+        fuzzyMinutes: parseFuzziness(
+          this.#settings!.get_string(SETTINGS.FUZZINESS),
+        ),
         showDate: this.#settings!.get_boolean(SETTINGS.SHOW_DATE),
         showWeekday: this.#settings!.get_boolean(SETTINGS.SHOW_WEEKDAY),
         timeFormat: this.#settings!.get_string(SETTINGS.TIME_FORMAT),

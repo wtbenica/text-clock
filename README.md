@@ -1,4 +1,11 @@
 ## Text Clock GNOME Extension v1.0.6
+ 
+[![Release](https://img.shields.io/github/v/release/wtbenica/text-clock?label=release)](https://github.com/wtbenica/text-clock/releases)
+[![License](https://img.shields.io/github/license/wtbenica/text-clock)](LICENSE)
+[![Issues](https://img.shields.io/github/issues/wtbenica/text-clock)](https://github.com/wtbenica/text-clock/issues)
+[![Dependabot Status](https://img.shields.io/dependabot/gh/wtbenica/text-clock?label=dependabot)](https://github.com/wtbenica/text-clock/security/dependabot)
+
+![CI](https://github.com/wtbenica/text-clock/actions/workflows/validate.yml/badge.svg)
 
 ![Screenshot of Text Clock](media/screenshot.png 'Screenshot of Text Clock Extension')
 
@@ -151,6 +158,49 @@ sudo dnf install nodejs npm perl make
 # Optional: install yarn
 # npm install --global yarn
 ```
+
+## Developer Setup
+
+We use Yarn v4 (managed via Corepack) and a few local developer tools to keep the codebase consistent.
+
+Quick setup:
+
+```bash
+corepack enable
+corepack prepare yarn@4.9.4 --activate
+yarn install
+```
+
+Husky & lint-staged:
+
+- Husky installs Git hooks for your project (pre-commit, pre-push, etc.).
+- lint-staged runs linters/formatters only on staged files (faster than linting the whole repo).
+
+Practical effects of the changes made in this PR:
+
+- `package.json` now has a `prepare` script (`husky install`) so contributors can run `yarn prepare` to enable Git hooks.
+- A pre-commit hook (`.husky/pre-commit`) runs `lint-staged`, which executes ESLint and Prettier on staged `.ts` files before commits. This helps prevent style and lint issues from being committed.
+- Dependabot configuration (`.github/dependabot.yml`) will open PRs to keep dependencies up to date weekly.
+- A CI workflow (`.github/workflows/validate.yml`) runs `make validate` to lint, test, and build on pushes/PRs.
+
+Commands you might use:
+
+```bash
+# install deps
+corepack enable && corepack prepare yarn@4.9.4 --activate && yarn install
+
+# enable husky hooks (run once locally)
+yarn prepare
+
+# run validation locally
+make validate
+
+# test lint-staged locally
+yarn lint-staged
+```
+
+If you prefer not to have Git hooks, contributors can skip running `yarn prepare`, but the CI checks will still run on GitHub.
+
 
 ###### Arch Linux
 
