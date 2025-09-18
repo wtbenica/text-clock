@@ -48,11 +48,11 @@ all: validate
 # Verifies yarn, node, perl, glib-compile-schemas, zip, and xgettext
 check-deps:
 	@echo "Checking required tools..."
-	@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is not installed or not on PATH. Install or enable Corepack and retry."; exit 1; }
+	@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is not installed or not on PATH. Install and retry."; exit 1; }
 	@yarn_version=$$(yarn --version 2>/dev/null || echo "0"); \
 	major=$$(echo $$yarn_version | sed -E 's/^([0-9]+).*/\1/'); \
 	if [ -z "$$major" ] || [ $$major -lt 4 ]; then \
-		echo "ERROR: Yarn v4 or later is required (found: $$yarn_version). Please enable Corepack and install the recommended Yarn version."; exit 1; \
+		echo "ERROR: Yarn v4 or later is required (found: $$yarn_version). Please install the recommended Yarn version."; exit 1; \
 	fi
 	@command -v node >/dev/null 2>&1 || { echo "ERROR: node is not installed or not on PATH."; exit 1; }
 	@command -v perl >/dev/null 2>&1 || { echo "ERROR: perl is not installed or not on PATH."; exit 1; }
@@ -107,13 +107,13 @@ create_ext_dir:
 # Compile TypeScript files
 $(DIST_DIR)/extension.js: $(TS_FILES) node_modules/
 	@echo "Compiling TypeScript files..."
-	@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is required for building; please install/enable Corepack (see README) and try again."; exit 1; }
+	@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is required for building; please install and try again."; exit 1; }
 	@yarn tsc -p config/tsconfig.json || { echo "TypeScript compilation failed"; exit 1; }
 
 # Ensure node modules are installed based on package.json before proceeding
 node_modules/: package.json
 		@echo "Installing node modules..."
-		@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is required to install dependencies; please install/enable Corepack (see README) and try again."; exit 1; }
+		@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is required to install dependencies; please install and try again."; exit 1; }
 		@yarn install --immutable || { echo "yarn install failed"; exit 1; }
 
 # Compile GSettings schemas
@@ -134,7 +134,7 @@ locale/: $(MO_FILES)
 # Generate a new POT file
 po/text-clock@benica.dev.pot: dist/constants/dates/extension.js dist/constants/times/extension.js
 	@echo "Generating a new POT file..."
-	@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is required to generate POT files; please install/enable Corepack (see README) and try again."; exit 1; }
+	@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is required to generate POT files; please install and try again."; exit 1; }
 	@yarn tsc -p config/tsconfig.pot.json || { echo "TypeScript compilation failed"; exit 1; }
 	xgettext --from-code=UTF-8 --keyword=_ --output=po/text-clock@benica.dev.pot dist/constants_*_extension.js || { echo "Generating POT file failed"; exit 1; }
 
@@ -146,7 +146,7 @@ po/text-clock@benica.dev.pot: dist/constants/dates/extension.js dist/constants/t
 # Run tests (comprehensive)
 test: node_modules/
 	@echo "Running tests..."
-	@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is required to run tests; please install/enable Corepack (see README) and try again."; exit 1; }
+	@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is required to run tests; please install and try again."; exit 1; }
 	@yarn tsc -p config/tsconfig.test.json || { echo "TypeScript compilation failed"; exit 1; }
 	@yarn test || { echo "yarn test failed"; exit 1; }
 
