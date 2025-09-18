@@ -1,12 +1,12 @@
 ## Text Clock GNOME Extension v1.0.6
- 
+
 [![Release](https://img.shields.io/github/v/release/wtbenica/text-clock?label=release)](https://github.com/wtbenica/text-clock/releases)
 [![License](https://img.shields.io/github/license/wtbenica/text-clock)](LICENSE)
 [![Issues](https://img.shields.io/github/issues/wtbenica/text-clock)](https://github.com/wtbenica/text-clock/issues)
 ![Dependabot alerts](https://img.shields.io/github/issues-raw/wtbenica/text-clock/dependabot)
 ![CI](https://github.com/wtbenica/text-clock/actions/workflows/validate.yml/badge.svg)
 
-![Screenshot of Text Clock](media/screenshot.png 'Screenshot of Text Clock Extension')
+![Screenshot of Text Clock](media/screenshot.png "Screenshot of Text Clock Extension")
 
 ### Overview
 
@@ -29,39 +29,44 @@
 
 You can install the extension from the GNOME Extensions website or manually from the source code.
 
-#### GNOME Extensions
+#### With Extensions Manager 
 
-This extension is available on [extensions.gnome.org](https://extensions.gnome.org/extension/7186/text-clock/) for easy installation.
+The simplest way to install the extension is using [_Extensions Manager_](https://github.com/mjakeman/extension-manager). It can install, enable, disable, and configure extensions directly.
 
-You'll need a browser extension:
+#### From extensions.gnome.org
 
-- _Chrome-based browsers:_ [Chrome Web Store](https://chrome.google.com/webstore/detail/gnome-shell-integration/gphhapmejobijbbhgpjhcjognlahblep).
+This extension is available on [extensions.gnome.org](https://extensions.gnome.org/extension/7186/text-clock/). To use the site, you'll need to install a couple of components:
+-  The browser extension
 
-- _Firefox:_ [Mozilla Add-ons site](https://addons.mozilla.org/firefox/addon/gnome-shell-integration/).
+   - _Chrome-based browsers:_ [Chrome Web Store](https://chrome.google.com/webstore/detail/gnome-shell-integration/gphhapmejobijbbhgpjhcjognlahblep).
 
-- _Opera:_ [Deactivated](https://gnome.pages.gitlab.gnome.org/gnome-browser-integration/images/opera-conversation.png). Use one of the manual methods below.
+   - _Firefox:_ [Mozilla Add-ons site](https://addons.mozilla.org/firefox/addon/gnome-shell-integration/).
 
-And a [native host connector](https://gnome.pages.gitlab.gnome.org/gnome-browser-integration/pages/installation-guide.html).
+   - _Opera:_ [Deactivated](https://gnome.pages.gitlab.gnome.org/gnome-browser-integration/images/opera-conversation.png). Use one of the manual methods below.
 
-[_Extension Manager_](https://github.com/mjakeman/extension-manager) is also recommended for searching and managing extensions.
+- The [native host connector](https://gnome.pages.gitlab.gnome.org/gnome-browser-integration/pages/installation-guide.html) so the site can enable/disable extensions.
 
-#### Installation from ZIP File
+#### From a ZIP File
 
-You can directly download the extension as a ZIP file:
+You can download the latest release of the extension as a ZIP file:
 
-1. Download this [ZIP file](https://github.com/wtbenica/text-clock/releases/download/v1.0.6/text-clock@benica.dev.zip) from Github.
+1. Download this [ZIP file (v1.0.5)](https://github.com/wtbenica/text-clock/releases/download/v1.0.5/text-clock@benica.dev.zip) from Github.
 2. Extract the ZIP file to `~/.local/share/gnome-shell/extensions/`.
-3. Restart GNOME Shell for the changes to take effect. On X11, press Alt+F2, type `r`, and then press Enter. On Wayland, log out and back in.
+3. Restart GNOME Shell for the changes to take effect. On Wayland, log out and back in. On X11, press Alt+F2, type `r`, and then press Enter.
 
-#### Installation from Source
+#### From Source
 
 ###### Required Dependencies
 
 To use the Makefile for installation, you will need the following dependencies:
 
-- `node` (includes `npm`) or install `yarn` as an alternative package manager
+- `make` (for running the Makefile)
+- `node`
+- `yarn` (v4.x)
 - `perl`
-- `make`
+- `glib-compile-schemas`
+
+You can verify your system has the required tools by running `make check-deps`.
 
 ###### Pre-Installation Notes:
 
@@ -71,7 +76,7 @@ To use the Makefile for installation, you will need the following dependencies:
 
 ###### Installation
 
-1. The source files are hosted on GitHub. You can download the source files as a [ZIP file](https://github.com/wtbenica/text-clock/archive/refs/tags/v1.0.4.zip) or clone the repository using Git:
+1. The source files are hosted on GitHub. You can download the source files as a [ZIP file](https://github.com/wtbenica/text-clock/archive/refs/heads/main.zip) or clone the repository using Git:
 
    | Method     | Command                                                  |
    | ---------- | -------------------------------------------------------- |
@@ -87,22 +92,29 @@ To use the Makefile for installation, you will need the following dependencies:
    make install
    ```
 
-   This installs necessary Node.js packages, compiles the extension, and integrates it into your GNOME environment.
+   This compiles the extension and installs it into your GNOME Shell extensions directory.
 
-   Restart GNOME Shell for the changes to take effect, On X11, press Alt+F2, type `r`, and then press Enter. On Wayland, log out and back in.
+   
+   Restart GNOME Shell for the changes to take effect. On Wayland, log out and back in. On X11, press Alt+F2, type `r`, and then press Enter.
 
 3. After installation, you may delete the cloned repository. To only clean up the build artifacts, run:
    ```bash
    make clean
    ```
 
-#### Usage
+#### Managing the Extension
 
 ###### GUI Method
 
-To enable the extension, use a GUI tool like _GNOME Extensions_ or [_Extensions Manager_](https://github.com/mjakeman/extension-manager), If you don't have one installed, it can be obtained through your distribution's package manager. These tools also provide easy access to the extension's preferences.
+You can use a GUI tool like [_Extensions Manager_](https://github.com/mjakeman/extension-manager) or _GNOME Extensions_ to disable, enable, uninstall, and configure extensions.
 
 ###### Command Line
+
+To disable the extension (but leave it installed), run:
+
+```bash
+gnome-extensions disable text-clock@benica.dev
+```
 
 To enable the extension from the command line:
 
@@ -116,108 +128,19 @@ To access the preferences, run:
 gnome-extensions prefs text-clock@benica.dev
 ```
 
+To remove the extension completely, run:
+
+```bash
+gnome-extensions uninstall text-clock@benica.dev
+```
 ---
 
 ### Contributing
 
 Contributions, including bug reports and feature suggestions, are welcome. Please use the issue tracker or submit a pull request.
 
-Note: constants have been moved into `constants/` with `dates/` and `times/` subfolders. Runtime variants that are used by the extension and prefs live under those folders as `extension.ts` and `prefs.ts` respectively.
-
 ---
 
 ### License
 
 Text Clock is open-sourced under the GNU General Public License v3.0 or later (GPL-3.0-or-later). See the LICENSE file for more details.
-
----
-
-### Dependency Installation
-
-Below are instructions for installing the required dependencies. These instructions may vary slightly depending on your Linux distribution.
-
-###### Debian/Ubuntu
-
-Install Node.js (which provides npm) and other tools. Optionally install Yarn if you prefer it as the package manager.
-
-```bash
-sudo apt update
-# Install Node.js + npm
-sudo apt install nodejs npm perl make
-# Optional: install yarn (recommended for reproducible installs)
-# npm install --global yarn
-```
-
-###### Fedora
-
-```bash
-sudo dnf check-update
-# Install Node.js + npm
-sudo dnf install nodejs npm perl make
-# Optional: install yarn
-# npm install --global yarn
-```
-
-## Developer Setup
-
-We use Yarn v4 (managed via Corepack) and a few local developer tools to keep the codebase consistent.
-
-Quick setup:
-
-```bash
-corepack enable
-corepack prepare yarn@4.9.4 --activate
-yarn install
-```
-
-Husky & lint-staged:
-
-- Husky installs Git hooks for your project (pre-commit, pre-push, etc.).
-- lint-staged runs linters/formatters only on staged files (faster than linting the whole repo).
-
-Practical effects of the changes made in this PR:
-
-- `package.json` now has a `prepare` script (`husky install`) so contributors can run `yarn prepare` to enable Git hooks.
-- A pre-commit hook (`.husky/pre-commit`) runs `lint-staged`, which executes ESLint and Prettier on staged `.ts` files before commits. This helps prevent style and lint issues from being committed.
-- Dependabot configuration (`.github/dependabot.yml`) will open PRs to keep dependencies up to date weekly.
-- A CI workflow (`.github/workflows/validate.yml`) runs `make validate` to lint, test, and build on pushes/PRs.
-
-Commands you might use:
-
-```bash
-# install deps
-corepack enable && corepack prepare yarn@4.9.4 --activate && yarn install
-
-# enable husky hooks (run once locally)
-yarn prepare
-
-# run validation locally
-make validate
-
-# test lint-staged locally
-yarn lint-staged
-```
-
-If you prefer not to have Git hooks, contributors can skip running `yarn prepare`, but the CI checks will still run on GitHub.
-
-
-###### Arch Linux
-
-```bash
-sudo pacman -Syu nodejs npm perl make
-# Optional: install yarn
-# npm install --global yarn
-```
-
-###### openSUSE
-
-```bash
-sudo zypper refresh
-sudo zypper install --no-recommends nodejs npm perl make
-# Optional: install yarn
-# npm install --global yarn
-```
-
-###### Other Distributions
-
-For other Linux distributions, please use your package manager to install Node.js (npm), `perl`, and `make`. If you prefer Yarn, install it instead of using npm. If you encounter any issues, feel free to open an issue for assistance.
