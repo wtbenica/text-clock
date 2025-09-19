@@ -27,9 +27,9 @@
     "lint:fix": "eslint -c config/eslint.config.js \"**/*.ts\" --fix",
     "pack": "make pack",
     "prepare": "husky",
-    "test": "jest",
-    "test:coverage": "jest --coverage",
-    "test:watch": "jest --watch",
+    "test": "jest --config config/jest.config.cjs",
+    "test:coverage": "jest --config config/jest.config.cjs --coverage",
+    "test:watch": "jest --config config/jest.config.cjs --watch",
     "validate": "yarn lint && yarn test && yarn build"
   },
   "dependencies": {
@@ -39,7 +39,7 @@
   "devDependencies": {
     "@girs/gjs": "^4.0.0-beta.36",
     "@types/jest": "30.0.0",
-    "@types/node": "24.5.1",
+    "@types/node": "24.5.2",
     "@typescript-eslint/eslint-plugin": "8.44.0",
     "@typescript-eslint/parser": "8.44.0",
     "eslint": "^9.35.0",
@@ -48,7 +48,7 @@
     "jest-util": "^30.0.5",
     "lint-staged": "^16.1.6",
     "prettier": "3.6.2",
-    "ts-jest": "29.4.2",
+    "ts-jest": "29.4.3",
     "typescript": "5.9.2"
   },
   "lint-staged": {
