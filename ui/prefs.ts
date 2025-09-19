@@ -1,32 +1,20 @@
 /*
- * Copyright (c) 2024 Weimport { ClockFormatter, TimeFormat, Fuzziness } from "../clock_formatter.js";ley Benica
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * SPDX-FileCopyrightText: 2024 Wesley Benica <wesley@benica.dev>
+ * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import Gio from 'gi://Gio';
-import Adw from 'gi://Adw';
-import Gtk from 'gi://Gtk';
+import Gio from "gi://Gio";
+import Adw from "gi://Adw";
+import Gtk from "gi://Gtk";
 
 import {
   ExtensionPreferences,
   gettext as _,
-} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
+} from "resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js";
 
-import { SETTINGS, PrefItems, Errors } from '../constants/index.js';
-import { ClockFormatter, TimeFormat, Fuzziness } from '../clock_formatter.js';
-import { WordPack } from '../word_pack.js';
+import { SETTINGS, PrefItems, Errors } from "../constants/index.js";
+import { ClockFormatter, TimeFormat, Fuzziness } from "../clock_formatter.js";
+import { WordPack } from "../word_pack.js";
 import {
   timesFormatOne,
   midnightFormatOne,
@@ -37,8 +25,8 @@ import {
   hourNames,
   midnight,
   noon,
-} from '../constants/times/prefs.js';
-import { weekdays, dateOnly, daysOfMonth } from '../constants/dates/prefs.js';
+} from "../constants/times/prefs.js";
+import { weekdays, dateOnly, daysOfMonth } from "../constants/dates/prefs.js";
 
 /**
  * @returns a word pack that contains the strings for telling the time and date
@@ -68,11 +56,16 @@ export const TRANSLATE_PACK: () => WordPack = () =>
 function parseFuzziness(fuzzinessString: string): Fuzziness {
   const fuzzinessValue = parseInt(fuzzinessString);
   switch (fuzzinessValue) {
-    case 1: return Fuzziness.ONE_MINUTE;
-    case 5: return Fuzziness.FIVE_MINUTES;
-    case 10: return Fuzziness.TEN_MINUTES;
-    case 15: return Fuzziness.FIFTEEN_MINUTES;
-    default: return Fuzziness.FIVE_MINUTES; // Default fallback
+    case 1:
+      return Fuzziness.ONE_MINUTE;
+    case 5:
+      return Fuzziness.FIVE_MINUTES;
+    case 10:
+      return Fuzziness.TEN_MINUTES;
+    case 15:
+      return Fuzziness.FIFTEEN_MINUTES;
+    default:
+      return Fuzziness.FIVE_MINUTES; // Default fallback
   }
 }
 
@@ -121,7 +114,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
    */
   #createAndAddPageToWindow(window: Adw.PreferencesWindow) {
     const page = new Adw.PreferencesPage({
-      title: _('Text Clock'),
+      title: _("Text Clock"),
     });
     window.add(page);
     return page;
@@ -136,8 +129,8 @@ export default class TextClockPrefs extends ExtensionPreferences {
    */
   #createAndAddGroupToPage(page: Adw.PreferencesPage) {
     const group = new Adw.PreferencesGroup({
-      title: _('Clock Settings'),
-      description: _('Customize the appearance and behavior of the clock'),
+      title: _("Clock Settings"),
+      description: _("Customize the appearance and behavior of the clock"),
     });
     page.add(group);
     return group;
@@ -161,7 +154,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
     const row = new Adw.ComboRow(props);
     group.add(row);
     try {
-      row.connect('notify::selected', (widget: Adw.ComboRow) => {
+      row.connect("notify::selected", (widget: Adw.ComboRow) => {
         settings!.set_enum(settingKey, widget.selected);
       });
     } catch (error: any) {
@@ -190,9 +183,9 @@ export default class TextClockPrefs extends ExtensionPreferences {
     const row = new Adw.SwitchRow(props);
     group.add(row);
 
-    this.#bindSettingsToProperty(row, settings, settingKey, 'active');
+    this.#bindSettingsToProperty(row, settings, settingKey, "active");
 
-    settingBindings?.forEach(binding => {
+    settingBindings?.forEach((binding) => {
       this.#bindSettingsToProperty(
         row,
         settings,
@@ -250,21 +243,34 @@ export default class TextClockPrefs extends ExtensionPreferences {
           `${Fuzziness.ONE_MINUTE} minute`,
           `${Fuzziness.FIVE_MINUTES} minutes`,
           `${Fuzziness.TEN_MINUTES} minutes`,
-          `${Fuzziness.FIFTEEN_MINUTES} minutes`
-        ]
+          `${Fuzziness.FIFTEEN_MINUTES} minutes`,
+        ],
       }),
-      selected: this.#getFuzzinessIndex(settings.get_string(SETTINGS.FUZZINESS)),
+      selected: this.#getFuzzinessIndex(
+        settings.get_string(SETTINGS.FUZZINESS),
+      ),
     };
 
     const row = new Adw.ComboRow(fuzzinessComboInfo);
     group.add(row);
     try {
-      row.connect('notify::selected', (widget: Adw.ComboRow) => {
-        const fuzzinessValues = [Fuzziness.ONE_MINUTE, Fuzziness.FIVE_MINUTES, Fuzziness.TEN_MINUTES, Fuzziness.FIFTEEN_MINUTES];
-        settings!.set_string(SETTINGS.FUZZINESS, fuzzinessValues[widget.selected].toString());
+      row.connect("notify::selected", (widget: Adw.ComboRow) => {
+        const fuzzinessValues = [
+          Fuzziness.ONE_MINUTE,
+          Fuzziness.FIVE_MINUTES,
+          Fuzziness.TEN_MINUTES,
+          Fuzziness.FIFTEEN_MINUTES,
+        ];
+        settings!.set_string(
+          SETTINGS.FUZZINESS,
+          fuzzinessValues[widget.selected].toString(),
+        );
       });
     } catch (error: any) {
-      logError(error, `Error binding settings for ${fuzzinessComboInfo.title}:`);
+      logError(
+        error,
+        `Error binding settings for ${fuzzinessComboInfo.title}:`,
+      );
     }
     return row;
   }
@@ -355,7 +361,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
       [
         {
           settingKey: SETTINGS.SHOW_DATE,
-          property: 'sensitive',
+          property: "sensitive",
         },
       ],
     );
@@ -394,11 +400,16 @@ export default class TextClockPrefs extends ExtensionPreferences {
   #getFuzzinessIndex(fuzzinessString: string): number {
     const fuzzinessValue = parseInt(fuzzinessString);
     switch (fuzzinessValue) {
-      case Fuzziness.ONE_MINUTE: return 0;
-      case Fuzziness.FIVE_MINUTES: return 1;
-      case Fuzziness.TEN_MINUTES: return 2;
-      case Fuzziness.FIFTEEN_MINUTES: return 3;
-      default: return 1; // Default to 5 minutes
+      case Fuzziness.ONE_MINUTE:
+        return 0;
+      case Fuzziness.FIVE_MINUTES:
+        return 1;
+      case Fuzziness.TEN_MINUTES:
+        return 2;
+      case Fuzziness.FIFTEEN_MINUTES:
+        return 3;
+      default:
+        return 1; // Default to 5 minutes
     }
   }
 }

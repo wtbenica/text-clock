@@ -1,14 +1,13 @@
+# SPDX-FileCopyrightText: 2025 2024 Wesley Benica <wesley@benica.dev>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 # Header Section: variable definitions and paths used by targets
 NAME=text-clock
 DOMAIN=benica.dev
 MO_FILES=$(wildcard po/*.mo)
 ZIP_FILE=$(NAME)@${DOMAIN}.zip
-TS_FILES=$(wildcard *.ts) $(wildcard ui/*.ts) $(wildcard constants/**/*.ts) $	# Get current and new version from JSON output
-	@version_info=$$(node scripts/bump-version.cjs $(TYPE) --json); \
-	current_version=$$(echo "$$version_info" | node -pe "JSON.parse(require('fs').readFileSync('/dev/stdin', 'utf8')).current.version"); \
-	new_version=$$(echo "$$version_info" | node -pe "JSON.parse(require('fs').readFileSync('/dev/stdin', 'utf8')).new.version"); \
-	echo "Current version: $$current_version"; \
-	echo "Target version: $$new_version"; \ utils/*.ts)
+TS_FILES=$(wildcard *.ts) $(wildcard ui/*.ts) $(wildcard constants/**/*.ts) $(wildcard utils/*.ts)
 DIST_DIR=dist
 LOCALE_DIR=locale
 GNOME_SHELL_EXT_DIR=$(HOME)/.local/share/gnome-shell/extensions
@@ -33,7 +32,7 @@ endef
 # Phony Targets
 # ################################
 
-.PHONY: all pack install pot create_ext_dir clean test validate compile build check-deps release bump-version
+.PHONY: all pack install install-system uninstall uninstall-system pot create_ext_dir clean test validate compile build check-deps release bump-version
 
 # ################################
 # Main Build Targets
@@ -44,6 +43,8 @@ endef
 # - `build` prepares the `dist/` directory for distribution
 # - `pack` zips the `dist/` folder for distribution as a GNOME Shell
 #   extension.
+# - `install` installs to user directory (~/.local/share/gnome-shell/extensions)
+# - `install-system` installs system-wide (/usr/share/gnome-shell/extensions) - requires sudo
 # ################################
 
 # Default target - run validation pipeline (lint, tests, build)
@@ -91,6 +92,49 @@ install: create_ext_dir build
 	@rm -rf $(GNOME_SHELL_EXT_DIR)/$(NAME)@$(DOMAIN) || { echo "Removing existing extension failed"; exit 1; }
 	@cp -R $(DIST_DIR) $(GNOME_SHELL_EXT_DIR)/$(NAME)@$(DOMAIN) || { echo "Copying extension failed"; exit 1; }
 	@echo "Installation complete."
+
+# Install the extension system-wide (requires sudo)
+install-system: build
+	@echo "Installing the extension system-wide..."
+	@if [ "$$EUID" -ne 0 ]; then \
+		echo "System-wide installation requires root privileges."; \
+		echo "Please run: sudo make install-system"; \
+		exit 1; \
+	fi
+	@SYSTEM_EXT_DIR="/usr/share/gnome-shell/extensions"; \
+	mkdir -p "$$SYSTEM_EXT_DIR" || { echo "Creating system extension directory failed"; exit 1; }; \
+	rm -rf "$$SYSTEM_EXT_DIR/$(NAME)@$(DOMAIN)" || { echo "Removing existing system extension failed"; exit 1; }; \
+	cp -R $(DIST_DIR) "$$SYSTEM_EXT_DIR/$(NAME)@$(DOMAIN)" || { echo "Copying extension to system directory failed"; exit 1; }; \
+	find "$$SYSTEM_EXT_DIR/$(NAME)@$(DOMAIN)" -type f -exec chmod 644 {} \; || { echo "Setting file permissions failed"; exit 1; }; \
+	find "$$SYSTEM_EXT_DIR/$(NAME)@$(DOMAIN)" -type d -exec chmod 755 {} \; || { echo "Setting directory permissions failed"; exit 1; }
+	@echo "System-wide installation complete."
+	@echo "The extension is now available to all users on this system."
+
+# Uninstall the extension from the local GNOME Shell extensions directory
+uninstall:
+	@echo "Uninstalling the extension from user directory..."
+	@if [ -d "$(GNOME_SHELL_EXT_DIR)/$(NAME)@$(DOMAIN)" ]; then \
+		rm -rf "$(GNOME_SHELL_EXT_DIR)/$(NAME)@$(DOMAIN)" || { echo "Removing extension failed"; exit 1; }; \
+		echo "Extension uninstalled from user directory."; \
+	else \
+		echo "Extension not found in user directory."; \
+	fi
+
+# Uninstall the extension from the system directory (requires sudo)
+uninstall-system:
+	@echo "Uninstalling the extension from system directory..."
+	@if [ "$$EUID" -ne 0 ]; then \
+		echo "System-wide uninstallation requires root privileges."; \
+		echo "Please run: sudo make uninstall-system"; \
+		exit 1; \
+	fi
+	@SYSTEM_EXT_DIR="/usr/share/gnome-shell/extensions"; \
+	if [ -d "$$SYSTEM_EXT_DIR/$(NAME)@$(DOMAIN)" ]; then \
+		rm -rf "$$SYSTEM_EXT_DIR/$(NAME)@$(DOMAIN)" || { echo "Removing system extension failed"; exit 1; }; \
+		echo "Extension uninstalled from system directory."; \
+	else \
+		echo "Extension not found in system directory."; \
+	fi
 
 # ################################
 # Helper Targets
@@ -263,3 +307,29 @@ bump-version: check-deps
 	echo "When ready to merge back to main:"; \
 	echo "   git push origin $$branch_name"; \
 	echo "   gh pr create --base main --head $$branch_name"
+
+# AUR package release - update AUR with latest GitHub release
+release-aur:
+	@echo "Updating AUR package..."
+	@if [ ! -f scripts/release-aur.sh ]; then \
+		echo "ERROR: scripts/release-aur.sh not found"; \
+		exit 1; \
+	fi
+	@current_version=$$(node -pe "require('./package.json').version"); \
+	echo "Releasing AUR package for version $$current_version"; \
+	./scripts/release-aur.sh "$$current_version"
+
+# Complete release - GitHub + AUR in one command  
+release-full:
+	@echo "Starting complete release process..."
+	@if [ ! -f scripts/full-release.sh ]; then \
+		echo "ERROR: scripts/full-release.sh not found"; \
+		exit 1; \
+	fi
+	@echo "Usage: make release-full TYPE=patch|minor|major"
+	@if [ -z "$(TYPE)" ]; then \
+		echo "ERROR: TYPE parameter is required"; \
+		echo "Example: make release-full TYPE=patch"; \
+		exit 1; \
+	fi
+	./scripts/full-release.sh "$(TYPE)"

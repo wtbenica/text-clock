@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 2024 Wesley Benica <wesley@benica.dev>
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 module.exports = {
     preset: 'ts-jest/presets/default-esm',
     // Ensure <rootDir> points to the repository root (config/ is the config location)

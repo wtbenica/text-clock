@@ -1,27 +1,6 @@
 /*
- * Copyright (c) 2024 Wesley Benica
- *
- * This program is fre  getClockText(
-    date: Date,
-    showDate: boolean,
-    showWeekday: boolean,
-    timeFormat: TimeFormat,
-    fuzziness: Fuzziness,
-  ): string {
-    // Validate inputs
-    validateDate(date, "ClockFormatter.getClockText");
-    // Fuzziness is now guaranteed to be valid by the enum typeyou can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * SPDX-FileCopyrightText: 2024 Wesley Benica <wesley@benica.dev>
+ * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 import { WordPack } from "./word_pack.js";
@@ -34,7 +13,7 @@ import { validateDate, logExtensionError } from "./utils/error-utils.js";
 export enum TimeFormat {
   FORMAT_ONE = "format-one",
   FORMAT_TWO = "format-two",
-};
+}
 
 /**
  * Fuzziness options for time rounding in the Text Clock extension
@@ -45,7 +24,7 @@ export enum Fuzziness {
   FIVE_MINUTES = 5,
   TEN_MINUTES = 10,
   FIFTEEN_MINUTES = 15,
-};
+}
 
 /**
  * A class to format a time and date as a string.
@@ -113,7 +92,11 @@ export class ClockFormatter {
    * @param {TimeFormat} timeFormat - The format of the time string.
    * @returns {string} The name of the hour for display.
    */
-  #getHourName(hour: number, minuteBucket: number, timeFormat: TimeFormat): string {
+  #getHourName(
+    hour: number,
+    minuteBucket: number,
+    timeFormat: TimeFormat,
+  ): string {
     // Create cache key
     const cacheKey = `${hour}-${minuteBucket}-${timeFormat}`;
 

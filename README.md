@@ -29,20 +29,36 @@
 
 You can install the extension from the GNOME Extensions website or manually from the source code.
 
-#### With Extensions Manager 
+#### With Extensions Manager
 
 The simplest way to install the extension is using [_Extensions Manager_](https://github.com/mjakeman/extension-manager). It can install, enable, disable, and configure extensions directly.
+
+#### From AUR (Arch Linux)
+
+Arch Linux users can install the extension from the AUR:
+
+```bash
+# Using an AUR helper (recommended)
+yay -S gnome-shell-extension-text-clock
+
+# Or manually
+git clone https://aur.archlinux.org/gnome-shell-extension-text-clock.git
+cd gnome-shell-extension-text-clock
+makepkg -si
+```
+
+This installs the extension system-wide and is managed by the package manager.
 
 #### From extensions.gnome.org
 
 This extension is available on [extensions.gnome.org](https://extensions.gnome.org/extension/7186/text-clock/). To use the site, you'll need to install a couple of components:
--  The browser extension
 
-   - _Chrome-based browsers:_ [Chrome Web Store](https://chrome.google.com/webstore/detail/gnome-shell-integration/gphhapmejobijbbhgpjhcjognlahblep).
+- The browser extension
+  - _Chrome-based browsers:_ [Chrome Web Store](https://chrome.google.com/webstore/detail/gnome-shell-integration/gphhapmejobijbbhgpjhcjognlahblep).
 
-   - _Firefox:_ [Mozilla Add-ons site](https://addons.mozilla.org/firefox/addon/gnome-shell-integration/).
+  - _Firefox:_ [Mozilla Add-ons site](https://addons.mozilla.org/firefox/addon/gnome-shell-integration/).
 
-   - _Opera:_ [Deactivated](https://gnome.pages.gitlab.gnome.org/gnome-browser-integration/images/opera-conversation.png). Use one of the manual methods below.
+  - _Opera:_ [Deactivated](https://gnome.pages.gitlab.gnome.org/gnome-browser-integration/images/opera-conversation.png). Use one of the manual methods below.
 
 - The [native host connector](https://gnome.pages.gitlab.gnome.org/gnome-browser-integration/pages/installation-guide.html) so the site can enable/disable extensions.
 
@@ -88,19 +104,37 @@ You can verify your system has the required tools by running `make check-deps`.
 
 2. Navigate to the cloned or extracted directory that contains the Makefile and run:
 
+   **For user installation (recommended):**
+
    ```bash
    make install
    ```
 
-   This compiles the extension and installs it into your GNOME Shell extensions directory.
+   **For system-wide installation:**
 
-   
+   ```bash
+   sudo make install-system
+   ```
+
+   This compiles the extension and installs it into your GNOME Shell extensions directory.
+   - `make install` installs to `~/.local/share/gnome-shell/extensions/` (user-only)
+   - `make install-system` installs to `/usr/share/gnome-shell/extensions/` (all users)
+
    Restart GNOME Shell for the changes to take effect. On Wayland, log out and back in. On X11, press Alt+F2, type `r`, and then press Enter.
 
 3. After installation, you may delete the cloned repository. To only clean up the build artifacts, run:
    ```bash
    make clean
    ```
+
+###### Uninstallation
+
+To uninstall the extension:
+
+```bash
+make uninstall           # Remove from user directory
+sudo make uninstall-system  # Remove from system directory (if installed system-wide)
+```
 
 #### Managing the Extension
 
@@ -133,6 +167,7 @@ To remove the extension completely, run:
 ```bash
 gnome-extensions uninstall text-clock@benica.dev
 ```
+
 ---
 
 ### Contributing

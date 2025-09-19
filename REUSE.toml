@@ -1,0 +1,27 @@
+version = 1
+
+[[annotations]]
+path = [
+    "*.json",
+    "*.lock",
+    "*.md",
+    "*.yml",
+    "*.yaml",
+    ".gitignore",
+    ".gitattributes",
+    ".editorconfig",
+    ".yarnrc.yml",
+    "po/*.po",
+    "po/*.pot",
+    "po/*.mo",
+    "media/*.png",
+    "coverage/**",
+    "dist/**",
+    "node_modules/**",
+    "schemas/*.xml",
+    ".husky/**",
+    ".github/**",
+    "config/tsconfig*.json",
+]
+SPDX-FileCopyrightText = "2024 Wesley Benica <wesley@benica.dev>"
+SPDX-License-Identifier = "GPL-3.0-or-later"

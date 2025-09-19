@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 2024 Wesley Benica <wesley@benica.dev>
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /*
  * Test setup file for Jest
  * This file runs before all tests and sets up the testing environment
@@ -14,7 +18,7 @@ declare global {
 String.prototype.format = function (...args: any[]): string {
   let result = this as string;
   for (let i = 0; i < args.length; i++) {
-    result = result.replace('%s', args[i]);
+    result = result.replace("%s", args[i]);
   }
   return result;
 };

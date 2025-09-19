@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 
+// SPDX-FileCopyrightText: 2025 2024 Wesley Benica <wesley@benica.dev>
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 const fs = require('fs');
 const path = require('path');
 
