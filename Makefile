@@ -3,7 +3,12 @@ NAME=text-clock
 DOMAIN=benica.dev
 MO_FILES=$(wildcard po/*.mo)
 ZIP_FILE=$(NAME)@${DOMAIN}.zip
-TS_FILES=$(wildcard *.ts) $(wildcard ui/*.ts) $(wildcard constants/**/*.ts) $(wildcard utils/*.ts)
+TS_FILES=$(wildcard *.ts) $(wildcard ui/*.ts) $(wildcard constants/**/*.ts) $	# Get current and new version from JSON output
+	@version_info=$$(node scripts/bump-version.cjs $(TYPE) --json); \
+	current_version=$$(echo "$$version_info" | node -pe "JSON.parse(require('fs').readFileSync('/dev/stdin', 'utf8')).current.version"); \
+	new_version=$$(echo "$$version_info" | node -pe "JSON.parse(require('fs').readFileSync('/dev/stdin', 'utf8')).new.version"); \
+	echo "Current version: $$current_version"; \
+	echo "Target version: $$new_version"; \ utils/*.ts)
 DIST_DIR=dist
 LOCALE_DIR=locale
 GNOME_SHELL_EXT_DIR=$(HOME)/.local/share/gnome-shell/extensions
@@ -28,7 +33,7 @@ endef
 # Phony Targets
 # ################################
 
-.PHONY: all pack install pot create_ext_dir clean test validate compile build check-deps
+.PHONY: all pack install pot create_ext_dir clean test validate compile build check-deps release bump-version
 
 # ################################
 # Main Build Targets
@@ -49,8 +54,8 @@ all: validate
 check-deps:
 	@echo "Checking required tools..."
 	@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is not installed or not on PATH. Install and retry."; exit 1; }
-	@yarn_version=$$(yarn --version 2>/dev/null || echo "0"); \
-	major=$$(echo $$yarn_version | sed -E 's/^([0-9]+).*/\1/'); \
+	@yarn_version=$$(yarn --version 2>/dev/null || echo "0") && \
+	major=$$(echo $$yarn_version | sed -E 's/^([0-9]+).*/\1/') && \
 	if [ -z "$$major" ] || [ $$major -lt 4 ]; then \
 		echo "ERROR: Yarn v4 or later is required (found: $$yarn_version). Please install the recommended Yarn version."; exit 1; \
 	fi
@@ -59,7 +64,7 @@ check-deps:
 	@command -v glib-compile-schemas >/dev/null 2>&1 || { echo "ERROR: glib-compile-schemas is not installed or not on PATH."; exit 1; }
 	@command -v zip >/dev/null 2>&1 || { echo "ERROR: zip is not installed or not on PATH."; exit 1; }
 	@command -v xgettext >/dev/null 2>&1 || { echo "ERROR: xgettext (gettext) is not installed or not on PATH."; exit 1; }
-	@echo "check-deps: OK (yarn $$yarn_version)"
+	@yarn_version=$$(yarn --version 2>/dev/null || echo "0") && echo "check-deps: OK (yarn $$yarn_version)"
 
 # Compile TypeScript to `dist/` (invokes `tsc -p config/tsconfig.json`)
 compile: $(DIST_DIR)/extension.js
@@ -168,3 +173,93 @@ clean:
 	@rm -f schemas/gschemas.compiled || { echo "Removing compiled GSettings schemas failed"; exit 1; }
 	@rm -f yarn.lock || { echo "Removing yarn.lock file failed"; exit 1; }
 	@echo "Cleaning up complete."
+
+################################
+# Release and Version Management
+################################
+
+# Release the current version by creating and pushing a git tag
+release: check-deps
+	@echo "Starting release process..."
+	@# Verify we're on main branch
+	@current_branch=$$(git rev-parse --abbrev-ref HEAD); \
+	if [ "$$current_branch" != "main" ]; then \
+		echo "ERROR: You must be on the main branch to release. Currently on: $$current_branch"; \
+		exit 1; \
+	fi
+	@# Verify working tree is clean
+	@if ! git diff-index --quiet HEAD --; then \
+		echo "ERROR: Working tree is not clean. Please commit or stash your changes."; \
+		exit 1; \
+	fi
+	@# Verify we're up to date with remote
+	@git fetch origin main >/dev/null 2>&1 || { echo "ERROR: Failed to fetch from origin"; exit 1; }
+	@if [ "$$(git rev-parse HEAD)" != "$$(git rev-parse origin/main)" ]; then \
+		echo "ERROR: Your main branch is not up to date with origin/main. Please pull the latest changes."; \
+		exit 1; \
+	fi
+	@# Run validation to ensure everything is working
+	@echo "Running validation..."
+	@$(MAKE) validate || { echo "ERROR: Validation failed. Fix issues before releasing."; exit 1; }
+	@# Get current version and create tag
+	@current_version=$$(node -pe "require('./package.json').version"); \
+	echo "Creating release for version $$current_version..."; \
+	git tag "v$$current_version" || { echo "ERROR: Failed to create tag v$$current_version"; exit 1; }; \
+	git push origin "v$$current_version" || { echo "ERROR: Failed to push tag v$$current_version"; exit 1; }
+	@echo "✅ Release complete! GitHub Actions will create the release automatically."
+	@echo "   Check the release at: https://github.com/wtbenica/text-clock/releases"
+
+# Bump version and create a pull request for the next version
+bump-version: check-deps
+	@if [ -z "$(TYPE)" ]; then \
+		echo "ERROR: TYPE parameter is required. Usage: make bump-version TYPE=patch|minor|major"; \
+		exit 1; \
+	fi
+	@if [ "$(TYPE)" != "patch" ] && [ "$(TYPE)" != "minor" ] && [ "$(TYPE)" != "major" ]; then \
+		echo "ERROR: TYPE must be patch, minor, or major. Got: $(TYPE)"; \
+		exit 1; \
+	fi
+	@echo "Starting version bump process ($(TYPE))..."
+	@# Verify we're on main branch
+	@current_branch=$$(git rev-parse --abbrev-ref HEAD); \
+	if [ "$$current_branch" != "main" ]; then \
+		echo "ERROR: You must be on the main branch to bump version. Currently on: $$current_branch"; \
+		exit 1; \
+	fi
+	@# Verify working tree is clean
+	@if ! git diff-index --quiet HEAD --; then \
+		echo "ERROR: Working tree is not clean. Please commit or stash your changes."; \
+		exit 1; \
+	fi
+	@# Verify we're up to date with remote
+	@git fetch origin main >/dev/null 2>&1 || { echo "ERROR: Failed to fetch from origin"; exit 1; }
+	@if [ "$$(git rev-parse HEAD)" != "$$(git rev-parse origin/main)" ]; then \
+		echo "ERROR: Your main branch is not up to date with origin/main. Please pull the latest changes."; \
+		exit 1; \
+	fi
+	@# Check if GitHub CLI is available
+	@command -v gh >/dev/null 2>&1 || { echo "ERROR: GitHub CLI (gh) is not installed. Please install it to create pull requests."; exit 1; }
+	@# Get current and new version
+	@current_version=$$(node -pe "require('./package.json').version"); \
+	echo "Current version: $$current_version"; \
+	new_version=$$(node scripts/bump-version.cjs $(TYPE) --dry-run | grep "New version:" | cut -d' ' -f3 2>/dev/null || echo ""); \
+	if [ -z "$$new_version" ]; then \
+		echo "ERROR: Failed to calculate new version"; \
+		exit 1; \
+	fi; \
+	echo "Target version: $$new_version"; \
+	branch_name="v$$new_version"; \
+	echo "Creating development branch: $$branch_name"; \
+	git checkout -b "$$branch_name" || { echo "ERROR: Failed to create branch $$branch_name"; exit 1; }; \
+	echo "Updating version numbers..."; \
+	node scripts/bump-version.cjs $(TYPE) || { echo "ERROR: Version bump script failed"; exit 1; }; \
+	git add version.json package.json metadata.json README.md || { echo "ERROR: Failed to stage files"; exit 1; }; \
+	git commit -m "Bump version to $$new_version" || { echo "ERROR: Failed to commit changes"; exit 1; }; \
+	echo "✅ Version bump complete!"; \
+	echo "   Now on development branch: $$branch_name"; \
+	echo "   All version numbers updated to $$new_version"; \
+	echo "   Ready to start development for the next release"; \
+	echo ""; \
+	echo "When ready to merge back to main:"; \
+	echo "   git push origin $$branch_name"; \
+	echo "   gh pr create --base main --head $$branch_name"
