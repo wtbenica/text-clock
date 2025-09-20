@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 2024 Wesley Benica <wesley@benica.dev>
+// SPDX-FileCopyrightText: 2024-2025 Wesley Benica <wesley@benica.dev>
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -56,7 +56,7 @@ describe("WordPack", () => {
     });
 
     it("should return format one times for invalid format and log error", () => {
-      const consoleSpy = jest.spyOn(global, "logError");
+      const consoleSpy = jest.spyOn(global as any, "logError");
       const result = wordPack.getTimes("invalid-format");
 
       expect(result).toEqual(mockData.timesFormatOne);
