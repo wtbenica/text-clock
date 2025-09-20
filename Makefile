@@ -46,7 +46,7 @@ endef
 .PHONY: \
 	all pack install install-system uninstall uninstall-system pot create_ext_dir clean \
 	test validate compile build check-deps release bump-version release-aur release-full \
-	release-auto release-aur-auto release-full-auto draft-pr promote-pr release-existing
+	release-auto release-aur-auto release-full-auto draft-pr promote-pr release-existing pr_wait_and_merge
 
 # ################################
 # Main Build Targets
@@ -413,19 +413,15 @@ release-full:
 	fi; \
 	echo "Creating PR..."; \
 	pr_output=$$(gh pr create --base main --head "$$current_branch" --title "Release v$(CURRENT_VERSION)" --body "Automated release PR for version $(CURRENT_VERSION)" --fill 2>&1); \
-	pr_url=$$(echo "$$pr_output" | grep -Eo 'https://github.com/[^ ]+/pull/[0-9]+'); \
-	if [ -z "$$pr_url" ]; then \
-		echo "ERROR: Failed to create PR. Output:"; \
-		echo "$$pr_output"; \
-		exit 1; \
-	fi; \
-	echo "✅ PR created: $$pr_url"; \
-	echo "Waiting for status checks to pass..."; \
-	gh pr status --watch --timeout 5m || { echo "ERROR: Status checks failed or timed out"; exit 1; }; \
-	echo "✅ All status checks passed"; \
-	echo "Merging PR..."; \
-	gh pr merge --auto --squash || { echo "ERROR: Failed to merge PR"; exit 1; }; \
-	echo "✅ PR merged successfully"; \
+		pr_url=$$(echo "$$pr_output" | grep -Eo 'https://github.com/[^ ]+/pull/[0-9]+'); \
+		if [ -z "$$pr_url" ]; then \
+			echo "ERROR: Failed to create PR. Output:"; \
+			echo "$$pr_output"; \
+			exit 1; \
+		fi; \
+		echo "✅ PR created: $$pr_url"; \
+		# Wait for checks and merge using common helper
+		$(MAKE) pr_wait_and_merge || { echo "ERROR: PR validation/merge failed"; exit 1; }; \
 	echo "Switching to main branch for releases..."; \
 	git checkout main && git pull origin main || { echo "ERROR: Failed to update main branch"; exit 1; }; \
 	echo "Creating GitHub release..."; \
@@ -519,6 +515,15 @@ promote-pr:
 	echo "✅ PR #$$pr_number is now ready for review"; \
 	gh pr view "$$pr_number" --web
 
+# Wait for status checks to pass, then merge the current PR
+pr_wait_and_merge:
+	@echo "Waiting for status checks to pass..."
+	@gh pr status --watch --timeout 5m || { echo "ERROR: Status checks failed or timed out"; exit 1; }
+	@echo "✅ All status checks passed"
+	@echo "Merging PR..."
+	@gh pr merge --auto --squash || { echo "ERROR: Failed to merge PR"; exit 1; }
+	@echo "✅ PR merged successfully"
+
 # Complete release using existing PR (works with draft or ready PRs)
 release-existing:
 	@echo "Starting release process using existing PR..."
@@ -567,18 +572,14 @@ release-existing:
 		gh pr ready "$$pr_number" || { echo "ERROR: Failed to promote PR"; exit 1; }; \
 		echo "✅ PR promoted to ready for review"; \
 	fi; \
-	echo "Waiting for status checks to pass..."; \
-	gh pr status --watch --timeout 5m || { echo "ERROR: Status checks failed or timed out"; exit 1; }; \
-	echo "✅ All status checks passed"; \
-	echo "Merging PR..."; \
-	gh pr merge --auto --squash || { echo "ERROR: Failed to merge PR"; exit 1; }; \
-	echo "✅ PR merged successfully"; \
+	# Wait for checks and merge using common helper
+	$(MAKE) pr_wait_and_merge || { echo "ERROR: PR validation/merge failed"; exit 1; }; \
 	echo "Switching to main branch for releases..."; \
 	git checkout main && git pull origin main || { echo "ERROR: Failed to update main branch"; exit 1; }; \
 	echo "Creating GitHub release..."; \
-	$(MAKE) release ACCEPT_ALL=1 || { echo "ERROR: GitHub release failed"; exit 1; }; \
+	$(MAKE) release || { echo "ERROR: GitHub release failed"; exit 1; }; \
 	echo "Updating AUR package..."; \
-	$(MAKE) release-aur ACCEPT_ALL=1 || { echo "ERROR: AUR update failed"; exit 1; }; \
+	$(MAKE) release-aur || { echo "ERROR: AUR update failed"; exit 1; }; \
 	echo ""; \
 	echo "🎉 Complete release process finished!"; \
 	echo "✅ Version $(CURRENT_VERSION) released on GitHub"; \
