@@ -18,7 +18,7 @@
     "skipLibCheck": true
   },
   "include": [
-    "../ambient.d.ts",
+    "../config/ambient.d.ts",
   ],
   "files": [
     "../extension.ts",

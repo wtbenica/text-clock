@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run from repository root so tools (lint-staged) can find package.json
+cd -- "$(git rev-parse --show-toplevel)" || exit 1
+
+# Use yarn dlx to run lint-staged via Yarn (reliable across environments)
+yarn dlx lint-staged --quiet
+
+# Run tests; if they fail the hook exits non-zero and the commit is aborted
+yarn test

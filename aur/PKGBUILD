@@ -1,0 +1,28 @@
+# Maintainer: Wesley Benica <wesley at benica dot dev>
+
+pkgname=gnome-shell-extension-text-clock
+pkgver=1.0.5
+pkgrel=1
+pkgdesc="A simple text clock for the GNOME Shell top panel"
+arch=('any')
+url="https://github.com/wtbenica/text-clock"
+license=('GPL-3.0-or-later')
+depends=('gnome-shell>=45')
+source=("${pkgname}-${pkgver}.zip::https://github.com/wtbenica/text-clock/releases/download/v${pkgver}/text-clock@benica.dev.zip")
+sha256sums=('c3f951d83c7e9b73cdc9d04fc0df3ce5b789bb32644e48b367cfc10eaa895ce8')
+noextract=("${pkgname}-${pkgver}.zip")
+
+package() {
+    local uuid="text-clock@benica.dev"
+    local destdir="${pkgdir}/usr/share/gnome-shell/extensions/${uuid}"
+    
+    # Create the extension directory
+    install -d "${destdir}"
+    
+    # Extract the extension ZIP file to the destination
+    unzip -q "${srcdir}/${pkgname}-${pkgver}.zip" -d "${destdir}"
+    
+    # Set correct permissions: 644 for files, 755 for directories
+    find "${destdir}" -type f -exec chmod 644 {} \;
+    find "${destdir}" -type d -exec chmod 755 {} \;
+}

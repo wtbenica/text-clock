@@ -1,18 +1,6 @@
 /*
- * Copyright (c) 2024 Wesley Benica
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * SPDX-FileCopyrightText: 2024 Wesley Benica <wesley@benica.dev>
+ * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 import Clutter from "gi://Clutter";
@@ -64,11 +52,16 @@ const CLOCK_STYLE_CLASS_NAME = "clock";
 function parseFuzziness(fuzzinessString: string): Fuzziness {
   const fuzzinessValue = parseInt(fuzzinessString);
   switch (fuzzinessValue) {
-    case 1: return Fuzziness.ONE_MINUTE;
-    case 5: return Fuzziness.FIVE_MINUTES;
-    case 10: return Fuzziness.TEN_MINUTES;
-    case 15: return Fuzziness.FIFTEEN_MINUTES;
-    default: return Fuzziness.FIVE_MINUTES; // Default fallback
+    case 1:
+      return Fuzziness.ONE_MINUTE;
+    case 5:
+      return Fuzziness.FIVE_MINUTES;
+    case 10:
+      return Fuzziness.TEN_MINUTES;
+    case 15:
+      return Fuzziness.FIFTEEN_MINUTES;
+    default:
+      return Fuzziness.FIVE_MINUTES; // Default fallback
   }
 }
 
@@ -161,7 +154,9 @@ export default class TextClock extends Extension {
       // Create the clock label and add it to the top box
       this.#clockLabel = new TextClockLabel({
         translatePack: this.#translatePack,
-        fuzzyMinutes: parseFuzziness(this.#settings!.get_string(SETTINGS.FUZZINESS)),
+        fuzzyMinutes: parseFuzziness(
+          this.#settings!.get_string(SETTINGS.FUZZINESS),
+        ),
         showDate: this.#settings!.get_boolean(SETTINGS.SHOW_DATE),
         showWeekday: this.#settings!.get_boolean(SETTINGS.SHOW_WEEKDAY),
         timeFormat: this.#settings!.get_string(SETTINGS.TIME_FORMAT),

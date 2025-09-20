@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: 2024 Wesley Benica <wesley@benica.dev>
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 export * from "./core.js";
 export {
   daysOfMonth as daysOfMonthExtension,
