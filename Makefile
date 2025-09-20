@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 # Header Section: variable definitions and paths used by targets
+## === Variables ===
 NAME=text-clock
 DOMAIN=benica.dev
 MO_FILES=$(wildcard po/*.mo)
@@ -33,6 +34,7 @@ MAKEFLAGS += --no-builtin-rules
 # ########################
 # Function Definitions
 # ########################
+## === Functions ===
 
 define copy_and_modify
 	@cp $(1) $(2)
@@ -43,19 +45,24 @@ define check_gh_cli
 	@command -v gh >/dev/null 2>&1 || { echo "ERROR: GitHub CLI (gh) is not installed. Please install it to create pull requests."; exit 1; }
 endef
 
-# ################################
-# Phony Targets
-# ################################
+## === Phony Targets ===
+## (List of phony targets used below)
+##
 
 .PHONY: \
-	all pack install install-system uninstall uninstall-system pot create_ext_dir clean \
-	test validate compile build check-deps release bump-version release-aur release-full \
-	release-auto release-aur-auto release-full-auto draft-pr promote-pr release-existing pr_wait_and_merge
+	all \
+	pack \
+	install install-system uninstall uninstall-system \
+	pot create_ext_dir clean \
+	test validate compile build check-deps \
+	release release-auto \
+	release-aur release-aur-auto \
+	release-full release-full-auto release-existing release-dry release-aur-dry \
+	bump-version draft-pr promote-pr pr_wait_and_merge ci-dry-run help
 
 # ################################
-# Main Build Targets
-#
-# Notes:
+## === Main Build Targets ===
+## Notes:
 # - `make`/`make all` runs the `validate` target (lint + tests + build).
 # - `compile` compiles TypeScript into `dist/` using `tsc`.
 # - `build` prepares the `dist/` directory for distribution
@@ -69,10 +76,13 @@ endef
 # ################################
 
 # Default target - run validation pipeline (lint, tests, build)
+## all                 Run full validation (lint, tests, build)
 all: validate
 
 # Check required external tools and environment
 # Verifies yarn, node, perl, glib-compile-schemas, zip, and xgettext
+
+## check-deps          Verify required external tools are available (yarn, node, glib-compile-schemas, zip, xgettext)
 check-deps:
 	@echo "Checking required tools..."
 	@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is not installed or not on PATH. Install and retry."; exit 1; }
@@ -89,10 +99,13 @@ check-deps:
 	@yarn_version=$$(yarn --version 2>/dev/null || echo "0") && echo "check-deps: OK (yarn $$yarn_version)"
 
 # Compile TypeScript to `dist/` (invokes `tsc -p config/tsconfig.json`)
+## compile             Compile TypeScript into $(DIST_DIR)
 compile: $(DIST_DIR)/extension.js
 
 # Prepare the `dist/` directory for distribution
 # Puts all required files (compiled JS, metadata, schemas, locale) into `dist/`.
+
+## build               Prepare $(DIST_DIR) for distribution (copy metadata, schemas, locale)
 build: $(DIST_DIR)/extension.js schemas/gschemas.compiled locale/
 	@echo "Building distribution package..."
 	@mkdir -p $(DIST_DIR)
@@ -102,6 +115,7 @@ build: $(DIST_DIR)/extension.js schemas/gschemas.compiled locale/
 	@echo "Distribution package ready in $(DIST_DIR)/"
 
 # Package the extension into a zip file (zips the contents of `dist/`)
+## pack                Create the distribution zip file
 pack: build ${ZIP_FILE}
 
 # Generate a new POT file (collects translatable strings from compiled JS)
@@ -209,11 +223,11 @@ po/text-clock@benica.dev.pot: dist/constants/dates/extension.js dist/constants/t
 	xgettext --from-code=UTF-8 --keyword=_ --output=po/text-clock@benica.dev.pot dist/constants_*_extension.js || { echo "Generating POT file failed"; exit 1; }
 
 
-################################
-# Testing Section
-################################
+## === Testing ===
 
 # Run tests (comprehensive)
+
+## test                Run TypeScript tests and unit/integration suites
 test: node_modules/
 	@echo "Running tests..."
 	@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is required to run tests; please install and try again."; exit 1; }
@@ -221,6 +235,8 @@ test: node_modules/
 	@yarn test || { echo "yarn test failed"; exit 1; }
 
 # Validate the entire project
+
+## validate            Run build and tests (used as the default CI-style check)
 validate: build test
 	@echo "Validation complete - all checks passed!"
 
@@ -244,28 +260,15 @@ clean:
 ################################
 
 # Help target to improve discoverability of common commands
-.PHONY: help
+## === Help ===
+## help                Show this help text
 help:
-	@echo "Common targets:";
-	@echo "  make                - Run full validation (lint, tests, build)";
-	@echo "  make validate       - Run lint, tests, and build";
-	@echo "  make release        - Create and push git tag for current version (interactive)";
-	@echo "  make release ACCEPT_ALL=1  - Non-interactive release (CI-friendly)";
-	@echo "  make release-full   - Create PR from current branch, wait for checks, merge, and release";
-	@echo "  make release-full ACCEPT_ALL=1 - Run release-full in non-interactive mode";
-	@echo "  make bump-version TYPE=patch|minor|major - Bump version and create a development branch";
-	@echo "  make draft-pr       - Create a draft PR from current branch (for testing workflows)";
-	@echo "  make promote-pr     - Promote a draft PR to ready for review";
-	@echo "  make release-existing - Use an existing PR to perform release steps";
-	@echo "  make release-aur    - Update AUR package (prompts unless ACCEPT_ALL=1)";
-	@echo "  make release-aur-dry - Run a non-destructive AUR update simulation";
-	@echo "";
-	@echo "Timeouts:";
-	@echo "  PR_TIMEOUT must include a unit suffix: s (seconds), m (minutes), h (hours).";
-	@echo "  Example: make pr_wait_and_merge PR_TIMEOUT=5m";
+	@awk 'BEGIN{section="Other";oc=0; ignore="^(Variables|Functions|Phony Targets|Help|Header Section)$$"} /^[ \t]*## ===/ { s=$$0; sub(/^[ \t]*## ===[ \t]*/,"",s); sub(/[ \t]*===[ \t]*$$/,"",s); gsub(/^[ \t]+|[ \t]+$$/,"",s); if (s ~ ignore) { section="Other"; next } if(!(s in seen)){seen[s]=1; order[++oc]=s}; section=s; next } /^##[ \t]+[^=]/{ desc=substr($$0,4); gsub(/^[ \t]+|[ \t]+$$/,"",desc); if(getline){ if(match($$0,/^[ \t]*([A-Za-z0-9_][A-Za-z0-9_.-]*):/,m)){ target=m[1]; entries_count[section]++; entries[section SUBSEP entries_count[section]] = target ":::" desc } } } END{ if(order[1]=="") { order[++oc]="Other" } for(i=1;i<=oc;i++){ s=order[i]; print ""; print s ":"; for(k=1;k<=entries_count[s];k++){ split(entries[s SUBSEP k],p,":::"); printf("  %-20s %s\n", p[1], p[2]) } } if(entries_count["Other"]) { print ""; print "Other:"; for(k=1;k<=entries_count["Other"];k++){ split(entries["Other" SUBSEP k],p,":::"); printf("  %-20s %s\n", p[1], p[2]) } } }' $(MAKEFILE_LIST)
 
 
-# Release the current version by creating and pushing a git tag
+
+## === Release ===
+## release             Create and push git tag for current version (interactive)
 release: check-deps
 	@echo "Delegating release to scripts/release.sh"
 	@if [ "$(ACCEPT_ALL)" = "1" ]; then \
@@ -274,7 +277,7 @@ release: check-deps
 		./scripts/release.sh --version $(CURRENT_VERSION); \
 	fi
 
-# Bump version and create a pull request for the next version
+## bump-version        Bump version (TYPE=patch|minor|major) and create a development branch
 bump-version: check-deps
 	@if [ -z "$(TYPE)" ]; then \
 		echo "ERROR: TYPE parameter is required. Usage: make bump-version TYPE=patch|minor|major"; \
@@ -328,7 +331,7 @@ bump-version: check-deps
 	echo "   git push origin $$branch_name"; \
 	echo "   gh pr create --base main --head $$branch_name"
 
-# AUR package release - update AUR with latest GitHub release
+## release-aur         Update AUR package for current GitHub release (interactive)
 release-aur:
 	@echo "Updating AUR package..."
 	@if [ ! -f scripts/release-aur.sh ]; then \
@@ -359,7 +362,7 @@ release-aur:
 		./scripts/release-aur.sh "$(CURRENT_VERSION)"; \
 	fi
 
-# Complete release from development branch - creates PR, waits for validation, merges, and releases
+## release-full        Create PR from current branch, wait for checks, merge, create release, update AUR
 release-full:
 	@echo "Starting complete release process from development branch..."
 	$(call check_gh_cli)
@@ -434,8 +437,7 @@ release-aur-auto:
 release-full-auto:
 	$(MAKE) release-full ACCEPT_ALL=1
 
-# Non-destructive dry-run of release (does not create tags or push)
-.PHONY: release-dry
+## release-dry         Run a non-destructive release simulation (dry-run)
 release-dry:
 	@echo "Running non-destructive release dry-run for version $(CURRENT_VERSION)"
 	@if [ "$(ACCEPT_ALL)" = "1" ]; then \
@@ -444,16 +446,14 @@ release-dry:
 		./scripts/release.sh --dry-run --version $(CURRENT_VERSION); \
 	fi
 
-# CI-style dry-run: run validation, then the non-destructive release in auto mode
-.PHONY: ci-dry-run
+## ci-dry-run          Run validation + non-destructive release in auto mode (CI dry-run)
 ci-dry-run: check-deps
 	@echo "Starting CI dry-run: validate + non-destructive release"
 	@$(MAKE) node_modules/ || { echo "ERROR: node_modules install failed"; exit 1; }
 	@$(MAKE) validate || { echo "ERROR: validate failed"; exit 1; }
 	@$(MAKE) release-dry ACCEPT_ALL=1 || { echo "ERROR: release-dry failed"; exit 1; }
 
-# Non-destructive AUR release dry-run
-.PHONY: release-aur-dry
+## release-aur-dry     Non-destructive AUR release simulation for current version
 release-aur-dry:
 	@echo "Running non-destructive AUR release dry-run for version $(CURRENT_VERSION)"
 	@if [ "$(ACCEPT_ALL)" = "1" ]; then \
@@ -462,7 +462,8 @@ release-aur-dry:
 		./scripts/release-aur.sh --dry-run "$(CURRENT_VERSION)"; \
 	fi
 
-# Create a draft PR for testing and validation timing
+## draft-pr            Create a draft PR for testing workflow timing
+##                    (promote with `make promote-pr`)
 draft-pr:
 	@echo "Creating draft PR for testing..."
 	$(call check_gh_cli)
@@ -502,7 +503,7 @@ draft-pr:
 	echo "To promote to ready for review: make promote-pr"; \
 	echo "To release using this PR: make release-existing"
 
-# Promote current branch's draft PR to ready for review
+## promote-pr          Promote current branch's draft PR to ready for review
 promote-pr:
 	@echo "Promoting draft PR to ready for review..."
 	$(call check_gh_cli)
@@ -530,7 +531,7 @@ promote-pr:
 	echo "✅ PR #$$pr_number is now ready for review"; \
 	gh pr view "$$pr_number" --web
 
-# Wait for status checks to pass, then merge the current PR
+## pr_wait_and_merge   Wait for status checks on current branch's PR, then merge it
 pr_wait_and_merge:
 	@echo "Delegating PR wait and merge to scripts/pr-wait-and-merge.sh"
 	@if [ ! -x scripts/pr-wait-and-merge.sh ]; then \
