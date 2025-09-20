@@ -19,6 +19,10 @@ CURRENT_VERSION := $(shell node -pe "require('./package.json').version")
 #   ACCEPT_ALL=1           - prompts will be skipped (auto-accept)
 ACCEPT_ALL ?= 0
 
+# Default timeout for PR status watch operations. Must include unit suffix (s/m/h)
+# Examples: 300s (seconds), 5m (minutes), 1h (hours)
+PR_TIMEOUT ?= 3m
+
 # Build configuration (shell flags, make behavior).
 SHELL := /bin/bash
 .SHELLFLAGS := -eu -o pipefail -c
@@ -239,53 +243,36 @@ clean:
 # Release and Version Management
 ################################
 
+# Help target to improve discoverability of common commands
+.PHONY: help
+help:
+	@echo "Common targets:";
+	@echo "  make                - Run full validation (lint, tests, build)";
+	@echo "  make validate       - Run lint, tests, and build";
+	@echo "  make release        - Create and push git tag for current version (interactive)";
+	@echo "  make release ACCEPT_ALL=1  - Non-interactive release (CI-friendly)";
+	@echo "  make release-full   - Create PR from current branch, wait for checks, merge, and release";
+	@echo "  make release-full ACCEPT_ALL=1 - Run release-full in non-interactive mode";
+	@echo "  make bump-version TYPE=patch|minor|major - Bump version and create a development branch";
+	@echo "  make draft-pr       - Create a draft PR from current branch (for testing workflows)";
+	@echo "  make promote-pr     - Promote a draft PR to ready for review";
+	@echo "  make release-existing - Use an existing PR to perform release steps";
+	@echo "  make release-aur    - Update AUR package (prompts unless ACCEPT_ALL=1)";
+	@echo "  make release-aur-dry - Run a non-destructive AUR update simulation";
+	@echo "";
+	@echo "Timeouts:";
+	@echo "  PR_TIMEOUT must include a unit suffix: s (seconds), m (minutes), h (hours).";
+	@echo "  Example: make pr_wait_and_merge PR_TIMEOUT=5m";
+
+
 # Release the current version by creating and pushing a git tag
 release: check-deps
-	@echo "Starting release process..."
-	@# Verify we're on main branch
-	@current_branch=$$(git rev-parse --abbrev-ref HEAD); \
-	if [ "$$current_branch" != "main" ]; then \
-		echo "ERROR: You must be on the main branch to release. Currently on: $$current_branch"; \
-		exit 1; \
-	fi
-	@# Show what will happen and get confirmation
-	@current_version=$$(node -pe "require('./package.json').version"); \
-	echo ""; \
-	echo "This will:"; \
-	echo "  1. Run validation (lint, tests, build)"; \
-	echo "  2. Create git tag v$$current_version"; \
-	echo "  3. Push tag to GitHub"; \
-	echo "  4. Trigger GitHub Actions to create release"; \
-	echo ""; \
-	if [ "$(ACCEPT_ALL)" != "1" ]; then \
-		read -p "Continue with release v$$current_version? [y/N] " confirm; \
-		if [ "$$confirm" != "y" ] && [ "$$confirm" != "Y" ]; then \
-			echo "Release cancelled."; \
-			exit 0; \
-		fi; \
+	@echo "Delegating release to scripts/release.sh"
+	@if [ "$(ACCEPT_ALL)" = "1" ]; then \
+		./scripts/release.sh --auto --version $(CURRENT_VERSION); \
 	else \
-		echo "Auto-accepting due to ACCEPT_ALL=1"; \
+		./scripts/release.sh --version $(CURRENT_VERSION); \
 	fi
-	@# Verify working tree is clean
-	@if ! git diff-index --quiet HEAD --; then \
-		echo "ERROR: Working tree is not clean. Please commit or stash your changes."; \
-		exit 1; \
-	fi
-	@# Verify we're up to date with remote
-	@git fetch origin main >/dev/null 2>&1 || { echo "ERROR: Failed to fetch from origin"; exit 1; }
-	@if [ "$$(git rev-parse HEAD)" != "$$(git rev-parse origin/main)" ]; then \
-		echo "ERROR: Your main branch is not up to date with origin/main. Please pull the latest changes."; \
-		exit 1; \
-	fi
-	@# Run validation to ensure everything is working
-	@echo "Running validation..."
-	@$(MAKE) validate || { echo "ERROR: Validation failed. Fix issues before releasing."; exit 1; }
-	@# Get current version and create tag
-	@echo "Creating release for version $(CURRENT_VERSION)..."; \
-	git tag "v$(CURRENT_VERSION)" || { echo "ERROR: Failed to create tag v$(CURRENT_VERSION)"; exit 1; }; \
-	git push origin "v$(CURRENT_VERSION)" || { echo "ERROR: Failed to push tag v$(CURRENT_VERSION)"; exit 1; }
-	@echo "✅ Release complete! GitHub Actions will create the release automatically."
-	@echo "   Check the release at: https://github.com/wtbenica/text-clock/releases"
 
 # Bump version and create a pull request for the next version
 bump-version: check-deps
@@ -447,6 +434,34 @@ release-aur-auto:
 release-full-auto:
 	$(MAKE) release-full ACCEPT_ALL=1
 
+# Non-destructive dry-run of release (does not create tags or push)
+.PHONY: release-dry
+release-dry:
+	@echo "Running non-destructive release dry-run for version $(CURRENT_VERSION)"
+	@if [ "$(ACCEPT_ALL)" = "1" ]; then \
+		./scripts/release.sh --auto --dry-run --version $(CURRENT_VERSION); \
+	else \
+		./scripts/release.sh --dry-run --version $(CURRENT_VERSION); \
+	fi
+
+# CI-style dry-run: run validation, then the non-destructive release in auto mode
+.PHONY: ci-dry-run
+ci-dry-run: check-deps
+	@echo "Starting CI dry-run: validate + non-destructive release"
+	@$(MAKE) node_modules/ || { echo "ERROR: node_modules install failed"; exit 1; }
+	@$(MAKE) validate || { echo "ERROR: validate failed"; exit 1; }
+	@$(MAKE) release-dry ACCEPT_ALL=1 || { echo "ERROR: release-dry failed"; exit 1; }
+
+# Non-destructive AUR release dry-run
+.PHONY: release-aur-dry
+release-aur-dry:
+	@echo "Running non-destructive AUR release dry-run for version $(CURRENT_VERSION)"
+	@if [ "$(ACCEPT_ALL)" = "1" ]; then \
+		./scripts/release-aur.sh --dry-run "$(CURRENT_VERSION)"; \
+	else \
+		./scripts/release-aur.sh --dry-run "$(CURRENT_VERSION)"; \
+	fi
+
 # Create a draft PR for testing and validation timing
 draft-pr:
 	@echo "Creating draft PR for testing..."
@@ -517,12 +532,11 @@ promote-pr:
 
 # Wait for status checks to pass, then merge the current PR
 pr_wait_and_merge:
-	@echo "Waiting for status checks to pass..."
-	@gh pr status --watch --timeout 5m || { echo "ERROR: Status checks failed or timed out"; exit 1; }
-	@echo "✅ All status checks passed"
-	@echo "Merging PR..."
-	@gh pr merge --auto --squash || { echo "ERROR: Failed to merge PR"; exit 1; }
-	@echo "✅ PR merged successfully"
+	@echo "Delegating PR wait and merge to scripts/pr-wait-and-merge.sh"
+	@if [ ! -x scripts/pr-wait-and-merge.sh ]; then \
+		echo "ERROR: scripts/pr-wait-and-merge.sh not found or executable"; exit 1; \
+	fi
+	@./scripts/pr-wait-and-merge.sh --timeout $(PR_TIMEOUT) || { echo "ERROR: PR validation/merge failed"; exit 1; }
 
 # Complete release using existing PR (works with draft or ready PRs)
 release-existing:
