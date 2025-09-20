@@ -2,7 +2,7 @@ name: Validate
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
     branches: [main]
 
@@ -33,7 +33,7 @@ jobs:
           yarn lint
 
       - name: Check REUSE compliance
-        uses: fsfe/reuse-action@v3
+        uses: fsfe/reuse-action@v5
 
       - name: Run validation
         run: |
