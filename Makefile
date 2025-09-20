@@ -431,6 +431,12 @@ release-full:
 release-auto:
 	$(MAKE) release ACCEPT_ALL=1
 
+## sync-aur           Copy `aur/` files to local AUR clone and optionally commit/push
+sync-aur:
+	@echo "Syncing aur/ to local AUR clone..."
+	@./scripts/sync-to-aur.sh
+
+
 release-aur-auto:
 	$(MAKE) release-aur ACCEPT_ALL=1
 
