@@ -12,6 +12,13 @@ DIST_DIR=dist
 LOCALE_DIR=locale
 GNOME_SHELL_EXT_DIR=$(HOME)/.local/share/gnome-shell/extensions
 
+# Extract current version from package.json
+CURRENT_VERSION := $(shell node -pe "require('./package.json').version")
+
+#   ACCEPT_ALL=0 (default) - prompts will be shown for confirmation
+#   ACCEPT_ALL=1           - prompts will be skipped (auto-accept)
+ACCEPT_ALL ?= 0
+
 # Build configuration (shell flags, make behavior).
 SHELL := /bin/bash
 .SHELLFLAGS := -eu -o pipefail -c
@@ -28,11 +35,18 @@ define copy_and_modify
 	$(foreach cmd,$(3),sed -i $(cmd) $(2) || { echo "Modifying $(2) failed"; exit 1; };)
 endef
 
+define check_gh_cli
+	@command -v gh >/dev/null 2>&1 || { echo "ERROR: GitHub CLI (gh) is not installed. Please install it to create pull requests."; exit 1; }
+endef
+
 # ################################
 # Phony Targets
 # ################################
 
-.PHONY: all pack install install-system uninstall uninstall-system pot create_ext_dir clean test validate compile build check-deps release bump-version
+.PHONY: \
+	all pack install install-system uninstall uninstall-system pot create_ext_dir clean \
+	test validate compile build check-deps release bump-version release-aur release-full \
+	release-auto release-aur-auto release-full-auto draft-pr promote-pr release-existing
 
 # ################################
 # Main Build Targets
@@ -45,6 +59,9 @@ endef
 #   extension.
 # - `install` installs to user directory (~/.local/share/gnome-shell/extensions)
 # - `install-system` installs system-wide (/usr/share/gnome-shell/extensions) - requires sudo
+# - Release targets (`release`, `release-aur`, `release-full`) prompt for confirmation
+#   unless ACCEPT_ALL=1 is set: `make release ACCEPT_ALL=1`
+# - Auto versions (`release-auto`, `release-aur-auto`, `release-full-auto`) skip prompts
 # ################################
 
 # Default target - run validation pipeline (lint, tests, build)
@@ -231,6 +248,24 @@ release: check-deps
 		echo "ERROR: You must be on the main branch to release. Currently on: $$current_branch"; \
 		exit 1; \
 	fi
+	@# Show what will happen and get confirmation
+	@current_version=$$(node -pe "require('./package.json').version"); \
+	echo ""; \
+	echo "This will:"; \
+	echo "  1. Run validation (lint, tests, build)"; \
+	echo "  2. Create git tag v$$current_version"; \
+	echo "  3. Push tag to GitHub"; \
+	echo "  4. Trigger GitHub Actions to create release"; \
+	echo ""; \
+	if [ "$(ACCEPT_ALL)" != "1" ]; then \
+		read -p "Continue with release v$$current_version? [y/N] " confirm; \
+		if [ "$$confirm" != "y" ] && [ "$$confirm" != "Y" ]; then \
+			echo "Release cancelled."; \
+			exit 0; \
+		fi; \
+	else \
+		echo "Auto-accepting due to ACCEPT_ALL=1"; \
+	fi
 	@# Verify working tree is clean
 	@if ! git diff-index --quiet HEAD --; then \
 		echo "ERROR: Working tree is not clean. Please commit or stash your changes."; \
@@ -246,10 +281,9 @@ release: check-deps
 	@echo "Running validation..."
 	@$(MAKE) validate || { echo "ERROR: Validation failed. Fix issues before releasing."; exit 1; }
 	@# Get current version and create tag
-	@current_version=$$(node -pe "require('./package.json').version"); \
-	echo "Creating release for version $$current_version..."; \
-	git tag "v$$current_version" || { echo "ERROR: Failed to create tag v$$current_version"; exit 1; }; \
-	git push origin "v$$current_version" || { echo "ERROR: Failed to push tag v$$current_version"; exit 1; }
+	@echo "Creating release for version $(CURRENT_VERSION)..."; \
+	git tag "v$(CURRENT_VERSION)" || { echo "ERROR: Failed to create tag v$(CURRENT_VERSION)"; exit 1; }; \
+	git push origin "v$(CURRENT_VERSION)" || { echo "ERROR: Failed to push tag v$(CURRENT_VERSION)"; exit 1; }
 	@echo "✅ Release complete! GitHub Actions will create the release automatically."
 	@echo "   Check the release at: https://github.com/wtbenica/text-clock/releases"
 
@@ -284,8 +318,7 @@ bump-version: check-deps
 	@# Check if GitHub CLI is available
 	@command -v gh >/dev/null 2>&1 || { echo "ERROR: GitHub CLI (gh) is not installed. Please install it to create pull requests."; exit 1; }
 	@# Get current and new version
-	@current_version=$$(node -pe "require('./package.json').version"); \
-	echo "Current version: $$current_version"; \
+	@echo "Current version: $(CURRENT_VERSION)"; \
 	new_version=$$(node scripts/bump-version.cjs $(TYPE) --dry-run | grep "New version:" | cut -d' ' -f3 2>/dev/null || echo ""); \
 	if [ -z "$$new_version" ]; then \
 		echo "ERROR: Failed to calculate new version"; \
@@ -315,21 +348,238 @@ release-aur:
 		echo "ERROR: scripts/release-aur.sh not found"; \
 		exit 1; \
 	fi
-	@current_version=$$(node -pe "require('./package.json').version"); \
-	echo "Releasing AUR package for version $$current_version"; \
-	./scripts/release-aur.sh "$$current_version"
+	@echo ""; \
+	echo "This will:"; \
+	echo "  1. Verify GitHub release v$(CURRENT_VERSION) exists"; \
+	echo "  2. Update AUR package files (PKGBUILD, .SRCINFO)"; \
+	echo "  3. Test package build"; \
+	echo "  4. Commit changes to AUR repository"; \
+	echo "  5. Optionally push to AUR"; \
+	echo ""; \
+	if [ "$(ACCEPT_ALL)" != "1" ]; then \
+		read -p "Continue with AUR release for v$(CURRENT_VERSION)? [y/N] " confirm; \
+		if [ "$$confirm" != "y" ] && [ "$$confirm" != "Y" ]; then \
+			echo "AUR release cancelled."; \
+			exit 0; \
+		fi; \
+	else \
+		echo "Auto-accepting due to ACCEPT_ALL=1"; \
+	fi; \
+	echo "Releasing AUR package for version $(CURRENT_VERSION)"; \
+	if [ "$(ACCEPT_ALL)" = "1" ]; then \
+		./scripts/release-aur.sh --auto-push "$(CURRENT_VERSION)"; \
+	else \
+		./scripts/release-aur.sh "$(CURRENT_VERSION)"; \
+	fi
 
-# Complete release - GitHub + AUR in one command  
+# Complete release from development branch - creates PR, waits for validation, merges, and releases
 release-full:
-	@echo "Starting complete release process..."
-	@if [ ! -f scripts/full-release.sh ]; then \
-		echo "ERROR: scripts/full-release.sh not found"; \
+	@echo "Starting complete release process from development branch..."
+	$(call check_gh_cli)
+	@# Verify working tree is clean
+	@if ! git diff-index --quiet HEAD --; then \
+		echo "ERROR: Working tree is not clean. Please commit or stash your changes."; \
 		exit 1; \
 	fi
-	@echo "Usage: make release-full TYPE=patch|minor|major"
-	@if [ -z "$(TYPE)" ]; then \
-		echo "ERROR: TYPE parameter is required"; \
-		echo "Example: make release-full TYPE=patch"; \
+	@# Get current branch and version info
+	@current_branch=$$(git rev-parse --abbrev-ref HEAD); \
+	if [ "$$current_branch" = "main" ]; then \
+		echo "ERROR: You're on main branch. This command should be run from a development branch."; \
+		echo "Use 'make release' and 'make release-aur' instead for releases from main."; \
 		exit 1; \
-	fi
-	./scripts/full-release.sh "$(TYPE)"
+	fi; \
+	if [ -z "$(CURRENT_VERSION)" ]; then \
+		echo "ERROR: Could not read version from package.json. Aborting release."; \
+		exit 1; \
+	fi; \
+	echo "Creating release from branch: $$current_branch"; \
+	echo "Version: $(CURRENT_VERSION)"; \
+	echo ""; \
+	echo "This will:"; \
+	echo "  1. Create PR from $$current_branch to main"; \
+	echo "  2. Wait for GitHub Actions validation to pass"; \
+	echo "  3. Auto-merge PR when validation succeeds"; \
+	echo "  4. Create GitHub release"; \
+	echo "  5. Update AUR package"; \
+	echo ""; \
+	if [ "$(ACCEPT_ALL)" != "1" ]; then \
+		read -p "Continue? [y/N] " confirm; \
+		if [ "$$confirm" != "y" ] && [ "$$confirm" != "Y" ]; then \
+			echo "Release cancelled."; \
+			exit 0; \
+		fi; \
+	else \
+		echo "Auto-accepting due to ACCEPT_ALL=1"; \
+	fi; \
+	echo "Creating PR..."; \
+	pr_output=$$(gh pr create --base main --head "$$current_branch" --title "Release v$(CURRENT_VERSION)" --body "Automated release PR for version $(CURRENT_VERSION)" --fill 2>&1); \
+	pr_url=$$(echo "$$pr_output" | grep -Eo 'https://github.com/[^ ]+/pull/[0-9]+'); \
+	if [ -z "$$pr_url" ]; then \
+		echo "ERROR: Failed to create PR. Output:"; \
+		echo "$$pr_output"; \
+		exit 1; \
+	fi; \
+	echo "✅ PR created: $$pr_url"; \
+	echo "Waiting for status checks to pass..."; \
+	gh pr status --watch --timeout 5m || { echo "ERROR: Status checks failed or timed out"; exit 1; }; \
+	echo "✅ All status checks passed"; \
+	echo "Merging PR..."; \
+	gh pr merge --auto --squash || { echo "ERROR: Failed to merge PR"; exit 1; }; \
+	echo "✅ PR merged successfully"; \
+	echo "Switching to main branch for releases..."; \
+	git checkout main && git pull origin main || { echo "ERROR: Failed to update main branch"; exit 1; }; \
+	echo "Creating GitHub release..."; \
+	$(MAKE) release ACCEPT_ALL=1 || { echo "ERROR: GitHub release failed"; exit 1; }; \
+	echo "Updating AUR package..."; \
+	$(MAKE) release-aur ACCEPT_ALL=1 || { echo "ERROR: AUR update failed"; exit 1; }; \
+	echo ""; \
+	echo "🎉 Complete release process finished!"; \
+	echo "✅ Version $(CURRENT_VERSION) released on GitHub"; \
+	echo "✅ AUR package updated"; \
+	echo ""; \
+	echo "Next steps:"; \
+	echo "  1. Submit to extensions.gnome.org: make pack"; \
+	echo "  2. Start next development: make bump-version TYPE=patch"
+
+# Auto-accepting versions of release targets (no prompts)
+release-auto:
+	$(MAKE) release ACCEPT_ALL=1
+
+release-aur-auto:
+	$(MAKE) release-aur ACCEPT_ALL=1
+
+release-full-auto:
+	$(MAKE) release-full ACCEPT_ALL=1
+
+# Create a draft PR for testing and validation timing
+draft-pr:
+	@echo "Creating draft PR for testing..."
+	$(call check_gh_cli)
+	@# Get current branch info
+	@current_branch=$$(git rev-parse --abbrev-ref HEAD); \
+	if [ "$$current_branch" = "main" ]; then \
+		echo "ERROR: You're on main branch. Create a feature branch first."; \
+		exit 1; \
+	fi; \
+	current_version=$$(node -pe "require('./package.json').version" 2>/dev/null || echo "unknown"); \
+	echo "Creating draft PR from branch: $$current_branch"; \
+	echo ""; \
+	read -p "Enter PR title (default: 'Draft: $$current_branch'): " title; \
+	if [ -z "$$title" ]; then \
+		title="Draft: $$current_branch"; \
+	fi; \
+	read -p "Enter PR description (default: 'Draft PR for testing validation'): " body; \
+	if [ -z "$$body" ]; then \
+		body="Draft PR for testing validation and workflow timing"; \
+	fi; \
+	echo "Creating draft PR..."; \
+	pr_output=$$(gh pr create --base main --head "$$current_branch" --title "$$title" --body "$$body" --draft 2>&1); \
+	pr_url=$$(echo "$$pr_output" | grep -Eo 'https://github.com/[^ ]+/pull/[0-9]+'); \
+	if [ -z "$$pr_url" ]; then \
+		echo "ERROR: Failed to create draft PR. Output:"; \
+		echo "$$pr_output"; \
+		exit 1; \
+	fi; \
+	echo "✅ Draft PR created: $$pr_url"; \
+	echo ""; \
+	echo "This will trigger GitHub Actions validation."; \
+	echo "You can watch the progress at: $$pr_url"; \
+	echo ""; \
+	echo "To check timing: gh run list"; \
+	echo "To view detailed run: gh run view [run-id]"; \
+	echo ""; \
+	echo "To promote to ready for review: make promote-pr"; \
+	echo "To release using this PR: make release-existing"
+
+# Promote current branch's draft PR to ready for review
+promote-pr:
+	@echo "Promoting draft PR to ready for review..."
+	$(call check_gh_cli)
+	@# Get current branch and find associated PR
+	@current_branch=$$(git rev-parse --abbrev-ref HEAD); \
+	if [ "$$current_branch" = "main" ]; then \
+		echo "ERROR: You're on main branch. Switch to the branch with the draft PR."; \
+		exit 1; \
+	fi; \
+	echo "Looking for draft PR for branch: $$current_branch"; \
+	pr_number=$$(gh pr list --head "$$current_branch" --state open --json number --jq '.[0].number' 2>/dev/null); \
+	if [ -z "$$pr_number" ] || [ "$$pr_number" = "null" ]; then \
+		echo "ERROR: No open PR found for branch $$current_branch"; \
+		echo "Create a draft PR first with: make draft-pr"; \
+		exit 1; \
+	fi; \
+	pr_status=$$(gh pr view "$$pr_number" --json isDraft --jq '.isDraft'); \
+	if [ "$$pr_status" = "false" ]; then \
+		echo "PR #$$pr_number is already ready for review"; \
+		gh pr view "$$pr_number" --web; \
+		exit 0; \
+	fi; \
+	echo "Promoting PR #$$pr_number to ready for review..."; \
+	gh pr ready "$$pr_number" || { echo "ERROR: Failed to promote PR"; exit 1; }; \
+	echo "✅ PR #$$pr_number is now ready for review"; \
+	gh pr view "$$pr_number" --web
+
+# Complete release using existing PR (works with draft or ready PRs)
+release-existing:
+	@echo "Starting release process using existing PR..."
+	$(call check_gh_cli)
+	@# Get current branch and find associated PR
+	@current_branch=$$(git rev-parse --abbrev-ref HEAD); \
+	if [ "$$current_branch" = "main" ]; then \
+		echo "ERROR: You're on main branch. Switch to the branch with the PR to release."; \
+		exit 1; \
+	fi; \
+	if [ -z "$(CURRENT_VERSION)" ]; then \
+		echo "ERROR: Could not read version from package.json"; \
+		exit 1; \
+	fi; \
+	echo "Looking for PR for branch: $$current_branch"; \
+	pr_number=$$(gh pr list --head "$$current_branch" --state open --json number --jq '.[0].number' 2>/dev/null); \
+	if [ -z "$$pr_number" ] || [ "$$pr_number" = "null" ]; then \
+		echo "ERROR: No open PR found for branch $$current_branch"; \
+		echo "Create a PR first with: make draft-pr"; \
+		exit 1; \
+	fi; \
+	pr_status=$$(gh pr view "$$pr_number" --json isDraft --jq '.isDraft'); \
+	echo "Found PR #$$pr_number (draft: $$pr_status)"; \
+	echo "Version: $(CURRENT_VERSION)"; \
+	echo ""; \
+	echo "This will:"; \
+	if [ "$$pr_status" = "true" ]; then \
+		echo "  1. Promote draft PR #$$pr_number to ready for review"; \
+	fi; \
+	echo "  2. Wait for GitHub Actions validation to pass"; \
+	echo "  3. Auto-merge PR when validation succeeds"; \
+	echo "  4. Create GitHub release"; \
+	echo "  5. Update AUR package"; \
+	echo ""; \
+	if [ "$(ACCEPT_ALL)" != "1" ]; then \
+		read -p "Continue? [y/N] " confirm; \
+		if [ "$$confirm" != "y" ] && [ "$$confirm" != "Y" ]; then \
+			echo "Release cancelled."; \
+			exit 0; \
+		fi; \
+	else \
+		echo "Auto-accepting due to ACCEPT_ALL=1"; \
+	fi; \
+	if [ "$$pr_status" = "true" ]; then \
+		echo "Promoting draft PR to ready for review..."; \
+		gh pr ready "$$pr_number" || { echo "ERROR: Failed to promote PR"; exit 1; }; \
+		echo "✅ PR promoted to ready for review"; \
+	fi; \
+	echo "Waiting for status checks to pass..."; \
+	gh pr status --watch --timeout 5m || { echo "ERROR: Status checks failed or timed out"; exit 1; }; \
+	echo "✅ All status checks passed"; \
+	echo "Merging PR..."; \
+	gh pr merge --auto --squash || { echo "ERROR: Failed to merge PR"; exit 1; }; \
+	echo "✅ PR merged successfully"; \
+	echo "Switching to main branch for releases..."; \
+	git checkout main && git pull origin main || { echo "ERROR: Failed to update main branch"; exit 1; }; \
+	echo "Creating GitHub release..."; \
+	$(MAKE) release ACCEPT_ALL=1 || { echo "ERROR: GitHub release failed"; exit 1; }; \
+	echo "Updating AUR package..."; \
+	$(MAKE) release-aur ACCEPT_ALL=1 || { echo "ERROR: AUR update failed"; exit 1; }; \
+	echo ""; \
+	echo "🎉 Complete release process finished!"; \
+	echo "✅ Version $(CURRENT_VERSION) released on GitHub"; \
+	echo "✅ AUR package updated"
