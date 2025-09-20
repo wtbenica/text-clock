@@ -1,30 +1,34 @@
-import { WordPack } from '../../word_pack.js';
-import { TimeFormat } from '../../clock_formatter.js';
+// SPDX-FileCopyrightText: 2024-2025 Wesley Benica <wesley@benica.dev>
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
 
-describe('WordPack', () => {
+import { WordPack } from "../../word_pack.js";
+import { TimeFormat } from "../../clock_formatter.js";
+
+describe("WordPack", () => {
   let wordPack: WordPack;
 
   const mockData = {
-    timesFormatOne: ['exactly', 'five past', 'ten past', 'quarter past'],
-    midnightFormatOne: 'midnight',
-    noonFormatOne: 'noon',
-    timesFormatTwo: ['exactly', 'oh five', 'ten', 'fifteen'],
-    midnightFormatTwo: 'twelve',
-    noonFormatTwo: 'twelve',
-    names: ['twelve', 'one', 'two', 'three'],
-    days: ['Sunday', 'Monday', 'Tuesday'],
-    dayOnly: 'the %s',
-    midnight: 'midnight',
-    noon: 'noon',
-    daysOfMonth: ['1st', '2nd', '3rd'],
+    timesFormatOne: ["exactly", "five past", "ten past", "quarter past"],
+    midnightFormatOne: "midnight",
+    noonFormatOne: "noon",
+    timesFormatTwo: ["exactly", "oh five", "ten", "fifteen"],
+    midnightFormatTwo: "twelve",
+    noonFormatTwo: "twelve",
+    names: ["twelve", "one", "two", "three"],
+    days: ["Sunday", "Monday", "Tuesday"],
+    dayOnly: "the %s",
+    midnight: "midnight",
+    noon: "noon",
+    daysOfMonth: ["1st", "2nd", "3rd"],
   };
 
   beforeEach(() => {
     wordPack = new WordPack(mockData);
   });
 
-  describe('constructor', () => {
-    it('should create a WordPack with all required properties', () => {
+  describe("constructor", () => {
+    it("should create a WordPack with all required properties", () => {
       expect(wordPack.timesFormatOne).toEqual(mockData.timesFormatOne);
       expect(wordPack.timesFormatTwo).toEqual(mockData.timesFormatTwo);
       expect(wordPack.midnightFormatOne).toBe(mockData.midnightFormatOne);
@@ -40,51 +44,51 @@ describe('WordPack', () => {
     });
   });
 
-  describe('getTimes', () => {
-    it('should return format one times for FORMAT_ONE', () => {
+  describe("getTimes", () => {
+    it("should return format one times for FORMAT_ONE", () => {
       const result = wordPack.getTimes(TimeFormat.FORMAT_ONE);
       expect(result).toEqual(mockData.timesFormatOne);
     });
 
-    it('should return format two times for FORMAT_TWO', () => {
+    it("should return format two times for FORMAT_TWO", () => {
       const result = wordPack.getTimes(TimeFormat.FORMAT_TWO);
       expect(result).toEqual(mockData.timesFormatTwo);
     });
 
-    it('should return format one times for invalid format and log error', () => {
-      const consoleSpy = jest.spyOn(global, 'logError');
-      const result = wordPack.getTimes('invalid-format');
-      
+    it("should return format one times for invalid format and log error", () => {
+      const consoleSpy = jest.spyOn(global as any, "logError");
+      const result = wordPack.getTimes("invalid-format");
+
       expect(result).toEqual(mockData.timesFormatOne);
       expect(consoleSpy).toHaveBeenCalled();
     });
 
-    it('should handle empty string format', () => {
-      const result = wordPack.getTimes('');
+    it("should handle empty string format", () => {
+      const result = wordPack.getTimes("");
       expect(result).toEqual(mockData.timesFormatOne);
     });
 
-    it('should handle null/undefined format', () => {
+    it("should handle null/undefined format", () => {
       const result = wordPack.getTimes(null as any);
       expect(result).toEqual(mockData.timesFormatOne);
     });
   });
 
-  describe('validation', () => {
-    it('should work with minimal required data', () => {
+  describe("validation", () => {
+    it("should work with minimal required data", () => {
       const minimalData = {
-        timesFormatOne: ['test'],
-        midnightFormatOne: 'midnight',
-        noonFormatOne: 'noon',
-        timesFormatTwo: ['test'],
-        midnightFormatTwo: 'twelve',
-        noonFormatTwo: 'twelve',
-        names: ['twelve'],
-        days: ['Sunday'],
-        dayOnly: 'the %s',
-        midnight: 'midnight',
-        noon: 'noon',
-        daysOfMonth: ['1st'],
+        timesFormatOne: ["test"],
+        midnightFormatOne: "midnight",
+        noonFormatOne: "noon",
+        timesFormatTwo: ["test"],
+        midnightFormatTwo: "twelve",
+        noonFormatTwo: "twelve",
+        names: ["twelve"],
+        days: ["Sunday"],
+        dayOnly: "the %s",
+        midnight: "midnight",
+        noon: "noon",
+        daysOfMonth: ["1st"],
       };
 
       expect(() => new WordPack(minimalData)).not.toThrow();

@@ -6,6 +6,9 @@ package-lock.json
 ### Yarn (cache / install state)
 .yarn/cache/
 /.yarn/install-state.gz
+.pnp.*
+.yarn/unplugged/
+.yarn/build-state.yml
 
 ### Build outputs
 dist/
@@ -39,4 +42,4 @@ constants_*_test.generated.ts
 *_old.*
 
 ### Keep ESLint config in repo
-!eslint.config.js
+# ESLint config moved to config/eslint.config.js; no need to force-include a root file

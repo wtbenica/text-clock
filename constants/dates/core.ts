@@ -1,4 +1,9 @@
-/* Shared date constants (core) - do not import runtime gettext here. */
+/*
+ * SPDX-FileCopyrightText: 2024 Wesley Benica <wesley@benica.dev>
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ *
+ * Shared date constants (core) - do not import runtime gettext here.
+ */
 
 export type GettextFns = {
   _: (s: string) => string;

@@ -1,18 +1,6 @@
 /*
- * Copyright (c) 2024 Wesley Benica
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * SPDX-FileCopyrightText: 2024 Wesley Benica <wesley@benica.dev>
+ * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 /**
@@ -22,12 +10,12 @@
 // Conditionally import gettext - use a fallback for test environment
 let _: (msgid: string) => string;
 try {
-    // This will work in the GNOME Shell environment
-    ({ gettext: _ } = imports.gettext);
+  // This will work in the GNOME Shell environment
+  ({ gettext: _ } = imports.gettext);
 } catch {
-    // Fallback for test environment or when GNOME Shell imports aren't available
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _ = (msgid: string) => msgid;
+  // Fallback for test environment or when GNOME Shell imports aren't available
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _ = (msgid: string) => msgid;
 }
 
 /**
@@ -38,27 +26,27 @@ try {
  * @param level - Log level ('error', 'warn', 'info', 'debug')
  */
 export function logExtensionError(
-    error: Error | string | unknown,
-    context?: string,
-    level: 'error' | 'warn' | 'info' | 'debug' = 'error'
+  error: Error | string | unknown,
+  context?: string,
+  level: "error" | "warn" | "info" | "debug" = "error",
 ): void {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    const fullMessage = context ? `${context}: ${errorMessage}` : errorMessage;
+  const errorMessage = error instanceof Error ? error.message : String(error);
+  const fullMessage = context ? `${context}: ${errorMessage}` : errorMessage;
 
-    switch (level) {
-        case 'error':
-            logError(new Error(fullMessage), fullMessage);
-            break;
-        case 'warn':
-            console.warn(`[TextClock] ${fullMessage}`);
-            break;
-        case 'info':
-            console.info(`[TextClock] ${fullMessage}`);
-            break;
-        case 'debug':
-            console.debug(`[TextClock] ${fullMessage}`);
-            break;
-    }
+  switch (level) {
+    case "error":
+      logError(new Error(fullMessage), fullMessage);
+      break;
+    case "warn":
+      console.warn(`[TextClock] ${fullMessage}`);
+      break;
+    case "info":
+      console.info(`[TextClock] ${fullMessage}`);
+      break;
+    case "debug":
+      console.debug(`[TextClock] ${fullMessage}`);
+      break;
+  }
 }
 
 /**
@@ -70,16 +58,16 @@ export function logExtensionError(
  * @returns The result of the function or the fallback value
  */
 export function safeExecute<T>(
-    fn: () => T,
-    errorContext: string,
-    fallbackValue?: T
+  fn: () => T,
+  errorContext: string,
+  fallbackValue?: T,
 ): T | undefined {
-    try {
-        return fn();
-    } catch (error) {
-        logExtensionError(error, errorContext);
-        return fallbackValue;
-    }
+  try {
+    return fn();
+  } catch (error) {
+    logExtensionError(error, errorContext);
+    return fallbackValue;
+  }
 }
 
 /**
@@ -90,12 +78,12 @@ export function safeExecute<T>(
  * @throws Error if the value is null or undefined
  */
 export function validateRequired<T>(
-    value: T | null | undefined,
-    valueName: string
+  value: T | null | undefined,
+  valueName: string,
 ): asserts value is T {
-    if (value === null || value === undefined) {
-        throw new Error(`Required value '${valueName}' is null or undefined`);
-    }
+  if (value === null || value === undefined) {
+    throw new Error(`Required value '${valueName}' is null or undefined`);
+  }
 }
 
 /**
@@ -105,10 +93,13 @@ export function validateRequired<T>(
  * @param context - Context for error messages
  * @throws Error if the date is invalid
  */
-export function validateDate(date: Date, context: string = 'Date validation'): void {
-    if (!date || isNaN(date.getTime())) {
-        throw new Error(`${context}: Invalid date provided`);
-    }
+export function validateDate(
+  date: Date,
+  context: string = "Date validation",
+): void {
+  if (!date || isNaN(date.getTime())) {
+    throw new Error(`${context}: Invalid date provided`);
+  }
 }
 
 /**
@@ -119,15 +110,15 @@ export function validateDate(date: Date, context: string = 'Date validation'): v
  * @returns A function that executes fn with error handling
  */
 export function withErrorHandling<T extends any[], R>(
-    operation: string,
-    fn: (...args: T) => R
+  operation: string,
+  fn: (...args: T) => R,
 ): (...args: T) => R | undefined {
-    return (...args: T): R | undefined => {
-        try {
-            return fn(...args);
-        } catch (error) {
-            logExtensionError(error, `Failed during ${operation}`);
-            return undefined;
-        }
-    };
+  return (...args: T): R | undefined => {
+    try {
+      return fn(...args);
+    } catch (error) {
+      logExtensionError(error, `Failed during ${operation}`);
+      return undefined;
+    }
+  };
 }
