@@ -31,7 +31,7 @@ usage() {
     echo "  --auto-push         Automatically push to AUR (default: ask)"
     echo ""
     echo "Examples:"
-    echo "  $0 1.0.5                    # Update AUR to version 1.0.5"
+    echo "  $0 1.0.5                   # Update AUR to version 1.0.5"
     echo "  $0 --dry-run 1.0.5         # Show what would happen"
     echo "  $0 --auto-push 1.0.5       # Update and auto-push to AUR"
     echo ""
