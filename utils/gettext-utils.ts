@@ -30,7 +30,7 @@ export interface GettextFunctions {
 export function createGettextFunctions(): GettextFunctions {
   return {
     _: _,
-    ngettext: ngettext as any,
+    ngettext: ngettext,
     pgettext: pgettext,
   };
 }

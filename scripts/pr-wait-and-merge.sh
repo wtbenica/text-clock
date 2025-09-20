@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+
+# SPDX-FileCopyrightText: 2024-2025 Wesley Benica <wesley@benica.dev>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 set -euo pipefail
 
 # Wait for GitHub PR status checks to pass and merge the PR.
