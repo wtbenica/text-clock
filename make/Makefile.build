@@ -1,0 +1,138 @@
+# SPDX-FileCopyrightText: 2024-2025 Wesley Benica <wesley@benica.dev>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# Build and packaging targets
+# This file contains targets for compiling, building, and packaging the extension
+
+## === Main Build Targets ===
+
+## compile             Compile TypeScript into $(DIST_DIR)
+compile: $(DIST_DIR)/extension.js
+
+## build               Prepare $(DIST_DIR) for distribution (copy metadata, schemas, locale)
+build: $(DIST_DIR)/extension.js schemas/gschemas.compiled locale/
+	@echo "Building distribution package..."
+	@mkdir -p $(DIST_DIR)
+	@cp -r schemas $(DIST_DIR)/ 2>/dev/null || true
+	@cp metadata.json $(DIST_DIR)/ 2>/dev/null || true
+	@cp -r $(LOCALE_DIR) $(DIST_DIR)/ 2>/dev/null || true
+	@echo "Distribution package ready in $(DIST_DIR)/"
+
+## pack                Create the distribution zip file
+pack: build ${ZIP_FILE}
+
+## clean               Remove build artifacts (dist/, node_modules/, zip file, locale/, schemas/gschemas.compiled, yarn.lock)
+clean:
+	@echo "Cleaning up..."
+	@rm -rf $(DIST_DIR) || { echo "Removing dist directory failed"; exit 1; }
+	@rm -rf node_modules/ || { echo "Removing node_modules directory failed"; exit 1; }
+	@rm -f ${ZIP_FILE} || { echo "Removing zip file failed"; exit 1; }
+	@rm -rf $(LOCALE_DIR) || { echo "Removing locale directory failed"; exit 1; }
+	@rm -f schemas/gschemas.compiled || { echo "Removing compiled GSettings schemas failed"; exit 1; }
+	@rm -f yarn.lock || { echo "Removing yarn.lock file failed"; exit 1; }
+	@echo "Cleaning up complete."
+
+## === Installation ===
+
+## install             Install for the current user only (~/.local/share/gnome-shell/extensions)
+install: create_ext_dir build
+	@echo "Installing the extension..."
+	@rm -rf $(GNOME_SHELL_EXT_DIR)/$(NAME)@$(DOMAIN) || { echo "Removing existing extension failed"; exit 1; }
+	@cp -R $(DIST_DIR) $(GNOME_SHELL_EXT_DIR)/$(NAME)@$(DOMAIN) || { echo "Copying extension failed"; exit 1; }
+	@echo "Installation complete."
+
+## uninstall           Uninstall from the current user (~/.local/share/gnome-shell/extensions)
+uninstall:
+	@echo "Uninstalling the extension from user directory..."
+	@if [ -d "$(GNOME_SHELL_EXT_DIR)/$(NAME)@$(DOMAIN)" ]; then \
+		rm -rf "$(GNOME_SHELL_EXT_DIR)/$(NAME)@$(DOMAIN)" || { echo "Removing extension failed"; exit 1; }; \
+		echo "Extension uninstalled from user directory."; \
+	else \
+		echo "Extension not found in user directory."; \
+	fi
+
+## install-system      Install for all users - requires sudo (/usr/share/gnome-shell/extensions)
+install-system: build
+	@echo "Installing the extension system-wide..."
+	@if [ "$$EUID" -ne 0 ]; then \
+		echo "System-wide installation requires root privileges."; \
+		echo "Please run: sudo make install-system"; \
+		exit 1; \
+	fi
+	@SYSTEM_EXT_DIR="/usr/share/gnome-shell/extensions"; \
+	mkdir -p "$$SYSTEM_EXT_DIR" || { echo "Creating system extension directory failed"; exit 1; }; \
+	rm -rf "$$SYSTEM_EXT_DIR/$(NAME)@$(DOMAIN)" || { echo "Removing existing system extension failed"; exit 1; }; \
+	cp -R $(DIST_DIR) "$$SYSTEM_EXT_DIR/$(NAME)@$(DOMAIN)" || { echo "Copying extension to system directory failed"; exit 1; }; \
+	find "$$SYSTEM_EXT_DIR/$(NAME)@$(DOMAIN)" -type f -exec chmod 644 {} \; || { echo "Setting file permissions failed"; exit 1; }; \
+	find "$$SYSTEM_EXT_DIR/$(NAME)@$(DOMAIN)" -type d -exec chmod 755 {} \; || { echo "Setting directory permissions failed"; exit 1; }
+	@echo "System-wide installation complete."
+	@echo "The extension is now available to all users on this system."
+
+## uninstall-system    Uninstall system-wide - requires sudo (/usr/share/gnome-shell/extensions)
+uninstall-system:
+	@echo "Uninstalling the extension from system directory..."
+	@if [ "$$EUID" -ne 0 ]; then \
+		echo "System-wide uninstallation requires root privileges."; \
+		echo "Please run: sudo make uninstall-system"; \
+		exit 1; \
+	fi
+	@SYSTEM_EXT_DIR="/usr/share/gnome-shell/extensions"; \
+	if [ -d "$$SYSTEM_EXT_DIR/$(NAME)@$(DOMAIN)" ]; then \
+		rm -rf "$$SYSTEM_EXT_DIR/$(NAME)@$(DOMAIN)" || { echo "Removing system extension failed"; exit 1; }; \
+		echo "Extension uninstalled from system directory."; \
+	else \
+		echo "Extension not found in system directory."; \
+	fi
+
+### === Helpers ===
+
+# Update the zip file if any of the source files have changed
+${ZIP_FILE}: metadata.json node_modules/ $(DIST_DIR)/extension.js schemas/gschemas.compiled locale/
+	@echo "Packaging the extension..."
+	cp -r schemas $(DIST_DIR)/ || { echo "Copying schemas failed"; exit 1; }
+	cp metadata.json $(DIST_DIR)/ || { echo "Copying metadata.json failed"; exit 1; }
+	cp -r $(LOCALE_DIR) $(DIST_DIR)/ || { echo "Copying locale directory failed"; exit 1; }
+	(cd $(DIST_DIR) && zip ../${ZIP_FILE} -9r .) || { echo "Zipping extension failed"; exit 1; }
+
+# Ensure the local GNOME Shell extensions directory exists
+create_ext_dir:
+	@echo "Ensuring GNOME Shell extensions directory exists..."
+	@mkdir -p $(GNOME_SHELL_EXT_DIR) || { echo "Creating GNOME Shell extensions directory failed"; exit 1; }
+
+# Compile TypeScript files
+$(DIST_DIR)/extension.js: $(TS_FILES) node_modules/
+	@echo "Compiling TypeScript files..."
+	@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is required for building; please install and try again."; exit 1; }
+	@yarn tsc -p config/tsconfig.json || { echo "TypeScript compilation failed"; exit 1; }
+
+# Ensure node modules are installed based on package.json before proceeding
+node_modules/: package.json
+		@echo "Installing node modules..."
+		@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is required to install dependencies; please install and try again."; exit 1; }
+		@yarn install --immutable || { echo "yarn install failed"; exit 1; }
+
+# Compile GSettings schemas
+schemas/gschemas.compiled: schemas/org.gnome.shell.extensions.$(NAME).gschema.xml
+	@echo "Compiling GSettings schemas..."
+	glib-compile-schemas schemas || { echo "GSettings schema compilation failed"; exit 1; }
+
+# Generate a new POT file (collects translatable strings from compiled JS)
+pot: po/${NAME}@${DOMAIN}.pot
+
+# Prepare locale directory
+locale/: $(MO_FILES)
+	@echo "Preparing locale..."
+	@mkdir -p $(LOCALE_DIR) || { echo "Creating locale directory failed"; exit 1; }
+	@for file in $(MO_FILES); do \
+		lang=$$(basename $$file .mo); \
+		mkdir -p $(LOCALE_DIR)/$$lang/LC_MESSAGES || { echo "Creating message directory for $$lang failed"; exit 1; }; \
+		cp $$file $(LOCALE_DIR)/$$lang/LC_MESSAGES/$(NAME)@$(DOMAIN).mo || { echo "Copying $$file failed"; exit 1; }; \
+	done
+
+# Generate a new POT file
+po/text-clock@benica.dev.pot: dist/constants/dates/extension.js dist/constants/times/extension.js
+	@echo "Generating a new POT file..."
+	@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is required to generate POT files; please install and try again."; exit 1; }
+	@yarn tsc -p config/tsconfig.pot.json || { echo "TypeScript compilation failed"; exit 1; }
+	@xgettext --from-code=UTF-8 --keyword=_ --output=po/text-clock@benica.dev.pot dist/constants_*_extension.js || { echo "Generating POT file failed"; exit 1; }

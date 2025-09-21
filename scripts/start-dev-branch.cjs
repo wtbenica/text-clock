@@ -4,6 +4,23 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+/**
+ * Script to start a new development branch by incrementing the version number.
+ * Usage:
+ *   node start-dev-branch.cjs <major|minor|patch> [--dry-run] [--json]
+ * 
+ * This script updates the following files:
+ * - version.json
+ * - package.json
+ * - metadata.json
+ * - README.md
+ * 
+ * It increments the specified version component (major, minor, or patch) and
+ * always increments the build number. If --dry-run is provided, no files are
+ * modified, but the new version is printed. If --json is provided, outputs
+ * current and new version info in JSON format.
+ */
+
 const fs = require('fs');
 const path = require('path');
 
@@ -98,7 +115,7 @@ function main() {
   const isJsonOutput = process.argv.includes('--json');
 
   if (!type || !['major', 'minor', 'patch'].includes(type)) {
-    console.error('Usage: node bump-version.cjs <major|minor|patch> [--dry-run] [--json]');
+    console.error('Usage: node start-dev-branch.cjs <major|minor|patch> [--dry-run] [--json]');
     process.exit(1);
   }
 

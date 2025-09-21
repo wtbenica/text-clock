@@ -37,7 +37,7 @@ usage() {
     echo "  $0 --skip-aur minor        # Release but don't update AUR"
     echo ""
     echo "This script:"
-    echo "  1. Bumps version using 'make bump-version TYPE=<type>'"
+    echo "  1. Starts development branch using 'make start-dev-branch TYPE=<type>'"
     echo "  2. Creates GitHub release using 'make release'"
     echo "  3. Updates AUR package (optional)"
     echo "  4. Pushes AUR changes (optional)"
@@ -121,13 +121,13 @@ if [[ "$DRY_RUN" == "true" ]]; then
     log_warn "DRY RUN MODE - No changes will be made"
 fi
 
-# Step 1: Bump version
-log_step "Bumping $BUMP_TYPE version..."
+# Step 1: Start development branch
+log_step "Starting $BUMP_TYPE development branch..."
 if [[ "$DRY_RUN" == "true" ]]; then
-    log_info "Would run: make bump-version TYPE=$BUMP_TYPE"
+    log_info "Would run: make start-dev-branch TYPE=$BUMP_TYPE"
     NEW_VERSION="X.Y.Z"  # Can't determine without actually running
 else
-    make bump-version TYPE="$BUMP_TYPE"
+    make start-dev-branch TYPE="$BUMP_TYPE"
     # Get the new version
     NEW_VERSION=$(node -p "JSON.parse(require('fs').readFileSync('version.json', 'utf8')).major + '.' + JSON.parse(require('fs').readFileSync('version.json', 'utf8')).minor + '.' + JSON.parse(require('fs').readFileSync('version.json', 'utf8')).patch")
     log_info "✓ Version bumped to $NEW_VERSION"

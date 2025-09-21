@@ -1,0 +1,26 @@
+# SPDX-FileCopyrightText: 2024-2025 Wesley Benica <wesley@benica.dev>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# Testing and validation targets
+# This file contains targets for running tests, validation, and CI checks
+
+## === Testing & Validation ===
+
+## test                Compile from TypeScript and run tests
+test: node_modules/
+	@echo "Running tests..."
+	@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is required to run tests; please install and try again."; exit 1; }
+	@yarn tsc -p config/tsconfig.test.json || { echo "TypeScript compilation failed"; exit 1; }
+	@yarn test || { echo "yarn test failed"; exit 1; }
+
+## validate            Run build and tests (used as the default CI-style check)
+validate: build test
+	@echo "Validation complete - all checks passed!"
+
+## ci-dry-run          Run validation + non-destructive release in auto mode (CI dry-run)
+ci-dry-run: check-deps
+	@echo "Starting CI dry-run: validate + non-destructive release"
+	@$(MAKE) node_modules/ || { echo "ERROR: node_modules install failed"; exit 1; }
+	@$(MAKE) validate || { echo "ERROR: validate failed"; exit 1; }
+	@$(MAKE) release-dry ACCEPT_ALL=1 || { echo "ERROR: release-dry failed"; exit 1; }

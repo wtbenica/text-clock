@@ -41,5 +41,5 @@ make pot               # Generate new POT file for translations
 make release                               # Create GitHub release
 make release-aur                           # Update AUR package
 make release-full                          # Automated GitHub + AUR releases
-make bump-version TYPE={patch|minor|major} # Start next version development
+make start-dev-branch TYPE={patch|minor|major} # Start next version development
 ```
