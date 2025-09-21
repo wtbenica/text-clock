@@ -9,7 +9,7 @@ set -euo pipefail
 # --update           Update .SRCINFO using the project's update-aur.sh script
 # --version X.Y.Z    Specify version to use when updating .SRCINFO (overrides reading from package.json)
 # --yes              Assume yes to all prompts
-# --init             Allow initial sync to an empty AUR clone directory (no PKGBUILD)
+# --init             Allow initial sync to an empty AUR clone directory (no PKGBUILD). Fails if PKGBUILD already exists.
 #                       if the directory basename matches the expected AUR package name
 # --aur-repo <path>  Path to local AUR clone repository (default: ~/Development/gnome-shell-extension-text-clock)
 #
@@ -80,6 +80,13 @@ if [[ ! -f "$AUR_REPO/PKGBUILD" ]]; then
   else
     echo "Error: Destination AUR_REPO does not contain a PKGBUILD file. Aborting to prevent accidental deletion." >&2
     echo "If this is the first-time sync for a freshly-created AUR clone directory, re-run with --init." >&2
+    exit 1
+  fi
+else
+  # PKGBUILD exists - --init should not be used
+  if [[ "$INIT" == true ]]; then
+    echo "Error: PKGBUILD already exists in $AUR_REPO. --init should only be used for initial sync to empty AUR directories." >&2
+    echo "Use 'make sync-aur' instead of 'make sync-aur-init' for subsequent updates." >&2
     exit 1
   fi
 fi

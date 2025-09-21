@@ -21,7 +21,7 @@ SYNC_AUR_ARGS ?=
 ##    --update           Update .SRCINFO using the project's update-aur.sh script
 ##    --version X.Y.Z    Specify version to use when updating .SRCINFO (overrides reading from package.json)
 ##    --yes              Assume yes to all prompts
-##    --init             Allow initial sync to an empty AUR clone directory (no PKGBUILD)
+##    --init             Allow initial sync to an empty AUR clone directory (no PKGBUILD). Fails if PKGBUILD already exists.
 ##                       if the directory basename matches the expected AUR package name
 ## 
 ## sync-aur            Copy `aur/` files to local AUR clone and optionally commit/push

@@ -1,0 +1,21 @@
+# Build artifacts
+*.tar.gz
+*.tar.xz
+*.zip
+pkg/
+src/
+
+# makepkg temporary files
+*.log
+
+# Project scripts (not part of AUR package)
+update-aur.sh
+
+# Editor files
+*~
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
