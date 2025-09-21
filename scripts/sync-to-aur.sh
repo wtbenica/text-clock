@@ -1,7 +1,12 @@
-#!/usr/bin/env bash
+#!/bin/bash
+
+# SPDX-FileCopyrightText: 2024-2025 Wesley Benica <wesley@benica.dev>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 set -euo pipefail
 
-# Sync local aur/ files to AUR clone repository
+# Sync aur/ directory to local AUR clone repository
 #
 # --dry-run          Perform a trial run with no changes made
 # --commit           Commit changes to the AUR clone repository
@@ -58,6 +63,19 @@ PROJECT_ROOT=$(cd "$(dirname "$0")/.." && pwd)
 
 # Basic sanity checks
 command -v rsync >/dev/null 2>&1 || { echo "Error: rsync is required" >&2; exit 1; }
+
+# REUSE compliance check for aur/ directory
+echo "Checking REUSE compliance for aur/ directory..."
+if command -v reuse >/dev/null 2>&1; then
+  if ! (cd "$PROJECT_ROOT/aur" && reuse lint --quiet); then
+    echo "Error: REUSE compliance check failed for aur/ directory" >&2
+    echo "Run 'reuse lint' in the aur/ directory to see specific issues" >&2
+    exit 1
+  fi
+  echo "✓ REUSE compliance check passed"
+else
+  echo "Warning: reuse tool not found, skipping compliance check" >&2
+fi
 
 if [[ ! -d "$AUR_REPO" ]]; then
   echo "AUR repo not found at: $AUR_REPO" >&2

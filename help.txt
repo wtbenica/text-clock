@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2024-2025 Wesley Benica <wesley@benica.dev>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 
   help                Show this help text
   check-deps          Verify required tools are available (yarn, node, glib-compile-schemas, zip, xgettext)
