@@ -31,6 +31,9 @@ else
     AUR_DIR="$(dirname "$0")"
 fi
 
+# Initialize variables
+DRY_RUN=false
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -60,6 +63,8 @@ if [ $# -ne 1 ]; then
     usage
 fi
 
+VERSION="$1"
+
 # Validate version format
 if ! echo "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
     log_error "Invalid version format. Expected: X.Y.Z"
@@ -74,7 +79,7 @@ RELEASE_URL="https://github.com/${GITHUB_REPO}/releases/download/v${VERSION}/tex
 TEMP_FILE=$(mktemp)
 
 log_info "Downloading release to calculate SHA256..."
-RELEASE_ZIP_NAME="${PKGNAME}-${VERSION}.zip"
+RELEASE_ZIP_NAME="text-clock@benica.dev.zip"
 RELEASE_URL="https://github.com/${GITHUB_REPO}/releases/download/v${VERSION}/${RELEASE_ZIP_NAME}"
 TEMP_FILE=$(mktemp)
 
