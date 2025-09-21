@@ -4,13 +4,9 @@
 
 /* Shared time constants (core) - do not import runtime gettext here. */
 
-export type GettextFns = {
-  _: (s: string) => string;
-  ngettext: (s: string, p: string, n: number) => string;
-  pgettext: (ctx: string, s: string) => string;
-};
+import { GettextFunctions } from "../../utils/gettext-utils.js";
 
-export function createTimeConstants(fns: GettextFns) {
+export function createTimeConstants(fns: GettextFunctions) {
   const { pgettext } = fns;
 
   const timesFormatOne: () => string[] = () => [

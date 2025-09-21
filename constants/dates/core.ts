@@ -1,17 +1,15 @@
-/*
+/**
  * SPDX-FileCopyrightText: 2024 Wesley Benica <wesley@benica.dev>
  * SPDX-License-Identifier: GPL-3.0-or-later
- *
+ */
+
+/**
  * Shared date constants (core) - do not import runtime gettext here.
  */
 
-export type GettextFns = {
-  _: (s: string) => string;
-  ngettext: (s: string, p: string, n: number) => string;
-  pgettext: (ctx: string, s: string) => string;
-};
+import { GettextFunctions } from "../../utils/gettext-utils.js";
 
-export function createDateConstants(fns: GettextFns) {
+export function createDateConstants(fns: GettextFunctions) {
   const { _, pgettext } = fns;
 
   const dateOnly: () => string = () =>
