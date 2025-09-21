@@ -283,13 +283,13 @@ release-github-auto:
 	$(MAKE) release-github ACCEPT_ALL=1
 
 ## 
-## release-aur         Update AUR package for current GitHub release
+## release-aur         Update AUR package for current GitHub release (runs update + sync)
 release-aur:
-	@echo "Updating AUR package..."
+	@echo "Preparing AUR update for version $(CURRENT_VERSION)..."
 	@if [ ! -f scripts/release-aur.sh ]; then \
 		echo "ERROR: scripts/release-aur.sh not found"; \
 		exit 1; \
-	fi
+	fi; \
 	@echo ""; \
 	echo "This will:"; \
 	echo "  1. Verify GitHub release v$(CURRENT_VERSION) exists"; \
@@ -307,11 +307,13 @@ release-aur:
 	else \
 		echo "Auto-accepting due to ACCEPT_ALL=1"; \
 	fi; \
-	echo "Releasing AUR package for version $(CURRENT_VERSION)"; \
-	if [ "$(ACCEPT_ALL)" = "1" ]; then \
-		./scripts/release-aur.sh --auto-push "$(CURRENT_VERSION)"; \
+	@echo "Releasing AUR package for version $(CURRENT_VERSION)"; \
+	@if [ "$(ACCEPT_ALL)" = "1" ]; then \
+		./scripts/release-aur.sh --auto-push "$(CURRENT_VERSION)" || { echo "ERROR: release-aur helper failed"; exit 1; }; \
+		$(MAKE) sync-aur AUR_REPO=$(AUR_REPO) SYNC_AUR_ARGS="--commit --push --yes" || { echo "ERROR: sync-aur failed"; exit 1; }; \
 	else \
-		./scripts/release-aur.sh "$(CURRENT_VERSION)"; \
+		./scripts/release-aur.sh "$(CURRENT_VERSION)" || { echo "ERROR: release-aur helper failed"; exit 1; }; \
+		$(MAKE) sync-aur AUR_REPO=$(AUR_REPO) SYNC_AUR_ARGS="--commit --push" || { echo "ERROR: sync-aur failed"; exit 1; }; \
 	fi
 
 ## release-aur-dry     Non-destructive AUR release simulation for current version
@@ -541,19 +543,31 @@ bump-version: check-deps
 	echo "   gh pr create --base main --head $$branch_name"
 
 ## === AUR / Sync ===
+## 
+## AUR_REPO
+##     Path to local AUR clone (default: ~/Development/gnome-shell-extension-text-clock)
+## 
+## SYNC_AUR_ARGS Flags
+##     --commit - Commit changes to AUR repository
+##     --push - Push committed changes to AUR repository
+##     --init - Initialize AUR repository if not already done (first-time setup)
+##     --update - Update PKGBUILD and .SRCINFO files in AUR repository
+##     --version <ver> - Specify version to use (otherwise read from package.json)
+##     --dry-run - Perform a non-destructive dry-run (no changes made)
+##     --yes - Auto-accept prompts (no interactive confirmation)
 
 AUR_REPO ?= $(HOME)/Development/gnome-shell-extension-text-clock
 SYNC_AUR_ARGS ?=
 
-## sync-aur            Copy `aur/` files to local AUR clone and optionally commit/push (AUR_REPO, SYNC_AUR_ARGS)
-##                       - Usage: make sync-aur AUR_REPO=/path/to/aur/clone SYNC_AUR_ARGS="--commit --push"
-##                       - SYNC_AUR_ARGS is forwarded to scripts/sync-to-aur.sh (e.g. --dry-run/--yes/--push)
+## 
+## sync-aur            Copy `aur/` files to local AUR clone and optionally commit/push
+##                       - Usage: make sync-aur [AUR_REPO=/path/to/aur/clone] [SYNC_AUR_ARGS="<FLAGS>"]
 sync-aur:
 	@echo "Syncing aur/ to local AUR clone (AUR_REPO=$(AUR_REPO))..."
 	@./scripts/sync-to-aur.sh --aur-repo "$(AUR_REPO)" $(SYNC_AUR_ARGS)
 
 ## sync-aur-init       Initialize an AUR clone directory and perform initial sync (--init) (AUR_REPO, SYNC_AUR_ARGS)
-##                       - Usage: make sync-aur-init AUR_REPO=/path/to/aur/clone
+##                       - Usage: make sync-aur-init [AUR_REPO=/path/to/aur/clone] [SYNC_AUR_ARGS="<FLAGS>"]
 sync-aur-init:
 	@echo "Initial sync to AUR clone (init) - AUR_REPO=$(AUR_REPO)"
 	@./scripts/sync-to-aur.sh --init --aur-repo "$(AUR_REPO)" $(SYNC_AUR_ARGS)

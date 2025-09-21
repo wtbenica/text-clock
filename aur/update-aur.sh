@@ -4,6 +4,20 @@
 # SPDX-License-Identifier: 0BSD
 
 # Script to update AUR package files when a new release is made
+#
+# This script will:
+# 1. Verify GitHub release v<version> exists (download asset to compute checksum)
+# 2. Update AUR package files (PKGBUILD, .SRCINFO)
+# 3. Optionally operate in dry-run mode (no file changes)
+# 4. Exit with non-zero on any failure
+#
+# CLI flags (compatible style with scripts/sync-to-aur.sh):
+# --dry-run          Perform a non-destructive run; print changes but don't modify files
+# --version X.Y.Z    Specify the version to operate on (overrides positional arg)
+# -h|--help          Show this help text
+#
+# Usage: ./update-aur.sh [--dry-run] [--version X.Y.Z] <version>
+# Example: ./update-aur.sh --dry-run --version 1.0.7
 
 set -euo pipefail
 
@@ -11,6 +25,11 @@ set -euo pipefail
 PKGNAME="gnome-shell-extension-text-clock"
 GITHUB_REPO="wtbenica/text-clock"
 AUR_DIR="$(dirname "$0")"
+if [[ -f "./PKGBUILD" ]]; then
+    AUR_DIR="$(pwd)"
+else
+    AUR_DIR="$(dirname "$0")"
+fi
 
 # Colors for output
 RED='\033[0;31m'
@@ -41,14 +60,13 @@ if [ $# -ne 1 ]; then
     usage
 fi
 
-VERSION="$1"
-
 # Validate version format
 if ! echo "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
     log_error "Invalid version format. Expected: X.Y.Z"
     exit 1
 fi
 
+# Announce
 log_info "Updating AUR package to version $VERSION"
 
 # Download the release to get SHA256
@@ -56,9 +74,14 @@ RELEASE_URL="https://github.com/${GITHUB_REPO}/releases/download/v${VERSION}/tex
 TEMP_FILE=$(mktemp)
 
 log_info "Downloading release to calculate SHA256..."
-if ! curl -sL "$RELEASE_URL" -o "$TEMP_FILE"; then
-    log_error "Failed to download release from $RELEASE_URL"
-    log_error "Make sure the release exists on GitHub"
+RELEASE_ZIP_NAME="${PKGNAME}-${VERSION}.zip"
+RELEASE_URL="https://github.com/${GITHUB_REPO}/releases/download/v${VERSION}/${RELEASE_ZIP_NAME}"
+TEMP_FILE=$(mktemp)
+
+log_info "Attempting to download release archive: $RELEASE_URL"
+if ! curl -fSL --retry 3 --retry-delay 2 -o "$TEMP_FILE" "$RELEASE_URL"; then
+    log_error "Failed to download release archive from: $RELEASE_URL"
+    log_error "Check that the GitHub release 'v${VERSION}' exists for ${GITHUB_REPO} and that the asset '${RELEASE_ZIP_NAME}' is present and public."
     rm -f "$TEMP_FILE"
     exit 1
 fi
@@ -70,6 +93,18 @@ rm -f "$TEMP_FILE"
 log_info "SHA256: $SHA256"
 
 # Update PKGBUILD
+if [[ "$DRY_RUN" == true ]]; then
+    log_info "Dry-run mode: showing changes that would be applied to PKGBUILD"
+    echo "--- PKGBUILD (updates) ---"
+    echo "s/^pkgver=.*/pkgver=${VERSION}/"
+    echo "s/^pkgrel=.*/pkgrel=1/"
+    echo "s/^sha256sums=.*/sha256sums=('${SHA256}')/"
+    echo
+    echo "Would regenerate .SRCINFO using: makepkg --printsrcinfo > .SRCINFO (requires makepkg)"
+    log_info "Dry-run complete. No files modified."
+    exit 0
+fi
+
 log_info "Updating PKGBUILD..."
 sed -i "s/^pkgver=.*/pkgver=${VERSION}/" "$AUR_DIR/PKGBUILD"
 sed -i "s/^pkgrel=.*/pkgrel=1/" "$AUR_DIR/PKGBUILD"
@@ -81,11 +116,8 @@ cd "$AUR_DIR"
 if command -v makepkg >/dev/null 2>&1; then
     makepkg --printsrcinfo > .SRCINFO
 else
-    log_warn "makepkg not found, manually updating .SRCINFO..."
-    sed -i "s/^	pkgver = .*/	pkgver = ${VERSION}/" .SRCINFO
-    sed -i "s/^	pkgrel = .*/	pkgrel = 1/" .SRCINFO
-    sed -i "s|^	source = .*|	source = ${PKGNAME}-${VERSION}.zip::https://github.com/${GITHUB_REPO}/releases/download/v${VERSION}/text-clock@benica.dev.zip|" .SRCINFO
-    sed -i "s/^	sha256sums = .*/	sha256sums = ${SHA256}/" .SRCINFO
+    log_error "makepkg is required to regenerate .SRCINFO. Aborting."
+    exit 1
 fi
 
 log_info "AUR package files updated successfully!"

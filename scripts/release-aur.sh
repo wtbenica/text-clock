@@ -6,6 +6,24 @@
 
 # AUR release script for text-clock GNOME Shell extension
 # This script automates the AUR package update after a GitHub release
+# 
+# It performs the following steps:
+# 1. Checks that the GitHub release exists
+# 2. Updates AUR package files (PKGBUILD, .SRCINFO)
+# 3. Tests the package builds correctly
+# 4. Commits changes to AUR clone repository
+# 5. Optionally pushes to AUR
+# 6. Provides a summary and next steps
+#
+# CLI flags:
+#   -h, --help          Show this help message
+#   -n, --dry-run       Show what would be done without executing
+#   -s, --skip-test     Skip the build test step
+#   --auto-push         Automatically push to AUR (default: ask)
+#
+#   <version>          The version to release (format: X.Y.Z)
+#
+# Usage: scripts/release-aur.sh [options] <version>
 
 set -euo pipefail
 

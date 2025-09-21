@@ -2,13 +2,26 @@
 set -euo pipefail
 
 # Sync local aur/ files to AUR clone repository
-# Usage: scripts/sync-to-aur.sh [--dry-run] [--commit] [--push]
+#
+# --dry-run          Perform a trial run with no changes made
+# --commit           Commit changes to the AUR clone repository
+# --push             Push changes to the AUR (requires --commit)
+# --update           Update .SRCINFO using the project's update-aur.sh script
+# --version X.Y.Z    Specify version to use when updating .SRCINFO (overrides reading from package.json)
+# --yes              Assume yes to all prompts
+# --init             Allow initial sync to an empty AUR clone directory (no PKGBUILD)
+#                       if the directory basename matches the expected AUR package name
+# --aur-repo <path>  Path to local AUR clone repository (default: ~/Development/gnome-shell-extension-text-clock)
+#
+# Usage: scripts/sync-to-aur.sh [--dry-run] [--commit] [--push] [--update] [--version X.Y.Z] [--yes] [--init] [--aur-repo <path>]
 
 DRY_RUN=false
 COMMIT=false
 PUSH=false
 ASSUME_YES=false
 INIT=false
+UPDATE=false
+VERSION_OVERRIDE=""
 # Allow overriding the expected basename when needed via env
 EXPECTED_BASENAME="${EXPECTED_BASENAME:-gnome-shell-extension-text-clock}"
 AUR_REPO="${AUR_REPO:-$HOME/Development/gnome-shell-extension-text-clock}"
@@ -16,9 +29,12 @@ AUR_REPO="${AUR_REPO:-$HOME/Development/gnome-shell-extension-text-clock}"
 # Parse arguments (single loop)
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --dry-run) DRY_RUN=true; shift ;;
-    --commit) COMMIT=true; shift ;;
-    --push) PUSH=true; shift ;;
+  --dry-run) DRY_RUN=true; shift ;;
+  --commit) COMMIT=true; shift ;;
+  --push) PUSH=true; shift ;;
+  --update) UPDATE=true; shift ;;
+  --version) VERSION_OVERRIDE="$2"; shift 2 ;;
+  --version=*) VERSION_OVERRIDE="${1#*=}"; shift ;;
     --aur-repo)
       if [[ -n "${2:-}" ]]; then
         AUR_REPO="$2"
@@ -31,7 +47,7 @@ while [[ $# -gt 0 ]]; do
     --yes) ASSUME_YES=true; shift ;;
     --init) INIT=true; shift ;;
     -h|--help)
-      echo "Usage: $0 [--dry-run] [--commit] [--push] [--yes] [--init] [--aur-repo <path>]"
+      echo "Usage: $0 [--dry-run] [--commit] [--push] [--update] [--version X.Y.Z] [--yes] [--init] [--aur-repo <path>]"
       exit 0
       ;;
     *) echo "Unknown arg: $1" >&2; exit 1 ;;
@@ -113,7 +129,11 @@ if ! command -v node >/dev/null 2>&1; then
   echo "Error: Node.js is required to read package.json" >&2
   exit 1
 fi
-VERSION=$(cd "$PROJECT_ROOT" && node -pe "require('./package.json').version" 2>/dev/null || true)
+if [[ -n "$VERSION_OVERRIDE" ]]; then
+  VERSION="$VERSION_OVERRIDE"
+else
+  VERSION=$(cd "$PROJECT_ROOT" && node -pe "require('./package.json').version" 2>/dev/null || true)
+fi
 if [[ -z "$VERSION" ]]; then
   echo "Error: Could not read version from package.json" >&2
   exit 1
@@ -122,14 +142,19 @@ fi
 cd "$AUR_REPO"
 
 # Update PKGBUILD/.SRCINFO using the project's helper if available
-if [[ -x "$PROJECT_ROOT/aur/update-aur.sh" ]]; then
-  echo "Running update-aur.sh to refresh PKGBUILD/.SRCINFO"
-  if ! "$PROJECT_ROOT/aur/update-aur.sh" "$VERSION"; then
-    echo "Error: update-aur.sh failed. Please check the output above." >&2
+if [[ "$UPDATE" == true ]]; then
+  if [[ -x "$PROJECT_ROOT/aur/update-aur.sh" ]]; then
+    echo "Running update-aur.sh to refresh PKGBUILD/.SRCINFO (version: $VERSION)"
+    if ! "$PROJECT_ROOT/aur/update-aur.sh" "$VERSION"; then
+      echo "Error: update-aur.sh failed. Aborting sync; no commit/push will be performed." >&2
+      exit 1
+    fi
+  else
+    echo "Error: aur/update-aur.sh not executable or not present; cannot update .SRCINFO" >&2
     exit 1
   fi
 else
-  echo "Warning: aur/update-aur.sh not executable or not present; skipping auto .SRCINFO update"
+  echo "Skipping update-aur.sh (.SRCINFO) because --update not provided"
 fi
 
 if [[ "$COMMIT" == true ]]; then
