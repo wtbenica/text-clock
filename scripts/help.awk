@@ -18,9 +18,9 @@ BEGIN { print ""; printed = 0 }
 }
 
 # Target descriptions: '## some text'
-/^[ \t]*##[ \t]+/ {
+/^[ \t]*##[ \t].*/ {
     line = $0
-    sub(/^[ \t]*##[ \t]*/, "", line)
+    sub(/^[ \t]*## /, "", line)
     print "  " line
     printed = 1
     next

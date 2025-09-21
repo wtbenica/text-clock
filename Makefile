@@ -50,9 +50,9 @@ endef
 	install install-system uninstall uninstall-system \
 	pot create_ext_dir clean \
 	test validate compile build check-deps \
-	release release-auto \
-	release-aur release-aur-auto \
-	release-pr-full release-dry release-aur-dry \
+	release release-dry release-auto \
+	release-github release-github-dry release-github-auto \
+	release-aur release-aur-dry release-aur-auto \
 	pr-create pr-create-draft pr-promote pr-wait-and-merge pr-use-existing \
 	bump-version ci-dry-run help
 
@@ -65,17 +65,6 @@ help:
 	@./scripts/help.awk $(MAKEFILE_LIST)
 
 ## === Main Build Targets ===
-# Notes:
-# - `make`/`make all` runs the `validate` target (lint + tests + build).
-# - `compile` compiles TypeScript into `dist/` using `tsc`.
-# - `build` prepares the `dist/` directory for distribution
-# - `pack` zips the `dist/` folder for distribution as a GNOME Shell
-#   extension.
-# - `install` installs to user directory (~/.local/share/gnome-shell/extensions)
-# - `install-system` installs system-wide (/usr/share/gnome-shell/extensions) - requires sudo
-# - Release targets (`release`, `release-aur`, `release-pr-full`) prompt for confirmation
-#   unless ACCEPT_ALL=1 is set: `make release ACCEPT_ALL=1`
-# - Auto versions (`release-auto`, `release-aur-auto`, `release-pr-full-auto`) skip prompts
 
 ## all                 Run full validation (lint, tests, build)
 all: validate
@@ -196,32 +185,8 @@ ci-dry-run: check-deps
 
 ## === Release & Distribution ===
 
-## release             Create and push GitHub release for current version (interactive)
-release: check-deps
-	@echo "Delegating release to scripts/release.sh"
-	@if [ "$(ACCEPT_ALL)" = "1" ]; then \
-		./scripts/release.sh --auto --version $(CURRENT_VERSION); \
-	else \
-		./scripts/release.sh --version $(CURRENT_VERSION); \
-	fi
-
-## release-dry         Non-destructive release simulation (dry-run)
-release-dry: check-deps
-	@echo "Running non-destructive release dry-run for version $(CURRENT_VERSION)"
-	@if [ ! -f scripts/release.sh ]; then \
-		echo "ERROR: scripts/release.sh not found"; exit 1; \
-	fi; \
-	@./scripts/release.sh --dry-run --version $(CURRENT_VERSION) || { echo "ERROR: release dry-run failed"; exit 1; }
-
-## release-auto        Auto-accepting release (no prompts)
-release-auto:
-	$(MAKE) release ACCEPT_ALL=1
-
-release-pr-full-auto:
-	$(MAKE) release-pr-full ACCEPT_ALL=1
-
-## release-pr-full     Create PR, wait for checks, merge, create release, update AUR (interactive)
-release-pr-full:
+## release             Create PR, wait for checks, merge, create GitHub release, update AUR
+release:
 	@echo "Starting complete release process from development branch..."
 	$(call check_gh_cli)
 	@# Verify working tree is clean
@@ -273,7 +238,7 @@ release-pr-full:
 	echo "Switching to main branch for releases..."; \
 	git checkout main && git pull origin main || { echo "ERROR: Failed to update main branch"; exit 1; }; \
 	echo "Creating GitHub release..."; \
-	$(MAKE) release ACCEPT_ALL=1 || { echo "ERROR: GitHub release failed"; exit 1; }; \
+	$(MAKE) release-github ACCEPT_ALL=1 || { echo "ERROR: GitHub release failed"; exit 1; }; \
 	echo "Updating AUR package..."; \
 	$(MAKE) release-aur ACCEPT_ALL=1 || { echo "ERROR: AUR update failed"; exit 1; }; \
 	echo ""; \
@@ -285,7 +250,40 @@ release-pr-full:
 	echo "  1. Submit to extensions.gnome.org: make pack"; \
 	echo "  2. Start next development: make bump-version TYPE=patch"
 
-## release-aur         Update AUR package for current GitHub release (interactive)
+## release-dry         Create GitHub release, update AUR (pure, dry-run)
+release-dry: check-deps
+	@echo "Running full non-destructive release dry-run (GitHub + AUR)"
+	@$(MAKE) release-github-dry ACCEPT_ALL=$(ACCEPT_ALL) || { echo "ERROR: release-github-dry failed"; exit 1; }
+	@$(MAKE) release-aur-dry ACCEPT_ALL=$(ACCEPT_ALL) || { echo "ERROR: release-aur-dry failed"; exit 1; }
+
+## release-auto        Create PR, wait for checks, merge, create GitHub release, update AUR (auto-accept prompts)
+release-auto:
+	$(MAKE) release ACCEPT_ALL=1
+
+## 
+## release-github      Create and push GitHub release for current version
+release-github: check-deps
+	@echo "Delegating release to scripts/release.sh"
+	@if [ "$(ACCEPT_ALL)" = "1" ]; then \
+		./scripts/release.sh --auto --version $(CURRENT_VERSION); \
+	else \
+		./scripts/release.sh --version $(CURRENT_VERSION); \
+	fi
+
+## release-github-dry  Create GitHub release (dry-run)
+release-github-dry: check-deps
+	@echo "Running non-destructive release dry-run for version $(CURRENT_VERSION)"
+	@if [ ! -f scripts/release.sh ]; then \
+		echo "ERROR: scripts/release.sh not found"; exit 1; \
+	fi; \
+	@./scripts/release.sh --dry-run --version $(CURRENT_VERSION) || { echo "ERROR: release dry-run failed"; exit 1; }
+
+## release-github-auto Create GitHub release (auto-accept prompts)
+release-github-auto:
+	$(MAKE) release-github ACCEPT_ALL=1
+
+## 
+## release-aur         Update AUR package for current GitHub release
 release-aur:
 	@echo "Updating AUR package..."
 	@if [ ! -f scripts/release-aur.sh ]; then \
@@ -325,11 +323,9 @@ release-aur-dry:
 		./scripts/release-aur.sh --dry-run "$(CURRENT_VERSION)"; \
 	fi
 
-
 ## release-aur-auto    Auto-accepting AUR update (no prompts)
 release-aur-auto:
 	$(MAKE) release-aur ACCEPT_ALL=1
-
 
 ## === VCS / PR Helpers ===
 
@@ -481,7 +477,7 @@ pr-use-existing:
 	echo "Switching to main branch for releases..."; \
 	git checkout main && git pull origin main || { echo "ERROR: Failed to update main branch"; exit 1; }; \
 	echo "Creating GitHub release..."; \
-	$(MAKE) release || { echo "ERROR: GitHub release failed"; exit 1; }; \
+	$(MAKE) release-github || { echo "ERROR: GitHub release failed"; exit 1; }; \
 	echo "Updating AUR package..."; \
 	$(MAKE) release-aur || { echo "ERROR: AUR update failed"; exit 1; }; \
 	echo ""; \
