@@ -101,13 +101,21 @@ else
   exit 1
 fi
 
-# Automatic dry-run to preview deletions. If deletions are detected, require --commit or --yes.
-echo "Performing dry-run to detect potential deletions..."
-DRY_OUTPUT=$(rsync -av --delete --dry-run --itemize-changes --exclude='pkg/' --exclude='*.zip' "$PROJECT_ROOT/aur/" "$AUR_REPO/" 2>&1)
+# Check if this is a dry run - if so, just preview and exit
+if [[ "$DRY_RUN" == true ]]; then
+  echo "Performing dry-run to preview changes..."
+  rsync -av --delete --dry-run --itemize-changes --exclude='pkg/' --exclude='*.zip' --exclude='.git/' "$PROJECT_ROOT/aur/" "$AUR_REPO/"
+  echo "Dry run: files would be copied to $AUR_REPO but no actual changes made"
+  exit 0
+fi
+
+# For actual runs, do safety check first
+echo "Performing safety check for potential deletions..."
+DRY_OUTPUT=$(rsync -av --delete --dry-run --itemize-changes --exclude='pkg/' --exclude='*.zip' --exclude='.git/' "$PROJECT_ROOT/aur/" "$AUR_REPO/" 2>&1)
 echo "$DRY_OUTPUT"
 
 if echo "$DRY_OUTPUT" | grep -q "^\*deleting"; then
-  echo "Detected deletions in dry-run." >&2
+  echo "Detected deletions in safety check." >&2
   if [[ "$ASSUME_YES" != true && "$COMMIT" != true ]]; then
     echo "Aborting: run again with --yes to allow deletions, or run --dry-run to inspect changes." >&2
     exit 2
@@ -116,13 +124,8 @@ if echo "$DRY_OUTPUT" | grep -q "^\*deleting"; then
   fi
 fi
 
-# Perform the copy (exclude build artifacts and zips)
-rsync -av --delete --exclude='pkg/' --exclude='*.zip' "$PROJECT_ROOT/aur/" "$AUR_REPO/"
-
-if [[ "$DRY_RUN" == true ]]; then
-  echo "Dry run: files copied to $AUR_REPO but no .SRCINFO update or commits performed"
-  exit 0
-fi
+# Perform the actual copy (exclude build artifacts and zips)
+rsync -av --delete --exclude='pkg/' --exclude='*.zip' --exclude='.git/' "$PROJECT_ROOT/aur/" "$AUR_REPO/"
 
 # Read package version once
 if ! command -v node >/dev/null 2>&1; then

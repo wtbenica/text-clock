@@ -41,6 +41,19 @@ PR Helpers:
   promote-pr          Promote current branch's draft PR to ready for review
 
 AUR / Sync:
+  
+  AUR_REPO
+     Path to AUR clone repository, default is $HOME/Development/gnome-shell-extension-text-clock
+  
+  SYNC_AUR_ARGS
+     --dry-run          Perform a trial run with no changes made
+     --commit           Commit changes to the AUR clone repository
+     --push             Push changes to the AUR (requires --commit)
+     --update           Update .SRCINFO using the project's update-aur.sh script
+     --version X.Y.Z    Specify version to use when updating .SRCINFO (overrides reading from package.json)
+     --yes              Assume yes to all prompts
+     --init             Allow initial sync to an empty AUR clone directory (no PKGBUILD)
+                        if the directory basename matches the expected AUR package name
   sync-aur            Copy `aur/` files to local AUR clone and optionally commit/push
                         - Usage: make sync-aur [AUR_REPO=/path/to/aur/clone] [SYNC_AUR_ARGS="<FLAGS>"]
   sync-aur-init       Initialize an AUR clone directory and perform initial sync (--init) (AUR_REPO, SYNC_AUR_ARGS)
