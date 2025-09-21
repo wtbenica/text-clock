@@ -66,16 +66,18 @@ command -v rsync >/dev/null 2>&1 || { echo "Error: rsync is required" >&2; exit 
 
 # REUSE compliance check for aur/ directory
 echo "Checking REUSE compliance for aur/ directory..."
-if command -v reuse >/dev/null 2>&1; then
-  if ! (cd "$PROJECT_ROOT/aur" && reuse lint --quiet); then
-    echo "Error: REUSE compliance check failed for aur/ directory" >&2
-    echo "Run 'reuse lint' in the aur/ directory to see specific issues" >&2
-    exit 1
-  fi
-  echo "✓ REUSE compliance check passed"
-else
-  echo "Warning: reuse tool not found, skipping compliance check" >&2
+if ! command -v reuse >/dev/null 2>&1; then
+  echo "Error: reuse tool is required for AUR sync compliance checking" >&2
+  echo "Install with: pip install reuse" >&2
+  exit 1
 fi
+
+if ! (cd "$PROJECT_ROOT/aur" && reuse lint --quiet); then
+  echo "Error: REUSE compliance check failed for aur/ directory" >&2
+  echo "Run 'reuse lint' in the aur/ directory to see specific issues" >&2
+  exit 1
+fi
+echo "✓ REUSE compliance check passed"
 
 if [[ ! -d "$AUR_REPO" ]]; then
   echo "AUR repo not found at: $AUR_REPO" >&2
