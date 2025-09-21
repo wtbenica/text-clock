@@ -78,6 +78,77 @@ if ! (cd "$PROJECT_ROOT/aur" && reuse lint --quiet); then
   exit 1
 fi
 echo "✓ REUSE compliance check passed"
+# Namcap check: lint the AUR PKGBUILD
+echo "Running namcap on aur/PKGBUILD..."
+if ! command -v namcap >/dev/null 2>&1; then
+  echo "Error: namcap is required to lint the AUR PKGBUILD" >&2
+  echo "Install with: sudo pacman -S namcap" >&2
+  exit 1
+fi
+
+if ! namcap "$PROJECT_ROOT/aur/PKGBUILD"; then
+  echo "Error: namcap found issues in aur/PKGBUILD. Fix them before syncing to AUR." >&2
+  exit 1
+fi
+echo "✓ namcap check passed"
+
+# Build the package in a temporary directory to verify makepkg -si works and run namcap on the produced package
+MAKEPKG_INSTALL="${MAKEPKG_INSTALL:-false}"
+echo "Verifying package build with makepkg (MAKEPKG_INSTALL=${MAKEPKG_INSTALL})..."
+if ! command -v makepkg >/dev/null 2>&1; then
+  echo "Error: makepkg is required to validate the PKGBUILD" >&2
+  echo "Install the 'pacman' / base-devel toolchain on Arch to get makepkg" >&2
+  exit 1
+fi
+
+TMP_BUILD_DIR=$(mktemp -d)
+echo "Using temporary build dir: $TMP_BUILD_DIR"
+cp -a "$PROJECT_ROOT/aur/". "$TMP_BUILD_DIR/"
+pushd "$TMP_BUILD_DIR" >/dev/null
+
+MAKEPKG_FLAGS="-s --noconfirm"
+if [[ "$MAKEPKG_INSTALL" == "true" ]]; then
+  MAKEPKG_FLAGS="-si --noconfirm"
+fi
+
+# Remove any pre-existing package artifacts that could cause makepkg to abort
+rm -f *.pkg.* 2>/dev/null || true
+
+if ! makepkg $MAKEPKG_FLAGS; then
+  echo "Error: makepkg failed in temporary build dir ($TMP_BUILD_DIR). Fix PKGBUILD/build issues before syncing." >&2
+  popd >/dev/null || true
+  rm -rf "$TMP_BUILD_DIR"
+  exit 1
+fi
+
+# Find the produced package file
+PKGFILE=$(ls -1 *.pkg.* 2>/dev/null | tail -n1 || true)
+if [[ -z "$PKGFILE" ]]; then
+  echo "Error: no package file produced by makepkg; cannot run namcap on package" >&2
+  popd >/dev/null || true
+  rm -rf "$TMP_BUILD_DIR"
+  exit 1
+fi
+
+echo "Running namcap on built package: $PKGFILE"
+if ! command -v namcap >/dev/null 2>&1; then
+  echo "Error: namcap is required to lint built packages" >&2
+  echo "Install with: sudo pacman -S namcap" >&2
+  popd >/dev/null || true
+  rm -rf "$TMP_BUILD_DIR"
+  exit 1
+fi
+
+if ! namcap "$PKGFILE"; then
+  echo "Error: namcap found issues in built package ($PKGFILE). Fix them before syncing to AUR." >&2
+  popd >/dev/null || true
+  rm -rf "$TMP_BUILD_DIR"
+  exit 1
+fi
+
+echo "✓ Built package namcap check passed"
+popd >/dev/null || true
+rm -rf "$TMP_BUILD_DIR"
 
 if [[ ! -d "$AUR_REPO" ]]; then
   echo "AUR repo not found at: $AUR_REPO" >&2

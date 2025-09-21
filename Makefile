@@ -13,6 +13,7 @@ help:
 	@command -v awk >/dev/null 2>&1 || { echo "awk is required for make help"; exit 1; }
 	@./scripts/help.awk $(MAKEFILE_LIST)
 
+
 # Include all component Makefiles
 include make/Makefile.build
 include make/Makefile.test
