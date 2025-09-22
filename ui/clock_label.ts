@@ -11,6 +11,7 @@ import { gettext as _ } from "resource:///org/gnome/shell/extensions/extension.j
 import { WordPack } from "../word_pack.js";
 import { ClockFormatter, TimeFormat, Fuzziness } from "../clock_formatter.js";
 import { PrefItems, Errors } from "../constants/index.js";
+import { logExtensionError } from "../utils/error-utils.js";
 
 /**
  * The properties of the clock label
@@ -136,7 +137,11 @@ export const TextClockLabel = GObject.registerClass(
       try {
         this._formatter = new ClockFormatter(this._translatePack);
       } catch (error: any) {
-        logError(error, _(Errors.ERROR_INITIALIZING_CLOCK_LABEL));
+        logExtensionError(
+          error,
+          _(Errors.ERROR_INITIALIZING_CLOCK_LABEL),
+          "error",
+        );
       }
 
       this.updateClock();
@@ -244,7 +249,7 @@ export const TextClockLabel = GObject.registerClass(
           this.applyStyling();
         }
       } catch (error: any) {
-        logError(error, _(Errors.ERROR_UPDATING_CLOCK_LABEL));
+        logExtensionError(error, _(Errors.ERROR_UPDATING_CLOCK_LABEL), "error");
       }
     }
 

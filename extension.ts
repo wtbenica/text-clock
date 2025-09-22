@@ -40,6 +40,7 @@ import {
   dateOnly,
   daysOfMonth,
 } from "./constants/dates/extension.js";
+import { logExtensionError } from "./utils/error-utils.js";
 
 const CLOCK_STYLE_CLASS_NAME = "clock";
 
@@ -134,19 +135,25 @@ export default class TextClock extends Extension {
     try {
       this.#dateMenu = panel.statusArea.dateMenu as IDateMenuButton;
       if (!this.#dateMenu) {
-        log(`TextClock: dateMenu not found on panel.statusArea`);
+        logExtensionError(
+          `dateMenu not found on panel.statusArea`,
+          undefined,
+          "info",
+        );
         return;
       }
-      log(`TextClock: dateMenu found`);
+      logExtensionError(`dateMenu found`, undefined, "info");
 
       const { _clock, _clockDisplay } = this.#dateMenu as any;
       this.#clock = _clock;
       this.#clockDisplay = _clockDisplay;
-      log(
-        `TextClock: _clock ${this.#clock ? "found" : "missing"}, _clockDisplay ${this.#clockDisplay ? "found" : "missing"}`,
+      logExtensionError(
+        `_clock ${this.#clock ? "found" : "missing"}, _clockDisplay ${this.#clockDisplay ? "found" : "missing"}`,
+        undefined,
+        "info",
       );
     } catch (error: any) {
-      logError(error, _(Errors.ERROR_RETRIEVE_DATE_MENU));
+      logExtensionError(error, _(Errors.ERROR_RETRIEVE_DATE_MENU), "error");
     }
   }
 
@@ -175,7 +182,11 @@ export default class TextClock extends Extension {
           SETTINGS.FUZZINESS,
         );
       } catch (e: any) {
-        logError(e, _(Errors.ERROR_BINDING_SETTINGS_TO_CLOCK_LABEL));
+        logExtensionError(
+          e,
+          _(Errors.ERROR_BINDING_SETTINGS_TO_CLOCK_LABEL),
+          "error",
+        );
       }
       this.#topBox.add_child(this.#clockLabel!);
 
@@ -187,22 +198,32 @@ export default class TextClock extends Extension {
       const clockDisplayBox = this.#findClockDisplayBox();
       try {
         if ((clockDisplayBox as any).add_child) {
-          log(`TextClock: adding topBox into clockDisplayBox via add_child`);
+          logExtensionError(
+            `adding topBox into clockDisplayBox via add_child`,
+            undefined,
+            "info",
+          );
           clockDisplayBox.add_child(this.#topBox);
-          log(`TextClock: add_child completed`);
+          logExtensionError(`add_child completed`, undefined, "info");
         } else {
           const children = (clockDisplayBox as any).get_children
             ? (clockDisplayBox as any).get_children()
             : [];
           const insertIndex = Math.max(0, children.length);
-          log(
-            `TextClock: inserting topBox into clockDisplayBox (children=${children.length}) at index ${insertIndex}`,
+          logExtensionError(
+            `inserting topBox into clockDisplayBox (children=${children.length}) at index ${insertIndex}`,
+            undefined,
+            "info",
           );
           clockDisplayBox.insert_child_at_index(this.#topBox, insertIndex);
-          log(`TextClock: insert_child_at_index completed`);
+          logExtensionError(
+            `insert_child_at_index completed`,
+            undefined,
+            "info",
+          );
         }
       } catch (err: any) {
-        logError(err, _(Errors.ERROR_PLACING_CLOCK_LABEL));
+        logExtensionError(err, _(Errors.ERROR_PLACING_CLOCK_LABEL), "error");
         throw err;
       }
 
@@ -215,12 +236,16 @@ export default class TextClock extends Extension {
         if (typeof (this.#clockDisplay as any).hide === "function") {
           (this.#clockDisplay as any).hide();
         }
-        log(`TextClock: original clockDisplay hidden/modified`);
+        logExtensionError(
+          `original clockDisplay hidden/modified`,
+          undefined,
+          "info",
+        );
       } catch (e: any) {
-        logError(e, _(Errors.ERROR_PLACING_CLOCK_LABEL));
+        logExtensionError(e, _(Errors.ERROR_PLACING_CLOCK_LABEL), "error");
       }
     } catch (error: any) {
-      logError(error, _(Errors.ERROR_PLACING_CLOCK_LABEL));
+      logExtensionError(error, _(Errors.ERROR_PLACING_CLOCK_LABEL), "error");
     }
   }
 
@@ -240,7 +265,11 @@ export default class TextClock extends Extension {
         try {
           (this.#clockLabel as any).fuzzyMinutes = parseFuzziness(fuzz);
         } catch (e: any) {
-          logError(e, _(Errors.ERROR_BINDING_SETTINGS_TO_CLOCK_LABEL));
+          logExtensionError(
+            e,
+            _(Errors.ERROR_BINDING_SETTINGS_TO_CLOCK_LABEL),
+            "error",
+          );
         }
       });
       this.#settings!.bind(
@@ -254,7 +283,11 @@ export default class TextClock extends Extension {
         try {
           (this.#clockLabel as any).timeFormat = tf;
         } catch (e: any) {
-          logError(e, _(Errors.ERROR_BINDING_SETTINGS_TO_CLOCK_LABEL));
+          logExtensionError(
+            e,
+            _(Errors.ERROR_BINDING_SETTINGS_TO_CLOCK_LABEL),
+            "error",
+          );
         }
       });
       this.#clock!.bind_property(
@@ -276,7 +309,11 @@ export default class TextClock extends Extension {
         this.#applyStyles(),
       );
     } catch (error: any) {
-      logError(error, _(Errors.ERROR_BINDING_SETTINGS_TO_CLOCK_LABEL));
+      logExtensionError(
+        error,
+        _(Errors.ERROR_BINDING_SETTINGS_TO_CLOCK_LABEL),
+        "error",
+      );
     }
   }
 
@@ -312,7 +349,11 @@ export default class TextClock extends Extension {
     const children = (this.#dateMenu as any)?.get_children
       ? (this.#dateMenu as any).get_children()
       : [];
-    log(`TextClock: dateMenu children count: ${children.length}`);
+    logExtensionError(
+      `dateMenu children count: ${children.length}`,
+      undefined,
+      "debug",
+    );
 
     const box: St.BoxLayout | undefined = children.find(
       (child: Clutter.Actor) =>
@@ -321,7 +362,7 @@ export default class TextClock extends Extension {
     ) as St.BoxLayout | undefined;
 
     if (box) {
-      log(`TextClock: found clock-display-box`);
+      logExtensionError(`found clock-display-box`, undefined, "debug");
       return box;
     }
 
@@ -329,17 +370,25 @@ export default class TextClock extends Extension {
     // find a reasonable container (first BoxLayout) and log for debugging.
     for (const child of children) {
       if (child instanceof St.BoxLayout) {
-        log(
-          `TextClock: fallback using first BoxLayout child (style_class=${(child as any).style_class})`,
+        logExtensionError(
+          `fallback using first BoxLayout child (style_class=${(child as any).style_class})`,
+          undefined,
+          "debug",
         );
         return child as St.BoxLayout;
       }
-      log(
-        `TextClock: child type: ${child ? child.constructor.name : "unknown"}`,
+      logExtensionError(
+        `child type: ${child ? child.constructor.name : "unknown"}`,
+        undefined,
+        "debug",
       );
     }
 
-    log(`TextClock: could not find suitable clock display box`);
+    logExtensionError(
+      `could not find suitable clock display box`,
+      undefined,
+      "error",
+    );
     throw new Error(_(Errors.ERROR_COULD_NOT_FIND_CLOCK_DISPLAY_BOX));
   }
 }

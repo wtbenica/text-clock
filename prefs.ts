@@ -28,6 +28,7 @@ import {
   noon,
 } from "./constants/times/prefs.js";
 import { weekdays, dateOnly, daysOfMonth } from "./constants/dates/prefs.js";
+import { logExtensionError } from "./utils/error-utils.js";
 
 /**
  * @returns a word pack that contains the strings for telling the time and date
@@ -93,23 +94,33 @@ export default class TextClockPrefs extends ExtensionPreferences {
 
     const page = this.#createAndAddPageToWindow(window);
 
-    const group = this.#createAndAddGroupToPage(page);
+    const clockSettingsGroup = this.#createAndAddGroupToPage(
+      page,
+      "Clock Settings",
+      "Customize the appearance and behavior of the clock",
+    );
 
-    this.#addShowDateSwitchRow(group, settings);
+    this.#addShowDateSwitchRow(clockSettingsGroup, settings);
 
-    this.#addShowWeekdaySwitchRow(group, settings);
+    this.#addShowWeekdaySwitchRow(clockSettingsGroup, settings);
 
-    this.#addTimeFormatComboRow(group, settings);
+    this.#addTimeFormatComboRow(clockSettingsGroup, settings);
 
-    this.#createFuzzinessComboRow(group, settings);
+    this.#createFuzzinessComboRow(clockSettingsGroup, settings);
 
-    this.#addClockColorRow(group, settings);
+    this.#addDividerTextRow(clockSettingsGroup, settings);
 
-    this.#addDateColorRow(group, settings);
+    const clockColorSettingsGroup = this.#createAndAddGroupToPage(
+      page,
+      "Clock Colors",
+      "Customize the colors of the clock and date text",
+    );
 
-    this.#addDividerColorRow(group, settings);
+    this.#addClockColorRow(clockColorSettingsGroup, settings);
 
-    this.#addDividerTextRow(group, settings);
+    this.#addDateColorRow(clockColorSettingsGroup, settings);
+
+    this.#addDividerColorRow(clockColorSettingsGroup, settings);
 
     return Promise.resolve();
   }
@@ -130,16 +141,24 @@ export default class TextClockPrefs extends ExtensionPreferences {
   }
 
   /**
+   * Create and add the clock
+   */
+
+  /**
    * Create a group and add it to the page
    *
    * @param page The page to add the group to
    *
    * @returns The group
    */
-  #createAndAddGroupToPage(page: Adw.PreferencesPage) {
+  #createAndAddGroupToPage(
+    page: Adw.PreferencesPage,
+    title_tag: string,
+    description_tag: string,
+  ) {
     const group = new Adw.PreferencesGroup({
-      title: _("Clock Settings"),
-      description: _("Customize the appearance and behavior of the clock"),
+      title: _(title_tag),
+      description: _(description_tag),
     });
     page.add(group);
     return group;
@@ -167,7 +186,11 @@ export default class TextClockPrefs extends ExtensionPreferences {
         settings!.set_enum(settingKey, widget.selected);
       });
     } catch (error: any) {
-      logError(error, `Error binding settings for ${props.title}:`);
+      logExtensionError(
+        error,
+        `Error binding settings for ${props.title}:`,
+        "error",
+      );
     }
     return row;
   }
@@ -226,9 +249,10 @@ export default class TextClockPrefs extends ExtensionPreferences {
         Gio.SettingsBindFlags.DEFAULT,
       );
     } catch (error: any) {
-      logError(
+      logExtensionError(
         error,
         `${_(Errors.ERROR_BINDING_SETTINGS_FOR_)} ${widget.title}`,
+        "error",
       );
     }
   }

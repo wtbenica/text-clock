@@ -31,20 +31,26 @@ export function logExtensionError(
   level: "error" | "warn" | "info" | "debug" = "error",
 ): void {
   const errorMessage = error instanceof Error ? error.message : String(error);
-  const fullMessage = context ? `${context}: ${errorMessage}` : errorMessage;
+  const fullMessage = context
+    ? `[TextClock] ${context}: ${errorMessage}`
+    : `[TextClock] ${errorMessage}`;
 
   switch (level) {
     case "error":
-      logError(new Error(fullMessage), fullMessage);
+      if (error instanceof Error) {
+        logError(error, fullMessage); // Preserve original error details
+      } else {
+        logError(new Error(fullMessage), fullMessage);
+      }
       break;
     case "warn":
-      console.warn(`[TextClock] ${fullMessage}`);
+      log(`[WARN] ${fullMessage}`);
       break;
     case "info":
-      console.info(`[TextClock] ${fullMessage}`);
+      log(`[INFO] ${fullMessage}`);
       break;
     case "debug":
-      console.debug(`[TextClock] ${fullMessage}`);
+      log(`[DEBUG] ${fullMessage}`);
       break;
   }
 }
