@@ -64,6 +64,5 @@ export const SETTINGS = {
   CLOCK_COLOR: "clock-color",
   DATE_COLOR: "date-color",
   DIVIDER_COLOR: "divider-color",
-  FONT: "font",
   DIVIDER_TEXT: "divider-text",
 };

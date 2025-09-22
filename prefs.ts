@@ -109,8 +109,6 @@ export default class TextClockPrefs extends ExtensionPreferences {
 
     this.#addDividerColorRow(group, settings);
 
-    this.#addFontRow(group, settings);
-
     this.#addDividerTextRow(group, settings);
 
     return Promise.resolve();
@@ -249,41 +247,16 @@ export default class TextClockPrefs extends ExtensionPreferences {
     const fuzzinessComboInfo = {
       title: _(PrefItems.FUZZINESS.title),
       subtitle: _(PrefItems.FUZZINESS.subtitle),
-      model: new Gtk.StringList({
-        strings: [
-          `${Fuzziness.ONE_MINUTE} minute`,
-          `${Fuzziness.FIVE_MINUTES} minutes`,
-          `${Fuzziness.TEN_MINUTES} minutes`,
-          `${Fuzziness.FIFTEEN_MINUTES} minutes`,
-        ],
-      }),
-      selected: this.#getFuzzinessIndex(
-        settings.get_string(SETTINGS.FUZZINESS),
-      ),
+      model: new Gtk.StringList({ strings: ["1", "5", "10", "15"] }),
+      selected: settings!.get_enum(SETTINGS.FUZZINESS),
     };
 
-    const row = new Adw.ComboRow(fuzzinessComboInfo);
-    group.add(row);
-    try {
-      row.connect("notify::selected", (widget: Adw.ComboRow) => {
-        const fuzzinessValues = [
-          Fuzziness.ONE_MINUTE,
-          Fuzziness.FIVE_MINUTES,
-          Fuzziness.TEN_MINUTES,
-          Fuzziness.FIFTEEN_MINUTES,
-        ];
-        settings!.set_string(
-          SETTINGS.FUZZINESS,
-          fuzzinessValues[widget.selected].toString(),
-        );
-      });
-    } catch (error: any) {
-      logError(
-        error,
-        `Error binding settings for ${fuzzinessComboInfo.title}:`,
-      );
-    }
-    return row;
+    return this.#addComboRow(
+      group,
+      settings,
+      SETTINGS.FUZZINESS,
+      fuzzinessComboInfo,
+    );
   }
 
   /**
@@ -403,28 +376,6 @@ export default class TextClockPrefs extends ExtensionPreferences {
   }
 
   /**
-   * Get the index for the fuzziness combo box based on the current setting
-   *
-   * @param fuzzinessString - The current fuzziness setting as a string
-   * @returns The index for the combo box selection
-   */
-  #getFuzzinessIndex(fuzzinessString: string): number {
-    const fuzzinessValue = parseInt(fuzzinessString);
-    switch (fuzzinessValue) {
-      case Fuzziness.ONE_MINUTE:
-        return 0;
-      case Fuzziness.FIVE_MINUTES:
-        return 1;
-      case Fuzziness.TEN_MINUTES:
-        return 2;
-      case Fuzziness.FIFTEEN_MINUTES:
-        return 3;
-      default:
-        return 1; // Default to 5 minutes
-    }
-  }
-
-  /**
    * Add a color row for clock color
    */
   #addClockColorRow(
@@ -494,30 +445,6 @@ export default class TextClockPrefs extends ExtensionPreferences {
       settings.set_string("divider-color", newRgba.to_string());
     });
     row.add_suffix(colorButton);
-    group.add(row);
-    return row;
-  }
-
-  /**
-   * Add a font row
-   */
-  #addFontRow(
-    group: Adw.PreferencesGroup,
-    settings: Gio.Settings,
-  ): Adw.ActionRow {
-    const row = new Adw.ActionRow({
-      title: _("Font"),
-      subtitle: _("Font for the clock display"),
-    });
-    const fontButton = new Gtk.FontButton();
-    fontButton.set_font(settings.get_string("font"));
-    fontButton.connect("font-set", () => {
-      const font = fontButton.get_font();
-      if (font) {
-        settings.set_string("font", font);
-      }
-    });
-    row.add_suffix(fontButton);
     group.add(row);
     return row;
   }

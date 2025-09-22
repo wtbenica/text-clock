@@ -272,7 +272,6 @@ export default class TextClock extends Extension {
       this.#settings!.connect("changed::divider-color", () =>
         this.#applyStyles(),
       );
-      this.#settings!.connect("changed::font", () => this.#applyStyles());
       this.#settings!.connect("changed::divider-text", () =>
         this.#applyStyles(),
       );
@@ -289,7 +288,6 @@ export default class TextClock extends Extension {
     this.#clockLabel.setDividerColor(
       this.#settings!.get_string("divider-color"),
     );
-    this.#clockLabel.setFont(this.#settings!.get_string("font"));
     this.#clockLabel.setDividerText(this.#settings!.get_string("divider-text"));
   }
 

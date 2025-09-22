@@ -804,7 +804,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@girs/gjs@npm:4.0.0-beta.38, @girs/gjs@npm:^4.0.0-beta.37":
+"@girs/gjs@npm:4.0.0-beta.38, @girs/gjs@npm:^4.0.0-beta.37, @girs/gjs@npm:^4.0.0-beta.38":
   version: 4.0.0-beta.38
   resolution: "@girs/gjs@npm:4.0.0-beta.38"
   dependencies:
@@ -868,9 +868,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@girs/gnome-shell@npm:49.0.0":
-  version: 49.0.0
-  resolution: "@girs/gnome-shell@npm:49.0.0"
+"@girs/gnome-shell@npm:49.0.1":
+  version: 49.0.1
+  resolution: "@girs/gnome-shell@npm:49.0.1"
   dependencies:
     "@girs/accountsservice-1.0": "npm:1.0.0-4.0.0-beta.37"
     "@girs/adw-1": "npm:^1.8.0-4.0.0-beta.37"
@@ -896,7 +896,7 @@ __metadata:
     "@girs/shew-0": "npm:^0.0.0-4.0.0-beta.37"
     "@girs/st-17": "npm:^17.0.0-4.0.0-beta.37"
     "@girs/upowerglib-1.0": "npm:^0.99.1-4.0.0-beta.37"
-  checksum: 10c0/c66a919575a68bbdad23290f44385a4236d6c0f8bbf83658ee22b49eab6616e01dcd9b6740fccae56b8c68f0e384cd464e7d5f90e2e02af0fc3a027038e0eaa9
+  checksum: 10c0/eb32194606d04736b8189dfb55eceb3334ed00a68f02dcdc9e9401be249c6a6bc3bef6faa1004e6f0e06986e0181eb5a25295256592baf676585eb97ceae838d
   languageName: node
   linkType: hard
 
@@ -2671,13 +2671,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:^5.6.0":
-  version: 5.6.2
-  resolution: "chalk@npm:5.6.2"
-  checksum: 10c0/99a4b0f0e7991796b1e7e3f52dceb9137cae2a9dfc8fc0784a550dc4c558e15ab32ed70b14b21b52beb2679b4892b41a0aa44249bcb996f01e125d58477c6976
-  languageName: node
-  linkType: hard
-
 "char-regex@npm:^1.0.2":
   version: 1.0.2
   resolution: "char-regex@npm:1.0.2"
@@ -2773,7 +2766,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:^14.0.0":
+"commander@npm:14.0.1":
   version: 14.0.1
   resolution: "commander@npm:14.0.1"
   checksum: 10c0/64439c0651ddd01c1d0f48c8f08e97c18a0a1fa693879451f1203ad01132af2c2aa85da24cf0d8e098ab9e6dc385a756be670d2999a3c628ec745c3ec124587b
@@ -2812,7 +2805,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.4, debug@npm:^4.4.1":
+"debug@npm:4, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.4":
   version: 4.4.3
   resolution: "debug@npm:4.4.3"
   dependencies:
@@ -4243,13 +4236,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lilconfig@npm:^3.1.3":
-  version: 3.1.3
-  resolution: "lilconfig@npm:3.1.3"
-  checksum: 10c0/f5604e7240c5c275743561442fbc5abf2a84ad94da0f5adc71d25e31fa8483048de3dcedcb7a44112a942fed305fd75841cdf6c9681c7f640c63f1049e9a5dcc
-  languageName: node
-  linkType: hard
-
 "lines-and-columns@npm:^1.1.6":
   version: 1.2.4
   resolution: "lines-and-columns@npm:1.2.4"
@@ -4257,27 +4243,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lint-staged@npm:^16.1.6":
-  version: 16.1.6
-  resolution: "lint-staged@npm:16.1.6"
+"lint-staged@npm:^16.2.0":
+  version: 16.2.0
+  resolution: "lint-staged@npm:16.2.0"
   dependencies:
-    chalk: "npm:^5.6.0"
-    commander: "npm:^14.0.0"
-    debug: "npm:^4.4.1"
-    lilconfig: "npm:^3.1.3"
-    listr2: "npm:^9.0.3"
-    micromatch: "npm:^4.0.8"
-    nano-spawn: "npm:^1.0.2"
-    pidtree: "npm:^0.6.0"
-    string-argv: "npm:^0.3.2"
-    yaml: "npm:^2.8.1"
+    commander: "npm:14.0.1"
+    listr2: "npm:9.0.4"
+    micromatch: "npm:4.0.8"
+    nano-spawn: "npm:1.0.3"
+    pidtree: "npm:0.6.0"
+    string-argv: "npm:0.3.2"
+    yaml: "npm:2.8.1"
   bin:
     lint-staged: bin/lint-staged.js
-  checksum: 10c0/e695edfec7e330f2c7cd0bb0e56220aa95d3b3655fe64a87a02140609a3594df67e1ea7abc2cc4ce69aa010418e406b1b24703ba4bd026c873a5b43a5ab16c6a
+  checksum: 10c0/0903eea526d390fd04ec10c2b6c3c3accdff53647d1918d3c30236d46fa7714a4a109d1aeda7364ecc689728c7b188bc430911b170834228fe0010d938c9a631
   languageName: node
   linkType: hard
 
-"listr2@npm:^9.0.3":
+"listr2@npm:9.0.4":
   version: 9.0.4
   resolution: "listr2@npm:9.0.4"
   dependencies:
@@ -4410,7 +4393,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"micromatch@npm:^4.0.8":
+"micromatch@npm:4.0.8, micromatch@npm:^4.0.8":
   version: 4.0.8
   resolution: "micromatch@npm:4.0.8"
   dependencies:
@@ -4542,7 +4525,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nano-spawn@npm:^1.0.2":
+"nano-spawn@npm:1.0.3":
   version: 1.0.3
   resolution: "nano-spawn@npm:1.0.3"
   checksum: 10c0/ea18857e493710a50ded333dd71677953bd9bd9e6a17ade74af957763c50a9a02205ef31bc0d6784f5b3ad82db3d9f47531e9baac2acf01118f9b7c35bd9d5de
@@ -4811,7 +4794,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pidtree@npm:^0.6.0":
+"pidtree@npm:0.6.0":
   version: 0.6.0
   resolution: "pidtree@npm:0.6.0"
   bin:
@@ -5120,7 +5103,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"string-argv@npm:^0.3.2":
+"string-argv@npm:0.3.2":
   version: 0.3.2
   resolution: "string-argv@npm:0.3.2"
   checksum: 10c0/75c02a83759ad1722e040b86823909d9a2fc75d15dd71ec4b537c3560746e33b5f5a07f7332d1e3f88319909f82190843aa2f0a0d8c8d591ec08e93d5b8dec82
@@ -5274,8 +5257,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "text-clock@workspace:."
   dependencies:
-    "@girs/gjs": "npm:^4.0.0-beta.37"
-    "@girs/gnome-shell": "npm:49.0.0"
+    "@girs/gjs": "npm:^4.0.0-beta.38"
+    "@girs/gnome-shell": "npm:49.0.1"
     "@types/jest": "npm:30.0.0"
     "@types/node": "npm:24.5.2"
     "@typescript-eslint/eslint-plugin": "npm:8.44.0"
@@ -5284,7 +5267,7 @@ __metadata:
     husky: "npm:^9.1.7"
     jest: "npm:30.1.3"
     jest-util: "npm:^30.0.5"
-    lint-staged: "npm:^16.1.6"
+    lint-staged: "npm:^16.2.0"
     prettier: "npm:3.6.2"
     ts-jest: "npm:29.4.4"
     ts-node: "npm:^10.9.2"
@@ -5727,7 +5710,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml@npm:^2.8.1":
+"yaml@npm:2.8.1":
   version: 2.8.1
   resolution: "yaml@npm:2.8.1"
   bin:

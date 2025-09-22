@@ -39,11 +39,9 @@ export interface ITextClock extends St.BoxLayout {
   clockColor: string;
   dateColor: string;
   dividerColor: string;
-  font: string;
   setClockColor(color: string): void;
   setDateColor(color: string): void;
   setDividerColor(color: string): void;
-  setFont(font: string): void;
   setDividerText(text: string): void;
 }
 
@@ -68,9 +66,13 @@ export const TextClockLabel = GObject.registerClass(
         GObject.ParamFlags.READWRITE,
         true,
       ),
-      // 'fuzzy-minutes' is intentionally not registered as a GObject property
-      // to avoid schema type-binding mismatches; fuzziness is handled via
-      // the class setter after construction.
+      "fuzzy-minutes": GObject.ParamSpec.string(
+        CLOCK_LABEL_PROPERTIES.FUZZINESS,
+        "Fuzziness",
+        "The fuzziness of the clock",
+        GObject.ParamFlags.READWRITE,
+        "5",
+      ),
       "show-weekday": GObject.ParamSpec.boolean(
         CLOCK_LABEL_PROPERTIES.SHOW_WEEKDAY,
         PrefItems.SHOW_WEEKDAY.title,
@@ -107,7 +109,6 @@ export const TextClockLabel = GObject.registerClass(
     clockColor: string = "#FFFFFF";
     dateColor: string = "#FFFFFF";
     dividerColor: string = "#FFFFFF";
-    font: string = "Sans 12";
     timeText: string = "";
     dividerText: string = "";
     dateText: string = "";
@@ -255,8 +256,6 @@ export const TextClockLabel = GObject.registerClass(
       // Prefer Pango markup via set_markup when available. If the current
       // St.Label implementation doesn't provide set_markup, fall back to
       // using set_text and apply style (including color) via set_style.
-      const fontStyle = `font: ${this.font};`;
-
       if (typeof (this.timeLabel as any).set_markup === "function") {
         (this.timeLabel as any).set_markup(
           `<span foreground="${clockColor.replace("#", "")}">${this._escapeMarkup(this.timeText)}</span>`,
@@ -267,9 +266,9 @@ export const TextClockLabel = GObject.registerClass(
         (this.dividerLabel as any).set_markup(
           `<span foreground="${dividerColor.replace("#", "")}">${this._escapeMarkup(this.dividerText)}</span>`,
         );
-        this.timeLabel.set_style(fontStyle);
-        this.dividerLabel.set_style(fontStyle);
-        this.dateLabel.set_style(fontStyle);
+        this.timeLabel.set_style("");
+        this.dividerLabel.set_style("");
+        this.dateLabel.set_style("");
       } else {
         // Fallback: use set_text and include color in style so labels render
         // correctly on older Shell versions without set_markup.
@@ -277,9 +276,9 @@ export const TextClockLabel = GObject.registerClass(
         this.dateLabel.set_text(this.dateText);
         this.dividerLabel.set_text(this.dividerText);
 
-        this.timeLabel.set_style(`${fontStyle} color: ${clockColor};`);
-        this.dividerLabel.set_style(`${fontStyle} color: ${dividerColor};`);
-        this.dateLabel.set_style(`${fontStyle} color: ${dateColor};`);
+        this.timeLabel.set_style(`color: ${clockColor};`);
+        this.dividerLabel.set_style(`color: ${dividerColor};`);
+        this.dateLabel.set_style(`color: ${dateColor};`);
       }
     }
 
@@ -325,11 +324,6 @@ export const TextClockLabel = GObject.registerClass(
 
     setDividerColor(color: string) {
       this.dividerColor = color;
-      this.applyStyling();
-    }
-
-    setFont(font: string) {
-      this.font = font;
       this.applyStyling();
     }
 

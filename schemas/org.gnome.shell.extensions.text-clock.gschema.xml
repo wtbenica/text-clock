@@ -80,13 +80,6 @@
             The color for the divider text.
       </description>
     </key>
-    <key name='font' type='s'>
-      <default>'Sans 12'</default>
-      <summary>Font</summary>
-      <description>
-            The font for the clock display.
-      </description>
-    </key>
     <key name='divider-text' type='s'>
       <default>' • '</default>
       <summary>Divider text</summary>
