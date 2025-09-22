@@ -4,7 +4,6 @@
  */
 
 import GObject from "gi://GObject";
-import Clutter from "gi://Clutter";
 import St from "gi://St";
 
 import { gettext as _ } from "resource:///org/gnome/shell/extensions/extension.js";
@@ -31,7 +30,7 @@ export const CLOCK_LABEL_PROPERTIES = {
 export interface ITextClock extends St.BoxLayout {
   _showDate: boolean;
   _translatePack: WordPack;
-  _fuzzyMinutes: Fuzziness;
+  _fuzzyMinutes: Fuzziness | string;
   _showWeekday: boolean;
   _timeFormat: string;
   timeLabel: St.Label;
@@ -54,7 +53,7 @@ export interface ITextClock extends St.BoxLayout {
  */
 export const TextClockLabel = GObject.registerClass(
   {
-    GTypeName: "TextClockLabel",
+    GTypeName: "TextClockLabelV2",
     Properties: {
       "translate-pack": GObject.ParamSpec.jsobject<WordPack>(
         CLOCK_LABEL_PROPERTIES.TRANSLATE_PACK,
@@ -69,15 +68,9 @@ export const TextClockLabel = GObject.registerClass(
         GObject.ParamFlags.READWRITE,
         true,
       ),
-      "fuzzy-minutes": GObject.ParamSpec.uint(
-        CLOCK_LABEL_PROPERTIES.FUZZINESS,
-        PrefItems.FUZZINESS.title,
-        PrefItems.FUZZINESS.subtitle,
-        GObject.ParamFlags.READWRITE,
-        Fuzziness.ONE_MINUTE,
-        Fuzziness.FIFTEEN_MINUTES,
-        Fuzziness.FIVE_MINUTES,
-      ),
+      // 'fuzzy-minutes' is intentionally not registered as a GObject property
+      // to avoid schema type-binding mismatches; fuzziness is handled via
+      // the class setter after construction.
       "show-weekday": GObject.ParamSpec.boolean(
         CLOCK_LABEL_PROPERTIES.SHOW_WEEKDAY,
         PrefItems.SHOW_WEEKDAY.title,
@@ -105,7 +98,7 @@ export const TextClockLabel = GObject.registerClass(
     _formatter?: ClockFormatter;
     _showDate: boolean;
     _translatePack: WordPack;
-    _fuzzyMinutes: Fuzziness;
+    _fuzzyMinutes: Fuzziness | string;
     _showWeekday: boolean;
     _timeFormat: TimeFormat;
     timeLabel: St.Label;
@@ -203,8 +196,19 @@ export const TextClockLabel = GObject.registerClass(
      *
      * @param {Fuzziness} value
      */
-    set fuzzyMinutes(value: Fuzziness) {
-      this._fuzzyMinutes = value;
+    set fuzzyMinutes(value: Fuzziness | string) {
+      // Accept either a numeric enum value or the string representation
+      if (typeof value === "string") {
+        const parsed = parseInt(value as string);
+        if (!Number.isNaN(parsed)) {
+          this._fuzzyMinutes = parsed as Fuzziness;
+        } else {
+          // keep as string fallback (will be parsed by formatter when needed)
+          this._fuzzyMinutes = value;
+        }
+      } else {
+        this._fuzzyMinutes = value;
+      }
       this.updateClock();
     }
 
@@ -215,12 +219,23 @@ export const TextClockLabel = GObject.registerClass(
       try {
         const date = new Date();
         if (this._formatter) {
+          // Normalize fuzziness to a numeric enum value if it's a string
+          let fuzz: Fuzziness;
+          if (typeof this._fuzzyMinutes === "string") {
+            const parsed = parseInt(this._fuzzyMinutes as string);
+            fuzz = Number.isNaN(parsed)
+              ? Fuzziness.FIVE_MINUTES
+              : (parsed as Fuzziness);
+          } else {
+            fuzz = this._fuzzyMinutes as Fuzziness;
+          }
+
           const parts = this._formatter.getClockParts(
             date,
             this._showDate,
             this._showWeekday,
             this._timeFormat,
-            this._fuzzyMinutes,
+            fuzz,
           );
           this.timeText = parts.time;
           this.dividerText = parts.divider;
@@ -233,19 +248,69 @@ export const TextClockLabel = GObject.registerClass(
     }
 
     applyStyling() {
-      this.timeLabel.set_text(
-        `<span color="${this.clockColor}">${this.timeText}</span>`,
+      const clockColor = this._normalizeColor(this.clockColor);
+      const dateColor = this._normalizeColor(this.dateColor);
+      const dividerColor = this._normalizeColor(this.dividerColor);
+
+      // Prefer Pango markup via set_markup when available. If the current
+      // St.Label implementation doesn't provide set_markup, fall back to
+      // using set_text and apply style (including color) via set_style.
+      const fontStyle = `font: ${this.font};`;
+
+      if (typeof (this.timeLabel as any).set_markup === "function") {
+        (this.timeLabel as any).set_markup(
+          `<span foreground="${clockColor.replace("#", "")}">${this._escapeMarkup(this.timeText)}</span>`,
+        );
+        (this.dateLabel as any).set_markup(
+          `<span foreground="${dateColor.replace("#", "")}">${this._escapeMarkup(this.dateText)}</span>`,
+        );
+        (this.dividerLabel as any).set_markup(
+          `<span foreground="${dividerColor.replace("#", "")}">${this._escapeMarkup(this.dividerText)}</span>`,
+        );
+        this.timeLabel.set_style(fontStyle);
+        this.dividerLabel.set_style(fontStyle);
+        this.dateLabel.set_style(fontStyle);
+      } else {
+        // Fallback: use set_text and include color in style so labels render
+        // correctly on older Shell versions without set_markup.
+        this.timeLabel.set_text(this.timeText);
+        this.dateLabel.set_text(this.dateText);
+        this.dividerLabel.set_text(this.dividerText);
+
+        this.timeLabel.set_style(`${fontStyle} color: ${clockColor};`);
+        this.dividerLabel.set_style(`${fontStyle} color: ${dividerColor};`);
+        this.dateLabel.set_style(`${fontStyle} color: ${dateColor};`);
+      }
+    }
+
+    _escapeMarkup(text: string) {
+      return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    _normalizeColor(color: string) {
+      // If color is already hex, return as-is; if rgb(...), convert to hex.
+      if (!color) return "#ffffff";
+      color = color.trim();
+      const rgbMatch = color.match(
+        /rgb\s*\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)/i,
       );
-      this.dateLabel.set_text(
-        `<span color="${this.dateColor}">${this.dateText}</span>`,
-      );
-      this.dividerLabel.set_text(
-        `<span color="${this.dividerColor}">${this.dividerText}</span>`,
-      );
-      const style = `font: ${this.font};`;
-      this.timeLabel.set_style(style);
-      this.dividerLabel.set_style(style);
-      this.dateLabel.set_style(style);
+      if (rgbMatch) {
+        const r = Math.max(0, Math.min(255, Number(rgbMatch[1])));
+        const g = Math.max(0, Math.min(255, Number(rgbMatch[2])));
+        const b = Math.max(0, Math.min(255, Number(rgbMatch[3])));
+        return (
+          "#" + [r, g, b].map((n) => n.toString(16).padStart(2, "0")).join("")
+        );
+      }
+      // If already hex (with or without #)
+      const hexMatch = color.match(/^#?[0-9a-f]{3,6}$/i);
+      if (hexMatch) {
+        return color.startsWith("#") ? color : `#${color}`;
+      }
+      return "#ffffff";
     }
 
     setClockColor(color: string) {
@@ -271,7 +336,13 @@ export const TextClockLabel = GObject.registerClass(
     setDividerText(text: string) {
       // Update the divider text, but only if date is shown
       if (this._showDate) {
-        this.dividerLabel.set_text(text);
+        if (typeof (this.dividerLabel as any).set_markup === "function") {
+          (this.dividerLabel as any).set_markup(
+            `<span>${this._escapeMarkup(text)}</span>`,
+          );
+        } else {
+          this.dividerLabel.set_text(text);
+        }
       }
     }
   },
