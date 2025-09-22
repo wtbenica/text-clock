@@ -111,84 +111,63 @@ export default class TextClock extends Extension {
 
   // Retrieve the date menu from the status area
   #retrieveDateMenu() {
-    try {
-      this.#dateMenu = panel.statusArea.dateMenu as IDateMenuButton;
-      if (!this.#dateMenu) {
-        logInfo(`dateMenu not found on panel.statusArea`);
-        return;
-      }
-
-      const { _clock, _clockDisplay } = this.#dateMenu as any;
-      this.#clock = _clock;
-      this.#clockDisplay = _clockDisplay;
-    } catch (error: any) {
-      logErr(error, _(Errors.ERROR_RETRIEVE_DATE_MENU));
+    this.#dateMenu = panel.statusArea.dateMenu as IDateMenuButton;
+    if (!this.#dateMenu) {
+      logInfo(`dateMenu not found on panel.statusArea`);
+      return;
     }
+
+    const { _clock, _clockDisplay } = this.#dateMenu as any;
+    this.#clock = _clock;
+    this.#clockDisplay = _clockDisplay;
   }
 
   // Place the clock label in the top box
   #placeClockLabel() {
     this.#translatePack = TRANSLATE_PACK();
 
-    try {
-      // Create the top box
-      this.#topBox = new St.BoxLayout({
-        style_class: CLOCK_STYLE_CLASS_NAME,
-      });
+    // Create the top box
+    this.#topBox = new St.BoxLayout({
+      style_class: CLOCK_STYLE_CLASS_NAME,
+    });
 
-      // Create the clock label and add it to the top box
-      this.#clockLabel = new TextClockLabel({
-        translatePack: this.#translatePack,
-        showDate: this.#settings!.get_boolean(SETTINGS.SHOW_DATE),
-        showWeekday: this.#settings!.get_boolean(SETTINGS.SHOW_WEEKDAY),
-        timeFormat: this.#settings!.get_string(SETTINGS.TIME_FORMAT),
-        dividerText: this.#settings!.get_string(SETTINGS.DIVIDER_TEXT),
-      });
+    // Create the clock label and add it to the top box
+    this.#clockLabel = new TextClockLabel({
+      translatePack: this.#translatePack,
+      showDate: this.#settings!.get_boolean(SETTINGS.SHOW_DATE),
+      showWeekday: this.#settings!.get_boolean(SETTINGS.SHOW_WEEKDAY),
+      timeFormat: this.#settings!.get_string(SETTINGS.TIME_FORMAT),
+      dividerText: this.#settings!.get_string(SETTINGS.DIVIDER_TEXT),
+    });
 
-      // Read fuzziness from GSettings as an enum index and map to minutes.
-      // Assign via the setter (which accepts numeric or string) rather than
-      // using a direct GSettings -> GObject property bind to avoid type
-      // conversion ambiguity between the schema (enum) and the widget property.
-      const fuzzIndex = this.#settings!.get_enum(SETTINGS.FUZZINESS);
-      const fuzzValue = fuzzinessFromEnumIndex(fuzzIndex);
-      if (this.#clockLabel) {
-        (this.#clockLabel as any).fuzzyMinutes = fuzzValue;
-      } else {
-        logWarn(
-          `Attempted to set fuzziness but clockLabel is undefined`,
-          _(Errors.ERROR_BINDING_SETTINGS_TO_CLOCK_LABEL),
-        );
-      }
-      this.#topBox.add_child(this.#clockLabel!);
-
-      // Apply initial styles
-      this.#applyStyles();
-
-      // Insert the top box into the clock display box. Prefer `add_child`
-      // when available because it's more stable across Shell versions.
-      const clockDisplayBox = this.#findClockDisplayBox();
-      try {
-        clockDisplayBox.add_child(this.#topBox);
-      } catch (err: any) {
-        logErr(err, _(Errors.ERROR_PLACING_CLOCK_LABEL));
-        throw err;
-      }
-
-      // Remove the style class and hide the original clock display so our
-      // text clock is visible in its place. Use hide() as it's more robust
-      // across Shell versions than only setting width.
-      try {
-        this.#clockDisplay!.remove_style_class_name(CLOCK_STYLE_CLASS_NAME);
-        this.#clockDisplay!.set_width(0);
-        if (typeof (this.#clockDisplay as any).hide === "function") {
-          (this.#clockDisplay as any).hide();
-        }
-      } catch (e: any) {
-        logErr(e, _(Errors.ERROR_PLACING_CLOCK_LABEL));
-      }
-    } catch (error: any) {
-      logErr(error, _(Errors.ERROR_PLACING_CLOCK_LABEL));
+    // Read fuzziness from GSettings as an enum index and map to minutes.
+    // Assign via the setter (which accepts numeric or string) rather than
+    // using a direct GSettings -> GObject property bind to avoid type
+    // conversion ambiguity between the schema (enum) and the widget property.
+    const fuzzIndex = this.#settings!.get_enum(SETTINGS.FUZZINESS);
+    const fuzzValue = fuzzinessFromEnumIndex(fuzzIndex);
+    if (this.#clockLabel) {
+      (this.#clockLabel as any).fuzzyMinutes = fuzzValue;
+    } else {
+      logWarn(
+        `Attempted to set fuzziness but clockLabel is undefined`,
+        _(Errors.ERROR_BINDING_SETTINGS_TO_CLOCK_LABEL),
+      );
     }
+    this.#topBox.add_child(this.#clockLabel!);
+
+    // Apply initial styles
+    this.#applyStyles();
+
+    // Insert the top box into the clock display box.
+    const clockDisplayBox = this.#findClockDisplayBox();
+    clockDisplayBox.add_child(this.#topBox);
+
+    // Remove the style class and hide the original clock display so our
+    // text clock is visible in its place.
+    this.#clockDisplay!.remove_style_class_name(CLOCK_STYLE_CLASS_NAME);
+    this.#clockDisplay!.set_width(0);
+    (this.#clockDisplay as any).hide();
   }
 
   // Bind settings to their clock label properties
@@ -205,60 +184,44 @@ export default class TextClock extends Extension {
       return;
     }
 
-    try {
-      this.#settings.bind(
-        SETTINGS.SHOW_DATE,
-        this.#clockLabel,
-        CLOCK_LABEL_PROPERTIES.SHOW_DATE,
-        Gio.SettingsBindFlags.DEFAULT,
-      );
+    this.#settings.bind(
+      SETTINGS.SHOW_DATE,
+      this.#clockLabel,
+      CLOCK_LABEL_PROPERTIES.SHOW_DATE,
+      Gio.SettingsBindFlags.DEFAULT,
+    );
 
-      this.#settings?.connect("changed::fuzziness", () => {
-        try {
-          const fuzzIndex = this.#settings!.get_enum(SETTINGS.FUZZINESS);
-          (this.#clockLabel as any).fuzzyMinutes =
-            fuzzinessFromEnumIndex(fuzzIndex);
-        } catch (e: any) {
-          logErr(e, _(Errors.ERROR_BINDING_SETTINGS_TO_CLOCK_LABEL));
-        }
-      });
+    this.#settings?.connect("changed::fuzziness", () => {
+      const fuzzIndex = this.#settings!.get_enum(SETTINGS.FUZZINESS);
+      (this.#clockLabel as any).fuzzyMinutes =
+        fuzzinessFromEnumIndex(fuzzIndex);
+    });
 
-      this.#settings?.connect("changed::time-format", () => {
-        const tf = this.#settings?.get_string(SETTINGS.TIME_FORMAT);
-        if (tf) {
-          try {
-            (this.#clockLabel as any).timeFormat = tf;
-          } catch (e: any) {
-            logErr(e, _(Errors.ERROR_BINDING_SETTINGS_TO_CLOCK_LABEL));
-          }
-        }
-      });
+    this.#settings?.connect("changed::time-format", () => {
+      const tf = this.#settings?.get_string(SETTINGS.TIME_FORMAT);
+      if (tf) {
+        (this.#clockLabel as any).timeFormat = tf;
+      }
+    });
 
-      this.#settings.bind(
-        SETTINGS.SHOW_WEEKDAY,
-        this.#clockLabel,
-        CLOCK_LABEL_PROPERTIES.SHOW_WEEKDAY,
-        Gio.SettingsBindFlags.DEFAULT,
-      );
+    this.#settings.bind(
+      SETTINGS.SHOW_WEEKDAY,
+      this.#clockLabel,
+      CLOCK_LABEL_PROPERTIES.SHOW_WEEKDAY,
+      Gio.SettingsBindFlags.DEFAULT,
+    );
 
-      this.#clock!.bind_property(
-        "clock",
-        this.#clockLabel,
-        CLOCK_LABEL_PROPERTIES.CLOCK_UPDATE,
-        GObject.BindingFlags.DEFAULT,
-      );
+    this.#clock!.bind_property(
+      "clock",
+      this.#clockLabel,
+      CLOCK_LABEL_PROPERTIES.CLOCK_UPDATE,
+      GObject.BindingFlags.DEFAULT,
+    );
 
-      this.#settings.connect("changed::clock-color", () => this.#applyStyles());
-      this.#settings.connect("changed::date-color", () => this.#applyStyles());
-      this.#settings.connect("changed::divider-color", () =>
-        this.#applyStyles(),
-      );
-      this.#settings.connect("changed::divider-text", () =>
-        this.#applyStyles(),
-      );
-    } catch (error: any) {
-      logErr(error, _(Errors.ERROR_BINDING_SETTINGS_TO_CLOCK_LABEL));
-    }
+    this.#settings.connect("changed::clock-color", () => this.#applyStyles());
+    this.#settings.connect("changed::date-color", () => this.#applyStyles());
+    this.#settings.connect("changed::divider-color", () => this.#applyStyles());
+    this.#settings.connect("changed::divider-text", () => this.#applyStyles());
   }
 
   // Apply styles to the clock label
@@ -283,9 +246,7 @@ export default class TextClock extends Extension {
   #restoreClockDisplay() {
     this.#clockDisplay!.add_style_class_name(CLOCK_STYLE_CLASS_NAME);
     this.#clockDisplay!.set_width(-1);
-    if (typeof (this.#clockDisplay as any).show === "function") {
-      (this.#clockDisplay as any).show();
-    }
+    (this.#clockDisplay as any).show();
   }
 
   // Finds the St.BoxLayout child with style class 'clock-display-box'
@@ -304,15 +265,6 @@ export default class TextClock extends Extension {
       return box;
     }
 
-    // Fallbacks for panels/ shells where the class name differs. Try to
-    // find a reasonable container (first BoxLayout) and log for debugging.
-    for (const child of children) {
-      if (child instanceof St.BoxLayout) {
-        return child as St.BoxLayout;
-      }
-    }
-
-    logErr(`could not find suitable clock display box`);
     throw new Error(_(Errors.ERROR_COULD_NOT_FIND_CLOCK_DISPLAY_BOX));
   }
 }

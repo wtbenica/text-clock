@@ -142,14 +142,10 @@ export const TextClockLabel = GObject.registerClass(
       this.add_child(this.dividerLabel);
       this.add_child(this.dateLabel);
 
-      try {
-        this._formatter = new ClockFormatter(
-          this._translatePack,
-          this.dividerText,
-        );
-      } catch (error: any) {
-        logErr(error, _(Errors.ERROR_INITIALIZING_CLOCK_LABEL));
-      }
+      this._formatter = new ClockFormatter(
+        this._translatePack,
+        this.dividerText,
+      );
 
       this.updateClock();
     }
@@ -229,34 +225,30 @@ export const TextClockLabel = GObject.registerClass(
      * Updates the clock label text
      */
     updateClock() {
-      try {
-        const date = new Date();
-        if (this._formatter) {
-          // Normalize fuzziness to a numeric enum value if it's a string
-          let fuzz: Fuzziness;
-          if (typeof this._fuzzyMinutes === "string") {
-            const parsed = parseInt(this._fuzzyMinutes as string);
-            fuzz = Number.isNaN(parsed)
-              ? Fuzziness.FIVE_MINUTES
-              : (parsed as Fuzziness);
-          } else {
-            fuzz = this._fuzzyMinutes as Fuzziness;
-          }
-
-          const parts = this._formatter.getClockParts(
-            date,
-            this._showDate,
-            this._showWeekday,
-            this._timeFormat,
-            fuzz,
-          );
-          this.timeText = parts.time;
-          this.dividerText = parts.divider;
-          this.dateText = parts.date;
-          this.applyStyling();
+      const date = new Date();
+      if (this._formatter) {
+        // Normalize fuzziness to a numeric enum value if it's a string
+        let fuzz: Fuzziness;
+        if (typeof this._fuzzyMinutes === "string") {
+          const parsed = parseInt(this._fuzzyMinutes as string);
+          fuzz = Number.isNaN(parsed)
+            ? Fuzziness.FIVE_MINUTES
+            : (parsed as Fuzziness);
+        } else {
+          fuzz = this._fuzzyMinutes as Fuzziness;
         }
-      } catch (error: any) {
-        logErr(error, _(Errors.ERROR_UPDATING_CLOCK_LABEL));
+
+        const parts = this._formatter.getClockParts(
+          date,
+          this._showDate,
+          this._showWeekday,
+          this._timeFormat,
+          fuzz,
+        );
+        this.timeText = parts.time;
+        this.dividerText = parts.divider;
+        this.dateText = parts.date;
+        this.applyStyling();
       }
     }
 
@@ -265,33 +257,18 @@ export const TextClockLabel = GObject.registerClass(
       const dateColor = this._normalizeColor(this.dateColor);
       const dividerColor = this._normalizeColor(this.dividerColor);
 
-      // Prefer Pango markup via set_markup when available. If the current
-      // St.Label implementation doesn't provide set_markup, fall back to
-      // using set_text and apply style (including color) via set_style.
-      if (typeof (this.timeLabel as any).set_markup === "function") {
-        (this.timeLabel as any).set_markup(
-          `<span foreground="${clockColor.replace("#", "")}">${this._escapeMarkup(this.timeText)}</span>`,
-        );
-        (this.dateLabel as any).set_markup(
-          `<span foreground="${dateColor.replace("#", "")}">${this._escapeMarkup(this.dateText)}</span>`,
-        );
-        (this.dividerLabel as any).set_markup(
-          `<span foreground="${dividerColor.replace("#", "")}">${this._escapeMarkup(this.dividerText)}</span>`,
-        );
-        this.timeLabel.set_style("");
-        this.dividerLabel.set_style("");
-        this.dateLabel.set_style("");
-      } else {
-        // Fallback: use set_text and include color in style so labels render
-        // correctly on older Shell versions without set_markup.
-        this.timeLabel.set_text(this.timeText);
-        this.dateLabel.set_text(this.dateText);
-        this.dividerLabel.set_text(this.dividerText);
-
-        this.timeLabel.set_style(`color: ${clockColor};`);
-        this.dividerLabel.set_style(`color: ${dividerColor};`);
-        this.dateLabel.set_style(`color: ${dateColor};`);
-      }
+      (this.timeLabel as any).set_markup(
+        `<span foreground="${clockColor.replace("#", "")}">${this._escapeMarkup(this.timeText)}</span>`,
+      );
+      (this.dateLabel as any).set_markup(
+        `<span foreground="${dateColor.replace("#", "")}">${this._escapeMarkup(this.dateText)}</span>`,
+      );
+      (this.dividerLabel as any).set_markup(
+        `<span foreground="${dividerColor.replace("#", "")}">${this._escapeMarkup(this.dividerText)}</span>`,
+      );
+      this.timeLabel.set_style("");
+      this.dividerLabel.set_style("");
+      this.dateLabel.set_style("");
     }
 
     _escapeMarkup(text: string) {

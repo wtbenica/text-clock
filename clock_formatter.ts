@@ -235,25 +235,14 @@ export class ClockFormatter {
   }
 
   /**
-   * Attempts to format the given string template with the given arguments.
-   *
-   * If the format method is not available, it will attempt to replace the first instance of "%s" with the argument.
+   * Formats the given string template with the given argument.
    *
    * @param {string} template - The template string to format.
    * @param {string} arg - The argument to insert into the template.
    * @returns {string} The formatted string.
    */
   #formatString(template: string, arg: string): string {
-    try {
-      return template.format(arg);
-    } catch {
-      try {
-        return template.replace("%s", arg);
-      } catch (error2: any) {
-        logErr(error2, "Failed to format date string template");
-      }
-    }
-    return template;
+    return template.format(arg);
   }
 
   /**
