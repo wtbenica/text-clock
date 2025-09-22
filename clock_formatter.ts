@@ -62,8 +62,35 @@ export class ClockFormatter {
     timeFormat: TimeFormat,
     fuzziness: Fuzziness,
   ): string {
+    const parts = this.getClockParts(
+      date,
+      showDate,
+      showWeekday,
+      timeFormat,
+      fuzziness,
+    );
+    return parts.time + parts.divider + parts.date;
+  }
+
+  /**
+   * Returns the clock parts: time, divider, date.
+   *
+   * @param {Date} date - The current date and time.
+   * @param {boolean} showDate - Flag to indicate if the date should be included in the output.
+   * @param {boolean} showWeekday - Flag to indicate if the weekday should be included in the output.
+   * @param {TimeFormat} timeFormat - The format of the time string.
+   * @param {Fuzziness} fuzziness - The number of minutes to round to.
+   * @returns {object} Object with time, divider, date strings.
+   */
+  getClockParts(
+    date: Date,
+    showDate: boolean,
+    showWeekday: boolean,
+    timeFormat: TimeFormat,
+    fuzziness: Fuzziness,
+  ): { time: string; divider: string; date: string } {
     // Validate inputs
-    validateDate(date, "ClockFormatter.getClockText");
+    validateDate(date, "ClockFormatter.getClockParts");
     if (fuzziness <= 0) {
       throw new Error("Fuzziness must be a positive number");
     }
@@ -77,11 +104,12 @@ export class ClockFormatter {
     const roundedHour = (shouldRoundUp ? hours + 1 : hours) % 24;
     const hourName = this.#getHourName(roundedHour, minuteBucket, timeFormat);
     const time = this.#getTimeString(hourName, minuteBucket, timeFormat);
-    const displayDate = showDate
-      ? ` | ${this.#getDisplayedDate(date, minuteBucket, showWeekday)}`
+    const divider = showDate ? " | " : "";
+    const dateStr = showDate
+      ? this.#getDisplayedDate(date, minuteBucket, showWeekday)
       : "";
 
-    return time + displayDate;
+    return { time, divider, date: dateStr };
   }
 
   /**

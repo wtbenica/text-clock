@@ -59,5 +59,40 @@
             The format to use for the time display.
       </description>
     </key>
+    <key name='clock-color' type='s'>
+      <default>'#FFFFFF'</default>
+      <summary>Clock text color</summary>
+      <description>
+            The color for the clock time text.
+      </description>
+    </key>
+    <key name='date-color' type='s'>
+      <default>'#FFFFFF'</default>
+      <summary>Date text color</summary>
+      <description>
+            The color for the date text.
+      </description>
+    </key>
+    <key name='divider-color' type='s'>
+      <default>'#FFFFFF'</default>
+      <summary>Divider text color</summary>
+      <description>
+            The color for the divider text.
+      </description>
+    </key>
+    <key name='font' type='s'>
+      <default>'Sans 12'</default>
+      <summary>Font</summary>
+      <description>
+            The font for the clock display.
+      </description>
+    </key>
+    <key name='divider-text' type='s'>
+      <default>' • '</default>
+      <summary>Divider text</summary>
+      <description>
+            The text to use as a divider between time and date.
+      </description>
+    </key>
   </schema>
 </schemalist>

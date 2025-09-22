@@ -102,6 +102,16 @@ export default class TextClockPrefs extends ExtensionPreferences {
 
     this.#createFuzzinessComboRow(group, settings);
 
+    this.#addClockColorRow(group, settings);
+
+    this.#addDateColorRow(group, settings);
+
+    this.#addDividerColorRow(group, settings);
+
+    this.#addFontRow(group, settings);
+
+    this.#addDividerTextRow(group, settings);
+
     return Promise.resolve();
   }
 
@@ -411,5 +421,108 @@ export default class TextClockPrefs extends ExtensionPreferences {
       default:
         return 1; // Default to 5 minutes
     }
+  }
+
+  /**
+   * Add a color row for clock color
+   */
+  #addClockColorRow(
+    group: Adw.PreferencesGroup,
+    settings: Gio.Settings,
+  ): Adw.ActionRow {
+    const row = new Adw.ActionRow({
+      title: _("Clock Color"),
+      subtitle: _("Color for the time text"),
+    });
+    const colorButton = new Gtk.ColorButton();
+    row.add_suffix(colorButton);
+    group.add(row);
+    settings.bind(
+      "clock-color",
+      colorButton,
+      "rgba",
+      Gio.SettingsBindFlags.DEFAULT,
+    );
+    return row;
+  }
+
+  /**
+   * Add a color row for date color
+   */
+  #addDateColorRow(
+    group: Adw.PreferencesGroup,
+    settings: Gio.Settings,
+  ): Adw.ActionRow {
+    const row = new Adw.ActionRow({
+      title: _("Date Color"),
+      subtitle: _("Color for the date text"),
+    });
+    const colorButton = new Gtk.ColorButton();
+    row.add_suffix(colorButton);
+    group.add(row);
+    settings.bind(
+      "date-color",
+      colorButton,
+      "rgba",
+      Gio.SettingsBindFlags.DEFAULT,
+    );
+    return row;
+  }
+
+  /**
+   * Add a color row for divider color
+   */
+  #addDividerColorRow(
+    group: Adw.PreferencesGroup,
+    settings: Gio.Settings,
+  ): Adw.ActionRow {
+    const row = new Adw.ActionRow({
+      title: _("Divider Color"),
+      subtitle: _("Color for the divider text"),
+    });
+    const colorButton = new Gtk.ColorButton();
+    row.add_suffix(colorButton);
+    group.add(row);
+    settings.bind(
+      "divider-color",
+      colorButton,
+      "rgba",
+      Gio.SettingsBindFlags.DEFAULT,
+    );
+    return row;
+  }
+
+  /**
+   * Add a font row
+   */
+  #addFontRow(
+    group: Adw.PreferencesGroup,
+    settings: Gio.Settings,
+  ): Adw.ActionRow {
+    const row = new Adw.ActionRow({
+      title: _("Font"),
+      subtitle: _("Font for the clock display"),
+    });
+    const fontButton = new Gtk.FontButton();
+    row.add_suffix(fontButton);
+    group.add(row);
+    settings.bind("font", fontButton, "font", Gio.SettingsBindFlags.DEFAULT);
+    return row;
+  }
+
+  /**
+   * Add an entry row for divider text
+   */
+  #addDividerTextRow(
+    group: Adw.PreferencesGroup,
+    settings: Gio.Settings,
+  ): Adw.EntryRow {
+    const row = new Adw.EntryRow({
+      title: _("Divider Text"),
+      text: settings.get_string("divider-text"),
+    });
+    group.add(row);
+    settings.bind("divider-text", row, "text", Gio.SettingsBindFlags.DEFAULT);
+    return row;
   }
 }

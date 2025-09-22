@@ -274,7 +274,7 @@ describe("ClockFormatter", () => {
       const date = new Date("invalid");
       expect(() => {
         formatter.getClockText(date, false, false, TimeFormat.FORMAT_ONE, 5);
-      }).toThrow("ClockFormatter.getClockText: Invalid date provided");
+      }).toThrow("ClockFormatter.getClockParts: Invalid date provided");
     });
 
     it("should throw error for zero fuzziness", () => {

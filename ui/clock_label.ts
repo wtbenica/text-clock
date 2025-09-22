@@ -28,12 +28,20 @@ export const CLOCK_LABEL_PROPERTIES = {
 /**
  * The interface for TextClockLabel
  */
-export interface ITextClock extends Clutter.Actor {
+export interface ITextClock extends St.BoxLayout {
   _showDate: boolean;
   _translatePack: WordPack;
   _fuzzyMinutes: Fuzziness;
   _showWeekday: boolean;
   _timeFormat: string;
+  timeLabel: St.Label;
+  dividerLabel: St.Label;
+  dateLabel: St.Label;
+  setClockColor(color: string): void;
+  setDateColor(color: string): void;
+  setDividerColor(color: string): void;
+  setFont(font: string): void;
+  setDividerText(text: string): void;
 }
 
 /**
@@ -89,13 +97,16 @@ export const TextClockLabel = GObject.registerClass(
       ),
     },
   },
-  class ClockLabel extends St.Label implements ITextClock {
+  class ClockLabel extends St.BoxLayout implements ITextClock {
     _formatter?: ClockFormatter;
     _showDate: boolean;
     _translatePack: WordPack;
     _fuzzyMinutes: Fuzziness;
     _showWeekday: boolean;
     _timeFormat: TimeFormat;
+    timeLabel: St.Label;
+    dividerLabel: St.Label;
+    dateLabel: St.Label;
 
     constructor(props: any) {
       super(props);
@@ -105,9 +116,17 @@ export const TextClockLabel = GObject.registerClass(
       this._showWeekday = props.showWeekday;
       this._timeFormat = props.timeFormat;
 
+      // Create the three labels
+      this.timeLabel = new St.Label();
+      this.dividerLabel = new St.Label();
+      this.dateLabel = new St.Label();
+
+      this.add_child(this.timeLabel);
+      this.add_child(this.dividerLabel);
+      this.add_child(this.dateLabel);
+
       try {
         this._formatter = new ClockFormatter(this._translatePack);
-        this.clutterText.yAlign = Clutter.ActorAlign.CENTER;
       } catch (error: any) {
         logError(error, _(Errors.ERROR_INITIALIZING_CLOCK_LABEL));
       }
@@ -181,18 +200,46 @@ export const TextClockLabel = GObject.registerClass(
     updateClock() {
       try {
         const date = new Date();
-        if (this._formatter)
-          this.set_text(
-            this._formatter?.getClockText(
-              date,
-              this._showDate,
-              this._showWeekday,
-              this._timeFormat,
-              this._fuzzyMinutes,
-            ),
+        if (this._formatter) {
+          const parts = this._formatter.getClockParts(
+            date,
+            this._showDate,
+            this._showWeekday,
+            this._timeFormat,
+            this._fuzzyMinutes,
           );
+          this.timeLabel.set_text(parts.time);
+          this.dividerLabel.set_text(parts.divider);
+          this.dateLabel.set_text(parts.date);
+        }
       } catch (error: any) {
         logError(error, _(Errors.ERROR_UPDATING_CLOCK_LABEL));
+      }
+    }
+
+    setClockColor(color: string) {
+      this.timeLabel.set_style(`color: ${color};`);
+    }
+
+    setDateColor(color: string) {
+      this.dateLabel.set_style(`color: ${color};`);
+    }
+
+    setDividerColor(color: string) {
+      this.dividerLabel.set_style(`color: ${color};`);
+    }
+
+    setFont(font: string) {
+      const style = `font: ${font};`;
+      this.timeLabel.set_style(style);
+      this.dividerLabel.set_style(style);
+      this.dateLabel.set_style(style);
+    }
+
+    setDividerText(text: string) {
+      // Update the divider text, but only if date is shown
+      if (this._showDate) {
+        this.dividerLabel.set_text(text);
       }
     }
   },

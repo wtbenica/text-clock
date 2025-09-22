@@ -163,6 +163,9 @@ export default class TextClock extends Extension {
       });
       this.#topBox.add_child(this.#clockLabel!);
 
+      // Apply initial styles
+      this.#applyStyles();
+
       // Insert the top box into the last position of the clock display box
       const clockDisplayBox = this.#findClockDisplayBox();
       clockDisplayBox.insert_child_at_index(
@@ -211,9 +214,34 @@ export default class TextClock extends Extension {
         CLOCK_LABEL_PROPERTIES.CLOCK_UPDATE,
         GObject.BindingFlags.DEFAULT,
       );
+
+      // Connect to style settings changes
+      this.#settings!.connect("changed::clock-color", () =>
+        this.#applyStyles(),
+      );
+      this.#settings!.connect("changed::date-color", () => this.#applyStyles());
+      this.#settings!.connect("changed::divider-color", () =>
+        this.#applyStyles(),
+      );
+      this.#settings!.connect("changed::font", () => this.#applyStyles());
+      this.#settings!.connect("changed::divider-text", () =>
+        this.#applyStyles(),
+      );
     } catch (error: any) {
       logError(error, _(Errors.ERROR_BINDING_SETTINGS_TO_CLOCK_LABEL));
     }
+  }
+
+  // Apply styles to the clock label
+  #applyStyles() {
+    if (!this.#clockLabel) return;
+    this.#clockLabel.setClockColor(this.#settings!.get_string("clock-color"));
+    this.#clockLabel.setDateColor(this.#settings!.get_string("date-color"));
+    this.#clockLabel.setDividerColor(
+      this.#settings!.get_string("divider-color"),
+    );
+    this.#clockLabel.setFont(this.#settings!.get_string("font"));
+    this.#clockLabel.setDividerText(this.#settings!.get_string("divider-text"));
   }
 
   // Destroys created objects and sets properties to undefined
