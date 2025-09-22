@@ -135,34 +135,61 @@ export class ClockFormatter {
       return this.#cachedHourNames.get(cacheKey)!;
     }
 
-    const isTopOfTheHour = this.#isTopOfTheHour(minuteBucket);
-    const isMidnight = hour === 0;
-    const isNoon = hour === 12;
-
-    let hourName: string;
-    if (isMidnight) {
-      if (this.#isTopOfTheHour(minuteBucket)) {
-        hourName = this.wordPack.midnight;
-      } else if (timeFormat === TimeFormat.FORMAT_ONE) {
-        hourName = this.wordPack.midnightFormatOne;
-      } else {
-        hourName = this.wordPack.midnightFormatTwo;
-      }
-    } else if (isNoon) {
-      if (isTopOfTheHour) {
-        hourName = this.wordPack.noon;
-      } else if (timeFormat === TimeFormat.FORMAT_ONE) {
-        hourName = this.wordPack.noonFormatOne;
-      } else {
-        hourName = this.wordPack.noonFormatTwo;
-      }
-    } else {
-      hourName = this.wordPack.names[hour];
-    }
+    const hourName = this.#getHourNameUncached(hour, minuteBucket, timeFormat);
 
     // Cache the result
     this.#cachedHourNames.set(cacheKey, hourName);
     return hourName;
+  }
+
+  /**
+   * Returns the hour name without caching.
+   */
+  #getHourNameUncached(
+    hour: number,
+    minuteBucket: number,
+    timeFormat: TimeFormat,
+  ): string {
+    const isTopOfTheHour = this.#isTopOfTheHour(minuteBucket);
+
+    // Handle special cases for midnight and noon
+    if (hour === 0) {
+      // Midnight
+      return isTopOfTheHour
+        ? this.wordPack.midnight
+        : this.#getSpecialHourName(timeFormat, "midnight");
+    }
+
+    if (hour === 12) {
+      // Noon
+      return isTopOfTheHour
+        ? this.wordPack.noon
+        : this.#getSpecialHourName(timeFormat, "noon");
+    }
+
+    // Regular hours
+    return this.wordPack.names[hour];
+  }
+
+  /**
+   * Returns the special hour name for non-top-of-hour times.
+   */
+  #getSpecialHourName(
+    timeFormat: TimeFormat,
+    type: "midnight" | "noon",
+  ): string {
+    const formatMap = {
+      [TimeFormat.FORMAT_ONE]: {
+        midnight: this.wordPack.midnightFormatOne,
+        noon: this.wordPack.noonFormatOne,
+      },
+      [TimeFormat.FORMAT_TWO]: {
+        midnight: this.wordPack.midnightFormatTwo,
+        noon: this.wordPack.noonFormatTwo,
+      },
+    };
+
+    return formatMap[timeFormat][type];
   }
 
   /**

@@ -22,3 +22,23 @@ export function fuzzinessFromEnumIndex(index: number): Fuzziness {
       return Fuzziness.FIVE_MINUTES;
   }
 }
+
+/**
+ * Parses a fuzziness value from string or number to Fuzziness enum
+ *
+ * @param value - The value to parse
+ * @returns The parsed Fuzziness value
+ */
+export function parseFuzziness(value: Fuzziness | string): Fuzziness {
+  if (typeof value === "string") {
+    const parsed = parseInt(value);
+    if (
+      !Number.isNaN(parsed) &&
+      Object.values(Fuzziness).includes(parsed as Fuzziness)
+    ) {
+      return parsed as Fuzziness;
+    }
+    return Fuzziness.FIVE_MINUTES; // fallback
+  }
+  return value;
+}

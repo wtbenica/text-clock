@@ -42,6 +42,8 @@ import {
 } from "./constants/dates/extension.js";
 import { logErr, logWarn, logInfo, logDebug } from "./utils/error-utils.js";
 import { fuzzinessFromEnumIndex } from "./utils/fuzziness-utils.js";
+import { createTranslatePack } from "./utils/translate-pack-utils.js";
+import { extensionGettext } from "./utils/gettext-utils-ext.js";
 
 const CLOCK_STYLE_CLASS_NAME = "clock";
 
@@ -49,20 +51,7 @@ const CLOCK_STYLE_CLASS_NAME = "clock";
  * @returns a word pack that contains the strings for telling the time and date
  */
 export const TRANSLATE_PACK: () => WordPack = () =>
-  new WordPack({
-    timesFormatOne: timesFormatOne(),
-    midnightFormatOne: midnightFormatOne(),
-    noonFormatOne: noonFormatOne(),
-    timesFormatTwo: timesFormatTwo(),
-    midnightFormatTwo: midnightFormatTwo(),
-    noonFormatTwo: noonFormatTwo(),
-    names: hourNames(),
-    days: weekdays(),
-    dayOnly: dateOnly(),
-    midnight: midnight(),
-    noon: noon(),
-    daysOfMonth: daysOfMonth(),
-  });
+  createTranslatePack(extensionGettext);
 
 /**
  * TextClock extension for GNOME Shell

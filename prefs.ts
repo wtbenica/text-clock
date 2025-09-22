@@ -17,38 +17,15 @@ import { SETTINGS, PrefItems, Errors } from "./constants/index.js";
 import { ClockFormatter, TimeFormat, Fuzziness } from "./clock_formatter.js";
 import { fuzzinessFromEnumIndex } from "./utils/fuzziness-utils.js";
 import { WordPack } from "./word_pack.js";
-import {
-  timesFormatOne,
-  midnightFormatOne,
-  noonFormatOne,
-  timesFormatTwo,
-  midnightFormatTwo,
-  noonFormatTwo,
-  hourNames,
-  midnight,
-  noon,
-} from "./constants/times/prefs.js";
-import { weekdays, dateOnly, daysOfMonth } from "./constants/dates/prefs.js";
+import { createTranslatePack } from "./utils/translate-pack-utils.js";
+import { prefsGettext } from "./utils/gettext-utils-prefs.js";
 import { logErr } from "./utils/error-utils.js";
 
 /**
  * @returns a word pack that contains the strings for telling the time and date
  */
 export const TRANSLATE_PACK: () => WordPack = () =>
-  new WordPack({
-    timesFormatOne: timesFormatOne(),
-    midnightFormatOne: midnightFormatOne(),
-    noonFormatOne: noonFormatOne(),
-    timesFormatTwo: timesFormatTwo(),
-    midnightFormatTwo: midnightFormatTwo(),
-    noonFormatTwo: noonFormatTwo(),
-    names: hourNames(),
-    days: weekdays(),
-    dayOnly: dateOnly(),
-    midnight: midnight(),
-    noon: noon(),
-    daysOfMonth: daysOfMonth(),
-  });
+  createTranslatePack(prefsGettext);
 
 /**
  * Represents a binding between a setting and a property of a widget.
