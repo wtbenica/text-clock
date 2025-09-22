@@ -38,10 +38,12 @@ export enum Fuzziness {
  */
 export class ClockFormatter {
   wordPack: WordPack;
+  divider: string;
   #cachedHourNames: Map<string, string> = new Map();
 
-  constructor(wordPack: WordPack) {
+  constructor(wordPack: WordPack, divider: string = " | ") {
     this.wordPack = wordPack;
+    this.divider = divider;
   }
 
   /**
@@ -104,7 +106,7 @@ export class ClockFormatter {
     const roundedHour = (shouldRoundUp ? hours + 1 : hours) % 24;
     const hourName = this.#getHourName(roundedHour, minuteBucket, timeFormat);
     const time = this.#getTimeString(hourName, minuteBucket, timeFormat);
-    const divider = showDate ? " | " : "";
+    const divider = showDate ? this.divider : "";
     const dateStr = showDate
       ? this.#getDisplayedDate(date, minuteBucket, showWeekday)
       : "";

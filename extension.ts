@@ -173,6 +173,7 @@ export default class TextClock extends Extension {
         showDate: this.#settings!.get_boolean(SETTINGS.SHOW_DATE),
         showWeekday: this.#settings!.get_boolean(SETTINGS.SHOW_WEEKDAY),
         timeFormat: this.#settings!.get_string(SETTINGS.TIME_FORMAT),
+        dividerText: this.#settings!.get_string(SETTINGS.DIVIDER_TEXT),
       });
 
       // Set fuzziness explicitly via the setter to avoid GObject property
@@ -251,61 +252,82 @@ export default class TextClock extends Extension {
 
   // Bind settings to their clock label properties
   #bindSettingsToClockLabel() {
+    if (!this.#settings) {
+      logExtensionError(
+        "Settings object is undefined. Cannot bind settings to clock label.",
+        undefined,
+        "error",
+      );
+      return;
+    }
+
+    if (!this.#clockLabel) {
+      logExtensionError(
+        "Clock label is undefined. Cannot bind settings to clock label.",
+        undefined,
+        "error",
+      );
+      return;
+    }
+
     try {
-      this.#settings!.bind(
+      this.#settings.bind(
         SETTINGS.SHOW_DATE,
-        this.#clockLabel!,
+        this.#clockLabel,
         CLOCK_LABEL_PROPERTIES.SHOW_DATE,
         Gio.SettingsBindFlags.DEFAULT,
       );
-      // Bindings for fuzziness and time-format use enum/string mismatches
-      // across GSettings and our property types, so handle changes manually.
-      this.#settings!.connect("changed::fuzziness", () => {
-        const fuzz = this.#settings!.get_string(SETTINGS.FUZZINESS);
-        try {
-          (this.#clockLabel as any).fuzzyMinutes = parseFuzziness(fuzz);
-        } catch (e: any) {
-          logExtensionError(
-            e,
-            _(Errors.ERROR_BINDING_SETTINGS_TO_CLOCK_LABEL),
-            "error",
-          );
+
+      this.#settings?.connect("changed::fuzziness", () => {
+        const fuzz = this.#settings?.get_string(SETTINGS.FUZZINESS);
+        if (fuzz) {
+          try {
+            (this.#clockLabel as any).fuzzyMinutes = parseFuzziness(fuzz);
+          } catch (e: any) {
+            logExtensionError(
+              e,
+              _(Errors.ERROR_BINDING_SETTINGS_TO_CLOCK_LABEL),
+              "error",
+            );
+          }
         }
       });
-      this.#settings!.bind(
+
+      this.#settings?.connect("changed::time-format", () => {
+        const tf = this.#settings?.get_string(SETTINGS.TIME_FORMAT);
+        if (tf) {
+          try {
+            (this.#clockLabel as any).timeFormat = tf;
+          } catch (e: any) {
+            logExtensionError(
+              e,
+              _(Errors.ERROR_BINDING_SETTINGS_TO_CLOCK_LABEL),
+              "error",
+            );
+          }
+        }
+      });
+
+      this.#settings.bind(
         SETTINGS.SHOW_WEEKDAY,
-        this.#clockLabel!,
+        this.#clockLabel,
         CLOCK_LABEL_PROPERTIES.SHOW_WEEKDAY,
         Gio.SettingsBindFlags.DEFAULT,
       );
-      this.#settings!.connect("changed::time-format", () => {
-        const tf = this.#settings!.get_string(SETTINGS.TIME_FORMAT);
-        try {
-          (this.#clockLabel as any).timeFormat = tf;
-        } catch (e: any) {
-          logExtensionError(
-            e,
-            _(Errors.ERROR_BINDING_SETTINGS_TO_CLOCK_LABEL),
-            "error",
-          );
-        }
-      });
+
       this.#clock!.bind_property(
         "clock",
-        this.#clockLabel!,
+        this.#clockLabel,
         CLOCK_LABEL_PROPERTIES.CLOCK_UPDATE,
         GObject.BindingFlags.DEFAULT,
       );
 
-      // Connect to style settings changes
-      this.#settings!.connect("changed::clock-color", () =>
+      this.#settings.connect("changed::clock-color", () => this.#applyStyles());
+      this.#settings.connect("changed::date-color", () => this.#applyStyles());
+      this.#settings.connect("changed::divider-color", () =>
         this.#applyStyles(),
       );
-      this.#settings!.connect("changed::date-color", () => this.#applyStyles());
-      this.#settings!.connect("changed::divider-color", () =>
-        this.#applyStyles(),
-      );
-      this.#settings!.connect("changed::divider-text", () =>
+      this.#settings.connect("changed::divider-text", () =>
         this.#applyStyles(),
       );
     } catch (error: any) {

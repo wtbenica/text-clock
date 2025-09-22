@@ -95,6 +95,13 @@ export const TextClockLabel = GObject.registerClass(
         GObject.ParamFlags.READWRITE,
         "",
       ),
+      "divider-text": GObject.ParamSpec.string(
+        "divider-text",
+        "Divider Text",
+        "The text used to divide time and date",
+        GObject.ParamFlags.READWRITE,
+        " | ",
+      ),
     },
   },
   class ClockLabel extends St.BoxLayout implements ITextClock {
@@ -121,6 +128,7 @@ export const TextClockLabel = GObject.registerClass(
       this._fuzzyMinutes = props.fuzzyMinutes || Fuzziness.FIVE_MINUTES;
       this._showWeekday = props.showWeekday;
       this._timeFormat = props.timeFormat;
+      this.dividerText = props.dividerText || " | ";
 
       // Create the three labels
       this.timeLabel = new St.Label();
@@ -135,7 +143,10 @@ export const TextClockLabel = GObject.registerClass(
       this.add_child(this.dateLabel);
 
       try {
-        this._formatter = new ClockFormatter(this._translatePack);
+        this._formatter = new ClockFormatter(
+          this._translatePack,
+          this.dividerText,
+        );
       } catch (error: any) {
         logExtensionError(
           error,
@@ -333,16 +344,11 @@ export const TextClockLabel = GObject.registerClass(
     }
 
     setDividerText(text: string) {
-      // Update the divider text, but only if date is shown
-      if (this._showDate) {
-        if (typeof (this.dividerLabel as any).set_markup === "function") {
-          (this.dividerLabel as any).set_markup(
-            `<span>${this._escapeMarkup(text)}</span>`,
-          );
-        } else {
-          this.dividerLabel.set_text(text);
-        }
+      this.dividerText = text;
+      if (this._formatter) {
+        this._formatter.divider = text;
       }
+      this.updateClock();
     }
   },
 );
