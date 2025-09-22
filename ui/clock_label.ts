@@ -115,6 +115,9 @@ export const TextClockLabel = GObject.registerClass(
     dateColor: string = "#FFFFFF";
     dividerColor: string = "#FFFFFF";
     font: string = "Sans 12";
+    timeText: string = "";
+    dividerText: string = "";
+    dateText: string = "";
 
     constructor(props: any) {
       super(props);
@@ -219,10 +222,9 @@ export const TextClockLabel = GObject.registerClass(
             this._timeFormat,
             this._fuzzyMinutes,
           );
-          this.timeLabel.set_text(parts.time);
-          this.dividerLabel.set_text(parts.divider);
-          this.dateLabel.set_text(parts.date);
-          // Apply colors and font
+          this.timeText = parts.time;
+          this.dividerText = parts.divider;
+          this.dateText = parts.date;
           this.applyStyling();
         }
       } catch (error: any) {
@@ -231,14 +233,14 @@ export const TextClockLabel = GObject.registerClass(
     }
 
     applyStyling() {
-      (this.timeLabel as any).set_text(
-        `<span color="${this.clockColor}">${this.timeLabel.get_text()}</span>`,
+      this.timeLabel.set_text(
+        `<span color="${this.clockColor}">${this.timeText}</span>`,
       );
-      (this.dateLabel as any).set_text(
-        `<span color="${this.dateColor}">${this.dateLabel.get_text()}</span>`,
+      this.dateLabel.set_text(
+        `<span color="${this.dateColor}">${this.dateText}</span>`,
       );
-      (this.dividerLabel as any).set_text(
-        `<span color="${this.dividerColor}">${this.dividerLabel.get_text()}</span>`,
+      this.dividerLabel.set_text(
+        `<span color="${this.dividerColor}">${this.dividerText}</span>`,
       );
       const style = `font: ${this.font};`;
       this.timeLabel.set_style(style);
