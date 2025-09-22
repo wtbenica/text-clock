@@ -5,7 +5,7 @@
 
 import { TimeFormat } from "./clock_formatter.js";
 import { Errors } from "./constants/index.js";
-import { logExtensionError } from "./utils/error-utils.js";
+import { logErr } from "./utils/error-utils.js";
 
 /**
  * A class to store the words used to format a time and date as a string.
@@ -92,11 +92,7 @@ export class WordPack {
       const error: Error = new Error(
         `${Errors.ERROR_INVALID_TIME_FORMAT} ${timeFormat}`,
       );
-      logExtensionError(
-        error,
-        `${Errors.ERROR_INVALID_TIME_FORMAT} ${timeFormat}`,
-        "error",
-      );
+      logErr(error, `${Errors.ERROR_INVALID_TIME_FORMAT} ${timeFormat}`);
     }
 
     return this.timesFormatOne;

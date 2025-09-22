@@ -15,6 +15,7 @@ import {
 
 import { SETTINGS, PrefItems, Errors } from "./constants/index.js";
 import { ClockFormatter, TimeFormat, Fuzziness } from "./clock_formatter.js";
+import { fuzzinessFromEnumIndex } from "./utils/fuzziness-utils.js";
 import { WordPack } from "./word_pack.js";
 import {
   timesFormatOne,
@@ -28,7 +29,7 @@ import {
   noon,
 } from "./constants/times/prefs.js";
 import { weekdays, dateOnly, daysOfMonth } from "./constants/dates/prefs.js";
-import { logExtensionError } from "./utils/error-utils.js";
+import { logErr } from "./utils/error-utils.js";
 
 /**
  * @returns a word pack that contains the strings for telling the time and date
@@ -48,28 +49,6 @@ export const TRANSLATE_PACK: () => WordPack = () =>
     noon: noon(),
     daysOfMonth: daysOfMonth(),
   });
-
-/**
- * Converts a fuzziness string setting to the corresponding Fuzziness enum value
- *
- * @param fuzzinessString - The fuzziness value as a string from settings
- * @returns The corresponding Fuzziness enum value, defaults to FIVE_MINUTES
- */
-function parseFuzziness(fuzzinessString: string): Fuzziness {
-  const fuzzinessValue = parseInt(fuzzinessString);
-  switch (fuzzinessValue) {
-    case 1:
-      return Fuzziness.ONE_MINUTE;
-    case 5:
-      return Fuzziness.FIVE_MINUTES;
-    case 10:
-      return Fuzziness.TEN_MINUTES;
-    case 15:
-      return Fuzziness.FIFTEEN_MINUTES;
-    default:
-      return Fuzziness.FIVE_MINUTES; // Default fallback
-  }
-}
 
 /**
  * Represents a binding between a setting and a property of a widget.
@@ -186,11 +165,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
         settings!.set_enum(settingKey, widget.selected);
       });
     } catch (error: any) {
-      logExtensionError(
-        error,
-        `Error binding settings for ${props.title}:`,
-        "error",
-      );
+      logErr(error, `Error binding settings for ${props.title}:`);
     }
     return row;
   }
@@ -249,11 +224,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
         Gio.SettingsBindFlags.DEFAULT,
       );
     } catch (error: any) {
-      logExtensionError(
-        error,
-        `${_(Errors.ERROR_BINDING_SETTINGS_FOR_)} ${widget.title}`,
-        "error",
-      );
+      logErr(error, `${_(Errors.ERROR_BINDING_SETTINGS_FOR_)} ${widget.title}`);
     }
   }
 
@@ -321,7 +292,8 @@ export default class TextClockPrefs extends ExtensionPreferences {
     const clockFormatter = new ClockFormatter(TRANSLATE_PACK());
 
     const date = new Date();
-    const fuzziness = parseFuzziness(settings.get_string(SETTINGS.FUZZINESS));
+    const fuzzinessEnumIndex = settings.get_enum(SETTINGS.FUZZINESS);
+    const fuzziness = fuzzinessFromEnumIndex(fuzzinessEnumIndex);
 
     const timeFormatOne = clockFormatter.getClockText(
       date,

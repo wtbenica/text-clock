@@ -4,7 +4,7 @@
  */
 
 import { WordPack } from "./word_pack.js";
-import { validateDate, logExtensionError } from "./utils/error-utils.js";
+import { logErr, validateDate } from "./utils/error-utils.js";
 
 /**
  * The time format options for the Text Clock extension
@@ -250,7 +250,7 @@ export class ClockFormatter {
       try {
         return template.replace("%s", arg);
       } catch (error2: any) {
-        logExtensionError(error2, "Failed to format date string template");
+        logErr(error2, "Failed to format date string template");
       }
     }
     return template;

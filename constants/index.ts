@@ -66,3 +66,7 @@ export const SETTINGS = {
   DIVIDER_COLOR: "divider-color",
   DIVIDER_TEXT: "divider-text",
 };
+
+// Map GSettings enum index -> fuzziness minutes.
+// Schema enum values (in gschema.xml) are ordered as: 1, 5, 10, 15
+export const FUZZINESS_ENUM_MINUTES: number[] = [1, 5, 10, 15];

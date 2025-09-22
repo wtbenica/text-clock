@@ -40,31 +40,10 @@ import {
   dateOnly,
   daysOfMonth,
 } from "./constants/dates/extension.js";
-import { logExtensionError } from "./utils/error-utils.js";
+import { logErr, logWarn, logInfo, logDebug } from "./utils/error-utils.js";
+import { fuzzinessFromEnumIndex } from "./utils/fuzziness-utils.js";
 
 const CLOCK_STYLE_CLASS_NAME = "clock";
-
-/**
- * Converts a fuzziness string setting to the corresponding Fuzziness enum value
- *
- * @param fuzzinessString - The fuzziness value as a string from settings
- * @returns The corresponding Fuzziness enum value, defaults to FIVE_MINUTES
- */
-function parseFuzziness(fuzzinessString: string): Fuzziness {
-  const fuzzinessValue = parseInt(fuzzinessString);
-  switch (fuzzinessValue) {
-    case 1:
-      return Fuzziness.ONE_MINUTE;
-    case 5:
-      return Fuzziness.FIVE_MINUTES;
-    case 10:
-      return Fuzziness.TEN_MINUTES;
-    case 15:
-      return Fuzziness.FIFTEEN_MINUTES;
-    default:
-      return Fuzziness.FIVE_MINUTES; // Default fallback
-  }
-}
 
 /**
  * @returns a word pack that contains the strings for telling the time and date
@@ -135,25 +114,15 @@ export default class TextClock extends Extension {
     try {
       this.#dateMenu = panel.statusArea.dateMenu as IDateMenuButton;
       if (!this.#dateMenu) {
-        logExtensionError(
-          `dateMenu not found on panel.statusArea`,
-          undefined,
-          "info",
-        );
+        logInfo(`dateMenu not found on panel.statusArea`);
         return;
       }
-      logExtensionError(`dateMenu found`, undefined, "info");
 
       const { _clock, _clockDisplay } = this.#dateMenu as any;
       this.#clock = _clock;
       this.#clockDisplay = _clockDisplay;
-      logExtensionError(
-        `_clock ${this.#clock ? "found" : "missing"}, _clockDisplay ${this.#clockDisplay ? "found" : "missing"}`,
-        undefined,
-        "info",
-      );
     } catch (error: any) {
-      logExtensionError(error, _(Errors.ERROR_RETRIEVE_DATE_MENU), "error");
+      logErr(error, _(Errors.ERROR_RETRIEVE_DATE_MENU));
     }
   }
 
@@ -176,17 +145,18 @@ export default class TextClock extends Extension {
         dividerText: this.#settings!.get_string(SETTINGS.DIVIDER_TEXT),
       });
 
-      // Set fuzziness explicitly via the setter to avoid GObject property
-      // binding mismatches between schema (string/enum) and numeric types.
-      try {
-        (this.#clockLabel as any).fuzzyMinutes = this.#settings!.get_string(
-          SETTINGS.FUZZINESS,
-        );
-      } catch (e: any) {
-        logExtensionError(
-          e,
+      // Read fuzziness from GSettings as an enum index and map to minutes.
+      // Assign via the setter (which accepts numeric or string) rather than
+      // using a direct GSettings -> GObject property bind to avoid type
+      // conversion ambiguity between the schema (enum) and the widget property.
+      const fuzzIndex = this.#settings!.get_enum(SETTINGS.FUZZINESS);
+      const fuzzValue = fuzzinessFromEnumIndex(fuzzIndex);
+      if (this.#clockLabel) {
+        (this.#clockLabel as any).fuzzyMinutes = fuzzValue;
+      } else {
+        logWarn(
+          `Attempted to set fuzziness but clockLabel is undefined`,
           _(Errors.ERROR_BINDING_SETTINGS_TO_CLOCK_LABEL),
-          "error",
         );
       }
       this.#topBox.add_child(this.#clockLabel!);
@@ -198,33 +168,9 @@ export default class TextClock extends Extension {
       // when available because it's more stable across Shell versions.
       const clockDisplayBox = this.#findClockDisplayBox();
       try {
-        if ((clockDisplayBox as any).add_child) {
-          logExtensionError(
-            `adding topBox into clockDisplayBox via add_child`,
-            undefined,
-            "info",
-          );
-          clockDisplayBox.add_child(this.#topBox);
-          logExtensionError(`add_child completed`, undefined, "info");
-        } else {
-          const children = (clockDisplayBox as any).get_children
-            ? (clockDisplayBox as any).get_children()
-            : [];
-          const insertIndex = Math.max(0, children.length);
-          logExtensionError(
-            `inserting topBox into clockDisplayBox (children=${children.length}) at index ${insertIndex}`,
-            undefined,
-            "info",
-          );
-          clockDisplayBox.insert_child_at_index(this.#topBox, insertIndex);
-          logExtensionError(
-            `insert_child_at_index completed`,
-            undefined,
-            "info",
-          );
-        }
+        clockDisplayBox.add_child(this.#topBox);
       } catch (err: any) {
-        logExtensionError(err, _(Errors.ERROR_PLACING_CLOCK_LABEL), "error");
+        logErr(err, _(Errors.ERROR_PLACING_CLOCK_LABEL));
         throw err;
       }
 
@@ -237,36 +183,25 @@ export default class TextClock extends Extension {
         if (typeof (this.#clockDisplay as any).hide === "function") {
           (this.#clockDisplay as any).hide();
         }
-        logExtensionError(
-          `original clockDisplay hidden/modified`,
-          undefined,
-          "info",
-        );
       } catch (e: any) {
-        logExtensionError(e, _(Errors.ERROR_PLACING_CLOCK_LABEL), "error");
+        logErr(e, _(Errors.ERROR_PLACING_CLOCK_LABEL));
       }
     } catch (error: any) {
-      logExtensionError(error, _(Errors.ERROR_PLACING_CLOCK_LABEL), "error");
+      logErr(error, _(Errors.ERROR_PLACING_CLOCK_LABEL));
     }
   }
 
   // Bind settings to their clock label properties
   #bindSettingsToClockLabel() {
     if (!this.#settings) {
-      logExtensionError(
+      logErr(
         "Settings object is undefined. Cannot bind settings to clock label.",
-        undefined,
-        "error",
       );
       return;
     }
 
     if (!this.#clockLabel) {
-      logExtensionError(
-        "Clock label is undefined. Cannot bind settings to clock label.",
-        undefined,
-        "error",
-      );
+      logErr("Clock label is undefined. Cannot bind settings to clock label.");
       return;
     }
 
@@ -279,17 +214,12 @@ export default class TextClock extends Extension {
       );
 
       this.#settings?.connect("changed::fuzziness", () => {
-        const fuzz = this.#settings?.get_string(SETTINGS.FUZZINESS);
-        if (fuzz) {
-          try {
-            (this.#clockLabel as any).fuzzyMinutes = parseFuzziness(fuzz);
-          } catch (e: any) {
-            logExtensionError(
-              e,
-              _(Errors.ERROR_BINDING_SETTINGS_TO_CLOCK_LABEL),
-              "error",
-            );
-          }
+        try {
+          const fuzzIndex = this.#settings!.get_enum(SETTINGS.FUZZINESS);
+          (this.#clockLabel as any).fuzzyMinutes =
+            fuzzinessFromEnumIndex(fuzzIndex);
+        } catch (e: any) {
+          logErr(e, _(Errors.ERROR_BINDING_SETTINGS_TO_CLOCK_LABEL));
         }
       });
 
@@ -299,11 +229,7 @@ export default class TextClock extends Extension {
           try {
             (this.#clockLabel as any).timeFormat = tf;
           } catch (e: any) {
-            logExtensionError(
-              e,
-              _(Errors.ERROR_BINDING_SETTINGS_TO_CLOCK_LABEL),
-              "error",
-            );
+            logErr(e, _(Errors.ERROR_BINDING_SETTINGS_TO_CLOCK_LABEL));
           }
         }
       });
@@ -331,11 +257,7 @@ export default class TextClock extends Extension {
         this.#applyStyles(),
       );
     } catch (error: any) {
-      logExtensionError(
-        error,
-        _(Errors.ERROR_BINDING_SETTINGS_TO_CLOCK_LABEL),
-        "error",
-      );
+      logErr(error, _(Errors.ERROR_BINDING_SETTINGS_TO_CLOCK_LABEL));
     }
   }
 
@@ -371,11 +293,6 @@ export default class TextClock extends Extension {
     const children = (this.#dateMenu as any)?.get_children
       ? (this.#dateMenu as any).get_children()
       : [];
-    logExtensionError(
-      `dateMenu children count: ${children.length}`,
-      undefined,
-      "debug",
-    );
 
     const box: St.BoxLayout | undefined = children.find(
       (child: Clutter.Actor) =>
@@ -384,7 +301,6 @@ export default class TextClock extends Extension {
     ) as St.BoxLayout | undefined;
 
     if (box) {
-      logExtensionError(`found clock-display-box`, undefined, "debug");
       return box;
     }
 
@@ -392,25 +308,11 @@ export default class TextClock extends Extension {
     // find a reasonable container (first BoxLayout) and log for debugging.
     for (const child of children) {
       if (child instanceof St.BoxLayout) {
-        logExtensionError(
-          `fallback using first BoxLayout child (style_class=${(child as any).style_class})`,
-          undefined,
-          "debug",
-        );
         return child as St.BoxLayout;
       }
-      logExtensionError(
-        `child type: ${child ? child.constructor.name : "unknown"}`,
-        undefined,
-        "debug",
-      );
     }
 
-    logExtensionError(
-      `could not find suitable clock display box`,
-      undefined,
-      "error",
-    );
+    logErr(`could not find suitable clock display box`);
     throw new Error(_(Errors.ERROR_COULD_NOT_FIND_CLOCK_DISPLAY_BOX));
   }
 }

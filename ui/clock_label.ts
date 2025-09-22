@@ -11,7 +11,7 @@ import { gettext as _ } from "resource:///org/gnome/shell/extensions/extension.j
 import { WordPack } from "../word_pack.js";
 import { ClockFormatter, TimeFormat, Fuzziness } from "../clock_formatter.js";
 import { PrefItems, Errors } from "../constants/index.js";
-import { logExtensionError } from "../utils/error-utils.js";
+import { logErr } from "../utils/error-utils.js";
 
 /**
  * The properties of the clock label
@@ -148,11 +148,7 @@ export const TextClockLabel = GObject.registerClass(
           this.dividerText,
         );
       } catch (error: any) {
-        logExtensionError(
-          error,
-          _(Errors.ERROR_INITIALIZING_CLOCK_LABEL),
-          "error",
-        );
+        logErr(error, _(Errors.ERROR_INITIALIZING_CLOCK_LABEL));
       }
 
       this.updateClock();
@@ -260,7 +256,7 @@ export const TextClockLabel = GObject.registerClass(
           this.applyStyling();
         }
       } catch (error: any) {
-        logExtensionError(error, _(Errors.ERROR_UPDATING_CLOCK_LABEL), "error");
+        logErr(error, _(Errors.ERROR_UPDATING_CLOCK_LABEL));
       }
     }
 
