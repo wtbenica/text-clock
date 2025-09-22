@@ -96,7 +96,7 @@ You can verify your system has the required tools by running `make check-deps`.
 
    | Method     | Command                                                  |
    | ---------- | -------------------------------------------------------- |
-   | HTTPS      | `git clone https://github.com/benica-dev/text-clock.git` |
+   | HTTPS      | `git clone https://github.com/wtbenica/text-clock.git` |
    | SSH        | `git clone git@github.com:wtbenica/text-clock.git`       |
    | GitHub CLI | `gh repo clone wtbenica/text-clock`                      |
 
