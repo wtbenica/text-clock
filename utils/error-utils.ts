@@ -30,17 +30,16 @@ export function logExtensionError(
   context?: string,
   level: "error" | "warn" | "info" | "debug" = "error",
 ): void {
-  const errorMessage = error instanceof Error ? error.message : String(error);
   const fullMessage = context
-    ? `[TextClock] ${context}: ${errorMessage}`
-    : `[TextClock] ${errorMessage}`;
+    ? `[TextClock] ${context}: ${error instanceof Error ? error.message : String(error)}`
+    : `[TextClock] ${error instanceof Error ? error.message : String(error)}`;
 
   switch (level) {
     case "error":
       if (error instanceof Error) {
         logError(error, fullMessage); // Preserve original error details
       } else {
-        logError(new Error(fullMessage), fullMessage);
+        logError(new Error(String(error)), fullMessage); // Wrap string in Error
       }
       break;
     case "warn":
