@@ -37,6 +37,10 @@ export interface ITextClock extends St.BoxLayout {
   timeLabel: St.Label;
   dividerLabel: St.Label;
   dateLabel: St.Label;
+  clockColor: string;
+  dateColor: string;
+  dividerColor: string;
+  font: string;
   setClockColor(color: string): void;
   setDateColor(color: string): void;
   setDividerColor(color: string): void;
@@ -107,6 +111,10 @@ export const TextClockLabel = GObject.registerClass(
     timeLabel: St.Label;
     dividerLabel: St.Label;
     dateLabel: St.Label;
+    clockColor: string = "#FFFFFF";
+    dateColor: string = "#FFFFFF";
+    dividerColor: string = "#FFFFFF";
+    font: string = "Sans 12";
 
     constructor(props: any) {
       super(props);
@@ -118,8 +126,11 @@ export const TextClockLabel = GObject.registerClass(
 
       // Create the three labels
       this.timeLabel = new St.Label();
+      (this.timeLabel as any).use_markup = true;
       this.dividerLabel = new St.Label();
+      (this.dividerLabel as any).use_markup = true;
       this.dateLabel = new St.Label();
+      (this.dateLabel as any).use_markup = true;
 
       this.add_child(this.timeLabel);
       this.add_child(this.dividerLabel);
@@ -211,29 +222,48 @@ export const TextClockLabel = GObject.registerClass(
           this.timeLabel.set_text(parts.time);
           this.dividerLabel.set_text(parts.divider);
           this.dateLabel.set_text(parts.date);
+          // Apply colors and font
+          this.applyStyling();
         }
       } catch (error: any) {
         logError(error, _(Errors.ERROR_UPDATING_CLOCK_LABEL));
       }
     }
 
-    setClockColor(color: string) {
-      this.timeLabel.set_style(`color: ${color};`);
-    }
-
-    setDateColor(color: string) {
-      this.dateLabel.set_style(`color: ${color};`);
-    }
-
-    setDividerColor(color: string) {
-      this.dividerLabel.set_style(`color: ${color};`);
-    }
-
-    setFont(font: string) {
-      const style = `font: ${font};`;
+    applyStyling() {
+      (this.timeLabel as any).set_text(
+        `<span color="${this.clockColor}">${this.timeLabel.get_text()}</span>`,
+      );
+      (this.dateLabel as any).set_text(
+        `<span color="${this.dateColor}">${this.dateLabel.get_text()}</span>`,
+      );
+      (this.dividerLabel as any).set_text(
+        `<span color="${this.dividerColor}">${this.dividerLabel.get_text()}</span>`,
+      );
+      const style = `font: ${this.font};`;
       this.timeLabel.set_style(style);
       this.dividerLabel.set_style(style);
       this.dateLabel.set_style(style);
+    }
+
+    setClockColor(color: string) {
+      this.clockColor = color;
+      this.applyStyling();
+    }
+
+    setDateColor(color: string) {
+      this.dateColor = color;
+      this.applyStyling();
+    }
+
+    setDividerColor(color: string) {
+      this.dividerColor = color;
+      this.applyStyling();
+    }
+
+    setFont(font: string) {
+      this.font = font;
+      this.applyStyling();
     }
 
     setDividerText(text: string) {

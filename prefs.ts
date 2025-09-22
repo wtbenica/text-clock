@@ -6,6 +6,7 @@
 import Gio from "gi://Gio";
 import Adw from "gi://Adw";
 import Gtk from "gi://Gtk";
+import Gdk from "gi://Gdk";
 
 import {
   ExtensionPreferences,
@@ -435,14 +436,17 @@ export default class TextClockPrefs extends ExtensionPreferences {
       subtitle: _("Color for the time text"),
     });
     const colorButton = new Gtk.ColorButton();
+    // Set initial color
+    const rgba = new Gdk.RGBA();
+    rgba.parse(settings.get_string("clock-color"));
+    colorButton.set_rgba(rgba);
+    // Connect to changes
+    colorButton.connect("color-set", () => {
+      const newRgba = colorButton.get_rgba();
+      settings.set_string("clock-color", newRgba.to_string());
+    });
     row.add_suffix(colorButton);
     group.add(row);
-    settings.bind(
-      "clock-color",
-      colorButton,
-      "rgba",
-      Gio.SettingsBindFlags.DEFAULT,
-    );
     return row;
   }
 
@@ -458,14 +462,15 @@ export default class TextClockPrefs extends ExtensionPreferences {
       subtitle: _("Color for the date text"),
     });
     const colorButton = new Gtk.ColorButton();
+    const rgba = new Gdk.RGBA();
+    rgba.parse(settings.get_string("date-color"));
+    colorButton.set_rgba(rgba);
+    colorButton.connect("color-set", () => {
+      const newRgba = colorButton.get_rgba();
+      settings.set_string("date-color", newRgba.to_string());
+    });
     row.add_suffix(colorButton);
     group.add(row);
-    settings.bind(
-      "date-color",
-      colorButton,
-      "rgba",
-      Gio.SettingsBindFlags.DEFAULT,
-    );
     return row;
   }
 
@@ -481,14 +486,15 @@ export default class TextClockPrefs extends ExtensionPreferences {
       subtitle: _("Color for the divider text"),
     });
     const colorButton = new Gtk.ColorButton();
+    const rgba = new Gdk.RGBA();
+    rgba.parse(settings.get_string("divider-color"));
+    colorButton.set_rgba(rgba);
+    colorButton.connect("color-set", () => {
+      const newRgba = colorButton.get_rgba();
+      settings.set_string("divider-color", newRgba.to_string());
+    });
     row.add_suffix(colorButton);
     group.add(row);
-    settings.bind(
-      "divider-color",
-      colorButton,
-      "rgba",
-      Gio.SettingsBindFlags.DEFAULT,
-    );
     return row;
   }
 
@@ -504,9 +510,15 @@ export default class TextClockPrefs extends ExtensionPreferences {
       subtitle: _("Font for the clock display"),
     });
     const fontButton = new Gtk.FontButton();
+    fontButton.set_font(settings.get_string("font"));
+    fontButton.connect("font-set", () => {
+      const font = fontButton.get_font();
+      if (font) {
+        settings.set_string("font", font);
+      }
+    });
     row.add_suffix(fontButton);
     group.add(row);
-    settings.bind("font", fontButton, "font", Gio.SettingsBindFlags.DEFAULT);
     return row;
   }
 
