@@ -64,14 +64,12 @@ export class ClockFormatter {
     timeFormat: TimeFormat,
     fuzziness: Fuzziness,
   ): string {
-    const parts = this.getClockParts(
-      date,
-      showDate,
-      showWeekday,
-      timeFormat,
-      fuzziness,
-    );
-    return parts.time + parts.divider + parts.date;
+    const {
+      time,
+      divider,
+      date: dateStr,
+    } = this.getClockParts(date, showDate, showWeekday, timeFormat, fuzziness);
+    return time + divider + dateStr;
   }
 
   /**
@@ -100,9 +98,7 @@ export class ClockFormatter {
     const minutes = date.getMinutes();
     const hours = date.getHours();
     const minuteBucket = Math.round(minutes / fuzziness) * fuzziness;
-    const shouldRoundUp =
-      (timeFormat === TimeFormat.FORMAT_ONE && minuteBucket > 30) ||
-      minuteBucket === 60;
+    const shouldRoundUp = this.#shouldRoundUp(minuteBucket, timeFormat);
     const roundedHour = (shouldRoundUp ? hours + 1 : hours) % 24;
     const hourName = this.#getHourName(roundedHour, minuteBucket, timeFormat);
     const time = this.#getTimeString(hourName, minuteBucket, timeFormat);
@@ -205,23 +201,42 @@ export class ClockFormatter {
     minuteBucket: number,
     timeFormat: TimeFormat,
   ): string {
-    const twelves = [
-      this.wordPack.names[0],
-      this.wordPack.names[12],
-      this.wordPack.midnight,
-      this.wordPack.noon,
-    ];
-
-    const isNoonOrMidnightExactly: boolean =
-      this.#isTopOfTheHour(minuteBucket) && twelves.includes(hourName);
-
-    if (isNoonOrMidnightExactly) {
+    // For exact noon/midnight at the top of the hour, just return the hour name
+    if (this.#isTopOfTheHour(minuteBucket) && this.#isExactHourName(hourName)) {
       return hourName;
     }
 
     const times: string[] = this.wordPack.getTimes(timeFormat);
+    return times[minuteBucket].format(hourName);
+  }
 
-    return this.#formatString(times[minuteBucket], hourName);
+  /**
+   * Returns whether the hour name represents an exact hour (noon/midnight).
+   *
+   * @param {string} hourName - The hour name to check.
+   * @returns {boolean} True if the hour name is exact.
+   */
+  #isExactHourName(hourName: string): boolean {
+    return (
+      hourName === this.wordPack.midnight ||
+      hourName === this.wordPack.noon ||
+      hourName === this.wordPack.names[0] || // midnight
+      hourName === this.wordPack.names[12] // noon
+    );
+  }
+
+  /**
+   * Returns whether the time should be rounded up to the next hour.
+   *
+   * @param {number} minuteBucket - The minute bucket (0-60).
+   * @param {TimeFormat} timeFormat - The format of the time string.
+   * @returns {boolean} True if the time should be rounded up.
+   */
+  #shouldRoundUp(minuteBucket: number, timeFormat: TimeFormat): boolean {
+    return (
+      (timeFormat === TimeFormat.FORMAT_ONE && minuteBucket > 30) ||
+      minuteBucket === 60
+    );
   }
 
   /**
@@ -246,11 +261,7 @@ export class ClockFormatter {
     minuteBucket: number,
     showWeekday: boolean,
   ): string {
-    const isNextDay = date.getHours() === 23 && minuteBucket === 60;
-    const adjustedDate = new Date(date);
-    if (isNextDay) {
-      adjustedDate.setDate(date.getDate() + 1);
-    }
+    const adjustedDate = this.#adjustDateForRounding(date, minuteBucket);
 
     const weekdayString = showWeekday
       ? this.wordPack.days[adjustedDate.getDay()]
@@ -259,6 +270,22 @@ export class ClockFormatter {
     const dateString = this.#getDateString(adjustedDate.getDate());
 
     return this.#formatString(weekdayString, dateString);
+  }
+
+  /**
+   * Adjusts the date if time rounding pushes it to the next day (midnight case).
+   *
+   * @param {Date} date - The original date.
+   * @param {number} minuteBucket - The minute bucket.
+   * @returns {Date} The adjusted date.
+   */
+  #adjustDateForRounding(date: Date, minuteBucket: number): Date {
+    const isNextDay = date.getHours() === 23 && minuteBucket === 60;
+    const adjustedDate = new Date(date);
+    if (isNextDay) {
+      adjustedDate.setDate(date.getDate() + 1);
+    }
+    return adjustedDate;
   }
 
   /**
