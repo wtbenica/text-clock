@@ -30,6 +30,14 @@
     <value value="1" nick="format-two"/>
   </enum>
 
+  <enum id="org.gnome.shell.extensions.text-clock.divider-preset">
+    <value value="0" nick="pipe"/>
+    <value value="1" nick="bullet"/>
+    <value value="2" nick="double-pipe"/>
+    <value value="3" nick="dash"/>
+    <value value="4" nick="custom"/>
+  </enum>
+
   <schema id='org.gnome.shell.extensions.text-clock' path='/org/gnome/shell/extensions/text-clock/'>
     <key name='show-date' type='b'>
       <default>true</default>
@@ -80,11 +88,18 @@
             The color for the divider text.
       </description>
     </key>
-    <key name='divider-text' type='s'>
-      <default>' • '</default>
-      <summary>Divider text</summary>
+    <key name="divider-preset" enum="org.gnome.shell.extensions.text-clock.divider-preset">
+      <default>"bullet"</default>
+      <summary>Divider preset</summary>
       <description>
-            The text to use as a divider between time and date.
+            The preset to use for the divider between time and date.
+      </description>
+    </key>
+    <key name='custom-divider-text' type='s'>
+      <default>' | '</default>
+      <summary>Custom divider text</summary>
+      <description>
+            The custom text to use as a divider when divider-preset is set to custom.
       </description>
     </key>
   </schema>

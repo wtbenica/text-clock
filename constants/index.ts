@@ -63,9 +63,34 @@ export const SETTINGS = {
   CLOCK_COLOR: "clock-color",
   DATE_COLOR: "date-color",
   DIVIDER_COLOR: "divider-color",
-  DIVIDER_TEXT: "divider-text",
+  DIVIDER_PRESET: "divider-preset",
+  CUSTOM_DIVIDER_TEXT: "custom-divider-text",
 };
 
 // Map GSettings enum index -> fuzziness minutes.
 // Schema enum values (in gschema.xml) are ordered as: 1, 5, 10, 15
 export const FUZZINESS_ENUM_MINUTES: number[] = [1, 5, 10, 15];
+
+// Map GSettings enum index -> divider text.
+// Schema enum values (in gschema.xml) are ordered as: pipe, bullet, double-pipe, dash, custom
+export const DIVIDER_PRESET_TEXTS: string[] = [
+  " | ",
+  " • ",
+  " ‖ ",
+  " — ",
+  "custom",
+];
+
+/**
+ * Get the actual divider text based on preset and custom text
+ */
+export function getDividerText(
+  presetIndex: number,
+  customText: string,
+): string {
+  if (presetIndex === 4) {
+    // custom
+    return customText;
+  }
+  return DIVIDER_PRESET_TEXTS[presetIndex] || " • ";
+}

@@ -136,11 +136,8 @@ export const TextClockLabel = GObject.registerClass(
 
       // Create the three labels
       this.timeLabel = new St.Label();
-      (this.timeLabel as any).use_markup = true;
       this.dividerLabel = new St.Label();
-      (this.dividerLabel as any).use_markup = true;
       this.dateLabel = new St.Label();
-      (this.dateLabel as any).use_markup = true;
 
       this.add_child(this.timeLabel);
       this.add_child(this.dividerLabel);
@@ -241,10 +238,8 @@ export const TextClockLabel = GObject.registerClass(
         text: string,
       ) => {
         const normalizedColor = normalizeColor(color);
-        (label as any).set_markup(
-          `<span foreground="${normalizedColor.replace("#", "")}">${escapeMarkup(text)}</span>`,
-        );
-        label.set_style("");
+        label.set_text(text);
+        label.set_style(`color: ${normalizedColor};`);
       };
 
       applyColorToLabel(this.timeLabel, this.clockColor, this.timeText);

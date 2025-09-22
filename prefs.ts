@@ -64,7 +64,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
 
     this.#createFuzzinessComboRow(clockSettingsGroup, settings);
 
-    this.#addDividerTextRow(clockSettingsGroup, settings);
+    this.#addDividerPresetRow(clockSettingsGroup, settings);
 
     const clockColorSettingsGroup = this.#createAndAddGroupToPage(
       page,
@@ -423,18 +423,50 @@ export default class TextClockPrefs extends ExtensionPreferences {
   }
 
   /**
-   * Add an entry row for divider text
+   * Add a combo row for divider preset and conditional entry for custom text
    */
-  #addDividerTextRow(
+  #addDividerPresetRow(
     group: Adw.PreferencesGroup,
     settings: Gio.Settings,
-  ): Adw.EntryRow {
-    const row = new Adw.EntryRow({
-      title: _("Divider Text"),
-      text: settings.get_string("divider-text"),
+  ): void {
+    // Combo row for divider preset
+    const presetRow = new Adw.ComboRow({
+      title: _("Divider Preset"),
+      subtitle: _("Choose a preset divider or select custom"),
+      model: new Gtk.StringList({ strings: ["|", "•", "‖", "—", "Custom"] }),
+      selected: settings!.get_enum(SETTINGS.DIVIDER_PRESET),
     });
-    group.add(row);
-    settings.bind("divider-text", row, "text", Gio.SettingsBindFlags.DEFAULT);
-    return row;
+    group.add(presetRow);
+
+    // Entry row for custom divider text (initially hidden)
+    const customEntryRow = new Adw.EntryRow({
+      title: _("Custom Divider Text"),
+      text: settings.get_string(SETTINGS.CUSTOM_DIVIDER_TEXT),
+    });
+    group.add(customEntryRow);
+
+    // Show/hide custom entry based on preset selection
+    const updateCustomEntryVisibility = () => {
+      const selectedPreset = presetRow.selected;
+      const isCustom = selectedPreset === 4; // "Custom" is index 4
+      customEntryRow.visible = isCustom;
+    };
+
+    // Initial visibility
+    updateCustomEntryVisibility();
+
+    // Connect preset change
+    presetRow.connect("notify::selected", () => {
+      settings.set_enum(SETTINGS.DIVIDER_PRESET, presetRow.selected);
+      updateCustomEntryVisibility();
+    });
+
+    // Connect custom text change
+    settings.bind(
+      SETTINGS.CUSTOM_DIVIDER_TEXT,
+      customEntryRow,
+      "text",
+      Gio.SettingsBindFlags.DEFAULT,
+    );
   }
 }

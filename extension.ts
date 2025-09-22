@@ -23,7 +23,7 @@ import {
 } from "./ui/clock_label.js";
 import { Fuzziness } from "./clock_formatter.js";
 import { WordPack } from "./word_pack.js";
-import { SETTINGS, Errors } from "./constants/index.js";
+import { SETTINGS, Errors, getDividerText } from "./constants/index.js";
 import {
   timesFormatOne,
   midnightFormatOne,
@@ -121,12 +121,17 @@ export default class TextClock extends Extension {
     });
 
     // Create the clock label and add it to the top box
+    const dividerPreset = this.#settings!.get_enum(SETTINGS.DIVIDER_PRESET);
+    const customDividerText = this.#settings!.get_string(
+      SETTINGS.CUSTOM_DIVIDER_TEXT,
+    );
+    const dividerText = getDividerText(dividerPreset, customDividerText);
     this.#clockLabel = new TextClockLabel({
       translatePack: this.#translatePack,
       showDate: this.#settings!.get_boolean(SETTINGS.SHOW_DATE),
       showWeekday: this.#settings!.get_boolean(SETTINGS.SHOW_WEEKDAY),
       timeFormat: this.#settings!.get_string(SETTINGS.TIME_FORMAT),
-      dividerText: this.#settings!.get_string(SETTINGS.DIVIDER_TEXT),
+      dividerText: dividerText,
     });
 
     // Read fuzziness from GSettings as an enum index and map to minutes.
@@ -210,7 +215,12 @@ export default class TextClock extends Extension {
     this.#settings.connect("changed::clock-color", () => this.#applyStyles());
     this.#settings.connect("changed::date-color", () => this.#applyStyles());
     this.#settings.connect("changed::divider-color", () => this.#applyStyles());
-    this.#settings.connect("changed::divider-text", () => this.#applyStyles());
+    this.#settings.connect("changed::divider-preset", () =>
+      this.#applyStyles(),
+    );
+    this.#settings.connect("changed::custom-divider-text", () =>
+      this.#applyStyles(),
+    );
   }
 
   // Apply styles to the clock label
@@ -221,7 +231,12 @@ export default class TextClock extends Extension {
     this.#clockLabel.setDividerColor(
       this.#settings!.get_string("divider-color"),
     );
-    this.#clockLabel.setDividerText(this.#settings!.get_string("divider-text"));
+    const dividerPreset = this.#settings!.get_enum(SETTINGS.DIVIDER_PRESET);
+    const customDividerText = this.#settings!.get_string(
+      SETTINGS.CUSTOM_DIVIDER_TEXT,
+    );
+    const dividerText = getDividerText(dividerPreset, customDividerText);
+    this.#clockLabel.setDividerText(dividerText);
   }
 
   // Destroys created objects and sets properties to undefined
