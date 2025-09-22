@@ -33,7 +33,7 @@
     "validate": "yarn lint && yarn test && yarn build"
   },
   "dependencies": {
-    "@girs/gnome-shell": "49.0.0",
+    "@girs/gnome-shell": "49.0.1",
     "ts-node": "^10.9.2"
   },
   "devDependencies": {
