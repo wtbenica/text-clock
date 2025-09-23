@@ -88,8 +88,8 @@ jobs:
           name: "Text Clock v${{ steps.version.outputs.version }}"
           body_path: release_notes.md
           files: |
-            text-clock@benica.dev.zip
-            text-clock@benica.dev.zip.sig
+            text-clock@benica.dev-${{ steps.version.outputs.version }}.zip
+            text-clock@benica.dev-${{ steps.version.outputs.version }}.zip.sig
           draft: false
           prerelease: false
         env:

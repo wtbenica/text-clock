@@ -60,7 +60,7 @@ make validate
 log_step "Creating release package..."
 make pack
 
-ZIP_FILE="text-clock@benica.dev.zip"
+ZIP_FILE="text-clock@benica.dev-${VERSION}.zip"
 
 # Sign if GPG key available (simulate CI signing)
 if [[ -n "${GPG_PRIVATE_KEY:-}" ]]; then
