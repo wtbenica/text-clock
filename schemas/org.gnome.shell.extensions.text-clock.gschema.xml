@@ -47,7 +47,7 @@
       </description>
     </key>
     <key name='fuzziness' enum="org.gnome.shell.extensions.text-clock.fuzziness">
-      <default>1</default>
+      <default>"5 minutes"</default>
       <summary>Time fuzziness</summary>
       <description>
             The number of minutes to fuzz the displayed time by.
@@ -61,7 +61,7 @@
       </description>
     </key>
     <key name="time-format" enum="org.gnome.shell.extensions.text-clock.time-format">
-      <default>0</default>
+      <default>"format-one"</default>
       <summary>Time format</summary>
       <description>
             The format to use for the time display.
@@ -89,7 +89,7 @@
       </description>
     </key>
     <key name="divider-preset" enum="org.gnome.shell.extensions.text-clock.divider-preset">
-      <default>1</default>
+      <default>"bullet"</default>
       <summary>Divider preset</summary>
       <description>
             The preset to use for the divider between time and date.

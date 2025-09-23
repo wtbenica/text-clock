@@ -22,7 +22,7 @@ source=(
     "${pkgname}-${pkgver}.key::https://raw.githubusercontent.com/wtbenica/text-clock/colorful/ci-pub.asc"
 )
 sha256sums=(
-    '7d87519c9bb45e851445e6d690c2ea5fc0b8991ab6641423ea4a4dc07be1b074'
+    '0fda87034a778a0e6294050e9ec2a85e5b6fa2e2bb42c29fed303a0d80a0cd92'
     'SKIP'
     'b7f0e54f80361ab240d6c6073c50d84872d7d8af39fa8485c43476656e03d835'
 )
@@ -46,4 +46,8 @@ package() {
     # Set correct permissions: 644 for files, 755 for directories
     find "${destdir}" -type f -exec chmod 644 {} \;
     find "${destdir}" -type d -exec chmod 755 {} \;
+
+    # Install GSettings schema to system location
+    install -Dm644 "${destdir}/schemas/org.gnome.shell.extensions.text-clock.gschema.xml" \
+        "${pkgdir}/usr/share/glib-2.0/schemas/org.gnome.shell.extensions.text-clock.gschema.xml"
 }
