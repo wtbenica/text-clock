@@ -77,8 +77,11 @@ make pack
 
 # Rename ZIP to match the release version/tag
 BASE_VERSION="$(get_current_version)"
+BASE_FILE="text-clock@benica.dev-${BASE_VERSION}.zip"
 ZIP_FILE="text-clock@benica.dev-${VERSION}.zip"
-mv "text-clock@benica.dev-${BASE_VERSION}.zip" "$ZIP_FILE"
+if [[ "$BASE_FILE" != "$ZIP_FILE" ]]; then
+    mv "$BASE_FILE" "$ZIP_FILE"
+fi
 
 # Sign if GPG key available (simulate CI signing)
 if [[ -n "${GPG_PRIVATE_KEY:-}" ]]; then
