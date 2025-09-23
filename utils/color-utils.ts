@@ -17,9 +17,9 @@ export function normalizeColor(color: string): string {
   if (!color) return "#ffffff";
   color = color.trim();
 
-  // Handle rgb() format
+  // Handle rgb() format (allow negative numbers, clamp to [0,255])
   const rgbMatch = color.match(
-    /rgb\s*\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)/i,
+    /rgb\s*\(\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*(-?\d+)\s*\)/i,
   );
   if (rgbMatch) {
     const r = Math.max(0, Math.min(255, Number(rgbMatch[1])));
