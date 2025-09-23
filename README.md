@@ -70,6 +70,31 @@ You can download the latest release of the extension as a ZIP file:
 2. Extract the ZIP file to `~/.local/share/gnome-shell/extensions/`.
 3. Restart GNOME Shell for the changes to take effect. On Wayland, log out and back in. On X11, press Alt+F2, type `r`, and then press Enter.
 
+##### Verifying the Download
+
+For added security, you can verify the integrity and authenticity of the downloaded ZIP file using GPG signatures. This ensures the release was signed by the developer and hasn't been tampered with.
+
+1. **Install GPG** (if not already installed):
+
+2. **Download and import the public key**:
+   ```bash
+   # Download from the repository
+   wget https://raw.githubusercontent.com/wtbenica/text-clock/main/ci-pub.asc
+
+   # Import into your GPG keyring
+   gpg --import ci-pub.asc
+   ```
+
+3. **Verify the ZIP file** (replace `X.Y.Z` with the version number):
+   ```bash
+   gpg --verify text-clock@benica.dev-X.Y.Z.zip.sig text-clock@benica.dev-X.Y.Z.zip
+   ```
+
+   - **Success**: You'll see "gpg: Good signature from [key details]".
+   - **Failure**: Indicates a potential issue—re-download or check the key fingerprint.
+
+The public key fingerprint is `50483D39B066B9CAC0B0189A433660C4BA3A31AC`. You can download the full public key from the repository's [`ci-pub.asc`](https://raw.githubusercontent.com/wtbenica/text-clock/main/ci-pub.asc ) file to import it.
+
 #### From Source
 
 ###### Required Dependencies
