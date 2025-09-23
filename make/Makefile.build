@@ -31,6 +31,12 @@ clean:
 	@rm -rf $(LOCALE_DIR) || { echo "Removing locale directory failed"; exit 1; }
 	@rm -f schemas/gschemas.compiled || { echo "Removing compiled GSettings schemas failed"; exit 1; }
 	@rm -f yarn.lock || { echo "Removing yarn.lock file failed"; exit 1; }
+	@echo "Removing any .zip, .zip.* and .zip.sig, .zip.sig.* files in repository (including aur/)..."
+	@find . -type f \( -name "*.zip" -o -name "*.zip.*" -o -name "*.zip.sig" -o -name "*.zip.sig.*" \) -print -exec rm -f {} \; || { echo "Removing zip files failed"; exit 1; }
+	@echo "Removing AUR packaging artifacts in aur/ (keys, package archives)..."
+	@if [ -d "aur" ]; then \
+		find aur -type f \( -name "*.key" -o -name "*.pkg.tar.*" -o -name "*.pkg.tar.zst" \) -print -exec rm -f {} \; || { echo "Removing aur packaging artifacts failed"; exit 1; }; \
+	fi
 	@echo "Cleaning up complete."
 
 ## === Installation ===

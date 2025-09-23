@@ -79,6 +79,6 @@ endef
 
 ### === Phony Targets ===
 
-.PHONY: check-deps help
+.PHONY: check-deps help clean
 
 
