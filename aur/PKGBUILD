@@ -18,12 +18,20 @@ source=(
     "${pkgname}-${pkgver}.zip::https://github.com/wtbenica/text-clock/releases/download/v${pkgver}/text-clock@benica.dev.zip"
     # Optional detached signature uploaded as a release asset (change extension to .asc if you prefer)
     "${pkgname}-${pkgver}.zip.sig::https://github.com/wtbenica/text-clock/releases/download/v${pkgver}/text-clock@benica.dev.zip.sig"
+    # Public key for signature verification
+    "${pkgname}-${pkgver}.key::https://raw.githubusercontent.com/wtbenica/text-clock/main/ci-pub.asc"
 )
 sha256sums=(
     'c3f951d83c7e9b73cdc9d04fc0df3ce5b789bb32644e48b367cfc10eaa895ce8'
     'SKIP'
+    'b7f0e54f80361ab240d6c6073c50d84872d7d8af39fa8485c43476656e03d835'
 )
 noextract=("${pkgname}-${pkgver}.zip")
+
+prepare() {
+    # Import the public key into the build keyring for signature verification
+    gpg --import "${srcdir}/${pkgname}-${pkgver}.key"
+}
 
 package() {
     local uuid="text-clock@benica.dev"
