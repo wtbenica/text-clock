@@ -62,9 +62,9 @@ make pack
 
 # Rename ZIP to include test version
 BASE_VERSION="$(get_current_version)"
-mv "text-clock@benica.dev-${BASE_VERSION}.zip" "$ZIP_FILE"
-
+VERSION="${BASE_VERSION}-test"
 ZIP_FILE="text-clock@benica.dev-${VERSION}.zip"
+mv "text-clock@benica.dev-${BASE_VERSION}.zip" "$ZIP_FILE"
 
 # Sign if GPG key available (simulate CI signing)
 if [[ -n "${GPG_PRIVATE_KEY:-}" ]]; then
