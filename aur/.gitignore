@@ -6,6 +6,9 @@
 *.tar.gz
 *.tar.xz
 *.zip
+*.zip.*
+*.sig
+*.sig.*
 *.pkg.tar.zst
 pkg/
 src/

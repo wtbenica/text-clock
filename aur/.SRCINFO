@@ -1,14 +1,20 @@
 pkgbase = gnome-shell-extension-text-clock
 	pkgdesc = A simple text clock for the GNOME Shell top panel
-	pkgver = 1.0.5
+	pkgver = 1.0.6_test
 	pkgrel = 1
 	url = https://github.com/wtbenica/text-clock
 	install = gnome-shell-extension-text-clock.install
 	arch = any
 	license = GPL-3.0-or-later
+	makedepends = unzip
 	depends = gnome-shell>=45
-	noextract = gnome-shell-extension-text-clock-1.0.5.zip
-	source = gnome-shell-extension-text-clock-1.0.5.zip::https://github.com/wtbenica/text-clock/releases/download/v1.0.5/text-clock@benica.dev.zip
-	sha256sums = c3f951d83c7e9b73cdc9d04fc0df3ce5b789bb32644e48b367cfc10eaa895ce8
+	noextract = gnome-shell-extension-text-clock-1.0.6_test.zip
+	source = gnome-shell-extension-text-clock-1.0.6_test.zip::https://github.com/wtbenica/text-clock/releases/download/v1.0.6-test/text-clock@benica.dev-1.0.6-test.zip
+	source = gnome-shell-extension-text-clock-1.0.6_test.zip.sig::https://github.com/wtbenica/text-clock/releases/download/v1.0.6-test/text-clock@benica.dev-1.0.6-test.zip.sig
+	source = gnome-shell-extension-text-clock-1.0.6_test.key::https://raw.githubusercontent.com/wtbenica/text-clock/main/ci-pub.asc
+	validpgpkeys = 50483D39B066B9CAC0B0189A433660C4BA3A31ACAF
+	sha256sums = 6b2c3e6b790a674076dfa80b31f86e16cf4879848f3c6cbbbeaddda3079c393b
+	sha256sums = SKIP
+	sha256sums = b7f0e54f80361ab240d6c6073c50d84872d7d8af39fa8485c43476656e03d835
 
 pkgname = gnome-shell-extension-text-clock
