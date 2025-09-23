@@ -49,3 +49,10 @@ constants_*_test.generated.ts
 /aur/*.pkg.tar.*
 /aur/*.BUILDINFO
 /aur/*.MTREE
+
+# GPG private key exports and signing artifacts (do not commit)
+ci-secret.asc
+*.gpg
+*.key
+*.secret
+*.sig

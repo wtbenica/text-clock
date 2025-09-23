@@ -180,3 +180,17 @@ promote-pr:
 
 # pr-wait-and-merge   Wait for status checks on current branch's PR, then merge it
 pr-wait-and-merge: wait-for-ci merge-pr
+
+## === Test Release Workflows ===
+
+## release-test         Create test release (draft/prerelease) from any branch
+release-test: check-deps
+	@./scripts/create-test-release.sh $(if $(DRY_RUN),--dry-run) $(if $(filter 1,$(ACCEPT_ALL)),--auto)
+
+## release-test-dry     Create test release (dry-run)
+release-test-dry: check-deps
+	@$(MAKE) release-test DRY_RUN=1
+
+## release-test-auto    Create test release (auto-accept prompts)
+release-test-auto:
+	$(MAKE) release-test ACCEPT_ALL=1

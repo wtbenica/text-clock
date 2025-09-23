@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - "v*"
+      - 'v*'
 
 permissions:
   contents: write
@@ -11,6 +11,8 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    env:
+      GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
 
     steps:
       - name: Checkout repository
@@ -24,7 +26,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y glib2.0-dev gettext
+          sudo apt-get install -y glib2.0-dev gettext gnupg
 
       - name: Install Yarn v4
         run: |
@@ -42,6 +44,20 @@ jobs:
       - name: Create release package
         run: |
           make pack
+
+      - name: Import GPG private key (optional)
+        if: ${{ env.GPG_PRIVATE_KEY != '' }}
+        run: |
+          echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+
+      - name: Sign release ZIP (optional)
+        if: ${{ env.GPG_PRIVATE_KEY != '' }}
+        run: |
+          set -euo pipefail
+          ZIP=text-clock@benica.dev.zip
+          sigfile="$ZIP.sig"
+          # Create detached signature (binary)
+          gpg --batch --yes --output "$sigfile" --detach-sign "$ZIP"
 
       - name: Extract version from tag
         id: version
@@ -73,6 +89,7 @@ jobs:
           body_path: release_notes.md
           files: |
             text-clock@benica.dev.zip
+            text-clock@benica.dev.zip.sig
           draft: false
           prerelease: false
         env:
