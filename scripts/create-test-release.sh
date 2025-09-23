@@ -60,6 +60,10 @@ make validate
 log_step "Creating release package..."
 make pack
 
+# Rename ZIP to include test version
+BASE_VERSION="$(get_current_version)"
+mv "text-clock@benica.dev-${BASE_VERSION}.zip" "$ZIP_FILE"
+
 ZIP_FILE="text-clock@benica.dev-${VERSION}.zip"
 
 # Sign if GPG key available (simulate CI signing)
