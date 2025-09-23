@@ -185,7 +185,7 @@ pr-wait-and-merge: wait-for-ci merge-pr
 
 ## release-test         Create test release (draft/prerelease) from any branch
 release-test: check-deps
-	@./scripts/create-test-release.sh $(if $(DRY_RUN),--dry-run) $(if $(filter 1,$(ACCEPT_ALL)),--auto)
+	@./scripts/create-test-release.sh $(if $(DRY_RUN),--dry-run) $(if $(filter 1,$(ACCEPT_ALL)),--auto) $(if $(TAG),--tag $(TAG))
 
 ## release-test-dry     Create test release (dry-run)
 release-test-dry: check-deps

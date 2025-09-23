@@ -13,8 +13,11 @@ set -euo pipefail
 SCRIPT_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 source "$SCRIPT_DIR/lib/common.sh"
 
+
 VERSION=""
+TAG=""
 DRY_RUN=false
+
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -22,21 +25,32 @@ while [[ $# -gt 0 ]]; do
             VERSION="$2"; shift 2 ;;
         --version=*)
             VERSION="${1#*=}"; shift ;;
+        --tag)
+            TAG="$2"; shift 2 ;;
+        --tag=*)
+            TAG="${1#*=}"; shift ;;
         --dry-run) DRY_RUN=true; shift ;;
         -h|--help)
-            echo "Usage: $0 [--version X.Y.Z-test] [--dry-run]"
-            echo "Create a test GitHub release (draft/prerelease) for the specified version"
-            echo "If no version specified, uses current version with '-test' suffix"
+            echo "Usage: $0 [--version X.Y.Z-test] [--tag TAG] [--dry-run]"
+            echo "Create a test GitHub release (draft/prerelease) for the specified version or tag."
+            echo "If no version or tag specified, uses current version with '-test' suffix."
             exit 0
             ;;
         *) log_error "Unknown option: $1"; exit 1 ;;
     esac
 done
 
-if [[ -z "$VERSION" ]]; then
-    BASE_VERSION="$(get_current_version)"
-    VERSION="${BASE_VERSION}-test"
+
+# If TAG is provided, use it for VERSION and ZIP naming
+if [[ -n "$TAG" ]]; then
+    VERSION="$TAG"
+else
+    if [[ -z "$VERSION" ]]; then
+        BASE_VERSION="$(get_current_version)"
+        VERSION="${BASE_VERSION}-test"
+    fi
 fi
+
 
 log_info "Creating test release for version $VERSION"
 
@@ -60,9 +74,9 @@ make validate
 log_step "Creating release package..."
 make pack
 
-# Rename ZIP to include test version
+
+# Rename ZIP to match the release version/tag
 BASE_VERSION="$(get_current_version)"
-VERSION="${BASE_VERSION}-test"
 ZIP_FILE="text-clock@benica.dev-${VERSION}.zip"
 mv "text-clock@benica.dev-${BASE_VERSION}.zip" "$ZIP_FILE"
 
