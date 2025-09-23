@@ -21,26 +21,9 @@ import {
   CLOCK_LABEL_PROPERTIES,
   ITextClock,
 } from "./ui/clock_label.js";
-import { Fuzziness } from "./clock_formatter.js";
 import { WordPack } from "./word_pack.js";
 import { SETTINGS, Errors, getDividerText } from "./constants/index.js";
-import {
-  timesFormatOne,
-  midnightFormatOne,
-  noonFormatOne,
-  timesFormatTwo,
-  midnightFormatTwo,
-  noonFormatTwo,
-  hourNames,
-  midnight,
-  noon,
-} from "./constants/times/extension.js";
-import {
-  weekdays,
-  dateOnly,
-  daysOfMonth,
-} from "./constants/dates/extension.js";
-import { logErr, logWarn, logInfo, logDebug } from "./utils/error-utils.js";
+import { logErr, logWarn, logInfo } from "./utils/error-utils.js";
 import { fuzzinessFromEnumIndex } from "./utils/fuzziness-utils.js";
 import { createTranslatePack } from "./utils/translate-pack-utils.js";
 import { extensionGettext } from "./utils/gettext-utils-ext.js";
@@ -71,6 +54,7 @@ export default class TextClock extends Extension {
 
   enable() {
     this.#initSettings();
+    this.#maybeShowUpdateNotification();
     this.#retrieveDateMenu();
     this.#placeClockLabel();
     this.#bindSettingsToClockLabel();
@@ -85,6 +69,60 @@ export default class TextClock extends Extension {
   // Initialize the settings object
   #initSettings() {
     this.#settings = this.getSettings();
+  }
+
+  // When the extension is enabled check whether we have a stored last-seen
+  // version and, if it differs from the current metadata version-name,
+  // show a short notification and persist the new version-name.
+  #maybeShowUpdateNotification() {
+    try {
+      if (!this.#settings) return;
+
+      // Extension metadata is provided by the base Extension class; access
+      // via (this as any).metadata which mirrors metadata.json at build time.
+      const meta: any = (this as any).metadata || {};
+      const currentVersionName: string =
+        meta["version-name"] || String(meta.version || "");
+      if (!currentVersionName) return;
+
+      const lastSeen = this.#settings.get_string(SETTINGS.LAST_SEEN_VERSION);
+      if (lastSeen !== currentVersionName) {
+        // Show a brief notification to the user about what's new.
+        const title = _("Text Clock updated");
+        const body = _(
+          "Text Clock was updated to version %s. You can now change the clock color and divider text in Preferences.",
+        ).replace("%s", currentVersionName);
+
+        try {
+          // Use the shell's global Main.notify if available.
+          if (
+            (globalThis as any).Main &&
+            typeof (globalThis as any).Main.notify === "function"
+          ) {
+            (globalThis as any).Main.notify(title, body);
+          } else {
+            // Fallback to logging if notifications aren't available in this
+            // runtime (e.g. during build-time tests).
+            logInfo(`${title}: ${body}`);
+          }
+        } catch (notifyErr) {
+          logInfo(`Update notification failed: ${String(notifyErr)}`);
+        }
+
+        // Persist the current version so we don't spam the user on subsequent
+        // enable cycles.
+        try {
+          this.#settings.set_string(
+            SETTINGS.LAST_SEEN_VERSION,
+            currentVersionName,
+          );
+        } catch (setErr) {
+          logWarn(`Failed to persist last-seen-version: ${String(setErr)}`);
+        }
+      }
+    } catch (err) {
+      logWarn(`Error checking extension update: ${String(err)}`);
+    }
   }
 
   // Initialize class properties to undefined

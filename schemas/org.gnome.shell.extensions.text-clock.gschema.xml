@@ -102,5 +102,13 @@
             The custom text to use as a divider when divider-preset is set to custom.
       </description>
     </key>
+    <key name='last-seen-version' type='s'>
+      <default>''</default>
+      <summary>Last seen extension version</summary>
+      <description>
+            The version-name of the extension the user last saw. Used to show an
+            update notification when the extension upgrades.
+      </description>
+    </key>
   </schema>
 </schemalist>

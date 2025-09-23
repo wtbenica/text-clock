@@ -65,6 +65,7 @@ export const SETTINGS = {
   DIVIDER_COLOR: "divider-color",
   DIVIDER_PRESET: "divider-preset",
   CUSTOM_DIVIDER_TEXT: "custom-divider-text",
+  LAST_SEEN_VERSION: "last-seen-version",
 };
 
 // Map GSettings enum index -> fuzziness minutes.
