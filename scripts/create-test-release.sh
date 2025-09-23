@@ -96,11 +96,16 @@ else
     FILES_ARG="$ZIP_FILE"
 fi
 
-# Generate release notes (similar to CI)
+
+# Generate release notes: use RELEASE_NOTES.md if present, else fallback to commit list
 log_step "Generating release notes..."
-if git describe --tags --abbrev=0 HEAD~1 >/dev/null 2>&1; then
-    PREV_TAG=$(git describe --tags --abbrev=0 HEAD~1)
-    NOTES="## Test Release $VERSION
+if [[ -f RELEASE_NOTES.md ]]; then
+    log_info "Using RELEASE_NOTES.md for release notes."
+    NOTES="$(cat RELEASE_NOTES.md)"
+else
+    if git describe --tags --abbrev=0 HEAD~1 >/dev/null 2>&1; then
+        PREV_TAG=$(git describe --tags --abbrev=0 HEAD~1)
+        NOTES="## Test Release $VERSION
 
 This is a test release from branch: $(get_current_branch)
 
@@ -112,8 +117,8 @@ $(git log --pretty=format="- %s" $PREV_TAG..HEAD)
 - Commit: $(git rev-parse --short HEAD)
 - Built: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
 "
-else
-    NOTES="## Test Release $VERSION
+    else
+        NOTES="## Test Release $VERSION
 
 This is a test release from branch: $(get_current_branch)
 
@@ -122,6 +127,7 @@ This is a test release from branch: $(get_current_branch)
 - Commit: $(git rev-parse --short HEAD)
 - Built: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
 "
+    fi
 fi
 
 # Create draft GitHub release
