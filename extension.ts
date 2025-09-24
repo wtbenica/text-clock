@@ -32,6 +32,7 @@ import { createTranslatePack } from "./utils/translate-pack-utils.js";
 import { extensionGettext } from "./utils/gettext-utils-ext.js";
 
 const CLOCK_STYLE_CLASS_NAME = "clock";
+const UPDATE_NOTIFICATION_DELAY_SECONDS = 4;
 
 /**
  * @returns a word pack that contains the strings for telling the time and date
@@ -110,19 +111,23 @@ export default class TextClock extends Extension {
           // First, wait for the shell UI to be ready, then add additional delay
           GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
             // Add a 2-second delay before showing the notification
-            GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 4, () => {
-              try {
-                this.#showNotificationWithAction(title, body);
-                logInfo("Update notification sent successfully");
-              } catch (notifyErr) {
-                logInfo(`Update notification failed: ${String(notifyErr)}`);
-                // Fallback to simple notification
-                if (Main && typeof Main.notify === "function") {
-                  Main.notify(title, body);
+            GLib.timeout_add_seconds(
+              GLib.PRIORITY_DEFAULT,
+              UPDATE_NOTIFICATION_DELAY_SECONDS,
+              () => {
+                try {
+                  this.#showNotificationWithAction(title, body);
+                  logInfo("Update notification sent successfully");
+                } catch (notifyErr) {
+                  logInfo(`Update notification failed: ${String(notifyErr)}`);
+                  // Fallback to simple notification
+                  if (Main && typeof Main.notify === "function") {
+                    Main.notify(title, body);
+                  }
                 }
-              }
-              return GLib.SOURCE_REMOVE;
-            });
+                return GLib.SOURCE_REMOVE;
+              },
+            );
             return GLib.SOURCE_REMOVE;
           });
         } catch (notifyScheduleErr) {
