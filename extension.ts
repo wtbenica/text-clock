@@ -30,7 +30,7 @@ import { logErr, logWarn, logInfo, logDebug } from "./utils/error-utils.js";
 import { fuzzinessFromEnumIndex } from "./utils/fuzziness-utils.js";
 import { createTranslatePack } from "./utils/translate-pack-utils.js";
 import { extensionGettext } from "./utils/gettext-utils-ext.js";
-import { NotificationService } from "./services/notification-service.js";
+import { NotificationService } from "./services/notification_service.js";
 
 const CLOCK_STYLE_CLASS_NAME = "clock";
 
