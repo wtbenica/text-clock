@@ -13,10 +13,10 @@
 import Gio from "gi://Gio";
 import GObject from "gi://GObject";
 import { SETTINGS } from "../constants/index.js";
-import SettingsKey from "../models/settings-keys";
-import { logInfo, logWarn, logErr } from "../utils/error-utils.js";
-import { fuzzinessFromEnumIndex } from "../utils/fuzziness-utils.js";
-import { Fuzziness } from "../clock_formatter.js";
+import SettingsKey from "../models/settings_keys";
+import { logInfo, logWarn, logErr } from "../utils/error_utils.js";
+import { fuzzinessFromEnumIndex } from "../utils/fuzziness_utils.js";
+import { Fuzziness } from "../core/clock_formatter.js";
 
 /**
  * Callback function for settings changes

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import { WordPack } from "../../word_pack.js";
-import { TimeFormat } from "../../clock_formatter.js";
+import { TimeFormat } from "../../core/clock_formatter.js";
 
 describe("WordPack", () => {
   let wordPack: WordPack;

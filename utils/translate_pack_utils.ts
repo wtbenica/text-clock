@@ -6,7 +6,7 @@
 import { WordPack } from "../word_pack.js";
 import { createTimeConstants } from "../constants/times/core.js";
 import { createDateConstants } from "../constants/dates/core.js";
-import { GettextFunctions } from "./gettext-utils.js";
+import { GettextFunctions } from "./gettext_utils.js";
 
 /**
  * Creates a word pack containing the strings for telling the time and date
@@ -32,4 +32,16 @@ export function createTranslatePack(gettextFns: GettextFunctions): WordPack {
     noon: timeConstants.noon(),
     daysOfMonth: dateConstants.daysOfMonth(),
   });
+}
+
+/**
+ * Creates a lazy getter for the translate pack
+ * Used to avoid duplicating the TRANSLATE_PACK logic in extension.ts and prefs.ts
+ *
+ * @param gettextFns - The gettext functions to use for translations
+ */
+export function createTranslatePackGetter(
+  gettextFns: GettextFunctions,
+): () => WordPack {
+  return () => createTranslatePack(gettextFns);
 }

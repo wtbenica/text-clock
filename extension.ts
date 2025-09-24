@@ -16,26 +16,25 @@ import {
   gettext as _,
 } from "resource:///org/gnome/shell/extensions/extension.js";
 
-import { TextClockLabel } from "./ui/clock_label.js";
-import { CLOCK_LABEL_PROPERTIES } from "./ui/interfaces.js";
+import { TextClockLabel } from "./ui/clock_widget.js";
+import { CLOCK_LABEL_PROPERTIES } from "./types/ui.js";
 import { WordPack } from "./word_pack.js";
 import { Errors } from "./constants/index.js";
-import SettingsKey from "./models/settings-keys";
-import { logErr, logWarn, logInfo } from "./utils/error-utils.js";
-import { fuzzinessFromEnumIndex } from "./utils/fuzziness-utils.js";
-import { createTranslatePack } from "./utils/translate-pack-utils.js";
-import { extensionGettext } from "./utils/gettext-utils-ext.js";
-import { NotificationService } from "./services/notification_service.js";
-import { StyleService } from "./services/style_service.js";
+import SettingsKey from "./models/settings_keys";
+import { logErr, logWarn, logInfo } from "./utils/error_utils.js";
+import { fuzzinessFromEnumIndex } from "./utils/fuzziness_utils.js";
+import { createTranslatePackGetter } from "./utils/translate_pack_utils.js";
+import { extensionGettext } from "./utils/gettext_utils_ext.js";
 import { SettingsManager } from "./services/settings_manager.js";
+import { StyleService } from "./services/style_service.js";
+import { NotificationService } from "./services/notification_service.js";
 
 const CLOCK_STYLE_CLASS_NAME = "clock";
 
 /**
  * @returns a word pack that contains the strings for telling the time and date
  */
-export const TRANSLATE_PACK: () => WordPack = () =>
-  createTranslatePack(extensionGettext);
+export const TRANSLATE_PACK = createTranslatePackGetter(extensionGettext);
 
 /**
  * TextClock extension for GNOME Shell
@@ -75,55 +74,44 @@ export default class TextClock extends Extension {
     // Initialize settings first
     this.#settings = (this as any).getSettings();
 
-    // Initialize services that depend on settings
+    // Initialize services directly
     this.#settingsManager = new SettingsManager(this.#settings as any);
     this.#styleService = new StyleService(this.#settings as any);
     this.#notificationService = new NotificationService("Text Clock");
-
-    logInfo("All services initialized");
   }
 
   // When the extension is enabled check whether we have a stored last-seen
   // version and, if it differs from the current metadata version-name,
   // show a short notification and persist the new version-name.
   #maybeShowUpdateNotification() {
-    try {
-      if (!this.#settingsManager || !this.#notificationService) return;
+    if (!this.#settingsManager || !this.#notificationService) return;
 
-      // Extension metadata is provided by the base Extension class; access
-      // via (this as any).metadata which mirrors metadata.json at build time.
-      const meta: any = (this as any).metadata || {};
-      const currentVersionName: string =
-        meta["version-name"] || String(meta.version || "");
+    // Extension metadata is provided by the base Extension class; access
+    // via (this as any).metadata which mirrors metadata.json at build time.
+    const meta: any = (this as any).metadata || {};
+    const currentVersionName: string =
+      meta["version-name"] || String(meta.version || "");
 
-      if (!currentVersionName) {
-        logWarn("No version-name found in metadata, skipping notification");
-        return;
-      }
+    if (!currentVersionName) {
+      logWarn("No version-name found in metadata, skipping notification");
+      return;
+    }
 
-      const lastSeen = this.#settingsManager.getString(
-        SettingsKey.LAST_SEEN_VERSION,
+    const lastSeen = this.#settingsManager.getString(
+      SettingsKey.LAST_SEEN_VERSION,
+    );
+
+    if (lastSeen !== currentVersionName) {
+      // Show update notification using the service
+      this.#notificationService.showUpdateNotification(currentVersionName, () =>
+        (this as any).openPreferences(),
       );
 
-      if (lastSeen !== currentVersionName) {
-        logInfo(
-          `Showing update notification for version ${currentVersionName}`,
-        );
-
-        // Show update notification using the service
-        this.#notificationService.showUpdateNotification(
-          currentVersionName,
-          () => (this as any).openPreferences(),
-        );
-
-        // Persist the current version
-        this.#settingsManager.setString(
-          SettingsKey.LAST_SEEN_VERSION,
-          currentVersionName,
-        );
-      }
-    } catch (err) {
-      logWarn(`Error checking extension update: ${String(err)}`);
+      // Persist the current version
+      this.#settingsManager.setString(
+        SettingsKey.LAST_SEEN_VERSION,
+        currentVersionName,
+      );
     }
   }
 
@@ -145,7 +133,6 @@ export default class TextClock extends Extension {
   #retrieveDateMenu() {
     this.#dateMenu = panel.statusArea.dateMenu as IDateMenuButton;
     if (!this.#dateMenu) {
-      logInfo(`dateMenu not found on panel.statusArea`);
       return;
     }
 
@@ -194,7 +181,7 @@ export default class TextClock extends Extension {
 
   // Bind settings to their clock label properties
   #bindSettingsToClockLabel() {
-    if (!this.#settingsManager || !this.#styleService || !this.#clockLabel) {
+    if (!this.#settingsManager || !this.#clockLabel) {
       logErr("Required services or clock label not available for binding");
       return;
     }
@@ -221,20 +208,23 @@ export default class TextClock extends Extension {
     );
 
     // Subscribe to fuzziness changes
-    this.#settingsManager.subscribe(SettingsKey.FUZZINESS, (newValue) => {
+    this.#settingsManager.subscribe(SettingsKey.FUZZINESS, (newValue: any) => {
       const fuzzValue = fuzzinessFromEnumIndex(newValue);
       (this.#clockLabel as any).fuzzyMinutes = fuzzValue;
     });
 
     // Subscribe to time format changes
-    this.#settingsManager.subscribe(SettingsKey.TIME_FORMAT, (newValue) => {
-      if (newValue) {
-        (this.#clockLabel as any).timeFormat = newValue;
-      }
-    });
+    this.#settingsManager.subscribe(
+      SettingsKey.TIME_FORMAT,
+      (newValue: any) => {
+        if (newValue) {
+          (this.#clockLabel as any).timeFormat = newValue;
+        }
+      },
+    );
 
     // Register the clock label with the style service for automatic updates
-    this.#styleService.registerTarget(this.#clockLabel as any);
+    this.#styleService!.registerTarget(this.#clockLabel as any);
   }
 
   // Apply styles to the clock label
@@ -245,7 +235,7 @@ export default class TextClock extends Extension {
 
   // Destroys created objects and sets properties to undefined
   #cleanup() {
-    // Destroy services first
+    // Destroy services
     if (this.#styleService) this.#styleService.destroy();
     if (this.#settingsManager) this.#settingsManager.destroy();
     if (this.#notificationService) this.#notificationService.destroy();

@@ -8,7 +8,7 @@ import * as Main from "resource:///org/gnome/shell/ui/main.js";
 import * as MessageTray from "resource:///org/gnome/shell/ui/messageTray.js";
 import { gettext as _ } from "resource:///org/gnome/shell/extensions/extension.js";
 
-import { logInfo, logWarn, logErr } from "../utils/error-utils.js";
+import { logInfo, logWarn, logErr } from "../utils/error_utils.js";
 
 /**
  * Configuration for showing notifications

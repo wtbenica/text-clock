@@ -1,4 +1,4 @@
-import { Fuzziness } from "../clock_formatter.js";
+import { Fuzziness } from "../core/clock_formatter.js";
 import { FUZZINESS_ENUM_MINUTES } from "../constants/index.js";
 
 /**

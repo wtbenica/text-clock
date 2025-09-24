@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { TimeFormat } from "./clock_formatter.js";
+import { TimeFormat } from "./core/clock_formatter.js";
 
 /**
  * A class to store the words used to format a time and date as a string.
