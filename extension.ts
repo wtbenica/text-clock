@@ -25,7 +25,9 @@ import { logErr, logWarn, logInfo } from "./utils/error_utils.js";
 import { fuzzinessFromEnumIndex } from "./utils/fuzziness_utils.js";
 import { createTranslatePackGetter } from "./utils/translate_pack_utils.js";
 import { extensionGettext } from "./utils/gettext_utils_ext.js";
-import ServiceContainer from "./services/service_container.js";
+import { SettingsManager } from "./services/settings_manager.js";
+import { StyleService } from "./services/style_service.js";
+import { NotificationService } from "./services/notification_service.js";
 
 const CLOCK_STYLE_CLASS_NAME = "clock";
 
@@ -43,7 +45,9 @@ export const TRANSLATE_PACK = createTranslatePackGetter(extensionGettext);
  */
 export default class TextClock extends Extension {
   #settings?: Gio.Settings;
-  #serviceContainer?: ServiceContainer;
+  #settingsManager?: SettingsManager;
+  #styleService?: StyleService;
+  #notificationService?: NotificationService;
   #dateMenu?: IDateMenuButton;
   #clock?: GnomeDesktop.WallClock;
   #clockDisplay?: St.Label;
@@ -70,60 +74,53 @@ export default class TextClock extends Extension {
     // Initialize settings first
     this.#settings = (this as any).getSettings();
 
-    // Initialize service container
-    this.#serviceContainer = new ServiceContainer(this.#settings as any);
-
-    logInfo("Service container initialized");
+    // Initialize services directly
+    this.#settingsManager = new SettingsManager(this.#settings as any);
+    this.#styleService = new StyleService(this.#settings as any);
+    this.#notificationService = new NotificationService("Text Clock");
   }
 
   // When the extension is enabled check whether we have a stored last-seen
   // version and, if it differs from the current metadata version-name,
   // show a short notification and persist the new version-name.
   #maybeShowUpdateNotification() {
-    try {
-      if (!this.#serviceContainer) return;
+    if (!this.#settingsManager || !this.#notificationService) return;
 
-      // Extension metadata is provided by the base Extension class; access
-      // via (this as any).metadata which mirrors metadata.json at build time.
-      const meta: any = (this as any).metadata || {};
-      const currentVersionName: string =
-        meta["version-name"] || String(meta.version || "");
+    // Extension metadata is provided by the base Extension class; access
+    // via (this as any).metadata which mirrors metadata.json at build time.
+    const meta: any = (this as any).metadata || {};
+    const currentVersionName: string =
+      meta["version-name"] || String(meta.version || "");
 
-      if (!currentVersionName) {
-        logWarn("No version-name found in metadata, skipping notification");
-        return;
-      }
+    if (!currentVersionName) {
+      logWarn("No version-name found in metadata, skipping notification");
+      return;
+    }
 
-      const lastSeen = this.#serviceContainer!.settingsManager.getString(
-        SettingsKey.LAST_SEEN_VERSION,
+    const lastSeen = this.#settingsManager.getString(
+      SettingsKey.LAST_SEEN_VERSION,
+    );
+
+    if (lastSeen !== currentVersionName) {
+      // Show update notification using the service
+      this.#notificationService.showUpdateNotification(currentVersionName, () =>
+        (this as any).openPreferences(),
       );
 
-      if (lastSeen !== currentVersionName) {
-        logInfo(
-          `Showing update notification for version ${currentVersionName}`,
-        );
-
-        // Show update notification using the service
-        this.#serviceContainer.notificationService.showUpdateNotification(
-          currentVersionName,
-          () => (this as any).openPreferences(),
-        );
-
-        // Persist the current version
-        this.#serviceContainer.settingsManager.setString(
-          SettingsKey.LAST_SEEN_VERSION,
-          currentVersionName,
-        );
-      }
-    } catch (err) {
-      logWarn(`Error checking extension update: ${String(err)}`);
+      // Persist the current version
+      this.#settingsManager.setString(
+        SettingsKey.LAST_SEEN_VERSION,
+        currentVersionName,
+      );
     }
   }
 
   // Initialize class properties to undefined
   #resetProperties() {
     this.#settings = undefined;
-    this.#serviceContainer = undefined;
+    this.#settingsManager = undefined;
+    this.#styleService = undefined;
+    this.#notificationService = undefined;
     this.#dateMenu = undefined;
     this.#clock = undefined;
     this.#clockDisplay = undefined;
@@ -136,7 +133,6 @@ export default class TextClock extends Extension {
   #retrieveDateMenu() {
     this.#dateMenu = panel.statusArea.dateMenu as IDateMenuButton;
     if (!this.#dateMenu) {
-      logInfo(`dateMenu not found on panel.statusArea`);
       return;
     }
 
@@ -155,24 +151,17 @@ export default class TextClock extends Extension {
     });
 
     // Create the clock label with current settings
-    const currentStyles =
-      this.#serviceContainer!.styleService.getCurrentStyles();
+    const currentStyles = this.#styleService!.getCurrentStyles();
     this.#clockLabel = new TextClockLabel({
       translatePack: this.#translatePack,
-      showDate: this.#serviceContainer!.settingsManager.getBoolean(
-        SettingsKey.SHOW_DATE,
-      ),
-      showWeekday: this.#serviceContainer!.settingsManager.getBoolean(
-        SettingsKey.SHOW_WEEKDAY,
-      ),
-      timeFormat: this.#serviceContainer!.settingsManager.getString(
-        SettingsKey.TIME_FORMAT,
-      ),
+      showDate: this.#settingsManager!.getBoolean(SettingsKey.SHOW_DATE),
+      showWeekday: this.#settingsManager!.getBoolean(SettingsKey.SHOW_WEEKDAY),
+      timeFormat: this.#settingsManager!.getString(SettingsKey.TIME_FORMAT),
       dividerText: currentStyles.dividerText || " | ",
     });
 
     // Set initial fuzziness
-    const fuzzValue = this.#serviceContainer!.settingsManager.getFuzziness();
+    const fuzzValue = this.#settingsManager!.getFuzziness();
     (this.#clockLabel as any).fuzzyMinutes = fuzzValue;
     this.#topBox.add_child(this.#clockLabel! as any);
 
@@ -192,19 +181,19 @@ export default class TextClock extends Extension {
 
   // Bind settings to their clock label properties
   #bindSettingsToClockLabel() {
-    if (!this.#serviceContainer || !this.#clockLabel) {
+    if (!this.#settingsManager || !this.#clockLabel) {
       logErr("Required services or clock label not available for binding");
       return;
     }
 
     // Bind basic properties using settings manager
-    this.#serviceContainer.settingsManager.bindProperty(
+    this.#settingsManager.bindProperty(
       SettingsKey.SHOW_DATE,
       this.#clockLabel as any,
       CLOCK_LABEL_PROPERTIES.SHOW_DATE,
     );
 
-    this.#serviceContainer.settingsManager.bindProperty(
+    this.#settingsManager.bindProperty(
       SettingsKey.SHOW_WEEKDAY,
       this.#clockLabel as any,
       CLOCK_LABEL_PROPERTIES.SHOW_WEEKDAY,
@@ -219,18 +208,15 @@ export default class TextClock extends Extension {
     );
 
     // Subscribe to fuzziness changes
-    this.#serviceContainer.settingsManager.subscribe(
-      SettingsKey.FUZZINESS,
-      (newValue) => {
-        const fuzzValue = fuzzinessFromEnumIndex(newValue);
-        (this.#clockLabel as any).fuzzyMinutes = fuzzValue;
-      },
-    );
+    this.#settingsManager.subscribe(SettingsKey.FUZZINESS, (newValue: any) => {
+      const fuzzValue = fuzzinessFromEnumIndex(newValue);
+      (this.#clockLabel as any).fuzzyMinutes = fuzzValue;
+    });
 
     // Subscribe to time format changes
-    this.#serviceContainer.settingsManager.subscribe(
+    this.#settingsManager.subscribe(
       SettingsKey.TIME_FORMAT,
-      (newValue) => {
+      (newValue: any) => {
         if (newValue) {
           (this.#clockLabel as any).timeFormat = newValue;
         }
@@ -238,19 +224,21 @@ export default class TextClock extends Extension {
     );
 
     // Register the clock label with the style service for automatic updates
-    this.#serviceContainer.styleService.registerTarget(this.#clockLabel as any);
+    this.#styleService!.registerTarget(this.#clockLabel as any);
   }
 
   // Apply styles to the clock label
   #applyStyles() {
-    if (!this.#clockLabel || !this.#serviceContainer) return;
-    this.#serviceContainer.styleService.applyStyles(this.#clockLabel);
+    if (!this.#clockLabel || !this.#styleService) return;
+    this.#styleService.applyStyles(this.#clockLabel);
   }
 
   // Destroys created objects and sets properties to undefined
   #cleanup() {
-    // Destroy services via container
-    if (this.#serviceContainer) this.#serviceContainer.destroy();
+    // Destroy services
+    if (this.#styleService) this.#styleService.destroy();
+    if (this.#settingsManager) this.#settingsManager.destroy();
+    if (this.#notificationService) this.#notificationService.destroy();
 
     // Destroy UI components
     if (this.#clockLabel) (this.#clockLabel as any).destroy();

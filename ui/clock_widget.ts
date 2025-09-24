@@ -15,7 +15,7 @@ import { PrefItems } from "../constants/index.js";
 import { parseFuzziness } from "../utils/fuzziness_utils.js";
 import { Color } from "../models/color.js";
 import { ITextClock, CLOCK_LABEL_PROPERTIES } from "../types/ui.js";
-import { ClockPresenter } from "./presenters/clock_presenter.js";
+import { buildStyles } from "../utils/style_utils.js";
 
 /**
  * A label that displays the time (and date) as text "five past noon" or "five
@@ -76,8 +76,7 @@ export const TextClockLabel = GObject.registerClass(
     },
   },
   class ClockLabel extends St.BoxLayout implements ITextClock {
-    #formatter?: ClockFormatter;
-    #presenter?: ClockPresenter;
+    #formatter: ClockFormatter;
     #showDate: boolean;
     #translatePack: WordPack;
     #fuzzyMinutes: Fuzziness;
@@ -113,14 +112,10 @@ export const TextClockLabel = GObject.registerClass(
       this.add_child(this.dividerLabel);
       this.add_child(this.dateLabel);
 
-      this.#presenter = new ClockPresenter({
-        translatePack: this.#translatePack,
-        showDate: this.#showDate,
-        showWeekday: this.#showWeekday,
-        timeFormat: this.#timeFormat,
-        fuzzyMinutes: this.#fuzzyMinutes,
-        dividerText: this.dividerText,
-      });
+      this.#formatter = new ClockFormatter(
+        this.#translatePack,
+        this.dividerText,
+      );
 
       this.updateClock();
     }
@@ -171,7 +166,7 @@ export const TextClockLabel = GObject.registerClass(
      */
     set translatePack(value: WordPack) {
       this.#translatePack = value;
-      if (this.#formatter) this.#formatter!.wordPack = this.#translatePack;
+      this.#formatter.wordPack = this.#translatePack;
       this.updateClock();
     }
 
@@ -190,27 +185,25 @@ export const TextClockLabel = GObject.registerClass(
      */
     updateClock() {
       const date = new Date();
-      if (this.#presenter) {
-        const parts = this.#presenter.present(date);
-        this.timeText = parts.time;
-        this.dividerText = parts.divider;
-        this.dateText = parts.date;
-        this.applyStyling();
-      }
+      const parts = this.#formatter.getPresentation(
+        date,
+        this.#showDate,
+        this.#showWeekday,
+        this.#timeFormat,
+        this.#fuzzyMinutes,
+      );
+      this.timeText = parts.time;
+      this.dividerText = parts.divider;
+      this.dateText = parts.date;
+      this.applyStyling();
     }
 
     applyStyling() {
-      const styles = this.#presenter
-        ? this.#presenter.buildStyles(
-            this.clockColor,
-            this.dateColor,
-            this.dividerColor,
-          )
-        : {
-            timeStyle: `color: ${this.clockColor.toString()};`,
-            dateStyle: `color: ${this.dateColor.toString()};`,
-            dividerStyle: `color: ${this.dividerColor.toString()};`,
-          };
+      const styles = buildStyles(
+        this.clockColor,
+        this.dateColor,
+        this.dividerColor,
+      );
 
       this.timeLabel.set_text(this.timeText);
       this.timeLabel.set_style(styles.timeStyle);
@@ -239,9 +232,7 @@ export const TextClockLabel = GObject.registerClass(
 
     setDividerText(text: string) {
       this.dividerText = text;
-      if (this.#formatter) {
-        this.#formatter.divider = text;
-      }
+      this.#formatter.divider = text;
       this.updateClock();
     }
   },

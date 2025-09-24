@@ -18,6 +18,12 @@ export enum Fuzziness {
   FIFTEEN_MINUTES = 15,
 }
 
+export interface ClockPresentation {
+  time: string;
+  divider: string;
+  date: string;
+}
+
 export class ClockFormatter {
   wordPack: WordPack;
   divider: string;
@@ -70,6 +76,30 @@ export class ClockFormatter {
       : "";
 
     return { time, divider, date: dateStr };
+  }
+
+  /**
+   * Compute the textual presentation for the current time (or provided date)
+   */
+  getPresentation(
+    date: Date,
+    showDate: boolean,
+    showWeekday: boolean,
+    timeFormat: TimeFormat,
+    fuzziness: Fuzziness,
+  ): ClockPresentation {
+    const parts = this.getClockParts(
+      date,
+      showDate,
+      showWeekday,
+      timeFormat,
+      fuzziness,
+    );
+    return {
+      time: parts.time,
+      divider: parts.divider,
+      date: parts.date,
+    };
   }
 
   #getHourName(
