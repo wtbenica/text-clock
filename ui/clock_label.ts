@@ -11,6 +11,7 @@ import { ClockFormatter, TimeFormat, Fuzziness } from "../clock_formatter.js";
 import { PrefItems } from "../constants/index.js";
 import { parseFuzziness } from "../utils/fuzziness-utils.js";
 import { normalizeColor } from "../utils/color-utils.js";
+import { Color } from "../models/color";
 
 /**
  * The properties of the clock label
@@ -36,12 +37,12 @@ export interface ITextClock extends St.BoxLayout {
   timeLabel: St.Label;
   dividerLabel: St.Label;
   dateLabel: St.Label;
-  clockColor: string;
-  dateColor: string;
-  dividerColor: string;
-  setClockColor(color: string): void;
-  setDateColor(color: string): void;
-  setDividerColor(color: string): void;
+  clockColor: Color;
+  dateColor: Color;
+  dividerColor: Color;
+  setClockColor(color: Color): void;
+  setDateColor(color: Color): void;
+  setDividerColor(color: Color): void;
   setDividerText(text: string): void;
 }
 
@@ -113,9 +114,9 @@ export const TextClockLabel = GObject.registerClass(
     timeLabel: St.Label;
     dividerLabel: St.Label;
     dateLabel: St.Label;
-    clockColor: string = "#FFFFFF";
-    dateColor: string = "#FFFFFF";
-    dividerColor: string = "#FFFFFF";
+    clockColor: Color = new Color("#FFFFFF");
+    dateColor: Color = new Color("#FFFFFF");
+    dividerColor: Color = new Color("#FFFFFF");
     timeText: string = "";
     dividerText: string = "";
     dateText: string = "";
@@ -231,12 +232,11 @@ export const TextClockLabel = GObject.registerClass(
     applyStyling() {
       const applyColorToLabel = (
         label: St.Label,
-        color: string,
+        color: Color,
         text: string,
       ) => {
-        const normalizedColor = normalizeColor(color);
         label.set_text(text);
-        label.set_style(`color: ${normalizedColor};`);
+        label.set_style(`color: ${color.toString()};`);
       };
 
       applyColorToLabel(this.timeLabel, this.clockColor, this.timeText);
@@ -244,17 +244,17 @@ export const TextClockLabel = GObject.registerClass(
       applyColorToLabel(this.dividerLabel, this.dividerColor, this.dividerText);
     }
 
-    setClockColor(color: string) {
+    setClockColor(color: Color) {
       this.clockColor = color;
       this.applyStyling();
     }
 
-    setDateColor(color: string) {
+    setDateColor(color: Color) {
       this.dateColor = color;
       this.applyStyling();
     }
 
-    setDividerColor(color: string) {
+    setDividerColor(color: Color) {
       this.dividerColor = color;
       this.applyStyling();
     }

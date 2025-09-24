@@ -14,14 +14,15 @@ import Gio from "gi://Gio";
 import { normalizeColor } from "../utils/color-utils.js";
 import { logInfo, logWarn } from "../utils/error-utils.js";
 import { SETTINGS, getDividerText } from "../constants/index.js";
+import { Color } from "../models/color.js";
 
 /**
  * Configuration for styling elements
  */
 export interface StyleConfig {
-  clockColor?: string;
-  dateColor?: string;
-  dividerColor?: string;
+  clockColor?: Color;
+  dateColor?: Color;
+  dividerColor?: Color;
   dividerText?: string;
 }
 
@@ -29,9 +30,9 @@ export interface StyleConfig {
  * Interface for objects that can receive style updates
  */
 export interface StyleTarget {
-  setClockColor(color: string): void;
-  setDateColor(color: string): void;
-  setDividerColor(color: string): void;
+  setClockColor(color: Color): void;
+  setDateColor(color: Color): void;
+  setDividerColor(color: Color): void;
   setDividerText(text: string): void;
 }
 
@@ -169,9 +170,11 @@ export class StyleService {
     );
 
     return {
-      clockColor: this.#settings.get_string(SETTINGS.CLOCK_COLOR),
-      dateColor: this.#settings.get_string(SETTINGS.DATE_COLOR),
-      dividerColor: this.#settings.get_string(SETTINGS.DIVIDER_COLOR),
+      clockColor: new Color(this.#settings.get_string(SETTINGS.CLOCK_COLOR)),
+      dateColor: new Color(this.#settings.get_string(SETTINGS.DATE_COLOR)),
+      dividerColor: new Color(
+        this.#settings.get_string(SETTINGS.DIVIDER_COLOR),
+      ),
       dividerText: getDividerText(dividerPreset, customDividerText),
     };
   }
