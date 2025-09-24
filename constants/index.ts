@@ -55,17 +55,23 @@ export const Errors: Record<string, string> = {
   ERROR_INVALID_TIME_FORMAT: "Invalid time format",
 };
 
+import SettingsKey from "../models/settings-keys";
+
+/**
+ * Backwards-compatible `SETTINGS` object.
+ * Values are sourced from `models/settings-keys.ts` to centralize keys.
+ */
 export const SETTINGS = {
-  SHOW_DATE: "show-date",
-  FUZZINESS: "fuzziness",
-  SHOW_WEEKDAY: "show-weekday",
-  TIME_FORMAT: "time-format",
-  CLOCK_COLOR: "clock-color",
-  DATE_COLOR: "date-color",
-  DIVIDER_COLOR: "divider-color",
-  DIVIDER_PRESET: "divider-preset",
-  CUSTOM_DIVIDER_TEXT: "custom-divider-text",
-  LAST_SEEN_VERSION: "last-seen-version",
+  SHOW_DATE: SettingsKey.SHOW_DATE,
+  FUZZINESS: SettingsKey.FUZZINESS,
+  SHOW_WEEKDAY: SettingsKey.SHOW_WEEKDAY,
+  TIME_FORMAT: SettingsKey.TIME_FORMAT,
+  CLOCK_COLOR: SettingsKey.CLOCK_COLOR,
+  DATE_COLOR: SettingsKey.DATE_COLOR,
+  DIVIDER_COLOR: SettingsKey.DIVIDER_COLOR,
+  DIVIDER_PRESET: SettingsKey.DIVIDER_PRESET,
+  CUSTOM_DIVIDER_TEXT: SettingsKey.CUSTOM_DIVIDER_TEXT,
+  LAST_SEEN_VERSION: SettingsKey.LAST_SEEN_VERSION,
 };
 
 // Map GSettings enum index -> fuzziness minutes.

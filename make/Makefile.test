@@ -14,8 +14,14 @@ test: node_modules/
 	@yarn tsc -p config/tsconfig.test.json || { echo "TypeScript compilation failed"; exit 1; }
 	@yarn test || { echo "yarn test failed"; exit 1; }
 
+## lint                Run TypeScript linter
+lint:
+	@echo "Running linter..."
+	@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is required to run linter; please install and try again."; exit 1; }
+	@yarn lint || { echo "yarn lint failed"; exit 1; }
+
 ## validate            Run build and tests (used as the default CI-style check)
-validate: build test
+validate: build lint test
 	@echo "Validation complete - all checks passed!"
 
 ## ci-dry-run          Run validation + non-destructive release in auto mode (CI dry-run)

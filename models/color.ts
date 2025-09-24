@@ -36,7 +36,9 @@ export class Color {
       /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/,
     );
     if (rgbMatch) {
-      const [_, r, g, b] = rgbMatch.map(Number);
+      const r = Number(rgbMatch[1]);
+      const g = Number(rgbMatch[2]);
+      const b = Number(rgbMatch[3]);
       if ([r, g, b].every((v) => v >= 0 && v <= 255)) {
         return `rgb(${r}, ${g}, ${b})`;
       }

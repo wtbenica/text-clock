@@ -14,6 +14,7 @@ import {
 } from "resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js";
 
 import { SETTINGS, PrefItems, Errors } from "./constants/index.js";
+import SettingsKey from "./models/settings-keys";
 import { ClockFormatter, TimeFormat } from "./clock_formatter.js";
 import { fuzzinessFromEnumIndex } from "./utils/fuzziness-utils.js";
 import { WordPack } from "./word_pack.js";
@@ -220,7 +221,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
       title: _(PrefItems.FUZZINESS.title),
       subtitle: _(PrefItems.FUZZINESS.subtitle),
       model: new Gtk.StringList({ strings: ["1", "5", "10", "15"] }),
-      selected: settings!.get_enum(SETTINGS.FUZZINESS),
+      selected: settings!.get_enum(SettingsKey.FUZZINESS),
     };
 
     return this.#addComboRow(
@@ -247,7 +248,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
       title: _(PrefItems.TIME_FORMAT.title),
       subtitle: _(PrefItems.TIME_FORMAT.subtitle),
       model: this.#getTimeFormatsList(settings),
-      selected: settings!.get_enum(SETTINGS.TIME_FORMAT),
+      selected: settings!.get_enum(SettingsKey.TIME_FORMAT),
     };
 
     return this.#addComboRow(
@@ -269,7 +270,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
     const clockFormatter = new ClockFormatter(TRANSLATE_PACK());
 
     const date = new Date();
-    const fuzzinessEnumIndex = settings.get_enum(SETTINGS.FUZZINESS);
+    const fuzzinessEnumIndex = settings.get_enum(SettingsKey.FUZZINESS);
     const fuzziness = fuzzinessFromEnumIndex(fuzzinessEnumIndex);
 
     const timeFormatOne = clockFormatter.getClockText(
@@ -308,16 +309,16 @@ export default class TextClockPrefs extends ExtensionPreferences {
     const showWeekdaySwitchInfo = {
       title: _(PrefItems.SHOW_WEEKDAY.title),
       subtitle: _(PrefItems.SHOW_WEEKDAY.subtitle),
-      sensitive: settings!.get_boolean(SETTINGS.SHOW_DATE),
+      sensitive: settings!.get_boolean(SettingsKey.SHOW_DATE),
     };
     return this.#addSwitchRow(
       group,
       showWeekdaySwitchInfo,
       settings,
-      SETTINGS.SHOW_WEEKDAY,
+      SettingsKey.SHOW_WEEKDAY,
       [
         {
-          settingKey: SETTINGS.SHOW_DATE,
+          settingKey: SettingsKey.SHOW_DATE,
           property: "sensitive",
         },
       ],
@@ -344,7 +345,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
       group,
       showDateSwitchInfo,
       settings,
-      SETTINGS.SHOW_DATE,
+      SettingsKey.SHOW_DATE,
     );
   }
 
@@ -362,12 +363,12 @@ export default class TextClockPrefs extends ExtensionPreferences {
     const colorButton = new Gtk.ColorButton();
     // Set initial color
     const rgba = new Gdk.RGBA();
-    rgba.parse(settings.get_string("clock-color"));
+    rgba.parse(settings.get_string(SettingsKey.CLOCK_COLOR));
     colorButton.set_rgba(rgba);
     // Connect to changes
     colorButton.connect("color-set", () => {
       const newRgba = colorButton.get_rgba();
-      settings.set_string("clock-color", newRgba.to_string());
+      settings.set_string(SettingsKey.CLOCK_COLOR, newRgba.to_string());
     });
     row.add_suffix(colorButton);
     group.add(row);
@@ -387,11 +388,11 @@ export default class TextClockPrefs extends ExtensionPreferences {
     });
     const colorButton = new Gtk.ColorButton();
     const rgba = new Gdk.RGBA();
-    rgba.parse(settings.get_string("date-color"));
+    rgba.parse(settings.get_string(SettingsKey.DATE_COLOR));
     colorButton.set_rgba(rgba);
     colorButton.connect("color-set", () => {
       const newRgba = colorButton.get_rgba();
-      settings.set_string("date-color", newRgba.to_string());
+      settings.set_string(SettingsKey.DATE_COLOR, newRgba.to_string());
     });
     row.add_suffix(colorButton);
     group.add(row);
@@ -411,11 +412,11 @@ export default class TextClockPrefs extends ExtensionPreferences {
     });
     const colorButton = new Gtk.ColorButton();
     const rgba = new Gdk.RGBA();
-    rgba.parse(settings.get_string("divider-color"));
+    rgba.parse(settings.get_string(SettingsKey.DIVIDER_COLOR));
     colorButton.set_rgba(rgba);
     colorButton.connect("color-set", () => {
       const newRgba = colorButton.get_rgba();
-      settings.set_string("divider-color", newRgba.to_string());
+      settings.set_string(SettingsKey.DIVIDER_COLOR, newRgba.to_string());
     });
     row.add_suffix(colorButton);
     group.add(row);
@@ -434,14 +435,14 @@ export default class TextClockPrefs extends ExtensionPreferences {
       title: _("Divider Preset"),
       subtitle: _("Choose a preset divider or select custom"),
       model: new Gtk.StringList({ strings: ["|", "•", "‖", "—", "Custom"] }),
-      selected: settings!.get_enum(SETTINGS.DIVIDER_PRESET),
+      selected: settings!.get_enum(SettingsKey.DIVIDER_PRESET),
     });
     group.add(presetRow);
 
     // Entry row for custom divider text (initially hidden)
     const customEntryRow = new Adw.EntryRow({
       title: _("Custom Divider Text"),
-      text: settings.get_string(SETTINGS.CUSTOM_DIVIDER_TEXT),
+      text: settings.get_string(SettingsKey.CUSTOM_DIVIDER_TEXT),
     });
     group.add(customEntryRow);
 
@@ -457,13 +458,13 @@ export default class TextClockPrefs extends ExtensionPreferences {
 
     // Connect preset change
     presetRow.connect("notify::selected", () => {
-      settings.set_enum(SETTINGS.DIVIDER_PRESET, presetRow.selected);
+      settings.set_enum(SettingsKey.DIVIDER_PRESET, presetRow.selected);
       updateCustomEntryVisibility();
     });
 
     // Connect custom text change
     settings.bind(
-      SETTINGS.CUSTOM_DIVIDER_TEXT,
+      SettingsKey.CUSTOM_DIVIDER_TEXT,
       customEntryRow,
       "text",
       Gio.SettingsBindFlags.DEFAULT,

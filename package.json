@@ -23,7 +23,7 @@
     "dev": "tsc -p config/tsconfig.json --watch",
     "format": "prettier --write \"**/*.ts\"",
     "install:ext": "make install",
-    "lint": "eslint -c config/eslint.config.js \"**/*.ts\"",
+    "lint": "eslint -c config/eslint.config.js \"**/*.ts\" --max-warnings 0",
     "lint:fix": "eslint -c config/eslint.config.js \"**/*.ts\" --fix",
     "pack": "make pack",
     "prepare": "husky",

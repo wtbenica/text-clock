@@ -22,7 +22,8 @@ import {
   ITextClock,
 } from "./ui/clock_label.js";
 import { WordPack } from "./word_pack.js";
-import { SETTINGS, Errors } from "./constants/index.js";
+import { Errors } from "./constants/index.js";
+import SettingsKey from "./models/settings-keys";
 import { logErr, logWarn, logInfo } from "./utils/error-utils.js";
 import { fuzzinessFromEnumIndex } from "./utils/fuzziness-utils.js";
 import { createTranslatePack } from "./utils/translate-pack-utils.js";
@@ -104,7 +105,7 @@ export default class TextClock extends Extension {
       }
 
       const lastSeen = this.#settingsManager.getString(
-        SETTINGS.LAST_SEEN_VERSION,
+        SettingsKey.LAST_SEEN_VERSION,
       );
 
       if (lastSeen !== currentVersionName) {
@@ -120,7 +121,7 @@ export default class TextClock extends Extension {
 
         // Persist the current version
         this.#settingsManager.setString(
-          SETTINGS.LAST_SEEN_VERSION,
+          SettingsKey.LAST_SEEN_VERSION,
           currentVersionName,
         );
       }
@@ -169,9 +170,9 @@ export default class TextClock extends Extension {
     const currentStyles = this.#styleService!.getCurrentStyles();
     this.#clockLabel = new TextClockLabel({
       translatePack: this.#translatePack,
-      showDate: this.#settingsManager!.getBoolean(SETTINGS.SHOW_DATE),
-      showWeekday: this.#settingsManager!.getBoolean(SETTINGS.SHOW_WEEKDAY),
-      timeFormat: this.#settingsManager!.getString(SETTINGS.TIME_FORMAT),
+      showDate: this.#settingsManager!.getBoolean(SettingsKey.SHOW_DATE),
+      showWeekday: this.#settingsManager!.getBoolean(SettingsKey.SHOW_WEEKDAY),
+      timeFormat: this.#settingsManager!.getString(SettingsKey.TIME_FORMAT),
       dividerText: currentStyles.dividerText || " | ",
     });
 
@@ -203,13 +204,13 @@ export default class TextClock extends Extension {
 
     // Bind basic properties using settings manager
     this.#settingsManager.bindProperty(
-      SETTINGS.SHOW_DATE,
+      SettingsKey.SHOW_DATE,
       this.#clockLabel,
       CLOCK_LABEL_PROPERTIES.SHOW_DATE,
     );
 
     this.#settingsManager.bindProperty(
-      SETTINGS.SHOW_WEEKDAY,
+      SettingsKey.SHOW_WEEKDAY,
       this.#clockLabel,
       CLOCK_LABEL_PROPERTIES.SHOW_WEEKDAY,
     );
@@ -223,13 +224,13 @@ export default class TextClock extends Extension {
     );
 
     // Subscribe to fuzziness changes
-    this.#settingsManager.subscribe(SETTINGS.FUZZINESS, (newValue) => {
+    this.#settingsManager.subscribe(SettingsKey.FUZZINESS, (newValue) => {
       const fuzzValue = fuzzinessFromEnumIndex(newValue);
       (this.#clockLabel as any).fuzzyMinutes = fuzzValue;
     });
 
     // Subscribe to time format changes
-    this.#settingsManager.subscribe(SETTINGS.TIME_FORMAT, (newValue) => {
+    this.#settingsManager.subscribe(SettingsKey.TIME_FORMAT, (newValue) => {
       if (newValue) {
         (this.#clockLabel as any).timeFormat = newValue;
       }

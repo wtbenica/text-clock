@@ -10,8 +10,7 @@ import { WordPack } from "../word_pack.js";
 import { ClockFormatter, TimeFormat, Fuzziness } from "../clock_formatter.js";
 import { PrefItems } from "../constants/index.js";
 import { parseFuzziness } from "../utils/fuzziness-utils.js";
-import { normalizeColor } from "../utils/color-utils.js";
-import { Color } from "../models/color";
+import { Color } from "../models/color.js";
 
 /**
  * The properties of the clock label

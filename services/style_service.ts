@@ -13,7 +13,8 @@
 import Gio from "gi://Gio";
 import { normalizeColor } from "../utils/color-utils.js";
 import { logInfo, logWarn } from "../utils/error-utils.js";
-import { SETTINGS, getDividerText } from "../constants/index.js";
+import { getDividerText } from "../constants/index.js";
+import SettingsKey from "../models/settings-keys";
 import { Color } from "../models/color.js";
 
 /**
@@ -144,11 +145,11 @@ export class StyleService {
    */
   #connectToSettings(): void {
     const colorSettings = [
-      SETTINGS.CLOCK_COLOR,
-      SETTINGS.DATE_COLOR,
-      SETTINGS.DIVIDER_COLOR,
-      SETTINGS.DIVIDER_PRESET,
-      SETTINGS.CUSTOM_DIVIDER_TEXT,
+      SettingsKey.CLOCK_COLOR,
+      SettingsKey.DATE_COLOR,
+      SettingsKey.DIVIDER_COLOR,
+      SettingsKey.DIVIDER_PRESET,
+      SettingsKey.CUSTOM_DIVIDER_TEXT,
     ];
 
     for (const setting of colorSettings) {
@@ -164,16 +165,16 @@ export class StyleService {
    * Get the current style configuration from settings
    */
   #getCurrentStyleConfig(): StyleConfig {
-    const dividerPreset = this.#settings.get_enum(SETTINGS.DIVIDER_PRESET);
+    const dividerPreset = this.#settings.get_enum(SettingsKey.DIVIDER_PRESET);
     const customDividerText = this.#settings.get_string(
-      SETTINGS.CUSTOM_DIVIDER_TEXT,
+      SettingsKey.CUSTOM_DIVIDER_TEXT,
     );
 
     return {
-      clockColor: new Color(this.#settings.get_string(SETTINGS.CLOCK_COLOR)),
-      dateColor: new Color(this.#settings.get_string(SETTINGS.DATE_COLOR)),
+      clockColor: new Color(this.#settings.get_string(SettingsKey.CLOCK_COLOR)),
+      dateColor: new Color(this.#settings.get_string(SettingsKey.DATE_COLOR)),
       dividerColor: new Color(
-        this.#settings.get_string(SETTINGS.DIVIDER_COLOR),
+        this.#settings.get_string(SettingsKey.DIVIDER_COLOR),
       ),
       dividerText: getDividerText(dividerPreset, customDividerText),
     };
