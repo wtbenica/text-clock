@@ -31,6 +31,12 @@ clean:
 	@rm -rf $(LOCALE_DIR) || { echo "Removing locale directory failed"; exit 1; }
 	@rm -f schemas/gschemas.compiled || { echo "Removing compiled GSettings schemas failed"; exit 1; }
 	@rm -f yarn.lock || { echo "Removing yarn.lock file failed"; exit 1; }
+	@echo "Removing any .zip, .zip.* and .zip.sig, .zip.sig.* files in repository (including aur/)..."
+	@find . -type f \( -name "*.zip" -o -name "*.zip.*" -o -name "*.zip.sig" -o -name "*.zip.sig.*" \) -print -exec rm -f {} \; || { echo "Removing zip files failed"; exit 1; }
+	@echo "Removing AUR packaging artifacts in aur/ (keys, package archives)..."
+	@if [ -d "aur" ]; then \
+		find aur -type f \( -name "*.key" -o -name "*.pkg.tar.*" -o -name "*.pkg.tar.zst" \) -print -exec rm -f {} \; || { echo "Removing aur packaging artifacts failed"; exit 1; }; \
+	fi
 	@echo "Cleaning up complete."
 
 ## === Installation ===
@@ -40,6 +46,12 @@ install: create_ext_dir build
 	@echo "Installing the extension..."
 	@rm -rf $(GNOME_SHELL_EXT_DIR)/$(NAME)@$(DOMAIN) || { echo "Removing existing extension failed"; exit 1; }
 	@cp -R $(DIST_DIR) $(GNOME_SHELL_EXT_DIR)/$(NAME)@$(DOMAIN) || { echo "Copying extension failed"; exit 1; }
+
+	# Install GSettings schema for the current user so Gio.Settings can use it
+	@echo "Installing GSettings schema to user schemas directory..."
+	@mkdir -p $(HOME)/.local/share/glib-2.0/schemas || { echo "Creating user schemas dir failed"; exit 1; }
+	@cp -f schemas/org.gnome.shell.extensions.$(NAME).gschema.xml $(HOME)/.local/share/glib-2.0/schemas/ || { echo "Copying schema to user schemas dir failed"; exit 1; }
+	@glib-compile-schemas $(HOME)/.local/share/glib-2.0/schemas || { echo "Compiling user GSettings schemas failed"; exit 1; }
 	@echo "Installation complete."
 
 ## uninstall           Uninstall from the current user (~/.local/share/gnome-shell/extensions)
@@ -48,6 +60,10 @@ uninstall:
 	@if [ -d "$(GNOME_SHELL_EXT_DIR)/$(NAME)@$(DOMAIN)" ]; then \
 		rm -rf "$(GNOME_SHELL_EXT_DIR)/$(NAME)@$(DOMAIN)" || { echo "Removing extension failed"; exit 1; }; \
 		echo "Extension uninstalled from user directory."; \
+		if [ -f "$(HOME)/.local/share/glib-2.0/schemas/org.gnome.shell.extensions.$(NAME).gschema.xml" ]; then \
+			rm -f "$(HOME)/.local/share/glib-2.0/schemas/org.gnome.shell.extensions.$(NAME).gschema.xml" || { echo "Removing user schema failed"; exit 1; }; \
+			glib-compile-schemas "$(HOME)/.local/share/glib-2.0/schemas" || { echo "Recompiling user GSettings schemas failed"; exit 1; }; \
+		fi; \
 	else \
 		echo "Extension not found in user directory."; \
 	fi
@@ -60,12 +76,18 @@ install-system: build
 		echo "Please run: sudo make install-system"; \
 		exit 1; \
 	fi
-	@SYSTEM_EXT_DIR="/usr/share/gnome-shell/extensions"; \
+	SYSTEM_EXT_DIR="/usr/share/gnome-shell/extensions"; \
 	mkdir -p "$$SYSTEM_EXT_DIR" || { echo "Creating system extension directory failed"; exit 1; }; \
 	rm -rf "$$SYSTEM_EXT_DIR/$(NAME)@$(DOMAIN)" || { echo "Removing existing system extension failed"; exit 1; }; \
 	cp -R $(DIST_DIR) "$$SYSTEM_EXT_DIR/$(NAME)@$(DOMAIN)" || { echo "Copying extension to system directory failed"; exit 1; }; \
-	find "$$SYSTEM_EXT_DIR/$(NAME)@$(DOMAIN)" -type f -exec chmod 644 {} \; || { echo "Setting file permissions failed"; exit 1; }; \
-	find "$$SYSTEM_EXT_DIR/$(NAME)@$(DOMAIN)" -type d -exec chmod 755 {} \; || { echo "Setting directory permissions failed"; exit 1; }
+	# Install GSettings schema to system location and compile
+	if [ -f "$(CURDIR)/schemas/org.gnome.shell.extensions.$(NAME).gschema.xml" ]; then \
+		install -Dm644 "$(CURDIR)/schemas/org.gnome.shell.extensions.$(NAME).gschema.xml" \
+			"/usr/share/glib-2.0/schemas/org.gnome.shell.extensions.$(NAME).gschema.xml" || { echo "Installing system schema failed"; exit 1; }; \
+		glib-compile-schemas /usr/share/glib-2.0/schemas || { echo "Compiling system GSettings schemas failed"; exit 1; }; \
+	fi; \
+	find "/usr/share/gnome-shell/extensions/$(NAME)@$(DOMAIN)" -type f -exec chmod 644 {} \; || { echo "Setting file permissions failed"; exit 1; }; \
+	find "/usr/share/gnome-shell/extensions/$(NAME)@$(DOMAIN)" -type d -exec chmod 755 {} \; || { echo "Setting directory permissions failed"; exit 1; }
 	@echo "System-wide installation complete."
 	@echo "The extension is now available to all users on this system."
 

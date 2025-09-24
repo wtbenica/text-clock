@@ -9,7 +9,7 @@
 NAME=text-clock
 DOMAIN=benica.dev
 MO_FILES=$(wildcard po/*.mo)
-ZIP_FILE=$(NAME)@${DOMAIN}.zip
+ZIP_FILE=$(NAME)@${DOMAIN}-$(CURRENT_VERSION).zip
 TS_FILES=$(wildcard *.ts) $(wildcard ui/*.ts) $(wildcard constants/**/*.ts) $(wildcard utils/*.ts)
 DIST_DIR=dist
 LOCALE_DIR=locale
@@ -79,6 +79,6 @@ endef
 
 ### === Phony Targets ===
 
-.PHONY: check-deps help
+.PHONY: check-deps help clean
 
 

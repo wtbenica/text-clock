@@ -55,12 +55,10 @@ describe("WordPack", () => {
       expect(result).toEqual(mockData.timesFormatTwo);
     });
 
-    it("should return format one times for invalid format and log error", () => {
-      const consoleSpy = jest.spyOn(global as any, "logError");
+    it("should return format one times for invalid format", () => {
       const result = wordPack.getTimes("invalid-format");
 
       expect(result).toEqual(mockData.timesFormatOne);
-      expect(consoleSpy).toHaveBeenCalled();
     });
 
     it("should handle empty string format", () => {

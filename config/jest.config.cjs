@@ -32,6 +32,10 @@ module.exports = {
         '!**/constants/**/prefs.ts',
         '!extension.ts',
         '!ui/**',
+        // Exclude GNOME Shell-only files from coverage to avoid errors in Node/test environment
+        '!utils/gettext-utils-prefs.ts',
+        '!utils/gettext-utils-ext.ts',
+        '!prefs.ts',
     ],
     coverageDirectory: '<rootDir>/coverage',
     coverageReporters: ['text', 'lcov', 'html'],

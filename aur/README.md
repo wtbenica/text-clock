@@ -68,6 +68,24 @@ When you release a new version:
    git push
    ```
 
+   ### Optional: GPG-signed releases
+
+   If you sign your release ZIP with GPG and upload a detached signature (e.g. `text-clock@benica.dev.zip.sig` or `.asc`) alongside the ZIP, the AUR update script can verify it before updating `PKGBUILD`.
+
+   - Add your public key fingerprint to `validpgpkeys` in `PKGBUILD`, for example:
+
+   ```bash
+   validpgpkeys=('0x0123456789ABCDEF0123456789ABCDEF01234567')
+   ```
+
+   - Or export your public key and set the environment variable `GPG_PUBKEY` when running `aur/update-aur.sh`:
+
+   ```bash
+   GPG_PUBKEY="$(gpg --armor --export 0x01234567)" ./update-aur.sh 1.0.7
+   ```
+
+   If a signature is present and a key/fingerprint is provided, the script will attempt to `gpg --verify` the downloaded signature and abort on failure.
+
 ## Automation Integration
 
 You could integrate AUR updates into your release workflow by:

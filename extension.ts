@@ -7,10 +7,13 @@ import Clutter from "gi://Clutter";
 import Gio from "gi://Gio";
 import GObject from "gi://GObject";
 import St from "gi://St";
+import GLib from "gi://GLib";
 import GnomeDesktop from "gi://GnomeDesktop";
 
 import { DateMenuButton } from "resource:///org/gnome/shell/ui/dateMenu.js";
 import { panel } from "resource:///org/gnome/shell/ui/main.js";
+import * as Main from "resource:///org/gnome/shell/ui/main.js";
+import * as MessageTray from "resource:///org/gnome/shell/ui/messageTray.js";
 import {
   Extension,
   gettext as _,
@@ -21,68 +24,21 @@ import {
   CLOCK_LABEL_PROPERTIES,
   ITextClock,
 } from "./ui/clock_label.js";
-import { Fuzziness } from "./clock_formatter.js";
 import { WordPack } from "./word_pack.js";
-import { SETTINGS, Errors } from "./constants/index.js";
-import {
-  timesFormatOne,
-  midnightFormatOne,
-  noonFormatOne,
-  timesFormatTwo,
-  midnightFormatTwo,
-  noonFormatTwo,
-  hourNames,
-  midnight,
-  noon,
-} from "./constants/times/extension.js";
-import {
-  weekdays,
-  dateOnly,
-  daysOfMonth,
-} from "./constants/dates/extension.js";
+import { SETTINGS, Errors, getDividerText } from "./constants/index.js";
+import { logErr, logWarn, logInfo, logDebug } from "./utils/error-utils.js";
+import { fuzzinessFromEnumIndex } from "./utils/fuzziness-utils.js";
+import { createTranslatePack } from "./utils/translate-pack-utils.js";
+import { extensionGettext } from "./utils/gettext-utils-ext.js";
 
 const CLOCK_STYLE_CLASS_NAME = "clock";
-
-/**
- * Converts a fuzziness string setting to the corresponding Fuzziness enum value
- *
- * @param fuzzinessString - The fuzziness value as a string from settings
- * @returns The corresponding Fuzziness enum value, defaults to FIVE_MINUTES
- */
-function parseFuzziness(fuzzinessString: string): Fuzziness {
-  const fuzzinessValue = parseInt(fuzzinessString);
-  switch (fuzzinessValue) {
-    case 1:
-      return Fuzziness.ONE_MINUTE;
-    case 5:
-      return Fuzziness.FIVE_MINUTES;
-    case 10:
-      return Fuzziness.TEN_MINUTES;
-    case 15:
-      return Fuzziness.FIFTEEN_MINUTES;
-    default:
-      return Fuzziness.FIVE_MINUTES; // Default fallback
-  }
-}
+const UPDATE_NOTIFICATION_DELAY_SECONDS = 4;
 
 /**
  * @returns a word pack that contains the strings for telling the time and date
  */
 export const TRANSLATE_PACK: () => WordPack = () =>
-  new WordPack({
-    timesFormatOne: timesFormatOne(),
-    midnightFormatOne: midnightFormatOne(),
-    noonFormatOne: noonFormatOne(),
-    timesFormatTwo: timesFormatTwo(),
-    midnightFormatTwo: midnightFormatTwo(),
-    noonFormatTwo: noonFormatTwo(),
-    names: hourNames(),
-    days: weekdays(),
-    dayOnly: dateOnly(),
-    midnight: midnight(),
-    noon: noon(),
-    daysOfMonth: daysOfMonth(),
-  });
+  createTranslatePack(extensionGettext);
 
 /**
  * TextClock extension for GNOME Shell
@@ -102,6 +58,7 @@ export default class TextClock extends Extension {
 
   enable() {
     this.#initSettings();
+    this.#maybeShowUpdateNotification();
     this.#retrieveDateMenu();
     this.#placeClockLabel();
     this.#bindSettingsToClockLabel();
@@ -118,6 +75,146 @@ export default class TextClock extends Extension {
     this.#settings = this.getSettings();
   }
 
+  // When the extension is enabled check whether we have a stored last-seen
+  // version and, if it differs from the current metadata version-name,
+  // show a short notification and persist the new version-name.
+  #maybeShowUpdateNotification() {
+    try {
+      if (!this.#settings) return;
+
+      // Extension metadata is provided by the base Extension class; access
+      // via (this as any).metadata which mirrors metadata.json at build time.
+      const meta: any = (this as any).metadata || {};
+      const currentVersionName: string =
+        meta["version-name"] || String(meta.version || "");
+
+      if (!currentVersionName) {
+        logWarn("No version-name found in metadata, skipping notification");
+        return;
+      }
+
+      const lastSeen = this.#settings.get_string(SETTINGS.LAST_SEEN_VERSION);
+
+      if (lastSeen !== currentVersionName) {
+        logInfo(
+          `Showing update notification for version ${currentVersionName}`,
+        );
+
+        // Show a brief notification to the user about what's new.
+        const title = _("Text Clock updated");
+        const body = _(
+          "Text Clock was updated to version %s. You can now change the clock color and divider text in Preferences.",
+        ).replace("%s", currentVersionName);
+
+        try {
+          // Schedule the notification with a delay to make it less jarring
+          // First, wait for the shell UI to be ready, then add additional delay
+          GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+            // Add a 2-second delay before showing the notification
+            GLib.timeout_add_seconds(
+              GLib.PRIORITY_DEFAULT,
+              UPDATE_NOTIFICATION_DELAY_SECONDS,
+              () => {
+                try {
+                  this.#showNotificationWithAction(title, body);
+                  logInfo("Update notification sent successfully");
+                } catch (notifyErr) {
+                  logInfo(`Update notification failed: ${String(notifyErr)}`);
+                  // Fallback to simple notification
+                  if (Main && typeof Main.notify === "function") {
+                    Main.notify(title, body);
+                  }
+                }
+                return GLib.SOURCE_REMOVE;
+              },
+            );
+            return GLib.SOURCE_REMOVE;
+          });
+        } catch (notifyScheduleErr) {
+          logInfo(
+            `Update notification scheduling failed: ${String(notifyScheduleErr)}`,
+          );
+        }
+
+        // Persist the current version so we don't spam the user on subsequent
+        // enable cycles.
+        try {
+          this.#settings.set_string(
+            SETTINGS.LAST_SEEN_VERSION,
+            currentVersionName,
+          );
+        } catch (setErr) {
+          logWarn(`Failed to persist last-seen-version: ${String(setErr)}`);
+        }
+      }
+    } catch (err) {
+      logWarn(`Error checking extension update: ${String(err)}`);
+    }
+  }
+
+  // Show notification with guidance on accessing preferences
+  #showNotificationWithAction(title: string, body: string) {
+    try {
+      // Create a notification source for the extension
+      const source = this.#getOrCreateNotificationSource();
+
+      // Create a persistent notification with action
+      const notification = new MessageTray.Notification({
+        source: source,
+        title: title,
+        body: body,
+        iconName: "preferences-desktop-notification-symbolic",
+      });
+
+      // Make the notification resident (persistent in notification area)
+      notification.resident = true;
+
+      // Add action button to open preferences
+      notification.addAction(_("Open Preferences"), () => {
+        try {
+          logInfo("Opening preferences from notification action");
+          this.openPreferences();
+
+          // Dismiss the notification after opening preferences
+          notification.destroy();
+          logInfo("Notification dismissed after opening preferences");
+        } catch (prefsErr) {
+          logWarn(`Failed to open preferences: ${String(prefsErr)}`);
+        }
+      });
+
+      // Show the notification
+      source.addNotification(notification);
+      logInfo("Persistent notification with action created successfully");
+    } catch (err) {
+      logErr(`Failed to create persistent notification: ${String(err)}`);
+      throw err;
+    }
+  }
+
+  // Get or create a notification source for this extension
+  #getOrCreateNotificationSource() {
+    const sourceName = _("Text Clock");
+
+    // Check if source already exists
+    let source = Main.messageTray
+      .getSources()
+      .find((s) => s.title === sourceName);
+
+    if (!source) {
+      // Create new source
+      source = new MessageTray.Source({
+        title: sourceName,
+        iconName: "preferences-desktop-notification-symbolic",
+      });
+
+      // Add source to message tray
+      Main.messageTray.add(source);
+    }
+
+    return source;
+  }
+
   // Initialize class properties to undefined
   #resetProperties() {
     this.#settings = undefined;
@@ -131,94 +228,148 @@ export default class TextClock extends Extension {
 
   // Retrieve the date menu from the status area
   #retrieveDateMenu() {
-    try {
-      this.#dateMenu = panel.statusArea.dateMenu as IDateMenuButton;
-      const { _clock, _clockDisplay } = this.#dateMenu;
-      this.#clock = _clock;
-      this.#clockDisplay = _clockDisplay;
-    } catch (error: any) {
-      logError(error, _(Errors.ERROR_RETRIEVE_DATE_MENU));
+    this.#dateMenu = panel.statusArea.dateMenu as IDateMenuButton;
+    if (!this.#dateMenu) {
+      logInfo(`dateMenu not found on panel.statusArea`);
+      return;
     }
+
+    const { _clock, _clockDisplay } = this.#dateMenu as any;
+    this.#clock = _clock;
+    this.#clockDisplay = _clockDisplay;
   }
 
   // Place the clock label in the top box
   #placeClockLabel() {
     this.#translatePack = TRANSLATE_PACK();
 
-    try {
-      // Create the top box
-      this.#topBox = new St.BoxLayout({
-        style_class: CLOCK_STYLE_CLASS_NAME,
-      });
+    // Create the top box
+    this.#topBox = new St.BoxLayout({
+      style_class: CLOCK_STYLE_CLASS_NAME,
+    });
 
-      // Create the clock label and add it to the top box
-      this.#clockLabel = new TextClockLabel({
-        translatePack: this.#translatePack,
-        fuzzyMinutes: parseFuzziness(
-          this.#settings!.get_string(SETTINGS.FUZZINESS),
-        ),
-        showDate: this.#settings!.get_boolean(SETTINGS.SHOW_DATE),
-        showWeekday: this.#settings!.get_boolean(SETTINGS.SHOW_WEEKDAY),
-        timeFormat: this.#settings!.get_string(SETTINGS.TIME_FORMAT),
-      });
-      this.#topBox.add_child(this.#clockLabel!);
+    // Create the clock label and add it to the top box
+    const dividerPreset = this.#settings!.get_enum(SETTINGS.DIVIDER_PRESET);
+    const customDividerText = this.#settings!.get_string(
+      SETTINGS.CUSTOM_DIVIDER_TEXT,
+    );
+    const dividerText = getDividerText(dividerPreset, customDividerText);
+    this.#clockLabel = new TextClockLabel({
+      translatePack: this.#translatePack,
+      showDate: this.#settings!.get_boolean(SETTINGS.SHOW_DATE),
+      showWeekday: this.#settings!.get_boolean(SETTINGS.SHOW_WEEKDAY),
+      timeFormat: this.#settings!.get_string(SETTINGS.TIME_FORMAT),
+      dividerText: dividerText,
+    });
 
-      // Insert the top box into the last position of the clock display box
-      const clockDisplayBox = this.#findClockDisplayBox();
-      clockDisplayBox.insert_child_at_index(
-        this.#topBox,
-        clockDisplayBox.get_children().length - 1,
+    // Read fuzziness from GSettings as an enum index and map to minutes.
+    // Assign via the setter (which accepts numeric or string) rather than
+    // using a direct GSettings -> GObject property bind to avoid type
+    // conversion ambiguity between the schema (enum) and the widget property.
+    const fuzzIndex = this.#settings!.get_enum(SETTINGS.FUZZINESS);
+    const fuzzValue = fuzzinessFromEnumIndex(fuzzIndex);
+    if (this.#clockLabel) {
+      (this.#clockLabel as any).fuzzyMinutes = fuzzValue;
+    } else {
+      logWarn(
+        `Attempted to set fuzziness but clockLabel is undefined`,
+        _(Errors.ERROR_BINDING_SETTINGS_TO_CLOCK_LABEL),
       );
-
-      // Remove the style class and hide the original clock display
-      this.#clockDisplay!.remove_style_class_name(CLOCK_STYLE_CLASS_NAME);
-      this.#clockDisplay!.set_width(0);
-    } catch (error: any) {
-      logError(error, _(Errors.ERROR_PLACING_CLOCK_LABEL));
     }
+    this.#topBox.add_child(this.#clockLabel!);
+
+    // Apply initial styles
+    this.#applyStyles();
+
+    // Insert the top box into the clock display box.
+    const clockDisplayBox = this.#findClockDisplayBox();
+    clockDisplayBox.add_child(this.#topBox);
+
+    // Remove the style class and hide the original clock display so our
+    // text clock is visible in its place.
+    this.#clockDisplay!.remove_style_class_name(CLOCK_STYLE_CLASS_NAME);
+    this.#clockDisplay!.set_width(0);
+    (this.#clockDisplay as any).hide();
   }
 
   // Bind settings to their clock label properties
   #bindSettingsToClockLabel() {
-    try {
-      this.#settings!.bind(
-        SETTINGS.SHOW_DATE,
-        this.#clockLabel!,
-        CLOCK_LABEL_PROPERTIES.SHOW_DATE,
-        Gio.SettingsBindFlags.DEFAULT,
+    if (!this.#settings) {
+      logErr(
+        "Settings object is undefined. Cannot bind settings to clock label.",
       );
-      this.#settings!.bind(
-        SETTINGS.FUZZINESS,
-        this.#clockLabel!,
-        CLOCK_LABEL_PROPERTIES.FUZZINESS,
-        Gio.SettingsBindFlags.DEFAULT,
-      );
-      this.#settings!.bind(
-        SETTINGS.SHOW_WEEKDAY,
-        this.#clockLabel!,
-        CLOCK_LABEL_PROPERTIES.SHOW_WEEKDAY,
-        Gio.SettingsBindFlags.DEFAULT,
-      );
-      this.#settings!.bind(
-        SETTINGS.TIME_FORMAT,
-        this.#clockLabel!,
-        CLOCK_LABEL_PROPERTIES.TIME_FORMAT,
-        Gio.SettingsBindFlags.DEFAULT,
-      );
-      this.#clock!.bind_property(
-        "clock",
-        this.#clockLabel!,
-        CLOCK_LABEL_PROPERTIES.CLOCK_UPDATE,
-        GObject.BindingFlags.DEFAULT,
-      );
-    } catch (error: any) {
-      logError(error, _(Errors.ERROR_BINDING_SETTINGS_TO_CLOCK_LABEL));
+      return;
     }
+
+    if (!this.#clockLabel) {
+      logErr("Clock label is undefined. Cannot bind settings to clock label.");
+      return;
+    }
+
+    this.#settings.bind(
+      SETTINGS.SHOW_DATE,
+      this.#clockLabel,
+      CLOCK_LABEL_PROPERTIES.SHOW_DATE,
+      Gio.SettingsBindFlags.DEFAULT,
+    );
+
+    this.#settings?.connect("changed::fuzziness", () => {
+      const fuzzIndex = this.#settings!.get_enum(SETTINGS.FUZZINESS);
+      (this.#clockLabel as any).fuzzyMinutes =
+        fuzzinessFromEnumIndex(fuzzIndex);
+    });
+
+    this.#settings?.connect("changed::time-format", () => {
+      const tf = this.#settings?.get_string(SETTINGS.TIME_FORMAT);
+      if (tf) {
+        (this.#clockLabel as any).timeFormat = tf;
+      }
+    });
+
+    this.#settings.bind(
+      SETTINGS.SHOW_WEEKDAY,
+      this.#clockLabel,
+      CLOCK_LABEL_PROPERTIES.SHOW_WEEKDAY,
+      Gio.SettingsBindFlags.DEFAULT,
+    );
+
+    this.#clock!.bind_property(
+      "clock",
+      this.#clockLabel,
+      CLOCK_LABEL_PROPERTIES.CLOCK_UPDATE,
+      GObject.BindingFlags.DEFAULT,
+    );
+
+    this.#settings.connect("changed::clock-color", () => this.#applyStyles());
+    this.#settings.connect("changed::date-color", () => this.#applyStyles());
+    this.#settings.connect("changed::divider-color", () => this.#applyStyles());
+    this.#settings.connect("changed::divider-preset", () =>
+      this.#applyStyles(),
+    );
+    this.#settings.connect("changed::custom-divider-text", () =>
+      this.#applyStyles(),
+    );
+  }
+
+  // Apply styles to the clock label
+  #applyStyles() {
+    if (!this.#clockLabel) return;
+    this.#clockLabel.setClockColor(this.#settings!.get_string("clock-color"));
+    this.#clockLabel.setDateColor(this.#settings!.get_string("date-color"));
+    this.#clockLabel.setDividerColor(
+      this.#settings!.get_string("divider-color"),
+    );
+    const dividerPreset = this.#settings!.get_enum(SETTINGS.DIVIDER_PRESET);
+    const customDividerText = this.#settings!.get_string(
+      SETTINGS.CUSTOM_DIVIDER_TEXT,
+    );
+    const dividerText = getDividerText(dividerPreset, customDividerText);
+    this.#clockLabel.setDividerText(dividerText);
   }
 
   // Destroys created objects and sets properties to undefined
   #cleanup() {
-    if (this.#clockLabel!) this.#clockLabel!.destroy();
+    if (this.#clockLabel) (this.#clockLabel as any).destroy();
     if (this.#topBox) this.#topBox.destroy();
     this.#resetProperties();
   }
@@ -227,21 +378,26 @@ export default class TextClock extends Extension {
   #restoreClockDisplay() {
     this.#clockDisplay!.add_style_class_name(CLOCK_STYLE_CLASS_NAME);
     this.#clockDisplay!.set_width(-1);
+    (this.#clockDisplay as any).show();
   }
 
   // Finds the St.BoxLayout child with style class 'clock-display-box'
   #findClockDisplayBox() {
-    const box: St.BoxLayout | undefined = this.#dateMenu!.get_children().find(
+    const children = (this.#dateMenu as any)?.get_children
+      ? (this.#dateMenu as any).get_children()
+      : [];
+
+    const box: St.BoxLayout | undefined = children.find(
       (child: Clutter.Actor) =>
         child instanceof St.BoxLayout &&
         child.has_style_class_name("clock-display-box"),
     ) as St.BoxLayout | undefined;
 
-    if (!box) {
-      throw new Error(_(Errors.ERROR_COULD_NOT_FIND_CLOCK_DISPLAY_BOX));
+    if (box) {
+      return box;
     }
 
-    return box;
+    throw new Error(_(Errors.ERROR_COULD_NOT_FIND_CLOCK_DISPLAY_BOX));
   }
 }
 

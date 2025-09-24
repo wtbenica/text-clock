@@ -1,5 +1,4 @@
 #!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
 
 # Run from repository root so tools (lint-staged) can find package.json
 cd -- "$(git rev-parse --show-toplevel)" || exit 1

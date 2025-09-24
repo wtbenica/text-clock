@@ -6,6 +6,7 @@
 import Gio from "gi://Gio";
 import Adw from "gi://Adw";
 import Gtk from "gi://Gtk";
+import Gdk from "gi://Gdk";
 
 import {
   ExtensionPreferences,
@@ -14,60 +15,17 @@ import {
 
 import { SETTINGS, PrefItems, Errors } from "./constants/index.js";
 import { ClockFormatter, TimeFormat, Fuzziness } from "./clock_formatter.js";
+import { fuzzinessFromEnumIndex } from "./utils/fuzziness-utils.js";
 import { WordPack } from "./word_pack.js";
-import {
-  timesFormatOne,
-  midnightFormatOne,
-  noonFormatOne,
-  timesFormatTwo,
-  midnightFormatTwo,
-  noonFormatTwo,
-  hourNames,
-  midnight,
-  noon,
-} from "./constants/times/prefs.js";
-import { weekdays, dateOnly, daysOfMonth } from "./constants/dates/prefs.js";
+import { createTranslatePack } from "./utils/translate-pack-utils.js";
+import { prefsGettext } from "./utils/gettext-utils-prefs.js";
+import { logErr } from "./utils/error-utils.js";
 
 /**
  * @returns a word pack that contains the strings for telling the time and date
  */
 export const TRANSLATE_PACK: () => WordPack = () =>
-  new WordPack({
-    timesFormatOne: timesFormatOne(),
-    midnightFormatOne: midnightFormatOne(),
-    noonFormatOne: noonFormatOne(),
-    timesFormatTwo: timesFormatTwo(),
-    midnightFormatTwo: midnightFormatTwo(),
-    noonFormatTwo: noonFormatTwo(),
-    names: hourNames(),
-    days: weekdays(),
-    dayOnly: dateOnly(),
-    midnight: midnight(),
-    noon: noon(),
-    daysOfMonth: daysOfMonth(),
-  });
-
-/**
- * Converts a fuzziness string setting to the corresponding Fuzziness enum value
- *
- * @param fuzzinessString - The fuzziness value as a string from settings
- * @returns The corresponding Fuzziness enum value, defaults to FIVE_MINUTES
- */
-function parseFuzziness(fuzzinessString: string): Fuzziness {
-  const fuzzinessValue = parseInt(fuzzinessString);
-  switch (fuzzinessValue) {
-    case 1:
-      return Fuzziness.ONE_MINUTE;
-    case 5:
-      return Fuzziness.FIVE_MINUTES;
-    case 10:
-      return Fuzziness.TEN_MINUTES;
-    case 15:
-      return Fuzziness.FIFTEEN_MINUTES;
-    default:
-      return Fuzziness.FIVE_MINUTES; // Default fallback
-  }
-}
+  createTranslatePack(prefsGettext);
 
 /**
  * Represents a binding between a setting and a property of a widget.
@@ -92,15 +50,33 @@ export default class TextClockPrefs extends ExtensionPreferences {
 
     const page = this.#createAndAddPageToWindow(window);
 
-    const group = this.#createAndAddGroupToPage(page);
+    const clockSettingsGroup = this.#createAndAddGroupToPage(
+      page,
+      "Clock Settings",
+      "Customize the appearance and behavior of the clock",
+    );
 
-    this.#addShowDateSwitchRow(group, settings);
+    this.#addShowDateSwitchRow(clockSettingsGroup, settings);
 
-    this.#addShowWeekdaySwitchRow(group, settings);
+    this.#addShowWeekdaySwitchRow(clockSettingsGroup, settings);
 
-    this.#addTimeFormatComboRow(group, settings);
+    this.#addTimeFormatComboRow(clockSettingsGroup, settings);
 
-    this.#createFuzzinessComboRow(group, settings);
+    this.#createFuzzinessComboRow(clockSettingsGroup, settings);
+
+    this.#addDividerPresetRow(clockSettingsGroup, settings);
+
+    const clockColorSettingsGroup = this.#createAndAddGroupToPage(
+      page,
+      "Clock Colors",
+      "Customize the colors of the clock and date text",
+    );
+
+    this.#addClockColorRow(clockColorSettingsGroup, settings);
+
+    this.#addDateColorRow(clockColorSettingsGroup, settings);
+
+    this.#addDividerColorRow(clockColorSettingsGroup, settings);
 
     return Promise.resolve();
   }
@@ -121,16 +97,24 @@ export default class TextClockPrefs extends ExtensionPreferences {
   }
 
   /**
+   * Create and add the clock
+   */
+
+  /**
    * Create a group and add it to the page
    *
    * @param page The page to add the group to
    *
    * @returns The group
    */
-  #createAndAddGroupToPage(page: Adw.PreferencesPage) {
+  #createAndAddGroupToPage(
+    page: Adw.PreferencesPage,
+    title_tag: string,
+    description_tag: string,
+  ) {
     const group = new Adw.PreferencesGroup({
-      title: _("Clock Settings"),
-      description: _("Customize the appearance and behavior of the clock"),
+      title: _(title_tag),
+      description: _(description_tag),
     });
     page.add(group);
     return group;
@@ -158,7 +142,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
         settings!.set_enum(settingKey, widget.selected);
       });
     } catch (error: any) {
-      logError(error, `Error binding settings for ${props.title}:`);
+      logErr(error, `Error binding settings for ${props.title}:`);
     }
     return row;
   }
@@ -217,10 +201,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
         Gio.SettingsBindFlags.DEFAULT,
       );
     } catch (error: any) {
-      logError(
-        error,
-        `${_(Errors.ERROR_BINDING_SETTINGS_FOR_)} ${widget.title}`,
-      );
+      logErr(error, `${_(Errors.ERROR_BINDING_SETTINGS_FOR_)} ${widget.title}`);
     }
   }
 
@@ -238,41 +219,16 @@ export default class TextClockPrefs extends ExtensionPreferences {
     const fuzzinessComboInfo = {
       title: _(PrefItems.FUZZINESS.title),
       subtitle: _(PrefItems.FUZZINESS.subtitle),
-      model: new Gtk.StringList({
-        strings: [
-          `${Fuzziness.ONE_MINUTE} minute`,
-          `${Fuzziness.FIVE_MINUTES} minutes`,
-          `${Fuzziness.TEN_MINUTES} minutes`,
-          `${Fuzziness.FIFTEEN_MINUTES} minutes`,
-        ],
-      }),
-      selected: this.#getFuzzinessIndex(
-        settings.get_string(SETTINGS.FUZZINESS),
-      ),
+      model: new Gtk.StringList({ strings: ["1", "5", "10", "15"] }),
+      selected: settings!.get_enum(SETTINGS.FUZZINESS),
     };
 
-    const row = new Adw.ComboRow(fuzzinessComboInfo);
-    group.add(row);
-    try {
-      row.connect("notify::selected", (widget: Adw.ComboRow) => {
-        const fuzzinessValues = [
-          Fuzziness.ONE_MINUTE,
-          Fuzziness.FIVE_MINUTES,
-          Fuzziness.TEN_MINUTES,
-          Fuzziness.FIFTEEN_MINUTES,
-        ];
-        settings!.set_string(
-          SETTINGS.FUZZINESS,
-          fuzzinessValues[widget.selected].toString(),
-        );
-      });
-    } catch (error: any) {
-      logError(
-        error,
-        `Error binding settings for ${fuzzinessComboInfo.title}:`,
-      );
-    }
-    return row;
+    return this.#addComboRow(
+      group,
+      settings,
+      SETTINGS.FUZZINESS,
+      fuzzinessComboInfo,
+    );
   }
 
   /**
@@ -313,7 +269,8 @@ export default class TextClockPrefs extends ExtensionPreferences {
     const clockFormatter = new ClockFormatter(TRANSLATE_PACK());
 
     const date = new Date();
-    const fuzziness = parseFuzziness(settings.get_string(SETTINGS.FUZZINESS));
+    const fuzzinessEnumIndex = settings.get_enum(SETTINGS.FUZZINESS);
+    const fuzziness = fuzzinessFromEnumIndex(fuzzinessEnumIndex);
 
     const timeFormatOne = clockFormatter.getClockText(
       date,
@@ -392,24 +349,124 @@ export default class TextClockPrefs extends ExtensionPreferences {
   }
 
   /**
-   * Get the index for the fuzziness combo box based on the current setting
-   *
-   * @param fuzzinessString - The current fuzziness setting as a string
-   * @returns The index for the combo box selection
+   * Add a color row for clock color
    */
-  #getFuzzinessIndex(fuzzinessString: string): number {
-    const fuzzinessValue = parseInt(fuzzinessString);
-    switch (fuzzinessValue) {
-      case Fuzziness.ONE_MINUTE:
-        return 0;
-      case Fuzziness.FIVE_MINUTES:
-        return 1;
-      case Fuzziness.TEN_MINUTES:
-        return 2;
-      case Fuzziness.FIFTEEN_MINUTES:
-        return 3;
-      default:
-        return 1; // Default to 5 minutes
-    }
+  #addClockColorRow(
+    group: Adw.PreferencesGroup,
+    settings: Gio.Settings,
+  ): Adw.ActionRow {
+    const row = new Adw.ActionRow({
+      title: _("Clock Color"),
+      subtitle: _("Color for the time text"),
+    });
+    const colorButton = new Gtk.ColorButton();
+    // Set initial color
+    const rgba = new Gdk.RGBA();
+    rgba.parse(settings.get_string("clock-color"));
+    colorButton.set_rgba(rgba);
+    // Connect to changes
+    colorButton.connect("color-set", () => {
+      const newRgba = colorButton.get_rgba();
+      settings.set_string("clock-color", newRgba.to_string());
+    });
+    row.add_suffix(colorButton);
+    group.add(row);
+    return row;
+  }
+
+  /**
+   * Add a color row for date color
+   */
+  #addDateColorRow(
+    group: Adw.PreferencesGroup,
+    settings: Gio.Settings,
+  ): Adw.ActionRow {
+    const row = new Adw.ActionRow({
+      title: _("Date Color"),
+      subtitle: _("Color for the date text"),
+    });
+    const colorButton = new Gtk.ColorButton();
+    const rgba = new Gdk.RGBA();
+    rgba.parse(settings.get_string("date-color"));
+    colorButton.set_rgba(rgba);
+    colorButton.connect("color-set", () => {
+      const newRgba = colorButton.get_rgba();
+      settings.set_string("date-color", newRgba.to_string());
+    });
+    row.add_suffix(colorButton);
+    group.add(row);
+    return row;
+  }
+
+  /**
+   * Add a color row for divider color
+   */
+  #addDividerColorRow(
+    group: Adw.PreferencesGroup,
+    settings: Gio.Settings,
+  ): Adw.ActionRow {
+    const row = new Adw.ActionRow({
+      title: _("Divider Color"),
+      subtitle: _("Color for the divider text"),
+    });
+    const colorButton = new Gtk.ColorButton();
+    const rgba = new Gdk.RGBA();
+    rgba.parse(settings.get_string("divider-color"));
+    colorButton.set_rgba(rgba);
+    colorButton.connect("color-set", () => {
+      const newRgba = colorButton.get_rgba();
+      settings.set_string("divider-color", newRgba.to_string());
+    });
+    row.add_suffix(colorButton);
+    group.add(row);
+    return row;
+  }
+
+  /**
+   * Add a combo row for divider preset and conditional entry for custom text
+   */
+  #addDividerPresetRow(
+    group: Adw.PreferencesGroup,
+    settings: Gio.Settings,
+  ): void {
+    // Combo row for divider preset
+    const presetRow = new Adw.ComboRow({
+      title: _("Divider Preset"),
+      subtitle: _("Choose a preset divider or select custom"),
+      model: new Gtk.StringList({ strings: ["|", "•", "‖", "—", "Custom"] }),
+      selected: settings!.get_enum(SETTINGS.DIVIDER_PRESET),
+    });
+    group.add(presetRow);
+
+    // Entry row for custom divider text (initially hidden)
+    const customEntryRow = new Adw.EntryRow({
+      title: _("Custom Divider Text"),
+      text: settings.get_string(SETTINGS.CUSTOM_DIVIDER_TEXT),
+    });
+    group.add(customEntryRow);
+
+    // Show/hide custom entry based on preset selection
+    const updateCustomEntryVisibility = () => {
+      const selectedPreset = presetRow.selected;
+      const isCustom = selectedPreset === 4; // "Custom" is index 4
+      customEntryRow.visible = isCustom;
+    };
+
+    // Initial visibility
+    updateCustomEntryVisibility();
+
+    // Connect preset change
+    presetRow.connect("notify::selected", () => {
+      settings.set_enum(SETTINGS.DIVIDER_PRESET, presetRow.selected);
+      updateCustomEntryVisibility();
+    });
+
+    // Connect custom text change
+    settings.bind(
+      SETTINGS.CUSTOM_DIVIDER_TEXT,
+      customEntryRow,
+      "text",
+      Gio.SettingsBindFlags.DEFAULT,
+    );
   }
 }

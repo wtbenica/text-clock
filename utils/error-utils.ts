@@ -21,32 +21,62 @@ try {
 /**
  * Logs an error with consistent formatting and optional context
  *
- * @param error - The error object or message to log
+ * @param message - The error object or message to log
  * @param context - Optional context message for better debugging
  * @param level - Log level ('error', 'warn', 'info', 'debug')
  */
-export function logExtensionError(
-  error: Error | string | unknown,
+function logMessage(
+  message: Error | string | unknown,
   context?: string,
   level: "error" | "warn" | "info" | "debug" = "error",
 ): void {
-  const errorMessage = error instanceof Error ? error.message : String(error);
-  const fullMessage = context ? `${context}: ${errorMessage}` : errorMessage;
+  const fullMessage = context
+    ? `[TextClock] ${context}: ${message instanceof Error ? message.message : String(message)}`
+    : `[TextClock] ${message instanceof Error ? message.message : String(message)}`;
 
   switch (level) {
     case "error":
-      logError(new Error(fullMessage), fullMessage);
+      if (typeof globalThis.logError === "function") {
+        if (message instanceof Error) {
+          globalThis.logError(message, fullMessage); // Preserve original error details
+        } else {
+          globalThis.logError(new Error(String(message)), fullMessage); // Wrap string in Error
+        }
+      }
       break;
     case "warn":
-      console.warn(`[TextClock] ${fullMessage}`);
+      if (typeof globalThis.log === "function") {
+        globalThis.log(`[WARN] ${fullMessage}`);
+      }
       break;
     case "info":
-      console.info(`[TextClock] ${fullMessage}`);
+      if (typeof globalThis.log === "function") {
+        globalThis.log(`[INFO] ${fullMessage}`);
+      }
       break;
     case "debug":
-      console.debug(`[TextClock] ${fullMessage}`);
+      if (typeof globalThis.log === "function") {
+        globalThis.log(`[DEBUG] ${fullMessage}`);
+      }
       break;
   }
+}
+
+// Convenience wrappers
+export function logErr(error: Error | string | unknown, context?: string) {
+  return logMessage(error, context, "error");
+}
+
+export function logWarn(message: Error | string | unknown, context?: string) {
+  return logMessage(message, context, "warn");
+}
+
+export function logInfo(message: Error | string | unknown, context?: string) {
+  return logMessage(message, context, "info");
+}
+
+export function logDebug(message: Error | string | unknown, context?: string) {
+  return logMessage(message, context, "debug");
 }
 
 /**
@@ -65,7 +95,7 @@ export function safeExecute<T>(
   try {
     return fn();
   } catch (error) {
-    logExtensionError(error, errorContext);
+    logMessage(error, errorContext);
     return fallbackValue;
   }
 }
@@ -117,7 +147,7 @@ export function withErrorHandling<T extends any[], R>(
     try {
       return fn(...args);
     } catch (error) {
-      logExtensionError(error, `Failed during ${operation}`);
+      logMessage(error, `Failed during ${operation}`);
       return undefined;
     }
   };

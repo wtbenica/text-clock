@@ -4,7 +4,7 @@
  */
 
 import { WordPack } from "./word_pack.js";
-import { validateDate, logExtensionError } from "./utils/error-utils.js";
+import { logErr, validateDate } from "./utils/error-utils.js";
 
 /**
  * The time format options for the Text Clock extension
@@ -38,10 +38,12 @@ export enum Fuzziness {
  */
 export class ClockFormatter {
   wordPack: WordPack;
+  divider: string;
   #cachedHourNames: Map<string, string> = new Map();
 
-  constructor(wordPack: WordPack) {
+  constructor(wordPack: WordPack, divider: string = " | ") {
     this.wordPack = wordPack;
+    this.divider = divider;
   }
 
   /**
@@ -62,8 +64,33 @@ export class ClockFormatter {
     timeFormat: TimeFormat,
     fuzziness: Fuzziness,
   ): string {
+    const {
+      time,
+      divider,
+      date: dateStr,
+    } = this.getClockParts(date, showDate, showWeekday, timeFormat, fuzziness);
+    return time + divider + dateStr;
+  }
+
+  /**
+   * Returns the clock parts: time, divider, date.
+   *
+   * @param {Date} date - The current date and time.
+   * @param {boolean} showDate - Flag to indicate if the date should be included in the output.
+   * @param {boolean} showWeekday - Flag to indicate if the weekday should be included in the output.
+   * @param {TimeFormat} timeFormat - The format of the time string.
+   * @param {Fuzziness} fuzziness - The number of minutes to round to.
+   * @returns {object} Object with time, divider, date strings.
+   */
+  getClockParts(
+    date: Date,
+    showDate: boolean,
+    showWeekday: boolean,
+    timeFormat: TimeFormat,
+    fuzziness: Fuzziness,
+  ): { time: string; divider: string; date: string } {
     // Validate inputs
-    validateDate(date, "ClockFormatter.getClockText");
+    validateDate(date, "ClockFormatter.getClockParts");
     if (fuzziness <= 0) {
       throw new Error("Fuzziness must be a positive number");
     }
@@ -71,17 +98,16 @@ export class ClockFormatter {
     const minutes = date.getMinutes();
     const hours = date.getHours();
     const minuteBucket = Math.round(minutes / fuzziness) * fuzziness;
-    const shouldRoundUp =
-      (timeFormat === TimeFormat.FORMAT_ONE && minuteBucket > 30) ||
-      minuteBucket === 60;
+    const shouldRoundUp = this.#shouldRoundUp(minuteBucket, timeFormat);
     const roundedHour = (shouldRoundUp ? hours + 1 : hours) % 24;
     const hourName = this.#getHourName(roundedHour, minuteBucket, timeFormat);
     const time = this.#getTimeString(hourName, minuteBucket, timeFormat);
-    const displayDate = showDate
-      ? ` | ${this.#getDisplayedDate(date, minuteBucket, showWeekday)}`
+    const divider = showDate ? this.divider : "";
+    const dateStr = showDate
+      ? this.#getDisplayedDate(date, minuteBucket, showWeekday)
       : "";
 
-    return time + displayDate;
+    return { time, divider, date: dateStr };
   }
 
   /**
@@ -105,34 +131,61 @@ export class ClockFormatter {
       return this.#cachedHourNames.get(cacheKey)!;
     }
 
-    const isTopOfTheHour = this.#isTopOfTheHour(minuteBucket);
-    const isMidnight = hour === 0;
-    const isNoon = hour === 12;
-
-    let hourName: string;
-    if (isMidnight) {
-      if (this.#isTopOfTheHour(minuteBucket)) {
-        hourName = this.wordPack.midnight;
-      } else if (timeFormat === TimeFormat.FORMAT_ONE) {
-        hourName = this.wordPack.midnightFormatOne;
-      } else {
-        hourName = this.wordPack.midnightFormatTwo;
-      }
-    } else if (isNoon) {
-      if (isTopOfTheHour) {
-        hourName = this.wordPack.noon;
-      } else if (timeFormat === TimeFormat.FORMAT_ONE) {
-        hourName = this.wordPack.noonFormatOne;
-      } else {
-        hourName = this.wordPack.noonFormatTwo;
-      }
-    } else {
-      hourName = this.wordPack.names[hour];
-    }
+    const hourName = this.#getHourNameUncached(hour, minuteBucket, timeFormat);
 
     // Cache the result
     this.#cachedHourNames.set(cacheKey, hourName);
     return hourName;
+  }
+
+  /**
+   * Returns the hour name without caching.
+   */
+  #getHourNameUncached(
+    hour: number,
+    minuteBucket: number,
+    timeFormat: TimeFormat,
+  ): string {
+    const isTopOfTheHour = this.#isTopOfTheHour(minuteBucket);
+
+    // Handle special cases for midnight and noon
+    if (hour === 0) {
+      // Midnight
+      return isTopOfTheHour
+        ? this.wordPack.midnight
+        : this.#getSpecialHourName(timeFormat, "midnight");
+    }
+
+    if (hour === 12) {
+      // Noon
+      return isTopOfTheHour
+        ? this.wordPack.noon
+        : this.#getSpecialHourName(timeFormat, "noon");
+    }
+
+    // Regular hours
+    return this.wordPack.names[hour];
+  }
+
+  /**
+   * Returns the special hour name for non-top-of-hour times.
+   */
+  #getSpecialHourName(
+    timeFormat: TimeFormat,
+    type: "midnight" | "noon",
+  ): string {
+    const formatMap = {
+      [TimeFormat.FORMAT_ONE]: {
+        midnight: this.wordPack.midnightFormatOne,
+        noon: this.wordPack.noonFormatOne,
+      },
+      [TimeFormat.FORMAT_TWO]: {
+        midnight: this.wordPack.midnightFormatTwo,
+        noon: this.wordPack.noonFormatTwo,
+      },
+    };
+
+    return formatMap[timeFormat][type];
   }
 
   /**
@@ -148,23 +201,42 @@ export class ClockFormatter {
     minuteBucket: number,
     timeFormat: TimeFormat,
   ): string {
-    const twelves = [
-      this.wordPack.names[0],
-      this.wordPack.names[12],
-      this.wordPack.midnight,
-      this.wordPack.noon,
-    ];
-
-    const isNoonOrMidnightExactly: boolean =
-      this.#isTopOfTheHour(minuteBucket) && twelves.includes(hourName);
-
-    if (isNoonOrMidnightExactly) {
+    // For exact noon/midnight at the top of the hour, just return the hour name
+    if (this.#isTopOfTheHour(minuteBucket) && this.#isExactHourName(hourName)) {
       return hourName;
     }
 
     const times: string[] = this.wordPack.getTimes(timeFormat);
+    return times[minuteBucket].format(hourName);
+  }
 
-    return this.#formatString(times[minuteBucket], hourName);
+  /**
+   * Returns whether the hour name represents an exact hour (noon/midnight).
+   *
+   * @param {string} hourName - The hour name to check.
+   * @returns {boolean} True if the hour name is exact.
+   */
+  #isExactHourName(hourName: string): boolean {
+    return (
+      hourName === this.wordPack.midnight ||
+      hourName === this.wordPack.noon ||
+      hourName === this.wordPack.names[0] || // midnight
+      hourName === this.wordPack.names[12] // noon
+    );
+  }
+
+  /**
+   * Returns whether the time should be rounded up to the next hour.
+   *
+   * @param {number} minuteBucket - The minute bucket (0-60).
+   * @param {TimeFormat} timeFormat - The format of the time string.
+   * @returns {boolean} True if the time should be rounded up.
+   */
+  #shouldRoundUp(minuteBucket: number, timeFormat: TimeFormat): boolean {
+    return (
+      (timeFormat === TimeFormat.FORMAT_ONE && minuteBucket > 30) ||
+      minuteBucket === 60
+    );
   }
 
   /**
@@ -189,11 +261,7 @@ export class ClockFormatter {
     minuteBucket: number,
     showWeekday: boolean,
   ): string {
-    const isNextDay = date.getHours() === 23 && minuteBucket === 60;
-    const adjustedDate = new Date(date);
-    if (isNextDay) {
-      adjustedDate.setDate(date.getDate() + 1);
-    }
+    const adjustedDate = this.#adjustDateForRounding(date, minuteBucket);
 
     const weekdayString = showWeekday
       ? this.wordPack.days[adjustedDate.getDay()]
@@ -205,25 +273,30 @@ export class ClockFormatter {
   }
 
   /**
-   * Attempts to format the given string template with the given arguments.
+   * Adjusts the date if time rounding pushes it to the next day (midnight case).
    *
-   * If the format method is not available, it will attempt to replace the first instance of "%s" with the argument.
+   * @param {Date} date - The original date.
+   * @param {number} minuteBucket - The minute bucket.
+   * @returns {Date} The adjusted date.
+   */
+  #adjustDateForRounding(date: Date, minuteBucket: number): Date {
+    const isNextDay = date.getHours() === 23 && minuteBucket === 60;
+    const adjustedDate = new Date(date);
+    if (isNextDay) {
+      adjustedDate.setDate(date.getDate() + 1);
+    }
+    return adjustedDate;
+  }
+
+  /**
+   * Formats the given string template with the given argument.
    *
    * @param {string} template - The template string to format.
    * @param {string} arg - The argument to insert into the template.
    * @returns {string} The formatted string.
    */
   #formatString(template: string, arg: string): string {
-    try {
-      return template.format(arg);
-    } catch {
-      try {
-        return template.replace("%s", arg);
-      } catch (error2: any) {
-        logExtensionError(error2, "Failed to format date string template");
-      }
-    }
-    return template;
+    return template.format(arg);
   }
 
   /**

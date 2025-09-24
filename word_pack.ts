@@ -5,6 +5,7 @@
 
 import { TimeFormat } from "./clock_formatter.js";
 import { Errors } from "./constants/index.js";
+import { logErr } from "./utils/error-utils.js";
 
 /**
  * A class to store the words used to format a time and date as a string.
@@ -78,22 +79,13 @@ export class WordPack {
   }
 
   /**
-   * Returns the the correct times for the given time format
+   * Returns the correct times for the given time format
    *
    * @param {string} timeFormat - The time format.
    */
   getTimes(timeFormat: string): string[] {
-    if (timeFormat === TimeFormat.FORMAT_TWO) {
-      return this.timesFormatTwo;
-    }
-
-    if (timeFormat !== TimeFormat.FORMAT_ONE) {
-      const error: Error = new Error(
-        `${Errors.ERROR_INVALID_TIME_FORMAT} ${timeFormat}`,
-      );
-      logError(error, `${Errors.ERROR_INVALID_TIME_FORMAT} ${timeFormat}`);
-    }
-
-    return this.timesFormatOne;
+    return timeFormat === TimeFormat.FORMAT_TWO
+      ? this.timesFormatTwo
+      : this.timesFormatOne;
   }
 }
