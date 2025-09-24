@@ -36,20 +36,28 @@ function logMessage(
 
   switch (level) {
     case "error":
-      if (message instanceof Error) {
-        logError(message, fullMessage); // Preserve original error details
-      } else {
-        logError(new Error(String(message)), fullMessage); // Wrap string in Error
+      if (typeof globalThis.logError === "function") {
+        if (message instanceof Error) {
+          globalThis.logError(message, fullMessage); // Preserve original error details
+        } else {
+          globalThis.logError(new Error(String(message)), fullMessage); // Wrap string in Error
+        }
       }
       break;
     case "warn":
-      log(`[WARN] ${fullMessage}`);
+      if (typeof globalThis.log === "function") {
+        globalThis.log(`[WARN] ${fullMessage}`);
+      }
       break;
     case "info":
-      log(`[INFO] ${fullMessage}`);
+      if (typeof globalThis.log === "function") {
+        globalThis.log(`[INFO] ${fullMessage}`);
+      }
       break;
     case "debug":
-      log(`[DEBUG] ${fullMessage}`);
+      if (typeof globalThis.log === "function") {
+        globalThis.log(`[DEBUG] ${fullMessage}`);
+      }
       break;
   }
 }

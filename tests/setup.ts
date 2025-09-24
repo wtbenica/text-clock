@@ -24,7 +24,9 @@ String.prototype.format = function (...args: any[]): string {
 };
 
 // Global test setup - cast to any to avoid TypeScript issues in test setup
+// Mock GNOME Shell logging functions
 (global as any).logError = jest.fn();
+(global as any).log = jest.fn();
 (global as any)._ = (text: string) => text; // Mock gettext function
 
 // Mock console methods to avoid noise in tests
