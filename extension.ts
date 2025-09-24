@@ -7,10 +7,12 @@ import Clutter from "gi://Clutter";
 import Gio from "gi://Gio";
 import GObject from "gi://GObject";
 import St from "gi://St";
+import GLib from "gi://GLib";
 import GnomeDesktop from "gi://GnomeDesktop";
 
 import { DateMenuButton } from "resource:///org/gnome/shell/ui/dateMenu.js";
 import { panel } from "resource:///org/gnome/shell/ui/main.js";
+import * as Main from "resource:///org/gnome/shell/ui/main.js";
 import {
   Extension,
   gettext as _,
@@ -23,7 +25,7 @@ import {
 } from "./ui/clock_label.js";
 import { WordPack } from "./word_pack.js";
 import { SETTINGS, Errors, getDividerText } from "./constants/index.js";
-import { logErr, logWarn, logInfo } from "./utils/error-utils.js";
+import { logErr, logWarn, logInfo, logDebug } from "./utils/error-utils.js";
 import { fuzzinessFromEnumIndex } from "./utils/fuzziness-utils.js";
 import { createTranslatePack } from "./utils/translate-pack-utils.js";
 import { extensionGettext } from "./utils/gettext-utils-ext.js";
@@ -83,10 +85,19 @@ export default class TextClock extends Extension {
       const meta: any = (this as any).metadata || {};
       const currentVersionName: string =
         meta["version-name"] || String(meta.version || "");
-      if (!currentVersionName) return;
+
+      if (!currentVersionName) {
+        logWarn("No version-name found in metadata, skipping notification");
+        return;
+      }
 
       const lastSeen = this.#settings.get_string(SETTINGS.LAST_SEEN_VERSION);
+
       if (lastSeen !== currentVersionName) {
+        logInfo(
+          `Showing update notification for version ${currentVersionName}`,
+        );
+
         // Show a brief notification to the user about what's new.
         const title = _("Text Clock updated");
         const body = _(
@@ -94,19 +105,29 @@ export default class TextClock extends Extension {
         ).replace("%s", currentVersionName);
 
         try {
-          // Use the shell's global Main.notify if available.
-          if (
-            (globalThis as any).Main &&
-            typeof (globalThis as any).Main.notify === "function"
-          ) {
-            (globalThis as any).Main.notify(title, body);
-          } else {
-            // Fallback to logging if notifications aren't available in this
-            // runtime (e.g. during build-time tests).
-            logInfo(`${title}: ${body}`);
-          }
-        } catch (notifyErr) {
-          logInfo(`Update notification failed: ${String(notifyErr)}`);
+          // Schedule the notification on the main loop idle so that the
+          // shell UI and notification daemon are initialized. This avoids
+          // silently failing to show notifications during session start.
+          GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+            try {
+              if (Main && typeof Main.notify === "function") {
+                Main.notify(title, body);
+                logInfo("Update notification sent successfully");
+              } else {
+                // Fallback to logging if notifications aren't available in
+                // this runtime (e.g. during build-time tests).
+                logInfo(`${title}: ${body}`);
+              }
+            } catch (notifyErr) {
+              logInfo(`Update notification failed: ${String(notifyErr)}`);
+            }
+
+            return GLib.SOURCE_REMOVE;
+          });
+        } catch (notifyScheduleErr) {
+          logInfo(
+            `Update notification scheduling failed: ${String(notifyScheduleErr)}`,
+          );
         }
 
         // Persist the current version so we don't spam the user on subsequent
