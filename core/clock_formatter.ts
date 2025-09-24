@@ -21,7 +21,6 @@ export enum Fuzziness {
 export class ClockFormatter {
   wordPack: WordPack;
   divider: string;
-  #cachedHourNames: Map<string, string> = new Map();
 
   constructor(wordPack: WordPack, divider: string = " | ") {
     this.wordPack = wordPack;
@@ -58,7 +57,10 @@ export class ClockFormatter {
     const minutes = date.getMinutes();
     const hours = date.getHours();
     const minuteBucket = Math.round(minutes / fuzziness) * fuzziness;
-    const shouldRoundUp = this.#shouldRoundUp(minuteBucket, timeFormat);
+    const shouldRoundUp = ClockFormatter.#shouldRoundUp(
+      minuteBucket,
+      timeFormat,
+    );
     const roundedHour = (shouldRoundUp ? hours + 1 : hours) % 24;
     const hourName = this.#getHourName(roundedHour, minuteBucket, timeFormat);
     const time = this.#getTimeString(hourName, minuteBucket, timeFormat);
@@ -75,46 +77,47 @@ export class ClockFormatter {
     minuteBucket: number,
     timeFormat: TimeFormat,
   ): string {
-    const cacheKey = `${hour}-${minuteBucket}-${timeFormat}`;
-    if (this.#cachedHourNames.has(cacheKey)) {
-      return this.#cachedHourNames.get(cacheKey)!;
-    }
-    const hourName = this.#getHourNameUncached(hour, minuteBucket, timeFormat);
-    this.#cachedHourNames.set(cacheKey, hourName);
-    return hourName;
+    return ClockFormatter.#computeHourName(
+      this.wordPack,
+      hour,
+      minuteBucket,
+      timeFormat,
+    );
   }
 
-  #getHourNameUncached(
+  static #computeHourName(
+    wordPack: WordPack,
     hour: number,
     minuteBucket: number,
     timeFormat: TimeFormat,
   ): string {
-    const isTopOfTheHour = this.#isTopOfTheHour(minuteBucket);
+    const isTopOfTheHour = ClockFormatter.#isTopOfTheHour(minuteBucket);
     if (hour === 0) {
       return isTopOfTheHour
-        ? this.wordPack.midnight
-        : this.#getSpecialHourName(timeFormat, "midnight");
+        ? wordPack.midnight
+        : ClockFormatter.#getSpecialHourName(wordPack, timeFormat, "midnight");
     }
     if (hour === 12) {
       return isTopOfTheHour
-        ? this.wordPack.noon
-        : this.#getSpecialHourName(timeFormat, "noon");
+        ? wordPack.noon
+        : ClockFormatter.#getSpecialHourName(wordPack, timeFormat, "noon");
     }
-    return this.wordPack.names[hour];
+    return wordPack.names[hour];
   }
 
-  #getSpecialHourName(
+  static #getSpecialHourName(
+    wordPack: WordPack,
     timeFormat: TimeFormat,
     type: "midnight" | "noon",
   ): string {
     const formatMap = {
       [TimeFormat.FORMAT_ONE]: {
-        midnight: this.wordPack.midnightFormatOne,
-        noon: this.wordPack.noonFormatOne,
+        midnight: wordPack.midnightFormatOne,
+        noon: wordPack.noonFormatOne,
       },
       [TimeFormat.FORMAT_TWO]: {
-        midnight: this.wordPack.midnightFormatTwo,
-        noon: this.wordPack.noonFormatTwo,
+        midnight: wordPack.midnightFormatTwo,
+        noon: wordPack.noonFormatTwo,
       },
     };
 
@@ -126,7 +129,10 @@ export class ClockFormatter {
     minuteBucket: number,
     timeFormat: TimeFormat,
   ): string {
-    if (this.#isTopOfTheHour(minuteBucket) && this.#isExactHourName(hourName)) {
+    if (
+      ClockFormatter.#isTopOfTheHour(minuteBucket) &&
+      ClockFormatter.#isExactHourName(this.wordPack, hourName)
+    ) {
       return hourName;
     }
 
@@ -134,23 +140,23 @@ export class ClockFormatter {
     return times[minuteBucket].format(hourName);
   }
 
-  #isExactHourName(hourName: string): boolean {
+  static #isExactHourName(wordPack: WordPack, hourName: string): boolean {
     return (
-      hourName === this.wordPack.midnight ||
-      hourName === this.wordPack.noon ||
-      hourName === this.wordPack.names[0] ||
-      hourName === this.wordPack.names[12]
+      hourName === wordPack.midnight ||
+      hourName === wordPack.noon ||
+      hourName === wordPack.names[0] ||
+      hourName === wordPack.names[12]
     );
   }
 
-  #shouldRoundUp(minuteBucket: number, timeFormat: TimeFormat): boolean {
+  static #shouldRoundUp(minuteBucket: number, timeFormat: TimeFormat): boolean {
     return (
       (timeFormat === TimeFormat.FORMAT_ONE && minuteBucket > 30) ||
       minuteBucket === 60
     );
   }
 
-  #isTopOfTheHour(minuteBucket: number): boolean {
+  static #isTopOfTheHour(minuteBucket: number): boolean {
     return minuteBucket === 0 || minuteBucket === 60;
   }
 
@@ -165,9 +171,12 @@ export class ClockFormatter {
       ? this.wordPack.days[adjustedDate.getDay()]
       : this.wordPack.dayOnly;
 
-    const dateString = this.#getDateString(adjustedDate.getDate());
+    const dateString = ClockFormatter.#getDateString(
+      this.wordPack,
+      adjustedDate.getDate(),
+    );
 
-    return this.#formatString(weekdayString, dateString);
+    return weekdayString.format(dateString);
   }
 
   #adjustDateForRounding(date: Date, minuteBucket: number): Date {
@@ -179,11 +188,7 @@ export class ClockFormatter {
     return adjustedDate;
   }
 
-  #formatString(template: string, arg: string): string {
-    return template.format(arg);
-  }
-
-  #getDateString(n: number): string {
-    return this.wordPack.daysOfMonth[n - 1];
+  static #getDateString(wordPack: WordPack, n: number): string {
+    return wordPack.daysOfMonth[n - 1];
   }
 }
