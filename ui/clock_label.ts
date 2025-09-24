@@ -6,14 +6,11 @@
 import GObject from "gi://GObject";
 import St from "gi://St";
 
-import { gettext as _ } from "resource:///org/gnome/shell/extensions/extension.js";
-
 import { WordPack } from "../word_pack.js";
 import { ClockFormatter, TimeFormat, Fuzziness } from "../clock_formatter.js";
-import { PrefItems, Errors } from "../constants/index.js";
-import { logErr } from "../utils/error-utils.js";
+import { PrefItems } from "../constants/index.js";
 import { parseFuzziness } from "../utils/fuzziness-utils.js";
-import { normalizeColor, escapeMarkup } from "../utils/color-utils.js";
+import { normalizeColor } from "../utils/color-utils.js";
 
 /**
  * The properties of the clock label

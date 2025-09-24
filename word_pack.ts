@@ -4,8 +4,6 @@
  */
 
 import { TimeFormat } from "./clock_formatter.js";
-import { Errors } from "./constants/index.js";
-import { logErr } from "./utils/error-utils.js";
 
 /**
  * A class to store the words used to format a time and date as a string.
