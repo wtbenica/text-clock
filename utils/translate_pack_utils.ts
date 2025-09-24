@@ -33,3 +33,15 @@ export function createTranslatePack(gettextFns: GettextFunctions): WordPack {
     daysOfMonth: dateConstants.daysOfMonth(),
   });
 }
+
+/**
+ * Creates a lazy getter for the translate pack
+ * Used to avoid duplicating the TRANSLATE_PACK logic in extension.ts and prefs.ts
+ *
+ * @param gettextFns - The gettext functions to use for translations
+ */
+export function createTranslatePackGetter(
+  gettextFns: GettextFunctions,
+): () => WordPack {
+  return () => createTranslatePack(gettextFns);
+}

@@ -16,14 +16,14 @@ import {
   gettext as _,
 } from "resource:///org/gnome/shell/extensions/extension.js";
 
-import { TextClockLabel } from "./ui/clock_label.js";
+import { TextClockLabel } from "./ui/clock_widget.js";
 import { CLOCK_LABEL_PROPERTIES } from "./types/ui.js";
 import { WordPack } from "./word_pack.js";
 import { Errors } from "./constants/index.js";
 import SettingsKey from "./models/settings_keys";
 import { logErr, logWarn, logInfo } from "./utils/error_utils.js";
 import { fuzzinessFromEnumIndex } from "./utils/fuzziness_utils.js";
-import { createTranslatePack } from "./utils/translate_pack_utils.js";
+import { createTranslatePackGetter } from "./utils/translate_pack_utils.js";
 import { extensionGettext } from "./utils/gettext_utils_ext.js";
 import ServiceContainer from "./services/service_container.js";
 
@@ -32,8 +32,7 @@ const CLOCK_STYLE_CLASS_NAME = "clock";
 /**
  * @returns a word pack that contains the strings for telling the time and date
  */
-export const TRANSLATE_PACK: () => WordPack = () =>
-  createTranslatePack(extensionGettext);
+export const TRANSLATE_PACK = createTranslatePackGetter(extensionGettext);
 
 /**
  * TextClock extension for GNOME Shell

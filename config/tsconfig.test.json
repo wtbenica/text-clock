@@ -13,7 +13,7 @@
         "noEmit": true
     },
     "files": [
-        "../clock_formatter.ts",
+        "../core/clock_formatter.ts",
         "../word_pack.ts",
         "../constants/index.ts",
         "../constants/dates/core.ts",

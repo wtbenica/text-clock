@@ -3,11 +3,9 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { WordPack } from "../word_pack.js";
 // Use plain `any` for GJS types in interfaces so unit tests (node) compile cleanly.
 type StBoxLayout = any;
 type StLabel = any;
-import { Fuzziness } from "../core/clock_formatter.js";
 import { Color } from "../models/color.js";
 
 export const CLOCK_LABEL_PROPERTIES = {
@@ -20,11 +18,6 @@ export const CLOCK_LABEL_PROPERTIES = {
 };
 
 export interface ITextClock extends StBoxLayout {
-  _showDate: boolean;
-  _translatePack: WordPack;
-  _fuzzyMinutes: Fuzziness | string;
-  _showWeekday: boolean;
-  _timeFormat: string;
   timeLabel: StLabel;
   dividerLabel: StLabel;
   dateLabel: StLabel;

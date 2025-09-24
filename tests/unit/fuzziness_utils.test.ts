@@ -2,7 +2,7 @@ import {
   fuzzinessFromEnumIndex,
   parseFuzziness,
 } from "../../utils/fuzziness_utils";
-import { Fuzziness } from "../../clock_formatter";
+import { Fuzziness } from "../../core/clock_formatter.js";
 
 // Mock FUZZINESS_ENUM_MINUTES for testing
 jest.mock("../../constants/index", () => ({

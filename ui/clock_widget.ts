@@ -17,7 +17,11 @@ import { Color } from "../models/color.js";
 import { ITextClock, CLOCK_LABEL_PROPERTIES } from "../types/ui.js";
 import { ClockPresenter } from "./presenters/clock_presenter.js";
 
-export const TextClockWidget = GObject.registerClass(
+/**
+ * A label that displays the time (and date) as text "five past noon" or "five
+ * past noon | monday the 1st".
+ */
+export const TextClockLabel = GObject.registerClass(
   {
     GTypeName: "TextClockLabelV2",
     Properties: {
@@ -71,14 +75,14 @@ export const TextClockWidget = GObject.registerClass(
       ),
     },
   },
-  class ClockWidget extends St.BoxLayout implements ITextClock {
-    _formatter?: ClockFormatter;
-    _presenter?: ClockPresenter;
-    _showDate: boolean;
-    _translatePack: WordPack;
-    _fuzzyMinutes: Fuzziness;
-    _showWeekday: boolean;
-    _timeFormat: TimeFormat;
+  class ClockLabel extends St.BoxLayout implements ITextClock {
+    #formatter?: ClockFormatter;
+    #presenter?: ClockPresenter;
+    #showDate: boolean;
+    #translatePack: WordPack;
+    #fuzzyMinutes: Fuzziness;
+    #showWeekday: boolean;
+    #timeFormat: TimeFormat;
     timeLabel: St.Label;
     dividerLabel: St.Label;
     dateLabel: St.Label;
@@ -91,13 +95,13 @@ export const TextClockWidget = GObject.registerClass(
 
     constructor(props: any) {
       super(props);
-      this._translatePack = props.translatePack;
-      this._showDate = props.showDate;
-      this._fuzzyMinutes = parseFuzziness(
+      this.#translatePack = props.translatePack;
+      this.#showDate = props.showDate;
+      this.#fuzzyMinutes = parseFuzziness(
         props.fuzzyMinutes || Fuzziness.FIVE_MINUTES,
       );
-      this._showWeekday = props.showWeekday;
-      this._timeFormat = props.timeFormat;
+      this.#showWeekday = props.showWeekday;
+      this.#timeFormat = props.timeFormat;
       this.dividerText = props.dividerText || " | ";
 
       // Create the three labels
@@ -109,52 +113,85 @@ export const TextClockWidget = GObject.registerClass(
       this.add_child(this.dividerLabel);
       this.add_child(this.dateLabel);
 
-      this._presenter = new ClockPresenter({
-        translatePack: this._translatePack,
-        showDate: this._showDate,
-        showWeekday: this._showWeekday,
-        timeFormat: this._timeFormat,
-        fuzzyMinutes: this._fuzzyMinutes,
+      this.#presenter = new ClockPresenter({
+        translatePack: this.#translatePack,
+        showDate: this.#showDate,
+        showWeekday: this.#showWeekday,
+        timeFormat: this.#timeFormat,
+        fuzzyMinutes: this.#fuzzyMinutes,
         dividerText: this.dividerText,
       });
 
       this.updateClock();
     }
 
+    /**
+     * Whether to show the date in the clock
+     *
+     * @param {boolean} value
+     */
     set showDate(value: boolean) {
-      this._showDate = value;
+      this.#showDate = value;
       this.updateClock();
     }
 
+    /**
+     * Whether to show the weekday as part of the date
+     *
+     * @param {boolean} value
+     */
     set showWeekday(value: boolean) {
-      this._showWeekday = value;
+      this.#showWeekday = value;
       this.updateClock();
     }
 
+    /**
+     * The clock update signal
+     *
+     * @param {string} _
+     */
     set clockUpdate(_: string) {
       this.updateClock();
     }
 
+    /**
+     * THe format used to display the time
+     *
+     * @param {string} value
+     */
     set timeFormat(value: TimeFormat) {
-      this._timeFormat = value;
+      this.#timeFormat = value;
       this.updateClock();
     }
 
+    /**
+     * The translation pack
+     *
+     * @param {WordPack} value
+     */
     set translatePack(value: WordPack) {
-      this._translatePack = value;
-      if (this._formatter) this._formatter!.wordPack = this._translatePack;
+      this.#translatePack = value;
+      if (this.#formatter) this.#formatter!.wordPack = this.#translatePack;
       this.updateClock();
     }
 
+    /**
+     * The fuzziness of the clock
+     *
+     * @param {Fuzziness} value
+     */
     set fuzzyMinutes(value: Fuzziness | string) {
-      this._fuzzyMinutes = parseFuzziness(value);
+      this.#fuzzyMinutes = parseFuzziness(value);
       this.updateClock();
     }
 
+    /**
+     * Updates the clock label text
+     */
     updateClock() {
       const date = new Date();
-      if (this._presenter) {
-        const parts = this._presenter.present(date);
+      if (this.#presenter) {
+        const parts = this.#presenter.present(date);
         this.timeText = parts.time;
         this.dividerText = parts.divider;
         this.dateText = parts.date;
@@ -163,8 +200,8 @@ export const TextClockWidget = GObject.registerClass(
     }
 
     applyStyling() {
-      const styles = this._presenter
-        ? this._presenter.buildStyles(
+      const styles = this.#presenter
+        ? this.#presenter.buildStyles(
             this.clockColor,
             this.dateColor,
             this.dividerColor,
@@ -202,15 +239,10 @@ export const TextClockWidget = GObject.registerClass(
 
     setDividerText(text: string) {
       this.dividerText = text;
-      if (this._formatter) {
-        this._formatter.divider = text;
+      if (this.#formatter) {
+        this.#formatter.divider = text;
       }
       this.updateClock();
     }
   },
 );
-
-export default TextClockWidget;
-
-// ...existing code moved from ui/clock_label.ts ...
-// canonical snake_case implementation - old kebab-case file removed

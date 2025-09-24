@@ -17,16 +17,14 @@ import { SETTINGS, PrefItems, Errors } from "./constants/index.js";
 import SettingsKey from "./models/settings_keys";
 import { ClockFormatter, TimeFormat } from "./core/clock_formatter.js";
 import { fuzzinessFromEnumIndex } from "./utils/fuzziness_utils.js";
-import { WordPack } from "./word_pack.js";
-import { createTranslatePack } from "./utils/translate_pack_utils.js";
+import { createTranslatePackGetter } from "./utils/translate_pack_utils.js";
 import { prefsGettext } from "./utils/gettext_utils_prefs.js";
 import { logErr } from "./utils/error_utils.js";
 
 /**
  * @returns a word pack that contains the strings for telling the time and date
  */
-export const TRANSLATE_PACK: () => WordPack = () =>
-  createTranslatePack(prefsGettext);
+export const TRANSLATE_PACK = createTranslatePackGetter(prefsGettext);
 
 /**
  * Represents a binding between a setting and a property of a widget.

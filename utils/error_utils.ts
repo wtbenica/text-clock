@@ -80,43 +80,6 @@ export function logDebug(message: Error | string | unknown, context?: string) {
 }
 
 /**
- * Safely executes a function and handles any errors that occur
- *
- * @param fn - The function to execute
- * @param errorContext - Context message for error logging
- * @param fallbackValue - Value to return if function fails
- * @returns The result of the function or the fallback value
- */
-export function safeExecute<T>(
-  fn: () => T,
-  errorContext: string,
-  fallbackValue?: T,
-): T | undefined {
-  try {
-    return fn();
-  } catch (error) {
-    logMessage(error, errorContext);
-    return fallbackValue;
-  }
-}
-
-/**
- * Validates that a required value is not null or undefined
- *
- * @param value - The value to check
- * @param valueName - Name of the value for error messages
- * @throws Error if the value is null or undefined
- */
-export function validateRequired<T>(
-  value: T | null | undefined,
-  valueName: string,
-): asserts value is T {
-  if (value === null || value === undefined) {
-    throw new Error(`Required value '${valueName}' is null or undefined`);
-  }
-}
-
-/**
  * Validates that a date object is valid
  *
  * @param date - The date to validate
@@ -130,25 +93,4 @@ export function validateDate(
   if (!date || isNaN(date.getTime())) {
     throw new Error(`${context}: Invalid date provided`);
   }
-}
-
-/**
- * Wraps a function that might throw with standardized error handling
- *
- * @param operation - Description of the operation being performed
- * @param fn - The function to wrap
- * @returns A function that executes fn with error handling
- */
-export function withErrorHandling<T extends any[], R>(
-  operation: string,
-  fn: (...args: T) => R,
-): (...args: T) => R | undefined {
-  return (...args: T): R | undefined => {
-    try {
-      return fn(...args);
-    } catch (error) {
-      logMessage(error, `Failed during ${operation}`);
-      return undefined;
-    }
-  };
 }
