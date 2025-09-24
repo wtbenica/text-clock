@@ -5,45 +5,14 @@
 
 import GObject from "gi://GObject";
 import St from "gi://St";
-
 import { WordPack } from "../word_pack.js";
 import { ClockFormatter, TimeFormat, Fuzziness } from "../clock_formatter.js";
 import { PrefItems } from "../constants/index.js";
 import { parseFuzziness } from "../utils/fuzziness-utils.js";
 import { Color } from "../models/color.js";
+import { ITextClock, CLOCK_LABEL_PROPERTIES } from "./interfaces.js";
 
-/**
- * The properties of the clock label
- */
-export const CLOCK_LABEL_PROPERTIES = {
-  SHOW_DATE: "show-date",
-  CLOCK_UPDATE: "clock-update",
-  TRANSLATE_PACK: "translate-pack",
-  FUZZINESS: "fuzzy-minutes",
-  SHOW_WEEKDAY: "show-weekday",
-  TIME_FORMAT: "time-format",
-};
-
-/**
- * The interface for TextClockLabel
- */
-export interface ITextClock extends St.BoxLayout {
-  _showDate: boolean;
-  _translatePack: WordPack;
-  _fuzzyMinutes: Fuzziness | string;
-  _showWeekday: boolean;
-  _timeFormat: string;
-  timeLabel: St.Label;
-  dividerLabel: St.Label;
-  dateLabel: St.Label;
-  clockColor: Color;
-  dateColor: Color;
-  dividerColor: Color;
-  setClockColor(color: Color): void;
-  setDateColor(color: Color): void;
-  setDividerColor(color: Color): void;
-  setDividerText(text: string): void;
-}
+// shared types imported from ui/interfaces.ts
 
 /**
  * A label that displays the time (and date) as text "five past noon" or "five

@@ -16,11 +16,8 @@ import {
   gettext as _,
 } from "resource:///org/gnome/shell/extensions/extension.js";
 
-import {
-  TextClockLabel,
-  CLOCK_LABEL_PROPERTIES,
-  ITextClock,
-} from "./ui/clock_label.js";
+import { TextClockLabel } from "./ui/clock_label.js";
+import { CLOCK_LABEL_PROPERTIES } from "./ui/interfaces.js";
 import { WordPack } from "./word_pack.js";
 import { Errors } from "./constants/index.js";
 import SettingsKey from "./models/settings-keys";
@@ -56,7 +53,7 @@ export default class TextClock extends Extension {
   #clock?: GnomeDesktop.WallClock;
   #clockDisplay?: St.Label;
   #topBox?: St.BoxLayout;
-  #clockLabel?: ITextClock;
+  #clockLabel?: any;
   #translatePack?: WordPack;
 
   enable() {
@@ -76,11 +73,11 @@ export default class TextClock extends Extension {
   // Initialize all services
   #initServices() {
     // Initialize settings first
-    this.#settings = this.getSettings();
+    this.#settings = (this as any).getSettings();
 
     // Initialize services that depend on settings
-    this.#settingsManager = new SettingsManager(this.#settings);
-    this.#styleService = new StyleService(this.#settings);
+    this.#settingsManager = new SettingsManager(this.#settings as any);
+    this.#styleService = new StyleService(this.#settings as any);
     this.#notificationService = new NotificationService("Text Clock");
 
     logInfo("All services initialized");
@@ -116,7 +113,7 @@ export default class TextClock extends Extension {
         // Show update notification using the service
         this.#notificationService.showUpdateNotification(
           currentVersionName,
-          () => this.openPreferences(),
+          () => (this as any).openPreferences(),
         );
 
         // Persist the current version
@@ -179,7 +176,7 @@ export default class TextClock extends Extension {
     // Set initial fuzziness
     const fuzzValue = this.#settingsManager!.getFuzziness();
     (this.#clockLabel as any).fuzzyMinutes = fuzzValue;
-    this.#topBox.add_child(this.#clockLabel!);
+    this.#topBox.add_child(this.#clockLabel! as any);
 
     // Apply initial styles
     this.#applyStyles();
@@ -205,20 +202,20 @@ export default class TextClock extends Extension {
     // Bind basic properties using settings manager
     this.#settingsManager.bindProperty(
       SettingsKey.SHOW_DATE,
-      this.#clockLabel,
+      this.#clockLabel as any,
       CLOCK_LABEL_PROPERTIES.SHOW_DATE,
     );
 
     this.#settingsManager.bindProperty(
       SettingsKey.SHOW_WEEKDAY,
-      this.#clockLabel,
+      this.#clockLabel as any,
       CLOCK_LABEL_PROPERTIES.SHOW_WEEKDAY,
     );
 
     // Bind clock updates
     this.#clock!.bind_property(
       "clock",
-      this.#clockLabel,
+      this.#clockLabel as any,
       CLOCK_LABEL_PROPERTIES.CLOCK_UPDATE,
       GObject.BindingFlags.DEFAULT,
     );
@@ -237,7 +234,7 @@ export default class TextClock extends Extension {
     });
 
     // Register the clock label with the style service for automatic updates
-    this.#styleService.registerTarget(this.#clockLabel);
+    this.#styleService.registerTarget(this.#clockLabel as any);
   }
 
   // Apply styles to the clock label
