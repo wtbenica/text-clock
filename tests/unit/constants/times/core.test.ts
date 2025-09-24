@@ -2,13 +2,11 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import {
-  createTimeConstants,
-  type GettextFns,
-} from "../../../../constants/times/core.js";
+import { createTimeConstants } from "../../../../constants/times/core.js";
+import type { GettextFunctions } from "../../../../utils/gettext-utils.js";
 
 describe("createTimeConstants", () => {
-  let mockGettextFns: GettextFns;
+  let mockGettextFunctions: GettextFunctions;
   let pgetextSpy: jest.SpyInstance;
   let timeConstants: ReturnType<typeof createTimeConstants>;
 
@@ -17,13 +15,13 @@ describe("createTimeConstants", () => {
       (context: string, message: string) => `translated:${message}`,
     );
 
-    mockGettextFns = {
+    mockGettextFunctions = {
       _: jest.fn((s: string) => `translated:${s}`),
       ngettext: jest.fn((s: string, p: string, n: number) => (n === 1 ? s : p)),
       pgettext: pgetextSpy as any,
     };
 
-    timeConstants = createTimeConstants(mockGettextFns);
+    timeConstants = createTimeConstants(mockGettextFunctions);
   });
 
   describe("timesFormatOne", () => {
@@ -207,7 +205,7 @@ describe("createTimeConstants", () => {
 
   describe("edge cases", () => {
     it("should handle gettext functions that return original strings", () => {
-      const passthroughGettext: GettextFns = {
+      const passthroughGettext: GettextFunctions = {
         _: (s: string) => s,
         ngettext: (s: string, p: string, n: number) => (n === 1 ? s : p),
         pgettext: (context: string, message: string) => message,
@@ -221,7 +219,7 @@ describe("createTimeConstants", () => {
     });
 
     it("should work with gettext functions that throw errors", () => {
-      const errorGettext: GettextFns = {
+      const errorGettext: GettextFunctions = {
         _: jest.fn().mockImplementation(() => {
           throw new Error("Translation error");
         }),

@@ -44,4 +44,10 @@ module.exports = {
         '^(\\.{1,2}/.*)\\.js$': '$1',
     },
     testTimeout: 10000,
+    
+    // Memory-friendly settings for constrained environments
+    maxWorkers: 1,              // Run tests sequentially, not in parallel
+    logHeapUsage: false,        // Don't log heap usage (reduces overhead)
+    detectLeaks: false,         // Skip leak detection to reduce memory usage
+    workerIdleMemoryLimit: '512MB', // Kill workers if they use too much memory
 };

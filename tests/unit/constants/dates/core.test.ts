@@ -2,13 +2,11 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import {
-  createDateConstants,
-  type GettextFns,
-} from "../../../../constants/dates/core.js";
+import { createDateConstants } from "../../../../constants/dates/core.js";
+import type { GettextFunctions } from "../../../../utils/gettext-utils.js";
 
 describe("createDateConstants", () => {
-  let mockGettextFns: GettextFns;
+  let mockGettextFunctions: GettextFunctions;
   let underscoreSpy: jest.SpyInstance;
   let pgetextSpy: jest.SpyInstance;
   let dateConstants: ReturnType<typeof createDateConstants>;
@@ -19,13 +17,13 @@ describe("createDateConstants", () => {
       (context: string, message: string) => `translated:${message}`,
     );
 
-    mockGettextFns = {
+    mockGettextFunctions = {
       _: underscoreSpy as any,
       ngettext: jest.fn((s: string, p: string, n: number) => (n === 1 ? s : p)),
       pgettext: pgetextSpy as any,
     };
 
-    dateConstants = createDateConstants(mockGettextFns);
+    dateConstants = createDateConstants(mockGettextFunctions);
   });
 
   describe("dateOnly", () => {
@@ -186,7 +184,7 @@ describe("createDateConstants", () => {
 
   describe("edge cases", () => {
     it("should handle gettext functions that return original strings", () => {
-      const passthroughGettext: GettextFns = {
+      const passthroughGettext: GettextFunctions = {
         _: (s: string) => s,
         ngettext: (s: string, p: string, n: number) => (n === 1 ? s : p),
         pgettext: (context: string, message: string) => message,
@@ -200,7 +198,7 @@ describe("createDateConstants", () => {
     });
 
     it("should work with gettext functions that throw errors", () => {
-      const errorGettext: GettextFns = {
+      const errorGettext: GettextFunctions = {
         _: jest.fn().mockImplementation(() => {
           throw new Error("Translation error");
         }),
@@ -219,7 +217,7 @@ describe("createDateConstants", () => {
     });
 
     it("should handle empty string returns from gettext", () => {
-      const emptyGettext: GettextFns = {
+      const emptyGettext: GettextFunctions = {
         _: jest.fn().mockReturnValue(""),
         ngettext: jest.fn().mockReturnValue(""),
         pgettext: jest.fn().mockReturnValue(""),
@@ -233,7 +231,7 @@ describe("createDateConstants", () => {
     });
 
     it("should handle null/undefined returns from gettext", () => {
-      const nullGettext: GettextFns = {
+      const nullGettext: GettextFunctions = {
         _: jest.fn().mockReturnValue(null),
         ngettext: jest.fn().mockReturnValue(null),
         pgettext: jest.fn().mockReturnValue(null),
