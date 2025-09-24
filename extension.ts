@@ -7,10 +7,13 @@ import Clutter from "gi://Clutter";
 import Gio from "gi://Gio";
 import GObject from "gi://GObject";
 import St from "gi://St";
+import GLib from "gi://GLib";
 import GnomeDesktop from "gi://GnomeDesktop";
 
 import { DateMenuButton } from "resource:///org/gnome/shell/ui/dateMenu.js";
 import { panel } from "resource:///org/gnome/shell/ui/main.js";
+import * as Main from "resource:///org/gnome/shell/ui/main.js";
+import * as MessageTray from "resource:///org/gnome/shell/ui/messageTray.js";
 import {
   Extension,
   gettext as _,
@@ -21,31 +24,15 @@ import {
   CLOCK_LABEL_PROPERTIES,
   ITextClock,
 } from "./ui/clock_label.js";
-import { Fuzziness } from "./clock_formatter.js";
 import { WordPack } from "./word_pack.js";
 import { SETTINGS, Errors, getDividerText } from "./constants/index.js";
-import {
-  timesFormatOne,
-  midnightFormatOne,
-  noonFormatOne,
-  timesFormatTwo,
-  midnightFormatTwo,
-  noonFormatTwo,
-  hourNames,
-  midnight,
-  noon,
-} from "./constants/times/extension.js";
-import {
-  weekdays,
-  dateOnly,
-  daysOfMonth,
-} from "./constants/dates/extension.js";
 import { logErr, logWarn, logInfo, logDebug } from "./utils/error-utils.js";
 import { fuzzinessFromEnumIndex } from "./utils/fuzziness-utils.js";
 import { createTranslatePack } from "./utils/translate-pack-utils.js";
 import { extensionGettext } from "./utils/gettext-utils-ext.js";
 
 const CLOCK_STYLE_CLASS_NAME = "clock";
+const UPDATE_NOTIFICATION_DELAY_SECONDS = 4;
 
 /**
  * @returns a word pack that contains the strings for telling the time and date
@@ -71,6 +58,7 @@ export default class TextClock extends Extension {
 
   enable() {
     this.#initSettings();
+    this.#maybeShowUpdateNotification();
     this.#retrieveDateMenu();
     this.#placeClockLabel();
     this.#bindSettingsToClockLabel();
@@ -85,6 +73,146 @@ export default class TextClock extends Extension {
   // Initialize the settings object
   #initSettings() {
     this.#settings = this.getSettings();
+  }
+
+  // When the extension is enabled check whether we have a stored last-seen
+  // version and, if it differs from the current metadata version-name,
+  // show a short notification and persist the new version-name.
+  #maybeShowUpdateNotification() {
+    try {
+      if (!this.#settings) return;
+
+      // Extension metadata is provided by the base Extension class; access
+      // via (this as any).metadata which mirrors metadata.json at build time.
+      const meta: any = (this as any).metadata || {};
+      const currentVersionName: string =
+        meta["version-name"] || String(meta.version || "");
+
+      if (!currentVersionName) {
+        logWarn("No version-name found in metadata, skipping notification");
+        return;
+      }
+
+      const lastSeen = this.#settings.get_string(SETTINGS.LAST_SEEN_VERSION);
+
+      if (lastSeen !== currentVersionName) {
+        logInfo(
+          `Showing update notification for version ${currentVersionName}`,
+        );
+
+        // Show a brief notification to the user about what's new.
+        const title = _("Text Clock updated");
+        const body = _(
+          "Text Clock was updated to version %s. You can now change the clock color and divider text in Preferences.",
+        ).replace("%s", currentVersionName);
+
+        try {
+          // Schedule the notification with a delay to make it less jarring
+          // First, wait for the shell UI to be ready, then add additional delay
+          GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+            // Add a 2-second delay before showing the notification
+            GLib.timeout_add_seconds(
+              GLib.PRIORITY_DEFAULT,
+              UPDATE_NOTIFICATION_DELAY_SECONDS,
+              () => {
+                try {
+                  this.#showNotificationWithAction(title, body);
+                  logInfo("Update notification sent successfully");
+                } catch (notifyErr) {
+                  logInfo(`Update notification failed: ${String(notifyErr)}`);
+                  // Fallback to simple notification
+                  if (Main && typeof Main.notify === "function") {
+                    Main.notify(title, body);
+                  }
+                }
+                return GLib.SOURCE_REMOVE;
+              },
+            );
+            return GLib.SOURCE_REMOVE;
+          });
+        } catch (notifyScheduleErr) {
+          logInfo(
+            `Update notification scheduling failed: ${String(notifyScheduleErr)}`,
+          );
+        }
+
+        // Persist the current version so we don't spam the user on subsequent
+        // enable cycles.
+        try {
+          this.#settings.set_string(
+            SETTINGS.LAST_SEEN_VERSION,
+            currentVersionName,
+          );
+        } catch (setErr) {
+          logWarn(`Failed to persist last-seen-version: ${String(setErr)}`);
+        }
+      }
+    } catch (err) {
+      logWarn(`Error checking extension update: ${String(err)}`);
+    }
+  }
+
+  // Show notification with guidance on accessing preferences
+  #showNotificationWithAction(title: string, body: string) {
+    try {
+      // Create a notification source for the extension
+      const source = this.#getOrCreateNotificationSource();
+
+      // Create a persistent notification with action
+      const notification = new MessageTray.Notification({
+        source: source,
+        title: title,
+        body: body,
+        iconName: "preferences-desktop-notification-symbolic",
+      });
+
+      // Make the notification resident (persistent in notification area)
+      notification.resident = true;
+
+      // Add action button to open preferences
+      notification.addAction(_("Open Preferences"), () => {
+        try {
+          logInfo("Opening preferences from notification action");
+          this.openPreferences();
+
+          // Dismiss the notification after opening preferences
+          notification.destroy();
+          logInfo("Notification dismissed after opening preferences");
+        } catch (prefsErr) {
+          logWarn(`Failed to open preferences: ${String(prefsErr)}`);
+        }
+      });
+
+      // Show the notification
+      source.addNotification(notification);
+      logInfo("Persistent notification with action created successfully");
+    } catch (err) {
+      logErr(`Failed to create persistent notification: ${String(err)}`);
+      throw err;
+    }
+  }
+
+  // Get or create a notification source for this extension
+  #getOrCreateNotificationSource() {
+    const sourceName = _("Text Clock");
+
+    // Check if source already exists
+    let source = Main.messageTray
+      .getSources()
+      .find((s) => s.title === sourceName);
+
+    if (!source) {
+      // Create new source
+      source = new MessageTray.Source({
+        title: sourceName,
+        iconName: "preferences-desktop-notification-symbolic",
+      });
+
+      // Add source to message tray
+      Main.messageTray.add(source);
+    }
+
+    return source;
   }
 
   // Initialize class properties to undefined
@@ -241,7 +369,7 @@ export default class TextClock extends Extension {
 
   // Destroys created objects and sets properties to undefined
   #cleanup() {
-    if (this.#clockLabel!) this.#clockLabel!.destroy();
+    if (this.#clockLabel) (this.#clockLabel as any).destroy();
     if (this.#topBox) this.#topBox.destroy();
     this.#resetProperties();
   }
