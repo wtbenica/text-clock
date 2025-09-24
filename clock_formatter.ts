@@ -4,7 +4,7 @@
  */
 
 import { WordPack } from "./word_pack.js";
-import { logErr, validateDate } from "./utils/error-utils.js";
+import { validateDate } from "./utils/error-utils.js";
 
 /**
  * The time format options for the Text Clock extension

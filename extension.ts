@@ -11,7 +11,6 @@ import GnomeDesktop from "gi://GnomeDesktop";
 
 import { DateMenuButton } from "resource:///org/gnome/shell/ui/dateMenu.js";
 import { panel } from "resource:///org/gnome/shell/ui/main.js";
-import * as Main from "resource:///org/gnome/shell/ui/main.js";
 import {
   Extension,
   gettext as _,
