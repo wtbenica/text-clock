@@ -17,13 +17,7 @@ import { Color } from "../models/color.js";
 import { ITextClock, CLOCK_LABEL_PROPERTIES } from "../types/ui.js";
 import { ClockPresenter } from "./presenters/clock_presenter.js";
 
-// shared types imported from ui/interfaces.ts
-
-/**
- * A label that displays the time (and date) as text "five past noon" or "five
- * past noon | monday the 1st".
- */
-export const TextClockLabel = GObject.registerClass(
+export const TextClockWidget = GObject.registerClass(
   {
     GTypeName: "TextClockLabelV2",
     Properties: {
@@ -77,7 +71,7 @@ export const TextClockLabel = GObject.registerClass(
       ),
     },
   },
-  class ClockLabel extends St.BoxLayout implements ITextClock {
+  class ClockWidget extends St.BoxLayout implements ITextClock {
     _formatter?: ClockFormatter;
     _presenter?: ClockPresenter;
     _showDate: boolean;
@@ -127,69 +121,36 @@ export const TextClockLabel = GObject.registerClass(
       this.updateClock();
     }
 
-    /**
-     * Whether to show the date in the clock
-     *
-     * @param {boolean} value
-     */
     set showDate(value: boolean) {
       this._showDate = value;
       this.updateClock();
     }
 
-    /**
-     * Whether to show the weekday as part of the date
-     *
-     * @param {boolean} value
-     */
     set showWeekday(value: boolean) {
       this._showWeekday = value;
       this.updateClock();
     }
 
-    /**
-     * The clock update signal
-     *
-     * @param {string} _
-     */
     set clockUpdate(_: string) {
       this.updateClock();
     }
 
-    /**
-     * THe format used to display the time
-     *
-     * @param {string} value
-     */
     set timeFormat(value: TimeFormat) {
       this._timeFormat = value;
       this.updateClock();
     }
 
-    /**
-     * The translation pack
-     *
-     * @param {WordPack} value
-     */
     set translatePack(value: WordPack) {
       this._translatePack = value;
       if (this._formatter) this._formatter!.wordPack = this._translatePack;
       this.updateClock();
     }
 
-    /**
-     * The fuzziness of the clock
-     *
-     * @param {Fuzziness} value
-     */
     set fuzzyMinutes(value: Fuzziness | string) {
       this._fuzzyMinutes = parseFuzziness(value);
       this.updateClock();
     }
 
-    /**
-     * Updates the clock label text
-     */
     updateClock() {
       const date = new Date();
       if (this._presenter) {
@@ -248,3 +209,8 @@ export const TextClockLabel = GObject.registerClass(
     }
   },
 );
+
+export default TextClockWidget;
+
+// ...existing code moved from ui/clock_label.ts ...
+// canonical snake_case implementation - old kebab-case file removed

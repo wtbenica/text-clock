@@ -6,7 +6,7 @@
 import { WordPack } from "../word_pack.js";
 import { createTimeConstants } from "../constants/times/core.js";
 import { createDateConstants } from "../constants/dates/core.js";
-import { GettextFunctions } from "./gettext-utils.js";
+import { GettextFunctions } from "./gettext_utils.js";
 
 /**
  * Creates a word pack containing the strings for telling the time and date

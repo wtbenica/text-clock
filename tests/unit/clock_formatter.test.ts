@@ -6,7 +6,7 @@ import {
   ClockFormatter,
   TimeFormat,
   Fuzziness,
-} from "../../clock_formatter.js";
+} from "../../core/clock_formatter.js";
 import { WordPack } from "../../word_pack.js";
 
 // Mock translation strings for testing

@@ -4,7 +4,7 @@
 
 /* Shared time constants (core) - do not import runtime gettext here. */
 
-import { GettextFunctions } from "../../utils/gettext-utils.js";
+import { GettextFunctions } from "../../utils/gettext_utils.js";
 
 export function createTimeConstants(fns: GettextFunctions) {
   const { pgettext } = fns;

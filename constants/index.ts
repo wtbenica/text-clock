@@ -55,11 +55,11 @@ export const Errors: Record<string, string> = {
   ERROR_INVALID_TIME_FORMAT: "Invalid time format",
 };
 
-import SettingsKey from "../models/settings-keys";
+import SettingsKey from "../models/settings_keys";
 
 /**
  * Backwards-compatible `SETTINGS` object.
- * Values are sourced from `models/settings-keys.ts` to centralize keys.
+ * Values are sourced from `models/settings_keys.ts` to centralize keys.
  */
 export const SETTINGS = {
   SHOW_DATE: SettingsKey.SHOW_DATE,

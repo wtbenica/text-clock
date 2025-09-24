@@ -3,22 +3,14 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { WordPack } from "./word_pack.js";
-import { validateDate } from "./utils/error_utils.js";
+import { WordPack } from "../word_pack.js";
+import { validateDate } from "../utils/error_utils.js";
 
-/**
- * The time format options for the Text Clock extension
- * @enum {string}
- */
 export enum TimeFormat {
   FORMAT_ONE = "format-one",
   FORMAT_TWO = "format-two",
 }
 
-/**
- * Fuzziness options for time rounding in the Text Clock extension
- * @enum {number}
- */
 export enum Fuzziness {
   ONE_MINUTE = 1,
   FIVE_MINUTES = 5,
@@ -26,16 +18,6 @@ export enum Fuzziness {
   FIFTEEN_MINUTES = 15,
 }
 
-/**
- * A class to format a time and date as a string.
- *
- * This class provides functionality to convert Date objects into human-readable
- * time strings like "five past noon" or "quarter to three", with optional date
- * information like "five past noon | Monday the 1st".
- *
- * @constructor
- * @param {WordPack} wordPack - The word pack containing localized strings for time/date formatting
- */
 export class ClockFormatter {
   wordPack: WordPack;
   divider: string;
@@ -46,17 +28,6 @@ export class ClockFormatter {
     this.divider = divider;
   }
 
-  /**
-   * Returns a time/date string formatted as "five past noon" or "five past noon | monday the 1st",
-   * depending on whether the date should be shown.
-   *
-   * @param {Date} date - The current date and time.
-   * @param {boolean} showDate - Flag to indicate if the date should be included in the output.
-   * @param {boolean} showWeekday - Flag to indicate if the weekday should be included in the output.
-   * @param {TimeFormat} timeFormat - The format of the time string.
-   * @param {Fuzziness} fuzziness - The number of minutes to round to.
-   * @returns {string} The formatted time/date string.
-   */
   getClockText(
     date: Date,
     showDate: boolean,
@@ -72,16 +43,6 @@ export class ClockFormatter {
     return time + divider + dateStr;
   }
 
-  /**
-   * Returns the clock parts: time, divider, date.
-   *
-   * @param {Date} date - The current date and time.
-   * @param {boolean} showDate - Flag to indicate if the date should be included in the output.
-   * @param {boolean} showWeekday - Flag to indicate if the weekday should be included in the output.
-   * @param {TimeFormat} timeFormat - The format of the time string.
-   * @param {Fuzziness} fuzziness - The number of minutes to round to.
-   * @returns {object} Object with time, divider, date strings.
-   */
   getClockParts(
     date: Date,
     showDate: boolean,
@@ -89,7 +50,6 @@ export class ClockFormatter {
     timeFormat: TimeFormat,
     fuzziness: Fuzziness,
   ): { time: string; divider: string; date: string } {
-    // Validate inputs
     validateDate(date, "ClockFormatter.getClockParts");
     if (fuzziness <= 0) {
       throw new Error("Fuzziness must be a positive number");
@@ -110,66 +70,39 @@ export class ClockFormatter {
     return { time, divider, date: dateStr };
   }
 
-  /**
-   * Returns the name of the hour suitable for display, considering special cases like "midnight" and "noon".
-   *
-   * @param {number} hour - The hour of the day (0-23).
-   * @param {number} minuteBucket - The minute bucket (0-60).
-   * @param {TimeFormat} timeFormat - The format of the time string.
-   * @returns {string} The name of the hour for display.
-   */
   #getHourName(
     hour: number,
     minuteBucket: number,
     timeFormat: TimeFormat,
   ): string {
-    // Create cache key
     const cacheKey = `${hour}-${minuteBucket}-${timeFormat}`;
-
-    // Check cache first
     if (this.#cachedHourNames.has(cacheKey)) {
       return this.#cachedHourNames.get(cacheKey)!;
     }
-
     const hourName = this.#getHourNameUncached(hour, minuteBucket, timeFormat);
-
-    // Cache the result
     this.#cachedHourNames.set(cacheKey, hourName);
     return hourName;
   }
 
-  /**
-   * Returns the hour name without caching.
-   */
   #getHourNameUncached(
     hour: number,
     minuteBucket: number,
     timeFormat: TimeFormat,
   ): string {
     const isTopOfTheHour = this.#isTopOfTheHour(minuteBucket);
-
-    // Handle special cases for midnight and noon
     if (hour === 0) {
-      // Midnight
       return isTopOfTheHour
         ? this.wordPack.midnight
         : this.#getSpecialHourName(timeFormat, "midnight");
     }
-
     if (hour === 12) {
-      // Noon
       return isTopOfTheHour
         ? this.wordPack.noon
         : this.#getSpecialHourName(timeFormat, "noon");
     }
-
-    // Regular hours
     return this.wordPack.names[hour];
   }
 
-  /**
-   * Returns the special hour name for non-top-of-hour times.
-   */
   #getSpecialHourName(
     timeFormat: TimeFormat,
     type: "midnight" | "noon",
@@ -188,20 +121,11 @@ export class ClockFormatter {
     return formatMap[timeFormat][type];
   }
 
-  /**
-   * Returns the time string for the given hour name and minute bucket.
-   *
-   * @param {string} hourName - The name of the hour.
-   * @param {number} minuteBucket - The minute bucket (0-11).
-   * @param {TimeFormat} timeFormat - The format of the time string.
-   * @returns {string} The time string.
-   */
   #getTimeString(
     hourName: string,
     minuteBucket: number,
     timeFormat: TimeFormat,
   ): string {
-    // For exact noon/midnight at the top of the hour, just return the hour name
     if (this.#isTopOfTheHour(minuteBucket) && this.#isExactHourName(hourName)) {
       return hourName;
     }
@@ -210,28 +134,15 @@ export class ClockFormatter {
     return times[minuteBucket].format(hourName);
   }
 
-  /**
-   * Returns whether the hour name represents an exact hour (noon/midnight).
-   *
-   * @param {string} hourName - The hour name to check.
-   * @returns {boolean} True if the hour name is exact.
-   */
   #isExactHourName(hourName: string): boolean {
     return (
       hourName === this.wordPack.midnight ||
       hourName === this.wordPack.noon ||
-      hourName === this.wordPack.names[0] || // midnight
-      hourName === this.wordPack.names[12] // noon
+      hourName === this.wordPack.names[0] ||
+      hourName === this.wordPack.names[12]
     );
   }
 
-  /**
-   * Returns whether the time should be rounded up to the next hour.
-   *
-   * @param {number} minuteBucket - The minute bucket (0-60).
-   * @param {TimeFormat} timeFormat - The format of the time string.
-   * @returns {boolean} True if the time should be rounded up.
-   */
   #shouldRoundUp(minuteBucket: number, timeFormat: TimeFormat): boolean {
     return (
       (timeFormat === TimeFormat.FORMAT_ONE && minuteBucket > 30) ||
@@ -239,23 +150,10 @@ export class ClockFormatter {
     );
   }
 
-  /**
-   * Returns whether the given minute bucket is at the top of the hour (0 or 60).
-   *
-   * @param {number} minuteBucket - The minute bucket (0-60).
-   * @returns {boolean} True if the minute bucket is at the top of the hour, false otherwise.
-   */
   #isTopOfTheHour(minuteBucket: number): boolean {
     return minuteBucket === 0 || minuteBucket === 60;
   }
 
-  /**
-   * Formats the current date as a string like "monday the 1st", adjusting the date based if the time will be rounded up to midnight (the next day).
-   *
-   * @param {Date} date - The date to format.
-   * @param {number} minuteBucket - The minute bucket (0-12).
-   * @returns {string} The formatted date string.
-   */
   #getDisplayedDate(
     date: Date,
     minuteBucket: number,
@@ -272,13 +170,6 @@ export class ClockFormatter {
     return this.#formatString(weekdayString, dateString);
   }
 
-  /**
-   * Adjusts the date if time rounding pushes it to the next day (midnight case).
-   *
-   * @param {Date} date - The original date.
-   * @param {number} minuteBucket - The minute bucket.
-   * @returns {Date} The adjusted date.
-   */
   #adjustDateForRounding(date: Date, minuteBucket: number): Date {
     const isNextDay = date.getHours() === 23 && minuteBucket === 60;
     const adjustedDate = new Date(date);
@@ -288,23 +179,10 @@ export class ClockFormatter {
     return adjustedDate;
   }
 
-  /**
-   * Formats the given string template with the given argument.
-   *
-   * @param {string} template - The template string to format.
-   * @param {string} arg - The argument to insert into the template.
-   * @returns {string} The formatted string.
-   */
   #formatString(template: string, arg: string): string {
     return template.format(arg);
   }
 
-  /**
-   * Returns the date string for the given number.
-   *
-   * @param {number} n - The number to convert to an ordinal.
-   * @returns {string} The ordinal string.
-   */
   #getDateString(n: number): string {
     return this.wordPack.daysOfMonth[n - 1];
   }

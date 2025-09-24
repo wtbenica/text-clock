@@ -11,13 +11,13 @@ import {
   gettext as _,
   ngettext,
   pgettext,
-} from "resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js";
-import { GettextFunctions } from "./gettext-utils.js";
+} from "resource:///org/gnome/shell/extensions/extension.js";
+import { GettextFunctions } from "./gettext_utils.js";
 
 /**
- * Gettext functions for preferences context (preferences window)
+ * Gettext functions for extension context (main extension code)
  */
-export const prefsGettext: GettextFunctions = {
+export const extensionGettext: GettextFunctions = {
   _: _,
   ngettext: ngettext,
   pgettext: pgettext,

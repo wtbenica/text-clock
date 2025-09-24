@@ -11,10 +11,10 @@
  */
 
 import Gio from "gi://Gio";
-import { normalizeColor } from "../utils/color-utils.js";
-import { logInfo, logWarn } from "../utils/error-utils.js";
+import { normalizeColor } from "../utils/color_utils.js";
+import { logInfo, logWarn } from "../utils/error_utils.js";
 import { getDividerText } from "../constants/index.js";
-import SettingsKey from "../models/settings-keys";
+import SettingsKey from "../models/settings_keys";
 import { Color } from "../models/color.js";
 
 /**

@@ -33,8 +33,8 @@ module.exports = {
         '!extension.ts',
         '!ui/**',
         // Exclude GNOME Shell-only files from coverage to avoid errors in Node/test environment
-        '!utils/gettext-utils-prefs.ts',
-        '!utils/gettext-utils-ext.ts',
+        '!utils/gettext_utils_prefs.ts',
+        '!utils/gettext_utils_ext.ts',
         '!prefs.ts',
     ],
     coverageDirectory: '<rootDir>/coverage',

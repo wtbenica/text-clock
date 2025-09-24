@@ -30,7 +30,7 @@ This file gives focused, actionable guidance so an AI coding agent can be immedi
   - TypeScript targets GJS imports via `gi://` and `resource:///` runtime imports. Generated JS must be compatible with GNOME Shell's GJS environment — keep `type: module` and build config in `config/tsconfig.json`.
   - Localization uses `po/` and `locale/` assets; word strings are packaged via `constants/times/*` and `constants/dates/*` (see `TRANSLATE_PACK` in `extension.ts` / `prefs.ts`).
   - Settings are stored in `Gio.Settings` keys defined in `constants/index.ts` (`SETTINGS.*`). Bindings often use `settings.bind()` or `settings.connect("changed::key", ...)`.
-  - Robustness: this repository targets GNOME Shell 45+. Keep code clear and handle errors where appropriate. Prefer the centralized logging helpers in `utils/error-utils.ts` (for example `logErr`, `logWarn`, `logInfo`, `logDebug`) instead of ad-hoc helpers such as `logExtensionError` to keep error handling consistent.
+  - Robustness: this repository targets GNOME Shell 45+. Keep code clear and handle errors where appropriate. Prefer the centralized logging helpers in `utils/error_utils.ts` (for example `logErr`, `logWarn`, `logInfo`, `logDebug`) instead of ad-hoc helpers such as `logExtensionError` to keep error handling consistent.
 
 - Testing patterns:
   - Unit tests live in `tests/unit` and use mocked `WordPack`/`ClockFormatter` inputs; prefer adding pure logic tests (no GJS runtime) for node-runnerable code.
@@ -38,7 +38,7 @@ This file gives focused, actionable guidance so an AI coding agent can be immedi
 
 - Typical small tasks and examples:
   - Add a new translation string: update `constants/times/*` and `constants/dates/*`, update `po/*.po`, and ensure `yarn build` still succeeds.
-  - Fix clock text formatting bug: modify `clock_formatter.ts` and add/extend unit tests in `tests/unit/clock-formatter.test.ts`.
+  - Fix clock text formatting bug: modify `clock_formatter.ts` and add/extend unit tests in `tests/unit/clock_formatter.test.ts`.
   - Change a pref-binding: update `prefs.ts`, `constants/index.ts` key name(s) if needed, and ensure `settings.bind()` usage follows existing error-handling style.
 
 - File locations that matter most (explicit references):
@@ -51,7 +51,7 @@ This file gives focused, actionable guidance so an AI coding agent can be immedi
 
 - Safety and compatibility notes for agents:
   - Do not assume Node/Electron-style DOM APIs — runtime is GNOME Shell/GJS. Keep changes to logic and build outputs that remain compatible with GJS (avoid browser or Node-only APIs unless used only in tests).
-  - Preserve existing defensive try/catch patterns when touching integration points. Prefer the centralized logging helpers in `utils/error-utils.ts` (for example `logErr`, `logWarn`, `logInfo`, `logDebug`) instead of `logExtensionError` so logging is consistent and test-friendly.
+  - Preserve existing defensive try/catch patterns when touching integration points. Prefer the centralized logging helpers in `utils/error_utils.ts` (for example `logErr`, `logWarn`, `logInfo`, `logDebug`) instead of `logExtensionError` so logging is consistent and test-friendly.
 
 - When proposing code changes include:
   - Which files to modify (paths), a short rationale, and exact commands to run locally to verify (`yarn build`, `yarn test`, `make install`).

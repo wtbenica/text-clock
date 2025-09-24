@@ -18,18 +18,19 @@
     "skipLibCheck": true
   },
   "include": [
-    "../config/ambient.d.ts",
+    "../*.ts",
+    "../core/**/*.ts",
+    "../ui/**/*.ts",
+    "../utils/**/*.ts",
+    "../services/**/*.ts",
+    "../constants/**/*.ts",
+    "../models/**/*.ts",
+    "../types/**/*.ts",
+    "../**/*.d.ts"
   ],
-  "files": [
-    "../extension.ts",
-    "../clock_formatter.ts",
-    "../word_pack.ts",
-    "../constants/index.ts",
-    "../constants/dates/extension.ts",
-    "../constants/dates/prefs.ts",
-    "../constants/times/extension.ts",
-    "../constants/times/prefs.ts",
-    "../ui/clock_label.ts",
-    "../prefs.ts",
-  ],
+  "exclude": [
+    "../tests",
+    "../node_modules",
+    "../dist"
+  ]
 }

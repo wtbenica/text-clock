@@ -7,9 +7,9 @@ import {
   validateRequired,
   validateDate,
   withErrorHandling,
-} from "../../utils/error-utils";
+} from "../../utils/error_utils";
 
-describe("error-utils", () => {
+describe("error_utils", () => {
   describe("safeExecute", () => {
     it("returns result when function succeeds", () => {
       expect(safeExecute(() => 42, "context")).toBe(42);
