@@ -13,6 +13,7 @@ import GnomeDesktop from "gi://GnomeDesktop";
 import { DateMenuButton } from "resource:///org/gnome/shell/ui/dateMenu.js";
 import { panel } from "resource:///org/gnome/shell/ui/main.js";
 import * as Main from "resource:///org/gnome/shell/ui/main.js";
+import * as MessageTray from "resource:///org/gnome/shell/ui/messageTray.js";
 import {
   Extension,
   gettext as _,
@@ -105,23 +106,23 @@ export default class TextClock extends Extension {
         ).replace("%s", currentVersionName);
 
         try {
-          // Schedule the notification on the main loop idle so that the
-          // shell UI and notification daemon are initialized. This avoids
-          // silently failing to show notifications during session start.
+          // Schedule the notification with a delay to make it less jarring
+          // First, wait for the shell UI to be ready, then add additional delay
           GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
-            try {
-              if (Main && typeof Main.notify === "function") {
-                Main.notify(title, body);
+            // Add a 2-second delay before showing the notification
+            GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 4, () => {
+              try {
+                this.#showNotificationWithAction(title, body);
                 logInfo("Update notification sent successfully");
-              } else {
-                // Fallback to logging if notifications aren't available in
-                // this runtime (e.g. during build-time tests).
-                logInfo(`${title}: ${body}`);
+              } catch (notifyErr) {
+                logInfo(`Update notification failed: ${String(notifyErr)}`);
+                // Fallback to simple notification
+                if (Main && typeof Main.notify === "function") {
+                  Main.notify(title, body);
+                }
               }
-            } catch (notifyErr) {
-              logInfo(`Update notification failed: ${String(notifyErr)}`);
-            }
-
+              return GLib.SOURCE_REMOVE;
+            });
             return GLib.SOURCE_REMOVE;
           });
         } catch (notifyScheduleErr) {
@@ -144,6 +145,69 @@ export default class TextClock extends Extension {
     } catch (err) {
       logWarn(`Error checking extension update: ${String(err)}`);
     }
+  }
+
+  // Show notification with guidance on accessing preferences
+  #showNotificationWithAction(title: string, body: string) {
+    try {
+      // Create a notification source for the extension
+      const source = this.#getOrCreateNotificationSource();
+
+      // Create a persistent notification with action
+      const notification = new MessageTray.Notification({
+        source: source,
+        title: title,
+        body: body,
+        iconName: "preferences-desktop-notification-symbolic",
+      });
+
+      // Make the notification resident (persistent in notification area)
+      notification.resident = true;
+
+      // Add action button to open preferences
+      notification.addAction(_("Open Preferences"), () => {
+        try {
+          logInfo("Opening preferences from notification action");
+          this.openPreferences();
+
+          // Dismiss the notification after opening preferences
+          notification.destroy();
+          logInfo("Notification dismissed after opening preferences");
+        } catch (prefsErr) {
+          logWarn(`Failed to open preferences: ${String(prefsErr)}`);
+        }
+      });
+
+      // Show the notification
+      source.addNotification(notification);
+      logInfo("Persistent notification with action created successfully");
+    } catch (err) {
+      logErr(`Failed to create persistent notification: ${String(err)}`);
+      throw err;
+    }
+  }
+
+  // Get or create a notification source for this extension
+  #getOrCreateNotificationSource() {
+    const sourceName = _("Text Clock");
+
+    // Check if source already exists
+    let source = Main.messageTray
+      .getSources()
+      .find((s) => s.title === sourceName);
+
+    if (!source) {
+      // Create new source
+      source = new MessageTray.Source({
+        title: sourceName,
+        iconName: "preferences-desktop-notification-symbolic",
+      });
+
+      // Add source to message tray
+      Main.messageTray.add(source);
+    }
+
+    return source;
   }
 
   // Initialize class properties to undefined
@@ -300,7 +364,7 @@ export default class TextClock extends Extension {
 
   // Destroys created objects and sets properties to undefined
   #cleanup() {
-    if (this.#clockLabel!) this.#clockLabel!.destroy();
+    if (this.#clockLabel) (this.#clockLabel as any).destroy();
     if (this.#topBox) this.#topBox.destroy();
     this.#resetProperties();
   }

@@ -60,7 +60,6 @@ uninstall:
 	@if [ -d "$(GNOME_SHELL_EXT_DIR)/$(NAME)@$(DOMAIN)" ]; then \
 		rm -rf "$(GNOME_SHELL_EXT_DIR)/$(NAME)@$(DOMAIN)" || { echo "Removing extension failed"; exit 1; }; \
 		echo "Extension uninstalled from user directory."; \
-		# Remove user-installed GSettings schema and recompile user schemas
 		if [ -f "$(HOME)/.local/share/glib-2.0/schemas/org.gnome.shell.extensions.$(NAME).gschema.xml" ]; then \
 			rm -f "$(HOME)/.local/share/glib-2.0/schemas/org.gnome.shell.extensions.$(NAME).gschema.xml" || { echo "Removing user schema failed"; exit 1; }; \
 			glib-compile-schemas "$(HOME)/.local/share/glib-2.0/schemas" || { echo "Recompiling user GSettings schemas failed"; exit 1; }; \
