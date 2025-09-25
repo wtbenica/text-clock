@@ -45,10 +45,13 @@ export class StyleService {
   #settings: Gio.Settings;
   #targets: Set<StyleTarget> = new Set();
   #signalConnections: number[] = [];
+  #ifaceSettings: Gio.Settings | null = null;
+  #ifaceSignalConnection: number | null = null;
 
   constructor(settings: Gio.Settings) {
     this.#settings = settings;
     this.#connectToSettings();
+    this.#connectToInterfaceSettings();
   }
 
   /**
@@ -165,6 +168,16 @@ export class StyleService {
     }
     this.#signalConnections = [];
 
+    // Disconnect interface settings signal (if any)
+    if (this.#ifaceSettings && this.#ifaceSignalConnection) {
+      try {
+        this.#ifaceSettings.disconnect(this.#ifaceSignalConnection);
+      } catch (e) {
+        logWarn(`Failed to disconnect ifaceSettings signal: ${e}`);
+      }
+      this.#ifaceSignalConnection = null;
+    }
+    this.#ifaceSettings = null;
     // Clear all targets
     this.#targets.clear();
   }
@@ -193,6 +206,35 @@ export class StyleService {
   }
 
   /**
+   * Connect to org.gnome.desktop.interface settings so we can watch for
+   * accent-color changes and update targets live (so users don't have to
+   * log out/in when they change their accent color).
+   */
+  #connectToInterfaceSettings(): void {
+    try {
+      this.#ifaceSettings = new Gio.Settings({
+        schema: "org.gnome.desktop.interface",
+      });
+
+      // Listen for accent-color changes
+      this.#ifaceSignalConnection = this.#ifaceSettings.connect(
+        "changed::accent-color",
+        () => {
+          // Only update if we're actually using accent color mode; applyToAllTargets
+          // will read the current color mode and act accordingly.
+          this.applyToAllTargets();
+        },
+      );
+    } catch (e) {
+      logWarn(
+        `Could not connect to org.gnome.desktop.interface settings: ${e}`,
+      );
+      this.#ifaceSettings = null;
+      this.#ifaceSignalConnection = null;
+    }
+  }
+
+  /**
    * Get the current style configuration from settings
    */
   #getCurrentStyleConfig(): StyleConfig {
@@ -210,10 +252,10 @@ export class StyleService {
       // Accent color mode
       const accentColor = this.getAccentColor();
       clockColor = accentColor.lighten();
-      dateColor = accentColor;
+      dateColor = accentColor.lighten();
       // Use a darkened version of the accent color for the divider so it remains
       // distinct when accent color is selected.
-      dividerColor = accentColor.darken();
+      dividerColor = accentColor.lighten();
       logInfo(
         `Using accent color for clock and date, darkened for divider: ${accentColor} ${accentColor}`,
       );
