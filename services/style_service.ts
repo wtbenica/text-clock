@@ -12,7 +12,7 @@
 
 import Gio from "gi://Gio";
 import { normalizeColor } from "../utils/color_utils.js";
-import { logInfo, logWarn } from "../utils/error_utils.js";
+import { logWarn } from "../utils/error_utils.js";
 import { getDividerText } from "../constants/index.js";
 import SettingsKey from "../models/settings_keys";
 import { Color } from "../models/color.js";
@@ -48,7 +48,6 @@ export class StyleService {
   constructor(settings: Gio.Settings) {
     this.#settings = settings;
     this.#connectToSettings();
-    logInfo("StyleService initialized");
   }
 
   /**
@@ -57,19 +56,13 @@ export class StyleService {
   registerTarget(target: StyleTarget): void {
     this.#targets.add(target);
     this.#applyCurrentStyles(target);
-    logInfo(`Style target registered. Total targets: ${this.#targets.size}`);
   }
 
   /**
    * Unregister a target from receiving style updates
    */
   unregisterTarget(target: StyleTarget): void {
-    const wasRemoved = this.#targets.delete(target);
-    if (wasRemoved) {
-      logInfo(
-        `Style target unregistered. Total targets: ${this.#targets.size}`,
-      );
-    }
+    this.#targets.delete(target);
   }
 
   /**
@@ -100,7 +93,6 @@ export class StyleService {
     for (const target of this.#targets) {
       this.applyStyles(target, config);
     }
-    logInfo(`Applied styles to ${this.#targets.size} targets`);
   }
 
   /**
@@ -123,6 +115,15 @@ export class StyleService {
   }
 
   /**
+   * Get the system's accent color
+   */
+  getAccentColor(): Color {
+    // Use GNOME Shell's built-in accent color CSS custom property
+    // -st-accent-color is available in GNOME Shell 47+
+    return new Color("-st-accent-color");
+  }
+
+  /**
    * Clean up resources
    */
   destroy(): void {
@@ -134,8 +135,6 @@ export class StyleService {
 
     // Clear all targets
     this.#targets.clear();
-
-    logInfo("StyleService destroyed");
   }
 
   // Private methods
@@ -145,6 +144,7 @@ export class StyleService {
    */
   #connectToSettings(): void {
     const colorSettings = [
+      SettingsKey.COLOR_MODE,
       SettingsKey.CLOCK_COLOR,
       SettingsKey.DATE_COLOR,
       SettingsKey.DIVIDER_COLOR,
@@ -154,7 +154,6 @@ export class StyleService {
 
     for (const setting of colorSettings) {
       const connectionId = this.#settings.connect(`changed::${setting}`, () => {
-        logInfo(`Style setting "${setting}" changed, updating all targets`);
         this.applyToAllTargets();
       });
       this.#signalConnections.push(connectionId);
@@ -169,13 +168,38 @@ export class StyleService {
     const customDividerText = this.#settings.get_string(
       SettingsKey.CUSTOM_DIVIDER_TEXT,
     );
+    const colorMode = this.#settings.get_enum(SettingsKey.COLOR_MODE);
+
+    let clockColor: Color;
+    let dateColor: Color;
+    let dividerColor: Color;
+
+    if (colorMode === 1) {
+      // Accent color mode
+      const accentColor = this.getAccentColor();
+      clockColor = accentColor;
+      dateColor = accentColor;
+      dividerColor = accentColor;
+    } else if (colorMode === 2) {
+      // Custom colors mode
+      clockColor = new Color(
+        this.#settings.get_string(SettingsKey.CLOCK_COLOR),
+      );
+      dateColor = new Color(this.#settings.get_string(SettingsKey.DATE_COLOR));
+      dividerColor = new Color(
+        this.#settings.get_string(SettingsKey.DIVIDER_COLOR),
+      );
+    } else {
+      // Default mode (0)
+      clockColor = new Color("#FFFFFF");
+      dateColor = new Color("#FFFFFF");
+      dividerColor = new Color("#FFFFFF");
+    }
 
     return {
-      clockColor: new Color(this.#settings.get_string(SettingsKey.CLOCK_COLOR)),
-      dateColor: new Color(this.#settings.get_string(SettingsKey.DATE_COLOR)),
-      dividerColor: new Color(
-        this.#settings.get_string(SettingsKey.DIVIDER_COLOR),
-      ),
+      clockColor,
+      dateColor,
+      dividerColor,
       dividerText: getDividerText(dividerPreset, customDividerText),
     };
   }

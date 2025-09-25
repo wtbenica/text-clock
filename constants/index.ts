@@ -36,6 +36,10 @@ export const PrefItems: Record<string, PrefsText> = {
     title: "Fuzziness",
     subtitle: "Round the minutes to the nearest multiple of this number",
   },
+  COLOR_MODE: {
+    title: "Color Mode",
+    subtitle: "Choose how to color the clock text",
+  },
 };
 
 /**
@@ -66,6 +70,7 @@ export const SETTINGS = {
   FUZZINESS: SettingsKey.FUZZINESS,
   SHOW_WEEKDAY: SettingsKey.SHOW_WEEKDAY,
   TIME_FORMAT: SettingsKey.TIME_FORMAT,
+  COLOR_MODE: SettingsKey.COLOR_MODE,
   CLOCK_COLOR: SettingsKey.CLOCK_COLOR,
   DATE_COLOR: SettingsKey.DATE_COLOR,
   DIVIDER_COLOR: SettingsKey.DIVIDER_COLOR,
@@ -86,6 +91,14 @@ export const DIVIDER_PRESET_TEXTS: string[] = [
   " ‖ ",
   " — ",
   "custom",
+];
+
+// Map GSettings enum index -> color mode.
+// Schema enum values (in gschema.xml) are ordered as: default, accent, custom
+export const COLOR_MODE_NAMES: string[] = [
+  "Default",
+  "Accent Color",
+  "Custom Colors",
 ];
 
 /**

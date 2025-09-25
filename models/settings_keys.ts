@@ -14,6 +14,7 @@ export const enum SettingsKey {
   SHOW_WEEKDAY = "show-weekday",
   TIME_FORMAT = "time-format",
   FUZZINESS = "fuzziness",
+  COLOR_MODE = "color-mode",
   CLOCK_COLOR = "clock-color",
   DATE_COLOR = "date-color",
   DIVIDER_COLOR = "divider-color",

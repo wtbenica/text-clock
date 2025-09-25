@@ -14,7 +14,7 @@ import Gio from "gi://Gio";
 import GObject from "gi://GObject";
 import { SETTINGS } from "../constants/index.js";
 import SettingsKey from "../models/settings_keys";
-import { logInfo, logWarn, logErr } from "../utils/error_utils.js";
+import { logWarn, logErr } from "../utils/error_utils.js";
 import { fuzzinessFromEnumIndex } from "../utils/fuzziness_utils.js";
 import { Fuzziness } from "../core/clock_formatter.js";
 
@@ -44,7 +44,6 @@ export class SettingsManager {
 
   constructor(settings: Gio.Settings) {
     this.#settings = settings;
-    logInfo("SettingsManager initialized");
   }
 
   /**
@@ -141,7 +140,6 @@ export class SettingsManager {
   ): void {
     try {
       this.#settings.bind(settingsKey, object, propertyName, flags);
-      logInfo(`Bound setting "${settingsKey}" to property "${propertyName}"`);
     } catch (error) {
       logErr(
         `Failed to bind setting "${settingsKey}" to property "${propertyName}": ${error}`,
@@ -169,7 +167,6 @@ export class SettingsManager {
       };
 
       this.#subscriptions.push(subscription);
-      logInfo(`Subscribed to setting "${key}" changes`);
 
       // Return unsubscribe function
       return () => this.#unsubscribe(subscription);
@@ -225,7 +222,6 @@ export class SettingsManager {
   resetSetting(key: SettingsKey | string): boolean {
     try {
       this.#settings.reset(key);
-      logInfo(`Reset setting "${key}" to default value`);
       return true;
     } catch (error) {
       logErr(`Failed to reset setting "${key}": ${error}`);
@@ -261,7 +257,6 @@ export class SettingsManager {
     }
 
     this.#subscriptions = [];
-    logInfo("SettingsManager destroyed");
   }
 
   // Private methods
@@ -318,8 +313,6 @@ export class SettingsManager {
       if (index > -1) {
         this.#subscriptions.splice(index, 1);
       }
-
-      logInfo(`Unsubscribed from setting "${subscription.key}" changes`);
     } catch (error) {
       logErr(
         `Failed to unsubscribe from setting "${subscription.key}": ${error}`,

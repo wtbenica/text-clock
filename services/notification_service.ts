@@ -8,7 +8,7 @@ import * as Main from "resource:///org/gnome/shell/ui/main.js";
 import * as MessageTray from "resource:///org/gnome/shell/ui/messageTray.js";
 import { gettext as _ } from "resource:///org/gnome/shell/extensions/extension.js";
 
-import { logInfo, logWarn, logErr } from "../utils/error_utils.js";
+import { logWarn, logErr } from "../utils/error_utils.js";
 
 /**
  * Configuration for showing notifications
@@ -82,7 +82,6 @@ export class NotificationService {
           label: _("Open Preferences"),
           callback: () => {
             try {
-              logInfo("Opening preferences from notification action");
               onOpenPreferences();
               // Note: Notification cleanup is handled in the main callback
             } catch (error) {
@@ -107,7 +106,6 @@ export class NotificationService {
       const notification = this.createNotification(config);
 
       source.addNotification(notification);
-      logInfo(`Notification displayed: "${config.title}"`);
     } catch (error) {
       logErr(`Failed to show notification: ${String(error)}`);
       // Fallback to simple Main.notify if available
@@ -131,10 +129,6 @@ export class NotificationService {
         });
         return GLib.SOURCE_REMOVE;
       });
-
-      logInfo(
-        `Notification scheduled for ${delaySeconds} seconds: "${config.title}"`,
-      );
     } catch (error) {
       logWarn(`Failed to schedule notification: ${String(error)}`);
     }
@@ -209,7 +203,6 @@ export class NotificationService {
           action.callback();
           // Auto-dismiss notification after action
           notification.destroy();
-          logInfo(`Notification dismissed after action: "${action.label}"`);
         });
       });
     }
@@ -224,10 +217,9 @@ export class NotificationService {
     try {
       if (Main && typeof Main.notify === "function") {
         Main.notify(title, body);
-        logInfo("Fallback notification sent successfully");
       }
     } catch (error) {
-      logInfo(`Fallback notification also failed: ${String(error)}`);
+      logWarn(`Fallback notification failed: ${String(error)}`);
     }
   }
 }

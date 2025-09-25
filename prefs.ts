@@ -7,6 +7,10 @@ import Gio from "gi://Gio";
 import Adw from "gi://Adw";
 import Gtk from "gi://Gtk";
 import Gdk from "gi://Gdk";
+import GLib from "gi://GLib";
+
+// GNOME Shell imports for version detection
+declare const imports: any;
 
 import {
   ExtensionPreferences,
@@ -19,7 +23,8 @@ import { ClockFormatter, TimeFormat } from "./core/clock_formatter.js";
 import { fuzzinessFromEnumIndex } from "./utils/fuzziness_utils.js";
 import { createTranslatePackGetter } from "./utils/translate_pack_utils.js";
 import { prefsGettext } from "./utils/gettext_utils_prefs.js";
-import { logErr } from "./utils/error_utils.js";
+import { logErr, logWarn } from "./utils/error_utils.js";
+import { parseGnomeShellVersionString } from "./utils/shell_version_utils.js";
 
 /**
  * @returns a word pack that contains the strings for telling the time and date
@@ -47,6 +52,10 @@ export default class TextClockPrefs extends ExtensionPreferences {
   async fillPreferencesWindow(window: Adw.PreferencesWindow): Promise<void> {
     const settings = this.getSettings();
 
+    // Check GNOME Shell version to determine if accent color is available
+    const shellVersion = this.#getShellVersion();
+    const supportsAccentColor = shellVersion >= 47;
+
     const page = this.#createAndAddPageToWindow(window);
 
     const clockSettingsGroup = this.#createAndAddGroupToPage(
@@ -71,11 +80,11 @@ export default class TextClockPrefs extends ExtensionPreferences {
       "Customize the colors of the clock and date text",
     );
 
-    this.#addClockColorRow(clockColorSettingsGroup, settings);
-
-    this.#addDateColorRow(clockColorSettingsGroup, settings);
-
-    this.#addDividerColorRow(clockColorSettingsGroup, settings);
+    this.#addColorModeRow(
+      clockColorSettingsGroup,
+      settings,
+      supportsAccentColor,
+    );
 
     return Promise.resolve();
   }
@@ -467,5 +476,133 @@ export default class TextClockPrefs extends ExtensionPreferences {
       "text",
       Gio.SettingsBindFlags.DEFAULT,
     );
+  }
+
+  /**
+   * Get the GNOME Shell version as a number
+   */
+  #getShellVersion(): number {
+    // Try a few safer methods in order to discover the running GNOME Shell version.
+    // 1) Look for GNOME_SHELL_VERSION environment variable (set in some distros / sessions)
+    try {
+      const versionString = GLib.getenv("GNOME_SHELL_VERSION");
+      const parsed = parseGnomeShellVersionString(versionString as any);
+      if (!Number.isNaN(parsed)) {
+        return parsed;
+      }
+    } catch (e) {
+      logWarn(`Error reading GNOME_SHELL_VERSION env: ${e}`);
+    }
+
+    // 2) Try running the system gnome-shell binary with --version. This is non-invasive
+    //    and works in many environments where the env var isn't set. It returns a string
+    //    like "GNOME Shell 47.1".
+    try {
+      const [ok, out] = GLib.spawn_command_line_sync("gnome-shell --version");
+      if (ok && out) {
+        const outStr = out.toString();
+        const parsed = parseGnomeShellVersionString(outStr);
+        if (!Number.isNaN(parsed)) {
+          return parsed;
+        }
+      }
+    } catch (e) {
+      // Ignore -- might not be available in this environment
+      logWarn(`Could not run 'gnome-shell --version': ${e}`);
+    }
+
+    // 3) As a last programmatic attempt, try to use imports.misc.config.LIBMUTTER_API_VERSION
+    //    if it's available. Wrap in try/catch because loading this module can throw in
+    //    some pref contexts (see runtime SyntaxError in logs).
+    try {
+      // Access via imports if present. This may throw; catch and continue.
+      if (
+        typeof imports !== "undefined" &&
+        imports.misc &&
+        imports.misc.config
+      ) {
+        const Config = imports.misc.config;
+        const apiVersion = Config.LIBMUTTER_API_VERSION;
+        if (typeof apiVersion === "number") {
+          // Convert LIBMUTTER API version to GNOME Shell major (empirical mapping)
+          const shellVersion = apiVersion + 35; // 10 -> 45, 11 -> 46, etc.
+          return shellVersion;
+        }
+      }
+    } catch (error) {
+      logWarn(
+        `Failed to detect GNOME Shell version from imports.misc.config: ${error}`,
+      );
+    }
+
+    // Final fallback: assume GNOME Shell 45 (minimum supported platform for this extension)
+    logWarn("Could not detect GNOME Shell version, assuming 45");
+    return 45;
+  } /**
+   * Add a combo row for color mode and conditional color pickers
+   */
+  #addColorModeRow(
+    group: Adw.PreferencesGroup,
+    settings: Gio.Settings,
+    supportsAccentColor: boolean = true,
+  ): void {
+    // Build the model based on whether accent color is supported
+    const modelStrings = ["Default"];
+    if (supportsAccentColor) {
+      modelStrings.push("Accent Color");
+    }
+    modelStrings.push("Custom Colors");
+
+    // Get current setting, but adjust if accent color is not supported
+    let currentSelected = settings.get_enum(SettingsKey.COLOR_MODE);
+    if (!supportsAccentColor && currentSelected === 1) {
+      // If accent color was selected but is no longer supported, switch to default
+      currentSelected = 0;
+      settings.set_enum(SettingsKey.COLOR_MODE, 0);
+    } else if (!supportsAccentColor && currentSelected === 2) {
+      // Custom colors becomes index 1 when accent color is not available
+      currentSelected = 1;
+    }
+
+    // Combo row for color mode
+    const colorModeRow = new Adw.ComboRow({
+      title: _(PrefItems.COLOR_MODE.title),
+      subtitle: _(PrefItems.COLOR_MODE.subtitle),
+      model: new Gtk.StringList({ strings: modelStrings }),
+      selected: currentSelected,
+    });
+    group.add(colorModeRow);
+
+    // Get references to color rows
+    const clockColorRow = this.#addClockColorRow(group, settings);
+    const dateColorRow = this.#addDateColorRow(group, settings);
+    const dividerColorRow = this.#addDividerColorRow(group, settings);
+
+    // Function to update visibility of color pickers
+    const updateColorPickersVisibility = () => {
+      const selectedMode = colorModeRow.selected;
+      // Adjust index based on whether accent color is available
+      const isCustom = supportsAccentColor
+        ? selectedMode === 2
+        : selectedMode === 1;
+      clockColorRow.visible = isCustom;
+      dateColorRow.visible = isCustom;
+      dividerColorRow.visible = isCustom;
+    };
+
+    // Initial visibility
+    updateColorPickersVisibility();
+
+    // Connect mode change
+    colorModeRow.connect("notify::selected", () => {
+      let settingValue = colorModeRow.selected;
+      // Adjust the setting value based on whether accent color is available
+      if (!supportsAccentColor && settingValue === 1) {
+        // Custom colors is index 1 when accent color is not available, but stored as 2
+        settingValue = 2;
+      }
+      settings.set_enum(SettingsKey.COLOR_MODE, settingValue);
+      updateColorPickersVisibility();
+    });
   }
 }

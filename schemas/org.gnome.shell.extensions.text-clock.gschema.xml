@@ -38,6 +38,12 @@
     <value value="4" nick="custom"/>
   </enum>
 
+  <enum id="org.gnome.shell.extensions.text-clock.color-mode">
+    <value value="0" nick="default"/>
+    <value value="1" nick="accent"/>
+    <value value="2" nick="custom"/>
+  </enum>
+
   <schema id='org.gnome.shell.extensions.text-clock' path='/org/gnome/shell/extensions/text-clock/'>
     <key name='show-date' type='b'>
       <default>true</default>
@@ -65,6 +71,13 @@
       <summary>Time format</summary>
       <description>
             The format to use for the time display.
+      </description>
+    </key>
+    <key name="color-mode" enum="org.gnome.shell.extensions.text-clock.color-mode">
+      <default>"default"</default>
+      <summary>Color mode</summary>
+      <description>
+            The color mode to use for the clock text.
       </description>
     </key>
     <key name='clock-color' type='s'>

@@ -15,13 +15,23 @@ export class Color {
 
   /**
    * Validates and normalizes a color string.
-   * Supports hex (#RRGGBB, #RGB) and rgb(...) formats.
+   * Supports hex (#RRGGBB, #RGB), rgb(...) formats, CSS custom properties, and GNOME Shell theme properties.
    *
    * @param color The color string to validate and normalize.
    * @returns The normalized color string.
    * @throws Error if the color format is invalid.
    */
   static validateAndNormalize(color: string): string {
+    // Allow CSS custom properties (var(...))
+    if (color.startsWith("var(") && color.endsWith(")")) {
+      return color;
+    }
+
+    // Allow GNOME Shell theme properties (-st-*)
+    if (color.startsWith("-st-")) {
+      return color;
+    }
+
     // Validate hex color (#RRGGBB or #RGB)
     const hexMatch = color.match(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/);
     if (hexMatch) {
@@ -31,16 +41,16 @@ export class Color {
         : `#${hex}`.toUpperCase();
     }
 
-    // Validate rgb(...) color
+    // Validate rgb(...) and rgba(...) colors
     const rgbMatch = color.match(
-      /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/,
+      /^rgba?\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})(?:,\s*[\d.]+)?\)$/,
     );
     if (rgbMatch) {
       const r = Number(rgbMatch[1]);
       const g = Number(rgbMatch[2]);
       const b = Number(rgbMatch[3]);
       if ([r, g, b].every((v) => v >= 0 && v <= 255)) {
-        return `rgb(${r}, ${g}, ${b})`;
+        return color; // Return as-is for rgba
       }
     }
 
