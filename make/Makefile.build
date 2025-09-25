@@ -54,6 +54,16 @@ install: create_ext_dir build
 	@glib-compile-schemas $(HOME)/.local/share/glib-2.0/schemas || { echo "Compiling user GSettings schemas failed"; exit 1; }
 	@echo "Installation complete."
 
+## install-ext         Build, install, and reload the extension for development
+install-ext: build install
+	@echo "Installing and reloading the extension (development helper)..."
+	@command -v gnome-extensions >/dev/null 2>&1 && \
+		( gnome-extensions disable text-clock@benica.dev || true; \
+		sleep 0.2; \
+		gnome-extensions enable text-clock@benica.dev || true ) || \
+		(echo "gnome-extensions not available; please log out/in to reload the shell");
+	@echo "install-ext: done"
+
 ## uninstall           Uninstall from the current user (~/.local/share/gnome-shell/extensions)
 uninstall:
 	@echo "Uninstalling the extension from user directory..."

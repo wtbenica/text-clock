@@ -7,6 +7,9 @@
  * This file runs before all tests and sets up the testing environment
  */
 
+import { setLogger } from "../utils/error_utils.js";
+import { consoleLogger } from "../utils/logger_console.js";
+
 // Add String.prototype.format to match GNOME Shell environment
 declare global {
   interface String {
@@ -23,8 +26,10 @@ String.prototype.format = function (...args: any[]): string {
   return result;
 };
 
-// Global test setup - cast to any to avoid TypeScript issues in test setup
-// Mock GNOME Shell logging functions
+// Set up console logger for test environment
+setLogger(consoleLogger);
+
+// Mock GNOME Shell globals that might still be referenced directly
 (global as any).logError = jest.fn();
 (global as any).log = jest.fn();
 (global as any)._ = (text: string) => text; // Mock gettext function

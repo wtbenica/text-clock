@@ -18,7 +18,7 @@ import {
 } from "resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js";
 
 import { SETTINGS, PrefItems, Errors } from "./constants/index.js";
-import SettingsKey from "./models/settings_keys";
+import SettingsKey from "./models/settings_keys.js";
 import { ClockFormatter, TimeFormat } from "./core/clock_formatter.js";
 import { fuzzinessFromEnumIndex } from "./utils/fuzziness_utils.js";
 import { createTranslatePackGetter } from "./utils/translate_pack_utils.js";

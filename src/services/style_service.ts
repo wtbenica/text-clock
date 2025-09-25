@@ -12,9 +12,10 @@
 
 import Gio from "gi://Gio";
 import { normalizeColor } from "../utils/color_utils.js";
-import { logWarn } from "../utils/error_utils.js";
+import { logInfo, logWarn } from "../utils/error_utils.js";
+import { accentNameToHex } from "../utils/accent_color_utils.js";
 import { getDividerText } from "../constants/index.js";
-import SettingsKey from "../models/settings_keys";
+import SettingsKey from "../models/settings_keys.js";
 import { Color } from "../models/color.js";
 
 /**
@@ -118,9 +119,40 @@ export class StyleService {
    * Get the system's accent color
    */
   getAccentColor(): Color {
-    // Use GNOME Shell's built-in accent color CSS custom property
-    // -st-accent-color is available in GNOME Shell 47+
-    return new Color("-st-accent-color");
+    // Try to read the selected accent color from the system settings.
+    try {
+      const ifaceSettings = new Gio.Settings({
+        schema: "org.gnome.desktop.interface",
+      });
+      if (ifaceSettings && ifaceSettings.get_string) {
+        const accent = ifaceSettings.get_string("accent-color");
+        if (accent) {
+          // If the accent is a named token (e.g. "yellow"), map it to a hex value.
+          const mapped = accentNameToHex(accent);
+          if (mapped) {
+            try {
+              return new Color(mapped);
+            } catch (e) {
+              logWarn(`Mapped accent color invalid: ${e}`);
+            }
+          }
+
+          // Otherwise try constructing Color directly (may throw if not concrete)
+          try {
+            return new Color(accent);
+          } catch (e) {
+            logWarn(
+              `org.gnome.desktop.interface.accent-color present but invalid: ${e}`,
+            );
+          }
+        }
+      }
+    } catch (e) {
+      logWarn(`Could not read org.gnome.desktop.interface.accent-color: ${e}`);
+    }
+
+    // No concrete accent color available; fall back to white
+    return new Color("#FFFFFF");
   }
 
   /**
@@ -177,9 +209,14 @@ export class StyleService {
     if (colorMode === 1) {
       // Accent color mode
       const accentColor = this.getAccentColor();
-      clockColor = accentColor;
+      clockColor = accentColor.lighten();
       dateColor = accentColor;
-      dividerColor = accentColor;
+      // Use a darkened version of the accent color for the divider so it remains
+      // distinct when accent color is selected.
+      dividerColor = accentColor.darken();
+      logInfo(
+        `Using accent color for clock and date, darkened for divider: ${accentColor} ${accentColor}`,
+      );
     } else if (colorMode === 2) {
       // Custom colors mode
       clockColor = new Color(

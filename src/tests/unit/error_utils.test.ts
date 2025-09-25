@@ -4,7 +4,7 @@ import {
   logInfo,
   logDebug,
   validateDate,
-} from "../../utils/error_utils";
+} from "../../utils/error_utils.js";
 
 describe("error_utils", () => {
   describe("validateDate", () => {

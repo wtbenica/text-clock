@@ -1,22 +1,32 @@
 {
     "extends": "./tsconfig.json",
     "compilerOptions": {
+        "rootDir": "../src",
+        "outDir": "../dist-test",
         "types": [
             "jest",
-            "@types/jest"
+            "@types/jest",
+            "node"
         ],
         "skipLibCheck": true,
         "allowJs": true,
         "allowImportingTsExtensions": true,
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
-        "noEmit": true
+        "noEmit": true,
     },
+    "include": [
+        "../src/tests/**/*.ts",
+    ],
+    "exclude": [
+        "../node_modules",
+        "../dist",
+        "../dist-test",
+        "../src/utils/logger_gjs.ts"
+    ],
     "files": [
-        "../core/clock_formatter.ts",
-        "../word_pack.ts",
-        "../constants/index.ts",
-        "../constants/dates/core.ts",
-        "../constants/times/core.ts",
+        "../src/constants/dates/core.ts",
+        "../src/constants/times/core.ts",
+        "../src/utils/gettext_utils.ts"
     ]
 }

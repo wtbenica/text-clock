@@ -2,6 +2,7 @@
   "compilerOptions": {
     "module": "ES2022",
     "moduleResolution": "bundler",
+    "rootDir": "../src",
     "outDir": "../dist",
     "sourceMap": false,
     "strict": true,
@@ -18,18 +19,11 @@
     "skipLibCheck": true
   },
   "include": [
-    "../*.ts",
-    "../core/**/*.ts",
-    "../ui/**/*.ts",
-    "../utils/**/*.ts",
-    "../services/**/*.ts",
-    "../constants/**/*.ts",
-    "../models/**/*.ts",
-    "../types/**/*.ts",
-    "../**/*.d.ts"
+    "../src/**/*.ts",
   ],
   "exclude": [
-    "../tests",
+    "../src/tests",
+    "../src/utils/logger_console.ts",
     "../node_modules",
     "../dist"
   ]

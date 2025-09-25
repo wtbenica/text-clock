@@ -1,5 +1,5 @@
-import { createTranslatePack } from "../../utils/translate_pack_utils";
-import { WordPack } from "../../word_pack";
+import { createTranslatePack } from "../../utils/translate_pack_utils.js";
+import { WordPack } from "../../word_pack.js";
 
 describe("createTranslatePack", () => {
   it("returns a WordPack with expected keys", () => {

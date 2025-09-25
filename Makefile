@@ -10,7 +10,10 @@ NAME=text-clock
 DOMAIN=benica.dev
 MO_FILES=$(wildcard po/*.mo)
 ZIP_FILE=$(NAME)@${DOMAIN}-$(CURRENT_VERSION).zip
-TS_FILES=$(wildcard *.ts) $(wildcard ui/*.ts) $(wildcard constants/**/*.ts) $(wildcard utils/*.ts)
+## Automatically discover all TypeScript source files. This avoids needing to
+## update the list by hand when files are added. Exclude common build/test
+## directories so Make doesn't try to rebuild for generated or test files.
+TS_FILES := $(shell find src -name "*.ts" -type f 2>/dev/null | grep -v '/tests/' || echo "")
 DIST_DIR=dist
 LOCALE_DIR=locale
 GNOME_SHELL_EXT_DIR=$(HOME)/.local/share/gnome-shell/extensions

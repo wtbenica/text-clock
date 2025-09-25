@@ -7,6 +7,17 @@
  * Centralized error handling utilities for the Text Clock extension
  */
 
+import type { Logger } from "./logger_interface.js";
+import { gjsLogger } from "./logger_gjs.js";
+
+// Current logger instance (can be overridden for tests)
+let currentLogger: Logger = gjsLogger;
+
+// Function to set logger for tests
+export function setLogger(logger: Logger): void {
+  currentLogger = logger;
+}
+
 // Conditionally import gettext - use a fallback for test environment
 let _: (msgid: string) => string;
 try {
@@ -36,28 +47,20 @@ function logMessage(
 
   switch (level) {
     case "error":
-      if (typeof globalThis.logError === "function") {
-        if (message instanceof Error) {
-          globalThis.logError(message, fullMessage); // Preserve original error details
-        } else {
-          globalThis.logError(new Error(String(message)), fullMessage); // Wrap string in Error
-        }
+      if (message instanceof Error) {
+        currentLogger.logError(message, fullMessage);
+      } else {
+        currentLogger.logError(new Error(String(message)), fullMessage);
       }
       break;
     case "warn":
-      if (typeof globalThis.log === "function") {
-        globalThis.log(`[WARN] ${fullMessage}`);
-      }
+      currentLogger.log(`[WARN] ${fullMessage}`);
       break;
     case "info":
-      if (typeof globalThis.log === "function") {
-        globalThis.log(`[INFO] ${fullMessage}`);
-      }
+      currentLogger.log(`[INFO] ${fullMessage}`);
       break;
     case "debug":
-      if (typeof globalThis.log === "function") {
-        globalThis.log(`[DEBUG] ${fullMessage}`);
-      }
+      currentLogger.log(`[DEBUG] ${fullMessage}`);
       break;
   }
 }

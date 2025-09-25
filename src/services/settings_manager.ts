@@ -13,7 +13,7 @@
 import Gio from "gi://Gio";
 import GObject from "gi://GObject";
 import { SETTINGS } from "../constants/index.js";
-import SettingsKey from "../models/settings_keys";
+import SettingsKey from "../models/settings_keys.js";
 import { logWarn, logErr } from "../utils/error_utils.js";
 import { fuzzinessFromEnumIndex } from "../utils/fuzziness_utils.js";
 import { Fuzziness } from "../core/clock_formatter.js";
