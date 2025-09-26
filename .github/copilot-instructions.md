@@ -26,4 +26,5 @@ simple clock replacement, so keep things simple.
 - Testing only handles logic, not UI. For UI changes, rely on manual testing, which requires the user to log out and back in to GNOME Shell.
 - When making changes, consider the impact on existing users. Avoid breaking changes unless absolutely necessary.
 - Keep business logic separate from UI code. Try to write pure functions that can be tested in isolation. Use dependency injection to pass in dependencies rather than hard-coding them. All business logic should have unit tests.
-
+- When attempting to fix bugs, use logging to help diagnose issues. Add logging statements to key points in the code to track execution flow and variable values. When done, remove any extraneous logging. Logging utilities are in `src/utils/logging`.
+- When adding strings, use the gettext utilities in `src/utils/gettext` to ensure proper localization support. Also run `make i18n-update` to update the `.pot` file. Then update translations in `po/` folder.
