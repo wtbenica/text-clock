@@ -1,7 +1,7 @@
 import Gio from "gi://Gio";
 import Adw from "gi://Adw";
 import { logErr } from "../../utils/error_utils.js";
-import { bindSettingsToProperty } from "../bindings.js";
+import { bindSettingsToProperty } from "../helpers.js";
 
 export function addComboRow(
   group: Adw.PreferencesGroup,
