@@ -13,7 +13,7 @@
 import Gio from "gi://Gio";
 import { normalizeColor } from "../utils/color/color_utils.js";
 import { accentNameToHex } from "../utils/color/accent_color_utils.js";
-import { logInfo, logWarn } from "../utils/error_utils.js";
+import { logWarn } from "../utils/error_utils.js";
 import { getDividerText } from "../constants/index.js";
 import SettingsKey from "../models/settings_keys.js";
 import { Color } from "../models/color.js";
@@ -271,9 +271,6 @@ export class StyleService {
       // Use a darkened version of the accent color for the divider so it remains
       // distinct when accent color is selected.
       dividerColor = accentColor.lighten(0.7);
-      logInfo(
-        `Using accent color for clock and date, darkened for divider: ${accentColor} ${accentColor}`,
-      );
     } else if (colorMode === 2) {
       // Custom colors mode, but allow per-section "use accent" overrides
       const accentColor = this.getAccentColor();
