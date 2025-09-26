@@ -10,13 +10,14 @@ import { prefsGettext } from "../../utils/gettext/index.js";
 export function createAndAddPageToWindow(
   window: Adw.PreferencesWindow,
   title_tag?: string,
+  icon_name?: string,
 ) {
   const title = title_tag
     ? prefsGettext._(title_tag)
     : prefsGettext._("Text Clock");
-  const page = new Adw.PreferencesPage({
-    title,
-  });
+  const pageProps: any = { title };
+  if (icon_name) pageProps.icon_name = icon_name;
+  const page = new Adw.PreferencesPage(pageProps);
   window.add(page);
   return page;
 }

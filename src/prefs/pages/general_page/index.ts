@@ -9,6 +9,18 @@ import {
 import { prefsGettext } from "../../../utils/gettext/index.js";
 import SettingsKey from "../../../models/settings_keys.js";
 import { PrefItems } from "../../../constants/index.js";
+import { FUZZINESS_OPTIONS, DIVIDER_PRESET } from "../../../constants/prefs.js";
+import {
+  createAndAddPageToWindow,
+  createAndAddGroupToPage,
+} from "../../ui/groups.js";
+import {
+  PAGE_TITLES,
+  PAGE_ICONS,
+  GROUP_TITLES,
+  GROUP_DESCRIPTIONS,
+} from "../../../constants/prefs.js";
+import { addTimeFormatComboRow } from "./formatters.js";
 
 /**
  * Add a switch row that toggles showing the date.
@@ -78,7 +90,7 @@ export function createFuzzinessComboRow(
   const fuzzinessComboInfo = {
     title: prefsGettext._(PrefItems.FUZZINESS.title),
     subtitle: prefsGettext._(PrefItems.FUZZINESS.subtitle),
-    model: new Gtk.StringList({ strings: ["1", "5", "10", "15"] }),
+    model: new Gtk.StringList({ strings: FUZZINESS_OPTIONS }),
     selected: settings!.get_enum(SettingsKey.FUZZINESS),
   };
 
@@ -104,9 +116,9 @@ export function addDividerPresetRow(
   settings: Gio.Settings,
 ): void {
   const presetInfo = {
-    title: prefsGettext._("Divider Preset"),
-    subtitle: prefsGettext._("Choose a preset divider or select custom"),
-    model: new Gtk.StringList({ strings: ["|", "•", "‖", "—", "Custom"] }),
+    title: prefsGettext._(DIVIDER_PRESET.TITLE),
+    subtitle: prefsGettext._(DIVIDER_PRESET.SUBTITLE),
+    model: new Gtk.StringList({ strings: DIVIDER_PRESET.OPTIONS }),
     selected: settings!.get_enum(SettingsKey.DIVIDER_PRESET),
   };
 
@@ -118,7 +130,7 @@ export function addDividerPresetRow(
   );
 
   const customEntryRow = new Adw.EntryRow({
-    title: prefsGettext._("Custom Divider Text"),
+    title: prefsGettext._(DIVIDER_PRESET.CUSTOM_TITLE),
     text: settings.get_string(SettingsKey.CUSTOM_DIVIDER_TEXT),
   });
   group.add(customEntryRow);
@@ -135,4 +147,36 @@ export function addDividerPresetRow(
   presetRow.connect("notify::selected", () => updateCustomEntryVisibility());
 
   addEntryRowBinding(settings, SettingsKey.CUSTOM_DIVIDER_TEXT, customEntryRow);
+}
+
+/**
+ * Create the General preferences page and add it to the provided window.
+ *
+ * @param window - Adw.PreferencesWindow instance
+ * @param settings - Gio.Settings instance
+ * @returns Adw.PreferencesPage the created page
+ */
+export function createGeneralPage(
+  window: Adw.PreferencesWindow,
+  settings: Gio.Settings,
+) {
+  const page = createAndAddPageToWindow(
+    window,
+    PAGE_TITLES.GENERAL,
+    PAGE_ICONS.GENERAL,
+  );
+
+  const clockSettingsGroup = createAndAddGroupToPage(
+    page,
+    GROUP_TITLES.CLOCK_SETTINGS,
+    GROUP_DESCRIPTIONS.CLOCK_SETTINGS,
+  );
+
+  addShowDateSwitchRow(clockSettingsGroup, settings);
+  addShowWeekdaySwitchRow(clockSettingsGroup, settings);
+  addTimeFormatComboRow(clockSettingsGroup, settings);
+  createFuzzinessComboRow(clockSettingsGroup, settings);
+  addDividerPresetRow(clockSettingsGroup, settings);
+
+  return page;
 }

@@ -5,6 +5,13 @@ import { prefsGettext } from "../../../utils/gettext/index.js";
 import { logErr, logWarn } from "../../../utils/error_utils.js";
 import { StyleService } from "../../../services/style_service.js";
 import SettingsKey from "../../../models/settings_keys.js";
+import { createAndAddPageToWindow } from "../../ui/groups.js";
+import {
+  PAGE_TITLES,
+  PAGE_ICONS,
+  GROUP_TITLES,
+  GROUP_DESCRIPTIONS,
+} from "../../../constants/prefs.js";
 import {
   addClockColorRow as _addClockColorRow,
   addDateColorRow as _addDateColorRow,
@@ -55,9 +62,9 @@ export function addColorModeRow(
   settings: Gio.Settings,
   supportsAccentColor: boolean = true,
 ): void {
-  const modelStrings = ["Default"];
-  if (supportsAccentColor) modelStrings.push("Accent Color");
-  modelStrings.push("Custom Colors");
+  const modelStrings = [prefsGettext._("Default")];
+  if (supportsAccentColor) modelStrings.push(prefsGettext._("Accent Color"));
+  modelStrings.push(prefsGettext._("Custom Colors"));
 
   let currentSelected = settings.get_enum(SettingsKey.COLOR_MODE);
   if (!supportsAccentColor && currentSelected === 1) {
@@ -144,3 +151,33 @@ export default {
   addDateColorRow,
   addDividerColorRow,
 };
+
+/**
+ * Create the Colors preferences page and add it to the provided window.
+ *
+ * @param window - Adw.PreferencesWindow instance
+ * @param settings - Gio.Settings instance
+ * @param supportsAccentColor - whether accent color is supported
+ * @returns Adw.PreferencesPage the created page
+ */
+export function createColorsPage(
+  window: Adw.PreferencesWindow,
+  settings: Gio.Settings,
+  supportsAccentColor: boolean,
+) {
+  const page = createAndAddPageToWindow(
+    window,
+    PAGE_TITLES.COLORS,
+    PAGE_ICONS.COLORS,
+  );
+
+  const colorGroup = new Adw.PreferencesGroup({
+    title: prefsGettext._(GROUP_TITLES.CLOCK_COLORS),
+    description: prefsGettext._(GROUP_DESCRIPTIONS.CLOCK_COLORS),
+  });
+  page.add(colorGroup);
+
+  addColorModeRow(colorGroup, settings, supportsAccentColor);
+
+  return page;
+}

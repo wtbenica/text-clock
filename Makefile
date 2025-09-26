@@ -51,6 +51,7 @@ include make/Makefile.test
 include make/Makefile.release
 include make/Makefile.aur
 include make/Makefile.version
+include make/Makefile.i18n
 
 
 ## check-deps          Verify required tools are available (yarn, node, glib-compile-schemas, zip, xgettext)
