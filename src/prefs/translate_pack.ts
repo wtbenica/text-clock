@@ -1,5 +1,5 @@
-import { createTranslatePackGetter } from "../utils/translate";
-import { prefsGettext } from "../utils/gettext";
+import { createTranslatePackGetter } from "../utils/translate/index.js";
+import { prefsGettext } from "../utils/gettext/index.js";
 
 /**
  * A function that returns the translate pack scoped for the preferences UI.

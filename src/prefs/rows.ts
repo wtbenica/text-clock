@@ -49,7 +49,7 @@ export function bindSettingsToProperty(
   } catch (error: any) {
     logErr(
       error,
-      `${(prefsGettext as any)("Error binding settings for")} ${widget.title}`,
+      `${prefsGettext._("Error binding settings for")} ${widget.title}`,
     );
   }
 }

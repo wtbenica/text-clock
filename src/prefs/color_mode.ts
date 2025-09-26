@@ -42,8 +42,8 @@ export function addColorModeRow(
   }
 
   const colorModeRow = new Adw.ComboRow({
-    title: (prefsGettext as any)(PrefItems.COLOR_MODE.title),
-    subtitle: (prefsGettext as any)(PrefItems.COLOR_MODE.subtitle),
+    title: prefsGettext._(PrefItems.COLOR_MODE.title),
+    subtitle: prefsGettext._(PrefItems.COLOR_MODE.subtitle),
     model: new Gtk.StringList({ strings: modelStrings }),
     selected: currentSelected,
   });

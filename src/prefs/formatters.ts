@@ -3,6 +3,8 @@ import { ClockFormatter, TimeFormat } from "../core/clock_formatter.js";
 import { fuzzinessFromEnumIndex } from "../utils/parse/index.js";
 import SettingsKey from "../models/settings_keys.js";
 import TRANSLATE_PACK from "./translate_pack.js";
+import { addComboRow } from "./rows.js";
+import { prefsGettext } from "../utils/gettext/index.js";
 
 export function getTimeFormatsList(settings: any): Gtk.StringList {
   /**
@@ -49,16 +51,11 @@ export function addTimeFormatComboRow(group: any, settings: any) {
    * @returns Adw.ComboRow - the created combo row
    */
   const info = {
-    title: "Time Format",
-    subtitle: "Choose time format",
+    title: prefsGettext._("Time Format"),
+    subtitle: prefsGettext._("Choose time format"),
     model: getTimeFormatsList(settings),
     selected: settings!.get_enum(SettingsKey.TIME_FORMAT),
   };
-  // Use Adw.ComboRow via dynamic import at runtime in prefs wrapper
-  const row = new (globalThis as any).Adw.ComboRow(info);
-  group.add(row);
-  row.connect("notify::selected", (widget: any) =>
-    settings!.set_enum("time-format", widget.selected),
-  );
-  return row;
+
+  return addComboRow(group, settings, SettingsKey.TIME_FORMAT, info);
 }

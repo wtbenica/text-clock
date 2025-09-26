@@ -1,5 +1,5 @@
 import Adw from "gi://Adw";
-import { prefsGettext } from "../utils/gettext";
+import { prefsGettext } from "../utils/gettext/index.js";
 
 /**
  * Create and add a PreferencesPage to the window.
@@ -9,7 +9,7 @@ import { prefsGettext } from "../utils/gettext";
  */
 export function createAndAddPageToWindow(window: Adw.PreferencesWindow) {
   const page = new Adw.PreferencesPage({
-    title: (prefsGettext as any)("Text Clock"),
+    title: prefsGettext._("Text Clock"),
   });
   window.add(page);
   return page;
@@ -29,8 +29,8 @@ export function createAndAddGroupToPage(
   description_tag: string,
 ) {
   const group = new Adw.PreferencesGroup({
-    title: (prefsGettext as any)(title_tag),
-    description: (prefsGettext as any)(description_tag),
+    title: prefsGettext._(title_tag),
+    description: prefsGettext._(description_tag),
   });
   page.add(group);
   return group;

@@ -37,7 +37,7 @@ export function createColorControlWidget(
   accentSwitch.set_valign(Gtk.Align.CENTER);
 
   const switchLabel = new Gtk.Label({
-    label: (prefsGettext as any)("Accent"),
+    label: prefsGettext._("Accent"),
     valign: Gtk.Align.CENTER,
   });
 
@@ -166,7 +166,7 @@ export function addClockColorRow(
     group,
     settings,
     styleSvc,
-    (prefsGettext as any)("Time Color"),
+    prefsGettext._("Time Color"),
     "clock-color",
     "clock-use-accent",
     "clock-use-accent",
@@ -182,7 +182,7 @@ export function addDateColorRow(
     group,
     settings,
     styleSvc,
-    (prefsGettext as any)("Date Color"),
+    prefsGettext._("Date Color"),
     "date-color",
     "date-use-accent",
     "date-use-accent",
@@ -198,7 +198,7 @@ export function addDividerColorRow(
     group,
     settings,
     styleSvc,
-    (prefsGettext as any)("Divider Color"),
+    prefsGettext._("Divider Color"),
     "divider-color",
     "divider-use-accent",
     "divider-use-accent",

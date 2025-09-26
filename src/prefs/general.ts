@@ -18,8 +18,8 @@ export function addShowDateSwitchRow(
   settings: Gio.Settings,
 ): Adw.SwitchRow {
   const showDateSwitchInfo = {
-    title: (prefsGettext as any)(PrefItems.SHOW_DATE.title),
-    subtitle: (prefsGettext as any)(PrefItems.SHOW_DATE.subtitle),
+    title: prefsGettext._(PrefItems.SHOW_DATE.title),
+    subtitle: prefsGettext._(PrefItems.SHOW_DATE.subtitle),
   };
   return addSwitchRow(
     group,
@@ -44,8 +44,8 @@ export function addShowWeekdaySwitchRow(
   settings: Gio.Settings,
 ): Adw.SwitchRow {
   const showWeekdaySwitchInfo = {
-    title: (prefsGettext as any)(PrefItems.SHOW_WEEKDAY.title),
-    subtitle: (prefsGettext as any)(PrefItems.SHOW_WEEKDAY.subtitle),
+    title: prefsGettext._(PrefItems.SHOW_WEEKDAY.title),
+    subtitle: prefsGettext._(PrefItems.SHOW_WEEKDAY.subtitle),
     sensitive: settings!.get_boolean(SettingsKey.SHOW_DATE),
   };
   return addSwitchRow(
@@ -72,8 +72,8 @@ export function createFuzzinessComboRow(
   settings: Gio.Settings,
 ): Adw.ComboRow {
   const fuzzinessComboInfo = {
-    title: (prefsGettext as any)(PrefItems.FUZZINESS.title),
-    subtitle: (prefsGettext as any)(PrefItems.FUZZINESS.subtitle),
+    title: prefsGettext._(PrefItems.FUZZINESS.title),
+    subtitle: prefsGettext._(PrefItems.FUZZINESS.subtitle),
     model: new Gtk.StringList({ strings: ["1", "5", "10", "15"] }),
     selected: settings!.get_enum(SettingsKey.FUZZINESS),
   };
@@ -99,16 +99,22 @@ export function addDividerPresetRow(
   group: Adw.PreferencesGroup,
   settings: Gio.Settings,
 ): void {
-  const presetRow = new Adw.ComboRow({
-    title: (prefsGettext as any)("Divider Preset"),
-    subtitle: (prefsGettext as any)("Choose a preset divider or select custom"),
+  const presetInfo = {
+    title: prefsGettext._("Divider Preset"),
+    subtitle: prefsGettext._("Choose a preset divider or select custom"),
     model: new Gtk.StringList({ strings: ["|", "•", "‖", "—", "Custom"] }),
     selected: settings!.get_enum(SettingsKey.DIVIDER_PRESET),
-  });
-  group.add(presetRow);
+  };
+
+  const presetRow = addComboRow(
+    group,
+    settings,
+    SettingsKey.DIVIDER_PRESET,
+    presetInfo,
+  );
 
   const customEntryRow = new Adw.EntryRow({
-    title: (prefsGettext as any)("Custom Divider Text"),
+    title: prefsGettext._("Custom Divider Text"),
     text: settings.get_string(SettingsKey.CUSTOM_DIVIDER_TEXT),
   });
   group.add(customEntryRow);
@@ -121,10 +127,8 @@ export function addDividerPresetRow(
 
   updateCustomEntryVisibility();
 
-  presetRow.connect("notify::selected", () => {
-    settings.set_enum(SettingsKey.DIVIDER_PRESET, presetRow.selected);
-    updateCustomEntryVisibility();
-  });
+  // addComboRow already handles the settings update; just observe for UI changes
+  presetRow.connect("notify::selected", () => updateCustomEntryVisibility());
 
   addEntryRowBinding(settings, SettingsKey.CUSTOM_DIVIDER_TEXT, customEntryRow);
 }

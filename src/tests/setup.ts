@@ -8,7 +8,7 @@
  */
 
 import { setLogger } from "../utils/error_utils.js";
-import { consoleLogger } from "../utils/logging";
+import { consoleLogger } from "../utils/logging/index.js";
 
 // Add String.prototype.format to match GNOME Shell environment
 declare global {
