@@ -1,7 +1,4 @@
-/*
- * Pure helpers for building style strings
- */
-import { Color } from "../models/color.js";
+import { Color } from "../../models/color.js";
 
 export interface StylePresentation {
   timeStyle: string;

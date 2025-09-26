@@ -27,6 +27,11 @@
     "files": [
         "../src/constants/dates/core.ts",
         "../src/constants/times/core.ts",
-        "../src/utils/gettext_utils.ts"
+        "../src/utils/gettext/index.ts",
+        "../src/utils/logging/index.ts",
+        "../src/utils/parse/index.ts",
+        "../src/utils/style/index.ts",
+        "../src/utils/translate/index.ts",
+        "../src/utils/color/index.ts"
     ]
 }

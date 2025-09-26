@@ -11,9 +11,8 @@
  */
 
 import Gio from "gi://Gio";
-import { normalizeColor } from "../utils/color_utils.js";
+import { normalizeColor, accentNameToHex } from "../utils/color";
 import { logInfo, logWarn } from "../utils/error_utils.js";
-import { accentNameToHex } from "../utils/accent_color_utils.js";
 import { getDividerText } from "../constants/index.js";
 import SettingsKey from "../models/settings_keys.js";
 import { Color } from "../models/color.js";

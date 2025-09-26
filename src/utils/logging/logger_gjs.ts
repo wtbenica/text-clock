@@ -3,9 +3,6 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-/**
- * GJS/GNOME Shell logger implementation
- */
 import type { Logger } from "./logger_interface.js";
 
 export const gjsLogger: Logger = {

@@ -7,8 +7,8 @@
  * Centralized error handling utilities for the Text Clock extension
  */
 
-import type { Logger } from "./logger_interface.js";
-import { gjsLogger } from "./logger_gjs.js";
+import type { Logger } from "./logging/index.js";
+import { gjsLogger } from "./logging/index.js";
 
 // Current logger instance (can be overridden for tests)
 let currentLogger: Logger = gjsLogger;

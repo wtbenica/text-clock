@@ -1,4 +1,4 @@
-import { parseGnomeShellVersionString } from "../../utils/shell_version_utils.js";
+import { parseGnomeShellVersionString } from "../../utils/parse";
 
 describe("parseGnomeShellVersionString", () => {
   it("parses plain major.minor string", () => {

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { prefsGettext } from "../../utils/gettext_utils_prefs.js";
+import { prefsGettext } from "../../utils/gettext";
 import { createDateConstants } from "../dates/core.js";
 
 const fns = prefsGettext;

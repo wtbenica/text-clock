@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { extensionGettext } from "../../utils/gettext_utils_ext.js";
+import { extensionGettext } from "../../utils/gettext";
 import { createDateConstants } from "../dates/core.js";
 
 const fns = extensionGettext;

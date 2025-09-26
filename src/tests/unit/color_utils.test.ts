@@ -1,4 +1,4 @@
-import { normalizeColor, escapeMarkup } from "../../utils/color_utils.js";
+import { normalizeColor, escapeMarkup } from "../../utils/color";
 
 describe("normalizeColor", () => {
   it("returns #ffffff for empty input", () => {

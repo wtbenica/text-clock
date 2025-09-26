@@ -1,7 +1,4 @@
-import {
-  fuzzinessFromEnumIndex,
-  parseFuzziness,
-} from "../../utils/fuzziness_utils.js";
+import { fuzzinessFromEnumIndex, parseFuzziness } from "../../utils/parse";
 import { Fuzziness } from "../../core/clock_formatter.js";
 
 // Mock FUZZINESS_ENUM_MINUTES for testing
