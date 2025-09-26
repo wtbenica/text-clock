@@ -57,64 +57,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
     const shellVersion = this.#getShellVersion();
     const supportsAccentColor = shellVersion >= 47;
 
-    // Determine initial window size based on color mode
-    const initialColorMode = settings.get_enum(SettingsKey.COLOR_MODE);
-    const isCustomMode = initialColorMode === 2;
-    const initialHeight = isCustomMode ? 800 : 650;
-    const windowWidth = 600;
-
-    // Set initial default size based on current color mode
-    try {
-      window.set_default_size(windowWidth, initialHeight);
-    } catch (e) {
-      logWarn(`Could not set initial window size: ${e}`);
-    }
-
-    // Track the current desired size to maintain it across focus changes
-    let currentDesiredHeight = initialHeight;
-
-    // Function to update window size based on color mode
-    const updateWindowSize = () => {
-      try {
-        const colorMode = settings.get_enum(SettingsKey.COLOR_MODE);
-        const isCustom = colorMode === 2;
-        const newHeight = isCustom ? 800 : 650;
-
-        // Only resize if the height actually needs to change
-        if (newHeight !== currentDesiredHeight) {
-          currentDesiredHeight = newHeight;
-
-          // Use GLib.idle_add to ensure the resize happens at the right time
-          GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
-            try {
-              // First try the standard GTK approach
-              window.set_default_size(windowWidth, currentDesiredHeight);
-
-              // Also set size request as a hint for minimum size
-              window.set_size_request(
-                windowWidth,
-                Math.min(currentDesiredHeight, 650),
-              );
-
-              // Force a resize if the window is already shown
-              if (window.get_visible()) {
-                // Get the current window surface/native window
-                const surface = window.get_surface();
-                if (surface) {
-                  // Request the window to resize itself
-                  window.queue_resize();
-                }
-              }
-            } catch (resizeError) {
-              logWarn(`Could not resize window: ${resizeError}`);
-            }
-            return false; // Don't repeat
-          });
-        }
-      } catch (e) {
-        logWarn(`Error in updateWindowSize: ${e}`);
-      }
-    };
+    // Default window sizing: rely on GTK/Adwaita defaults; no custom resize logic.
 
     const page = this.#createAndAddPageToWindow(window);
 
@@ -144,7 +87,6 @@ export default class TextClockPrefs extends ExtensionPreferences {
       clockColorSettingsGroup,
       settings,
       supportsAccentColor,
-      updateWindowSize,
     );
 
     return Promise.resolve();
@@ -737,7 +679,6 @@ export default class TextClockPrefs extends ExtensionPreferences {
     group: Adw.PreferencesGroup,
     settings: Gio.Settings,
     supportsAccentColor: boolean = true,
-    updateWindowSize: () => void,
   ): void {
     // Build the model based on whether accent color is supported
     const modelStrings = ["Default"];
@@ -838,7 +779,6 @@ export default class TextClockPrefs extends ExtensionPreferences {
       }
       settings.set_enum(SettingsKey.COLOR_MODE, settingValue);
       updateColorRowsVisibility();
-      updateWindowSize(); // Resize window when mode changes
     });
     // Update visibility when Show Date changes
     settings.connect("changed::show-date", () => updateColorRowsVisibility());

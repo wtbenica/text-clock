@@ -266,11 +266,11 @@ export class StyleService {
     if (colorMode === 1) {
       // Accent color mode
       const accentColor = this.getAccentColor();
-      clockColor = accentColor.lighten();
+      clockColor = accentColor.lighten(0.8);
       dateColor = accentColor;
       // Use a darkened version of the accent color for the divider so it remains
       // distinct when accent color is selected.
-      dividerColor = accentColor.lighten();
+      dividerColor = accentColor.lighten(0.8);
       logInfo(
         `Using accent color for clock and date, darkened for divider: ${accentColor} ${accentColor}`,
       );
