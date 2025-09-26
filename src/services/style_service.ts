@@ -124,9 +124,15 @@ export class StyleService {
   getAccentColor(): Color {
     // Try to read the selected accent color from the system settings.
     try {
-      const ifaceSettings = new Gio.Settings({
-        schema: "org.gnome.desktop.interface",
-      });
+      // Prefer using the cached ifaceSettings if available (created in
+      // #connectToInterfaceSettings). Fall back to creating a temporary
+      // Gio.Settings if necessary.
+      const ifaceSettings =
+        this.#ifaceSettings ??
+        new Gio.Settings({
+          schema: "org.gnome.desktop.interface",
+        });
+
       if (ifaceSettings && ifaceSettings.get_string) {
         const accent = ifaceSettings.get_string("accent-color");
         if (accent) {
@@ -169,7 +175,7 @@ export class StyleService {
     this.#signalConnections = [];
 
     // Disconnect interface settings signal (if any)
-    if (this.#ifaceSettings && this.#ifaceSignalConnection) {
+    if (this.#ifaceSettings !== null && this.#ifaceSignalConnection !== null) {
       try {
         this.#ifaceSettings.disconnect(this.#ifaceSignalConnection);
       } catch (e) {
@@ -195,6 +201,10 @@ export class StyleService {
       SettingsKey.DIVIDER_COLOR,
       SettingsKey.DIVIDER_PRESET,
       SettingsKey.CUSTOM_DIVIDER_TEXT,
+      // Per-section accent toggles (so changes trigger applyToAllTargets)
+      SettingsKey.CLOCK_USE_ACCENT,
+      SettingsKey.DATE_USE_ACCENT,
+      SettingsKey.DIVIDER_USE_ACCENT,
     ];
 
     for (const setting of colorSettings) {
@@ -211,6 +221,11 @@ export class StyleService {
    * log out/in when they change their accent color).
    */
   #connectToInterfaceSettings(): void {
+    // Avoid reconnecting if already connected
+    if (this.#ifaceSettings !== null && this.#ifaceSignalConnection !== null) {
+      return;
+    }
+
     try {
       this.#ifaceSettings = new Gio.Settings({
         schema: "org.gnome.desktop.interface",
@@ -252,7 +267,7 @@ export class StyleService {
       // Accent color mode
       const accentColor = this.getAccentColor();
       clockColor = accentColor.lighten();
-      dateColor = accentColor.lighten();
+      dateColor = accentColor;
       // Use a darkened version of the accent color for the divider so it remains
       // distinct when accent color is selected.
       dividerColor = accentColor.lighten();
@@ -260,14 +275,42 @@ export class StyleService {
         `Using accent color for clock and date, darkened for divider: ${accentColor} ${accentColor}`,
       );
     } else if (colorMode === 2) {
-      // Custom colors mode
-      clockColor = new Color(
-        this.#settings.get_string(SettingsKey.CLOCK_COLOR),
+      // Custom colors mode, but allow per-section "use accent" overrides
+      const accentColor = this.getAccentColor();
+
+      const useAccentClock = this.#settings.get_boolean(
+        SettingsKey.CLOCK_USE_ACCENT,
       );
-      dateColor = new Color(this.#settings.get_string(SettingsKey.DATE_COLOR));
-      dividerColor = new Color(
-        this.#settings.get_string(SettingsKey.DIVIDER_COLOR),
+      const useAccentDate = this.#settings.get_boolean(
+        SettingsKey.DATE_USE_ACCENT,
       );
+      const useAccentDivider = this.#settings.get_boolean(
+        SettingsKey.DIVIDER_USE_ACCENT,
+      );
+
+      if (useAccentClock) {
+        clockColor = accentColor;
+      } else {
+        clockColor = new Color(
+          this.#settings.get_string(SettingsKey.CLOCK_COLOR),
+        );
+      }
+
+      if (useAccentDate) {
+        dateColor = accentColor;
+      } else {
+        dateColor = new Color(
+          this.#settings.get_string(SettingsKey.DATE_COLOR),
+        );
+      }
+
+      if (useAccentDivider) {
+        dividerColor = accentColor;
+      } else {
+        dividerColor = new Color(
+          this.#settings.get_string(SettingsKey.DIVIDER_COLOR),
+        );
+      }
     } else {
       // Default mode (0)
       clockColor = new Color("#FFFFFF");

@@ -61,9 +61,9 @@ export class Color {
 
   /**
    * Lighten the color by blending with white.
-   * amount is fraction between 0 and 1 (default 0.2)
+   * amount is fraction between 0 and 1 (default 0.5)
    */
-  lighten(amount = 0.2): Color {
+  lighten(amount = 0.5): Color {
     const s = this.normalized;
     // If hex, compute numeric blend
     if (s.startsWith("#")) {
@@ -89,7 +89,7 @@ export class Color {
    * Darken the color by blending with black.
    * amount is fraction between 0 and 1 (default 0.2)
    */
-  darken(amount = 0.2): Color {
+  darken(amount = 0.3): Color {
     const s = this.normalized;
     if (s.startsWith("#")) {
       const r = parseInt(s.slice(1, 3), 16);

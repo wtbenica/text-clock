@@ -87,6 +87,13 @@
             The color for the clock time text.
       </description>
     </key>
+    <key name='clock-use-accent' type='b'>
+      <default>false</default>
+      <summary>Use accent color for clock</summary>
+      <description>
+            If true, the clock text will use the GNOME accent color instead of a custom color.
+      </description>
+    </key>
     <key name='date-color' type='s'>
       <default>'#FFFFFF'</default>
       <summary>Date text color</summary>
@@ -94,11 +101,25 @@
             The color for the date text.
       </description>
     </key>
+    <key name='date-use-accent' type='b'>
+      <default>false</default>
+      <summary>Use accent color for date</summary>
+      <description>
+            If true, the date text will use the GNOME accent color instead of a custom color.
+      </description>
+    </key>
     <key name='divider-color' type='s'>
       <default>'#FFFFFF'</default>
       <summary>Divider text color</summary>
       <description>
             The color for the divider text.
+      </description>
+    </key>
+    <key name='divider-use-accent' type='b'>
+      <default>false</default>
+      <summary>Use accent color for divider</summary>
+      <description>
+            If true, the divider text will use the GNOME accent color instead of a custom color.
       </description>
     </key>
     <key name="divider-preset" enum="org.gnome.shell.extensions.text-clock.divider-preset">

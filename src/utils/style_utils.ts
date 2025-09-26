@@ -17,7 +17,7 @@ export function buildStyles(
   return {
     timeStyle: `color: ${clockColor.toString()};`,
     dateStyle: `color: ${dateColor.toString()};`,
-    dividerStyle: `color: ${dividerColor.toString()};`,
+    dividerStyle: `color: ${dividerColor.toString()}; font-weight: bold;`,
   };
 }
 

@@ -19,6 +19,7 @@ import {
 
 import { SETTINGS, PrefItems, Errors } from "./constants/index.js";
 import SettingsKey from "./models/settings_keys.js";
+import { StyleService } from "./services/style_service.js";
 import { ClockFormatter, TimeFormat } from "./core/clock_formatter.js";
 import { fuzzinessFromEnumIndex } from "./utils/fuzziness_utils.js";
 import { createTranslatePackGetter } from "./utils/translate_pack_utils.js";
@@ -56,6 +57,65 @@ export default class TextClockPrefs extends ExtensionPreferences {
     const shellVersion = this.#getShellVersion();
     const supportsAccentColor = shellVersion >= 47;
 
+    // Determine initial window size based on color mode
+    const initialColorMode = settings.get_enum(SettingsKey.COLOR_MODE);
+    const isCustomMode = initialColorMode === 2;
+    const initialHeight = isCustomMode ? 800 : 650;
+    const windowWidth = 600;
+
+    // Set initial default size based on current color mode
+    try {
+      window.set_default_size(windowWidth, initialHeight);
+    } catch (e) {
+      logWarn(`Could not set initial window size: ${e}`);
+    }
+
+    // Track the current desired size to maintain it across focus changes
+    let currentDesiredHeight = initialHeight;
+
+    // Function to update window size based on color mode
+    const updateWindowSize = () => {
+      try {
+        const colorMode = settings.get_enum(SettingsKey.COLOR_MODE);
+        const isCustom = colorMode === 2;
+        const newHeight = isCustom ? 800 : 650;
+
+        // Only resize if the height actually needs to change
+        if (newHeight !== currentDesiredHeight) {
+          currentDesiredHeight = newHeight;
+
+          // Use GLib.idle_add to ensure the resize happens at the right time
+          GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+            try {
+              // First try the standard GTK approach
+              window.set_default_size(windowWidth, currentDesiredHeight);
+
+              // Also set size request as a hint for minimum size
+              window.set_size_request(
+                windowWidth,
+                Math.min(currentDesiredHeight, 650),
+              );
+
+              // Force a resize if the window is already shown
+              if (window.get_visible()) {
+                // Get the current window surface/native window
+                const surface = window.get_surface();
+                if (surface) {
+                  // Request the window to resize itself
+                  window.queue_resize();
+                }
+              }
+            } catch (resizeError) {
+              logWarn(`Could not resize window: ${resizeError}`);
+            }
+            return false; // Don't repeat
+          });
+        }
+      } catch (e) {
+        logWarn(`Error in updateWindowSize: ${e}`);
+      }
+    };
+
     const page = this.#createAndAddPageToWindow(window);
 
     const clockSettingsGroup = this.#createAndAddGroupToPage(
@@ -84,6 +144,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
       clockColorSettingsGroup,
       settings,
       supportsAccentColor,
+      updateWindowSize,
     );
 
     return Promise.resolve();
@@ -357,29 +418,168 @@ export default class TextClockPrefs extends ExtensionPreferences {
   }
 
   /**
+   * Create a color control widget with accent switch and color picker
+   */
+  #createColorControlWidget(
+    settings: Gio.Settings,
+    styleSvc: any,
+    colorSettingsKey: string,
+    accentSettingsKey: string,
+    errorContext: string,
+  ): Gtk.Widget {
+    const control = new Gtk.Box({
+      orientation: Gtk.Orientation.HORIZONTAL,
+      spacing: 12,
+      halign: Gtk.Align.CENTER,
+    });
+
+    // Create accent switch
+    const accentSwitch = new Gtk.Switch();
+    accentSwitch.set_valign(Gtk.Align.CENTER);
+
+    // Create switch label
+    const switchLabel = new Gtk.Label({
+      label: _("Accent"),
+      valign: Gtk.Align.CENTER,
+    });
+
+    // Create color picker
+    const colorButton = new Gtk.ColorButton();
+    colorButton.set_size_request(40, 40);
+    colorButton.set_valign(Gtk.Align.CENTER);
+
+    // Function to update color picker based on accent switch state
+    const updateColorPicker = () => {
+      const useAccent = accentSwitch.get_active();
+
+      if (useAccent) {
+        // Show accent color and make read-only (but not disabled to avoid graying out)
+        try {
+          const accentColor = styleSvc.getAccentColor().toString();
+          const rgba = new Gdk.RGBA();
+          rgba.parse(accentColor);
+          colorButton.set_rgba(rgba);
+        } catch (e) {
+          logErr(e, "Error setting accent color");
+        }
+        // Keep button enabled but disconnect color-set signal to make it read-only
+        colorButton.set_sensitive(true);
+      } else {
+        // Show custom color and enable picker
+        try {
+          const customColor = settings.get_string(colorSettingsKey);
+          const rgba = new Gdk.RGBA();
+          rgba.parse(customColor);
+          colorButton.set_rgba(rgba);
+        } catch (e) {
+          logErr(e, "Error setting custom color");
+        }
+        colorButton.set_sensitive(true);
+      }
+    };
+
+    // Bind accent switch to settings
+    try {
+      settings.bind(
+        accentSettingsKey,
+        accentSwitch,
+        "active",
+        Gio.SettingsBindFlags.DEFAULT,
+      );
+    } catch (e) {
+      logErr(e, `Error binding ${errorContext}`);
+    }
+
+    // Update color picker when accent switch changes
+    accentSwitch.connect("state-set", () => {
+      // Use GLib.idle_add to ensure the setting is updated before we read it
+      GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+        updateColorPicker();
+        return false; // Don't repeat
+      });
+    });
+
+    // Handle custom color changes (only when not using accent)
+    colorButton.connect("color-set", () => {
+      if (!accentSwitch.get_active()) {
+        const newRgba = colorButton.get_rgba();
+        settings.set_string(colorSettingsKey, newRgba.to_string());
+      } else {
+        // If accent is enabled, revert the color picker back to accent color
+        // This prevents the picker from changing when clicked while in accent mode
+        GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+          updateColorPicker();
+          return false;
+        });
+      }
+    });
+
+    // Set initial state
+    updateColorPicker();
+
+    // Add widgets to container
+    control.append(switchLabel);
+    control.append(accentSwitch);
+    control.append(colorButton);
+
+    // Expose color button for parent to update when accent color changes
+    (control as any)._colorButton = colorButton;
+    (control as any)._accentSwitch = accentSwitch;
+    (control as any)._updateColorPicker = updateColorPicker;
+
+    return control;
+  }
+
+  /**
+   * Common method to create a color row
+   */
+  #createColorRow(
+    group: Adw.PreferencesGroup,
+    settings: Gio.Settings,
+    styleSvc: any,
+    title: string,
+    colorKey: string,
+    accentKey: string,
+    errorContext: string,
+  ): Adw.ActionRow {
+    const control = this.#createColorControlWidget(
+      settings,
+      styleSvc,
+      colorKey,
+      accentKey,
+      errorContext,
+    );
+
+    const row = new Adw.ActionRow({
+      title: title,
+    });
+    row.add_suffix(control);
+    group.add(row);
+
+    // expose color button for redraw from parent
+    (row as any)._colorButton = (control as any)._colorButton;
+    (row as any)._accentSwitch = (control as any)._accentSwitch;
+    (row as any)._updateColorPicker = (control as any)._updateColorPicker;
+    return row;
+  }
+
+  /**
    * Add a color row for clock color
    */
   #addClockColorRow(
     group: Adw.PreferencesGroup,
     settings: Gio.Settings,
+    styleSvc: any,
   ): Adw.ActionRow {
-    const row = new Adw.ActionRow({
-      title: _("Clock Color"),
-      subtitle: _("Color for the time text"),
-    });
-    const colorButton = new Gtk.ColorButton();
-    // Set initial color
-    const rgba = new Gdk.RGBA();
-    rgba.parse(settings.get_string(SettingsKey.CLOCK_COLOR));
-    colorButton.set_rgba(rgba);
-    // Connect to changes
-    colorButton.connect("color-set", () => {
-      const newRgba = colorButton.get_rgba();
-      settings.set_string(SettingsKey.CLOCK_COLOR, newRgba.to_string());
-    });
-    row.add_suffix(colorButton);
-    group.add(row);
-    return row;
+    return this.#createColorRow(
+      group,
+      settings,
+      styleSvc,
+      _("Time Color"),
+      SettingsKey.CLOCK_COLOR,
+      SettingsKey.CLOCK_USE_ACCENT,
+      "clock-use-accent",
+    );
   }
 
   /**
@@ -388,22 +588,17 @@ export default class TextClockPrefs extends ExtensionPreferences {
   #addDateColorRow(
     group: Adw.PreferencesGroup,
     settings: Gio.Settings,
+    styleSvc: any,
   ): Adw.ActionRow {
-    const row = new Adw.ActionRow({
-      title: _("Date Color"),
-      subtitle: _("Color for the date text"),
-    });
-    const colorButton = new Gtk.ColorButton();
-    const rgba = new Gdk.RGBA();
-    rgba.parse(settings.get_string(SettingsKey.DATE_COLOR));
-    colorButton.set_rgba(rgba);
-    colorButton.connect("color-set", () => {
-      const newRgba = colorButton.get_rgba();
-      settings.set_string(SettingsKey.DATE_COLOR, newRgba.to_string());
-    });
-    row.add_suffix(colorButton);
-    group.add(row);
-    return row;
+    return this.#createColorRow(
+      group,
+      settings,
+      styleSvc,
+      _("Date Color"),
+      SettingsKey.DATE_COLOR,
+      SettingsKey.DATE_USE_ACCENT,
+      "date-use-accent",
+    );
   }
 
   /**
@@ -412,22 +607,17 @@ export default class TextClockPrefs extends ExtensionPreferences {
   #addDividerColorRow(
     group: Adw.PreferencesGroup,
     settings: Gio.Settings,
+    styleSvc: any,
   ): Adw.ActionRow {
-    const row = new Adw.ActionRow({
-      title: _("Divider Color"),
-      subtitle: _("Color for the divider text"),
-    });
-    const colorButton = new Gtk.ColorButton();
-    const rgba = new Gdk.RGBA();
-    rgba.parse(settings.get_string(SettingsKey.DIVIDER_COLOR));
-    colorButton.set_rgba(rgba);
-    colorButton.connect("color-set", () => {
-      const newRgba = colorButton.get_rgba();
-      settings.set_string(SettingsKey.DIVIDER_COLOR, newRgba.to_string());
-    });
-    row.add_suffix(colorButton);
-    group.add(row);
-    return row;
+    return this.#createColorRow(
+      group,
+      settings,
+      styleSvc,
+      _("Divider Color"),
+      SettingsKey.DIVIDER_COLOR,
+      SettingsKey.DIVIDER_USE_ACCENT,
+      "divider-use-accent",
+    );
   }
 
   /**
@@ -538,13 +728,16 @@ export default class TextClockPrefs extends ExtensionPreferences {
     // Final fallback: assume GNOME Shell 45 (minimum supported platform for this extension)
     logWarn("Could not detect GNOME Shell version, assuming 45");
     return 45;
-  } /**
+  }
+
+  /**
    * Add a combo row for color mode and conditional color pickers
    */
   #addColorModeRow(
     group: Adw.PreferencesGroup,
     settings: Gio.Settings,
     supportsAccentColor: boolean = true,
+    updateWindowSize: () => void,
   ): void {
     // Build the model based on whether accent color is supported
     const modelStrings = ["Default"];
@@ -573,25 +766,67 @@ export default class TextClockPrefs extends ExtensionPreferences {
     });
     group.add(colorModeRow);
 
-    // Get references to color rows
-    const clockColorRow = this.#addClockColorRow(group, settings);
-    const dateColorRow = this.#addDateColorRow(group, settings);
-    const dividerColorRow = this.#addDividerColorRow(group, settings);
+    // Create and add the color rows to the group
+    const styleSvc = new StyleService(settings);
+    const clockColorRow = this.#addClockColorRow(group, settings, styleSvc);
+    const dateColorRow = this.#addDateColorRow(group, settings, styleSvc);
+    const dividerColorRow = this.#addDividerColorRow(group, settings, styleSvc);
 
-    // Function to update visibility of color pickers
-    const updateColorPickersVisibility = () => {
+    // Get the update functions for each color control
+    const clockUpdater = clockColorRow
+      ? (clockColorRow as any)._updateColorPicker
+      : null;
+    const dividerUpdater = dividerColorRow
+      ? (dividerColorRow as any)._updateColorPicker
+      : null;
+    const dateUpdater = dateColorRow
+      ? (dateColorRow as any)._updateColorPicker
+      : null;
+
+    // Listen for system accent-color changes, update accent color buttons
+    try {
+      const ifaceSettings = new Gio.Settings({
+        schema: "org.gnome.desktop.interface",
+      });
+      ifaceSettings.connect("changed::accent-color", () => {
+        try {
+          // Trigger update of color pickers that are using accent colors
+          if (clockUpdater) clockUpdater();
+          if (dividerUpdater) dividerUpdater();
+          if (dateUpdater) dateUpdater();
+        } catch (colorErr) {
+          logErr(colorErr, "Error updating accent color buttons");
+        }
+      });
+    } catch (e) {
+      logWarn(`Could not listen for accent-color changes: ${e}`);
+    }
+
+    // Function to update visibility of color rows
+    const updateColorRowsVisibility = () => {
       const selectedMode = colorModeRow.selected;
       // Adjust index based on whether accent color is available
       const isCustom = supportsAccentColor
         ? selectedMode === 2
         : selectedMode === 1;
+
+      // Show/hide the color rows based on whether Custom Colors is selected
       clockColorRow.visible = isCustom;
-      dateColorRow.visible = isCustom;
       dividerColorRow.visible = isCustom;
+      dateColorRow.visible = isCustom;
+
+      // Additionally, hide date and divider rows when Show Date is false
+      try {
+        const showDate = settings.get_boolean(SettingsKey.SHOW_DATE);
+        dividerColorRow.visible = isCustom && showDate;
+        dateColorRow.visible = isCustom && showDate;
+      } catch (e) {
+        logErr(e, "Error updating color row visibility");
+      }
     };
 
     // Initial visibility
-    updateColorPickersVisibility();
+    updateColorRowsVisibility();
 
     // Connect mode change
     colorModeRow.connect("notify::selected", () => {
@@ -602,7 +837,10 @@ export default class TextClockPrefs extends ExtensionPreferences {
         settingValue = 2;
       }
       settings.set_enum(SettingsKey.COLOR_MODE, settingValue);
-      updateColorPickersVisibility();
+      updateColorRowsVisibility();
+      updateWindowSize(); // Resize window when mode changes
     });
+    // Update visibility when Show Date changes
+    settings.connect("changed::show-date", () => updateColorRowsVisibility());
   }
 }
