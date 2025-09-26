@@ -3,7 +3,7 @@ import { ClockFormatter, TimeFormat } from "../core/clock_formatter.js";
 import { fuzzinessFromEnumIndex } from "../utils/parse/index.js";
 import SettingsKey from "../models/settings_keys.js";
 import TRANSLATE_PACK from "./translate_pack.js";
-import { addComboRow } from "./rows.js";
+import { addComboRow } from "./ui/rows.js";
 import { prefsGettext } from "../utils/gettext/index.js";
 
 export function getTimeFormatsList(settings: any): Gtk.StringList {

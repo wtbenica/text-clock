@@ -3,23 +3,9 @@ import Gdk from "gi://Gdk";
 import GLib from "gi://GLib";
 import Gio from "gi://Gio";
 import Adw from "gi://Adw";
-import { prefsGettext } from "../utils/gettext/index.js";
-import { logErr } from "../utils/error_utils.js";
+import { prefsGettext } from "../../../utils/gettext/index.js";
+import { logErr } from "../../../utils/error_utils.js";
 
-/**
- * Create a compact color control widget used in prefs.
- *
- * The widget contains an "Accent" switch and a color button. When the accent
- * switch is active the color button mirrors the system accent color, otherwise
- * it represents a custom color stored in settings.
- *
- * @param settings - Gio.Settings instance used to read/write color values
- * @param styleSvc - StyleService instance to read accent color
- * @param colorSettingsKey - GSettings key for the custom color string
- * @param accentSettingsKey - GSettings key for the accent toggle boolean
- * @param errorContext - short string used in error logging context
- * @returns Gtk.Widget - a container widget with the color controls attached
- */
 export function createColorControlWidget(
   settings: Gio.Settings,
   styleSvc: any,
@@ -113,22 +99,6 @@ export function createColorControlWidget(
   return control;
 }
 
-/**
- * Create a typed ActionRow with a color control suffix.
- *
- * This constructs an `Adw.ActionRow`, appends the color control (created
- * with `createColorControlWidget`) as a suffix and adds the row to the
- * provided group.
- *
- * @param group - Preferences group to add the row to
- * @param settings - Gio.Settings instance
- * @param styleSvc - StyleService instance
- * @param title - localized title for the row
- * @param colorKey - GSettings key for the custom color
- * @param accentKey - GSettings key for the accent toggle
- * @param errorContext - context string for error logging
- * @returns Adw.ActionRow the created action row
- */
 export function createColorRow(
   group: Adw.PreferencesGroup,
   settings: Gio.Settings,
@@ -146,7 +116,6 @@ export function createColorRow(
     errorContext,
   );
 
-  // Construct a typed Adw.ActionRow and attach the control as a suffix.
   const actionRow: Adw.ActionRow = new Adw.ActionRow({ title });
   actionRow.add_suffix(control);
   group.add(actionRow);

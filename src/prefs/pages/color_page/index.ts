@@ -1,16 +1,46 @@
+import Gtk from "gi://Gtk";
 import Gio from "gi://Gio";
 import Adw from "gi://Adw";
-import Gtk from "gi://Gtk";
-import { StyleService } from "../services/style_service.js";
-import { prefsGettext } from "../utils/gettext/index.js";
-import { PrefItems } from "../constants/index.js";
-import SettingsKey from "../models/settings_keys.js";
+import { prefsGettext } from "../../../utils/gettext/index.js";
+import { logErr, logWarn } from "../../../utils/error_utils.js";
+import { StyleService } from "../../../services/style_service.js";
+import SettingsKey from "../../../models/settings_keys.js";
 import {
-  addClockColorRow,
-  addDateColorRow,
-  addDividerColorRow,
+  addClockColorRow as _addClockColorRow,
+  addDateColorRow as _addDateColorRow,
+  addDividerColorRow as _addDividerColorRow,
 } from "./color_controls.js";
-import { logErr, logWarn } from "../utils/error_utils.js";
+
+/**
+ * Create a compact color control widget used in prefs.
+ *
+ * See original `color_controls.createColorControlWidget` for details.
+ */
+export { createColorControlWidget, createColorRow } from "./color_controls.js";
+
+export function addClockColorRow(
+  group: any,
+  settings: Gio.Settings,
+  styleSvc: any,
+) {
+  return _addClockColorRow(group, settings, styleSvc);
+}
+
+export function addDateColorRow(
+  group: any,
+  settings: Gio.Settings,
+  styleSvc: any,
+) {
+  return _addDateColorRow(group, settings, styleSvc);
+}
+
+export function addDividerColorRow(
+  group: any,
+  settings: Gio.Settings,
+  styleSvc: any,
+) {
+  return _addDividerColorRow(group, settings, styleSvc);
+}
 
 /**
  * Add the color mode selection row and related color rows to a group.
@@ -19,10 +49,6 @@ import { logErr, logWarn } from "../utils/error_utils.js";
  * colors, the system accent color, or custom colors. This function also
  * creates the color rows (time/date/divider) and wires visibility and
  * accent-color change listeners.
- *
- * @param group - Preferences group to which color controls will be added
- * @param settings - Gio.Settings instance used for binding values
- * @param supportsAccentColor - whether the running shell supports accent color
  */
 export function addColorModeRow(
   group: Adw.PreferencesGroup,
@@ -42,8 +68,8 @@ export function addColorModeRow(
   }
 
   const colorModeRow = new Adw.ComboRow({
-    title: prefsGettext._(PrefItems.COLOR_MODE.title),
-    subtitle: prefsGettext._(PrefItems.COLOR_MODE.subtitle),
+    title: prefsGettext._("Color mode"),
+    subtitle: prefsGettext._("Choose which color source to use"),
     model: new Gtk.StringList({ strings: modelStrings }),
     selected: currentSelected,
   });
@@ -111,3 +137,10 @@ export function addColorModeRow(
 
   settings.connect("changed::show-date", () => updateColorRowsVisibility());
 }
+
+export default {
+  addColorModeRow,
+  addClockColorRow,
+  addDateColorRow,
+  addDividerColorRow,
+};

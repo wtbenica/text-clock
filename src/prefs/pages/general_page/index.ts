@@ -1,10 +1,14 @@
 import Gio from "gi://Gio";
 import Adw from "gi://Adw";
 import Gtk from "gi://Gtk";
-import { addComboRow, addSwitchRow, addEntryRowBinding } from "./rows.js";
-import { prefsGettext } from "../utils/gettext/index.js";
-import SettingsKey from "../models/settings_keys.js";
-import { PrefItems } from "../constants/index.js";
+import {
+  addComboRow,
+  addSwitchRow,
+  addEntryRowBinding,
+} from "../../ui/rows.js";
+import { prefsGettext } from "../../../utils/gettext/index.js";
+import SettingsKey from "../../../models/settings_keys.js";
+import { PrefItems } from "../../../constants/index.js";
 
 /**
  * Add a switch row that toggles showing the date.

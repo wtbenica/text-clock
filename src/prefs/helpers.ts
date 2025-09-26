@@ -1,24 +1,24 @@
-export { createAndAddPageToWindow, createAndAddGroupToPage } from "./groups.js";
 export {
-  addComboRow,
-  bindSettingsToProperty,
-  addSwitchRow,
-  addEntryRowBinding,
-} from "./rows.js";
+  createAndAddPageToWindow,
+  createAndAddGroupToPage,
+} from "./ui/groups.js";
+export { addComboRow, addSwitchRow, addEntryRowBinding } from "./ui/rows.js";
+export { bindSettingsToProperty } from "./bindings.js";
 export {
   createColorControlWidget,
   createColorRow,
+} from "./pages/color_page/color_controls.js";
+export {
+  addColorModeRow,
   addClockColorRow,
   addDateColorRow,
   addDividerColorRow,
-} from "./color_controls.js";
-export { addColorModeRow } from "./color_mode.js";
+} from "./pages/color_page/index.js";
 export { getTimeFormatsList, addTimeFormatComboRow } from "./formatters.js";
-export { getShellVersion } from "./shell_version.js";
-export { getAdwaitaVersion } from "./adwaita_version.js";
+export { getShellVersion, getAdwaitaVersion } from "./version.js";
 export {
   addShowDateSwitchRow,
   addShowWeekdaySwitchRow,
   createFuzzinessComboRow,
   addDividerPresetRow,
-} from "./general.js";
+} from "./pages/general_page/index.js";
