@@ -27,11 +27,13 @@ SYNC_AUR_ARGS ?=
 ## sync-aur            Copy `aur/` files to local AUR clone and optionally commit/push
 ##                       - Usage: make sync-aur [AUR_REPO=/path/to/aur/clone] [SYNC_AUR_ARGS="<FLAGS>"]
 sync-aur:
-	@echo "Syncing aur/ to local AUR clone (AUR_REPO=$(AUR_REPO))..."
-	@./scripts/sync-to-aur.sh --aur-repo "$(AUR_REPO)" $(SYNC_AUR_ARGS)
+	@echo "Syncing AUR files..."
+	@./scripts/sync-to-aur.sh --aur-repo "$(AUR_REPO)" $(SYNC_AUR_ARGS) >/dev/null 2>&1 || { echo "ERROR: AUR sync failed" >&2; exit 1; }
+	@echo "AUR sync completed successfully."
 
 ## sync-aur-init       Initialize an AUR clone directory and perform initial sync (--init) (AUR_REPO, SYNC_AUR_ARGS)
 ##                       - Usage: make sync-aur-init [AUR_REPO=/path/to/aur/clone] [SYNC_AUR_ARGS="<FLAGS>"]
 sync-aur-init:
-	@echo "Initial sync to AUR clone (init) - AUR_REPO=$(AUR_REPO)"
-	@./scripts/sync-to-aur.sh --init --aur-repo "$(AUR_REPO)" $(SYNC_AUR_ARGS)
+	@echo "Initializing AUR clone..."
+	@./scripts/sync-to-aur.sh --init --aur-repo "$(AUR_REPO)" $(SYNC_AUR_ARGS) >/dev/null 2>&1 || { echo "ERROR: AUR initialization failed" >&2; exit 1; }
+	@echo "AUR clone initialized successfully."

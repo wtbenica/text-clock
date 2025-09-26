@@ -9,20 +9,14 @@
 
 ## release             Create PR, wait for checks, merge, create GitHub release, update AUR
 release: validate create-pr wait-for-ci merge-pr switch-to-main release-gh update-aur
-	@echo ""
-	@echo "🎉 Complete release process finished!"
-	@echo "✅ Version $(CURRENT_VERSION) released on GitHub"
-	@echo "✅ AUR package updated"
-	@echo ""
-	@echo "Next steps:"
-	@echo "  1. Submit to extensions.gnome.org: make pack"
-	@echo "  2. Start next development: make start-dev-branch TYPE=patch"
+	@echo "Release $(CURRENT_VERSION) completed successfully."
 
 ## release-dry         Create GitHub release, update AUR (pure, dry-run)
 release-dry: check-deps
-	@echo "Running full non-destructive release dry-run (GitHub + AUR)"
-	@$(MAKE) release-gh DRY_RUN=1 || { echo "ERROR: release-gh dry-run failed"; exit 1; }
-	@$(MAKE) update-aur DRY_RUN=1 || { echo "ERROR: update-aur dry-run failed"; exit 1; }
+	@echo "Running dry-run release process..."
+	@$(MAKE) release-gh DRY_RUN=1 >/dev/null 2>&1 || { echo "ERROR: release-gh dry-run failed" >&2; exit 1; }
+	@$(MAKE) update-aur DRY_RUN=1 >/dev/null 2>&1 || { echo "ERROR: update-aur dry-run failed" >&2; exit 1; }
+	@echo "Dry-run release completed successfully."
 
 ## release-auto        Create PR, wait for checks, merge, create GitHub release, update AUR (auto-accept prompts)
 release-auto:
@@ -31,63 +25,37 @@ release-auto:
 ## release-pr          Complete release using an existing PR (promote if draft, wait & merge, then release)
 release-pr:
 	@echo "Starting release process using existing PR..."
-	@command -v gh >/dev/null 2>&1 || { echo "ERROR: GitHub CLI (gh) is not installed. Please install it to create pull requests."; exit 1; }
-	@# Get current branch and find associated PR
+	@command -v gh >/dev/null 2>&1 || { echo "ERROR: GitHub CLI (gh) is not installed or not on PATH" >&2; exit 1; }
 	@current_branch=$$(git rev-parse --abbrev-ref HEAD); \
 	if [ "$$current_branch" = "main" ]; then \
-		echo "ERROR: You're on main branch. Switch to the branch with the PR to release."; \
+		echo "ERROR: You're on main branch. Switch to the branch with the PR to release." >&2; \
 		exit 1; \
 	fi; \
 	if [ -z "$(CURRENT_VERSION)" ]; then \
-		echo "ERROR: Could not read version from package.json"; \
+		echo "ERROR: Could not read version from package.json" >&2; \
 		exit 1; \
 	fi; \
-	echo "Looking for PR for branch: $$current_branch"; \
 	pr_number=$$(gh pr list --head "$$current_branch" --state open --json number --jq '.[0].number' 2>/dev/null); \
 	if [ -z "$$pr_number" ] || [ "$$pr_number" = "null" ]; then \
-	echo "ERROR: No open PR found for branch $$current_branch"; \
-	echo "Create a PR first with: make create-pr-draft"; \
+		echo "ERROR: No open PR found for branch $$current_branch" >&2; \
 		exit 1; \
 	fi; \
 	pr_status=$$(gh pr view "$$pr_number" --json isDraft --jq '.isDraft'); \
-	echo "Found PR #$$pr_number (draft: $$pr_status)"; \
-	echo "Version: $(CURRENT_VERSION)"; \
-	echo ""; \
-	echo "This will:"; \
-	if [ "$$pr_status" = "true" ]; then \
-		echo "  1. Promote draft PR #$$pr_number to ready for review"; \
-	fi; \
-	echo "  2. Wait for GitHub Actions validation to pass"; \
-	echo "  3. Auto-merge PR when validation succeeds"; \
-	echo "  4. Create GitHub release"; \
-	echo "  5. Update AUR package"; \
-	echo ""; \
 	if [ "$(ACCEPT_ALL)" != "1" ]; then \
-		read -p "Continue? [y/N] " confirm; \
+		read -p "Continue with release for PR #$$pr_number? [y/N] " confirm; \
 		if [ "$$confirm" != "y" ] && [ "$$confirm" != "Y" ]; then \
 			echo "Release cancelled."; \
 			exit 0; \
 		fi; \
-	else \
-		echo "Auto-accepting due to ACCEPT_ALL=1"; \
 	fi; \
 	if [ "$$pr_status" = "true" ]; then \
-		echo "Promoting draft PR to ready for review..."; \
-		gh pr ready "$$pr_number" || { echo "ERROR: Failed to promote PR"; exit 1; }; \
-		echo "✅ PR promoted to ready for review"; \
+		gh pr ready "$$pr_number" >/dev/null 2>&1 || { echo "ERROR: Failed to promote PR" >&2; exit 1; }; \
 	fi; \
-	# Wait for checks and merge using common helper
-	$(MAKE) pr-wait-and-merge || { echo "ERROR: PR validation/merge failed"; exit 1; }; \
-	echo "Switching to main branch for releases..."; \
-	git checkout main && git pull origin main || { echo "ERROR: Failed to update main branch"; exit 1; }; \
-	echo "Creating GitHub release..."; \
-	$(MAKE) release-gh || { echo "ERROR: GitHub release failed"; exit 1; }; \
-	echo "Updating AUR package..."; \
-	$(MAKE) update-aur || { echo "ERROR: AUR update failed"; exit 1; }; \
-	echo ""; \
-	echo "🎉 Complete release process finished!"; \
-	echo "✅ Version $(CURRENT_VERSION) released on GitHub"; \
-	echo "✅ AUR package updated"
+	$(MAKE) pr-wait-and-merge >/dev/null 2>&1 || { echo "ERROR: PR validation/merge failed" >&2; exit 1; }; \
+	git checkout main && git pull origin main >/dev/null 2>&1 || { echo "ERROR: Failed to update main branch" >&2; exit 1; }; \
+	$(MAKE) release-gh >/dev/null 2>&1 || { echo "ERROR: GitHub release failed" >&2; exit 1; }; \
+	$(MAKE) update-aur >/dev/null 2>&1 || { echo "ERROR: AUR update failed" >&2; exit 1; }; \
+	@echo "Release $(CURRENT_VERSION) completed successfully."
 
 ## === GitHub Release ===
 
@@ -101,8 +69,9 @@ merge-pr:
 
 # switch-to-main      Switch to main branch and update it
 switch-to-main:
-	@echo "Switching to main branch for releases..."
-	git checkout main && git pull origin main || { echo "ERROR: Failed to update main branch"; exit 1; }
+	@echo "Switching to main branch..."
+	@git checkout main && git pull origin main >/dev/null 2>&1 || { echo "ERROR: Failed to update main branch" >&2; exit 1; }
+	@echo "Main branch updated."
 
 ## release-gh          Create and push GitHub release for current version
 release-gh: check-deps
@@ -153,30 +122,26 @@ create-pr-draft: check-deps
 ## promote-pr          Promote current branch's draft PR to ready for review
 promote-pr:
 	@echo "Promoting draft PR to ready for review..."
-	@command -v gh >/dev/null 2>&1 || { echo "ERROR: GitHub CLI (gh) is not installed. Please install it to create pull requests."; exit 1; }
-	@# Get current branch and find associated PR
+	@command -v gh >/dev/null 2>&1 || { echo "ERROR: GitHub CLI (gh) is not installed or not on PATH" >&2; exit 1; }
 	@current_branch=$$(git rev-parse --abbrev-ref HEAD); \
 	if [ "$$current_branch" = "main" ]; then \
-		echo "ERROR: You're on main branch. Switch to the branch with the draft PR."; \
+		echo "ERROR: You're on main branch. Switch to the branch with the draft PR." >&2; \
 		exit 1; \
 	fi; \
-	echo "Looking for draft PR for branch: $$current_branch"; \
 	pr_number=$$(gh pr list --head "$$current_branch" --state open --json number --jq '.[0].number' 2>/dev/null); \
 	if [ -z "$$pr_number" ] || [ "$$pr_number" = "null" ]; then \
-	echo "ERROR: No open PR found for branch $$current_branch"; \
-	echo "Create a draft PR first with: make create-pr-draft"; \
+		echo "ERROR: No open PR found for branch $$current_branch" >&2; \
 		exit 1; \
 	fi; \
 	pr_status=$$(gh pr view "$$pr_number" --json isDraft --jq '.isDraft'); \
 	if [ "$$pr_status" = "false" ]; then \
 		echo "PR #$$pr_number is already ready for review"; \
-		gh pr view "$$pr_number" --web; \
+		gh pr view "$$pr_number" --web >/dev/null 2>&1; \
 		exit 0; \
 	fi; \
-	echo "Promoting PR #$$pr_number to ready for review..."; \
-	gh pr ready "$$pr_number" || { echo "ERROR: Failed to promote PR"; exit 1; }; \
-	echo "✅ PR #$$pr_number is now ready for review"; \
-	gh pr view "$$pr_number" --web
+	gh pr ready "$$pr_number" >/dev/null 2>&1 || { echo "ERROR: Failed to promote PR" >&2; exit 1; }; \
+	gh pr view "$$pr_number" --web >/dev/null 2>&1; \
+	@echo "PR #$$pr_number promoted to ready for review."
 
 # pr-wait-and-merge   Wait for status checks on current branch's PR, then merge it
 pr-wait-and-merge: wait-for-ci merge-pr
