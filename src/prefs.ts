@@ -18,7 +18,6 @@ import {
   addDividerPresetRow,
   addColorModeRow,
   getShellVersion,
-  getAdwaitaVersion,
 } from "./prefs/helpers.js";
 
 /**
@@ -43,16 +42,6 @@ export default class TextClockPrefs extends ExtensionPreferences {
    */
   async fillPreferencesWindow(window: Adw.PreferencesWindow): Promise<void> {
     const settings = this.getSettings();
-
-    // Log detected Libadwaita/Adwaita version to help migrate from
-    // Adw.PreferencesWindow -> Adw.PreferencesDialog when available.
-    const adwMajor = getAdwaitaVersion();
-    if (adwMajor !== null) {
-      // Example: Adw 1.6 introduced removal of PreferencesWindow. We will
-      // use this value later to branch UI construction.
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const supportsPreferencesDialog = adwMajor >= 1 && adwMajor >= 6;
-    }
 
     // Check GNOME Shell version to determine if accent color is available
     const shellVersion = getShellVersion();

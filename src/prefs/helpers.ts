@@ -2,7 +2,7 @@ import GLib from "gi://GLib";
 import Gio from "gi://Gio";
 import Adw from "gi://Adw";
 import { prefsGettext } from "../utils/gettext/index.js";
-import { logErr, logWarn, logInfo } from "../utils/error_utils.js";
+import { logErr, logWarn } from "../utils/error_utils.js";
 import { parseGnomeShellVersionString } from "../utils/parse/index.js";
 import { createTranslatePackGetter } from "../utils/translate/index.js";
 
@@ -74,51 +74,6 @@ export function getShellVersion(): number {
 
   logWarn("Could not detect GNOME Shell version, assuming 45");
   return 45;
-}
-
-export function getAdwaitaVersion(): number | null {
-  try {
-    const anyAdw: any = Adw as any;
-
-    if (typeof anyAdw.get_major_version === "function") {
-      const major = Number(anyAdw.get_major_version());
-      if (!Number.isNaN(major)) {
-        logInfo(`Detected libadwaita major version: ${major}`);
-        return major;
-      }
-    }
-
-    if (typeof anyAdw.get_version === "function") {
-      const ver = String(anyAdw.get_version());
-      const m = ver.match(/(\d+)\./);
-      if (m) {
-        const major = Number(m[1]);
-        if (!Number.isNaN(major)) {
-          logInfo(`Detected libadwaita major version: ${major}`);
-          return major;
-        }
-      }
-    }
-
-    const candidates = [anyAdw.version, anyAdw.VERSION, anyAdw.__version__];
-    for (const c of candidates) {
-      if (!c) continue;
-      const s = String(c);
-      const m = s.match(/(\d+)\./);
-      if (m) {
-        const major = Number(m[1]);
-        if (!Number.isNaN(major)) {
-          logInfo(`Detected libadwaita major version: ${major}`);
-          return major;
-        }
-      }
-    }
-  } catch (e) {
-    logWarn(`Error detecting libadwaita version: ${e}`);
-  }
-
-  logWarn("Could not detect libadwaita version");
-  return null;
 }
 
 // Re-exports for UI and page helpers
