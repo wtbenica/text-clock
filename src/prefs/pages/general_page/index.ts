@@ -6,7 +6,7 @@ import {
   addSwitchRow,
   addEntryRowBinding,
 } from "../../ui/rows.js";
-import { prefsGettext } from "../../../utils/gettext/index.js";
+import { prefsGettext } from "../../../utils/gettext/gettext_utils_prefs.js";
 import SettingsKey from "../../../models/settings_keys.js";
 import { PrefItems } from "../../../constants/index.js";
 import { FUZZINESS_OPTIONS, DIVIDER_PRESET } from "../../../constants/prefs.js";

@@ -1,7 +1,7 @@
 import Gtk from "gi://Gtk";
 import Gio from "gi://Gio";
 import Adw from "gi://Adw";
-import { prefsGettext } from "../../../utils/gettext/index.js";
+import { prefsGettext } from "../../../utils/gettext/gettext_utils_prefs.js";
 import { logErr, logWarn } from "../../../utils/error_utils.js";
 import { StyleService } from "../../../services/style_service.js";
 import SettingsKey from "../../../models/settings_keys.js";

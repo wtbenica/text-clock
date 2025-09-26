@@ -1,5 +1,7 @@
-import { Fuzziness } from "../../core/clock_formatter.js";
-import { FUZZINESS_ENUM_MINUTES } from "../../constants/index.js";
+import { Fuzziness } from "../core/clock_formatter.js";
+import { FUZZINESS_ENUM_MINUTES } from "../constants/index.js";
+
+// === Fuzziness Parsing ===
 
 export function fuzzinessFromEnumIndex(index: number): Fuzziness {
   const minutes = FUZZINESS_ENUM_MINUTES[index] ?? 5;
@@ -29,4 +31,18 @@ export function parseFuzziness(value: Fuzziness | string): Fuzziness {
     return Fuzziness.FIVE_MINUTES;
   }
   return value;
+}
+
+// === GNOME Shell Version Parsing ===
+
+export function parseGnomeShellVersionString(
+  input: string | null | undefined,
+): number {
+  if (!input) return NaN;
+  const s = String(input).trim();
+  const re = /(?:GNOME Shell\s*)?(\d+)(?:\.|\b)/i;
+  const m = s.match(re);
+  if (!m) return NaN;
+  const major = parseInt(m[1], 10);
+  return Number.isNaN(major) ? NaN : major;
 }

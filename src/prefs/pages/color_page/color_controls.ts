@@ -3,7 +3,7 @@ import Gdk from "gi://Gdk";
 import GLib from "gi://GLib";
 import Gio from "gi://Gio";
 import Adw from "gi://Adw";
-import { prefsGettext } from "../../../utils/gettext/index.js";
+import { prefsGettext } from "../../../utils/gettext/gettext_utils_prefs.js";
 import { logErr } from "../../../utils/error_utils.js";
 
 export function createColorControlWidget(

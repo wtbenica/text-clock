@@ -1,5 +1,5 @@
 import Adw from "gi://Adw";
-import { prefsGettext } from "../../utils/gettext/index.js";
+import { prefsGettext } from "../../utils/gettext/gettext_utils_prefs.js";
 
 /**
  * Create and add a PreferencesPage to the window.

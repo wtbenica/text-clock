@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import { createDateConstants } from "../../../../constants/dates/core.js";
-import type { GettextFunctions } from "../../../../utils/gettext";
+import type { GettextFunctions } from "../../../../utils/gettext/gettext_utils.js";
 
 describe("createDateConstants", () => {
   let mockGettextFunctions: GettextFunctions;

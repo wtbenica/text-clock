@@ -15,7 +15,7 @@ import Gdk from "gi://Gdk";
 
 // @ts-ignore: runtime resource provided by GNOME Shell
 import { ExtensionPreferences } from "resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js";
-import { prefsGettext } from "./utils/gettext/index.js";
+import { prefsGettext } from "./utils/gettext/gettext_utils_prefs.js";
 import { WINDOW_TITLE } from "./constants/prefs.js";
 import { gjsLogger } from "./utils/logging/logger_gjs.js";
 

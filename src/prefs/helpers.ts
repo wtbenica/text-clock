@@ -1,10 +1,10 @@
 import GLib from "gi://GLib";
 import Gio from "gi://Gio";
 import Adw from "gi://Adw";
-import { prefsGettext } from "../utils/gettext/index.js";
+import { prefsGettext } from "../utils/gettext/gettext_utils_prefs.js";
 import { logErr, logWarn } from "../utils/error_utils.js";
-import { parseGnomeShellVersionString } from "../utils/parse/index.js";
-import { createTranslatePackGetter } from "../utils/translate/index.js";
+import { parseGnomeShellVersionString } from "../utils/parse_utils.js";
+import { createTranslatePackGetter } from "../utils/translate/translate_pack_utils.js";
 
 /**
  * Bind a Gio.Settings key to a property on an ActionRow-like widget.
