@@ -21,7 +21,7 @@ lint:
 	@yarn lint || { echo "yarn lint failed"; exit 1; }
 
 ## validate            Run build and tests (used as the default CI-style check)
-validate: build lint test
+validate: lint test build
 	@echo "Validation complete - all checks passed!"
 
 ## ci-dry-run          Run validation + non-destructive release in auto mode (CI dry-run)
