@@ -28,3 +28,6 @@ simple clock replacement, so keep things simple.
 - Keep business logic separate from UI code. Try to write pure functions that can be tested in isolation. Use dependency injection to pass in dependencies rather than hard-coding them. All business logic should have unit tests.
 - When attempting to fix bugs, use logging to help diagnose issues. Add logging statements to key points in the code to track execution flow and variable values. When done, remove any extraneous logging. Logging utilities are in `src/utils/logging`.
 - When adding strings, use the gettext utilities in `src/utils/gettext` to ensure proper localization support. Also run `make i18n-update` to update the `.pot` file. Then update translations in `po/` folder.
+- Do not use comments that refer to changes that you have made, e.g. "changed X to Y," "X can now be found in Y," etc. Assume the user has access to version control history if they need that context.
+- Avoid creating documentation files. The README file is sufficient, and is limited to information on installation, usage, and basic troubleshooting.
+- RELEASE_NOTES.md is used for CI/CD release notes. Do not add any other documentation files. Keep this file up to date with each release.

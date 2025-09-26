@@ -104,6 +104,16 @@ export const COLOR_MODE_NAMES: string[] = [
   "Custom Colors",
 ];
 
+// Import accent style configuration to ensure consistency
+import { ACCENT_STYLE_CONFIGS } from "../services/accent_style_config.js";
+
+// Map GSettings enum index -> accent color style names and descriptions
+export const ACCENT_COLOR_STYLE_NAMES: string[] = ACCENT_STYLE_CONFIGS.map(
+  (config) => config.name,
+);
+export const ACCENT_COLOR_STYLE_DESCRIPTIONS: string[] =
+  ACCENT_STYLE_CONFIGS.map((config) => config.description);
+
 /**
  * Get the actual divider text based on preset and custom text
  */

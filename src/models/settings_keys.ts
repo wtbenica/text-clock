@@ -15,6 +15,7 @@ export const enum SettingsKey {
   TIME_FORMAT = "time-format",
   FUZZINESS = "fuzziness",
   COLOR_MODE = "color-mode",
+  ACCENT_COLOR_STYLE = "accent-color-style",
   CLOCK_COLOR = "clock-color",
   DATE_COLOR = "date-color",
   DIVIDER_COLOR = "divider-color",

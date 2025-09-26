@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-26 11:35-0700\n"
+"POT-Creation-Date: 2025-09-26 13:38-0700\n"
 "PO-Revision-Date: 2024-07-20 18:12-0700\n"
 "Last-Translator: Wesley Benica <wesley@benica.dev>\n"
 "Language-Team: \n"
@@ -18,92 +18,64 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.4.2\n"
 
-#: dist/prefs/ui/groups.js:12 dist/prefs/groups.js:11
-#: dist/prefs/dialog.clean.js:19 dist/prefs/dialog.clean.js:37
-#: dist/prefs/dialog.js:20 dist/prefs/dialog.js:64
+#: dist/prefs/ui/groups.js:12
 msgid "Text Clock"
 msgstr ""
 
-#: dist/prefs/ui/color_controls.js:17 dist/prefs/color_controls.js:31
+#: dist/prefs/helpers.js:20
+msgid "Error binding settings for"
+msgstr ""
+
+#: dist/prefs/pages/general_page/formatters.js:37
+msgid "Time Format"
+msgstr ""
+
+#: dist/prefs/pages/general_page/formatters.js:38
+msgid "Choose time format"
+msgstr ""
+
+#: dist/prefs/pages/color_page/index.js:33
+msgid "Accent Style"
+msgstr ""
+
+#: dist/prefs/pages/color_page/index.js:34
+msgid "Choose accent color variation"
+msgstr ""
+
+#: dist/prefs/pages/color_page/index.js:53
+msgid "Default"
+msgstr ""
+
+#: dist/prefs/pages/color_page/index.js:55
+msgid "Accent Color"
+msgstr ""
+
+#: dist/prefs/pages/color_page/index.js:56
+msgid "Custom Colors"
+msgstr ""
+
+#: dist/prefs/pages/color_page/index.js:66
+msgid "Color mode"
+msgstr ""
+
+#: dist/prefs/pages/color_page/index.js:67
+msgid "Choose which color source to use"
+msgstr ""
+
 #: dist/prefs/pages/color_page/color_controls.js:17
 msgid "Accent"
 msgstr ""
 
-#: dist/prefs/ui/color_controls.js:94 dist/prefs/color_controls.js:125
 #: dist/prefs/pages/color_page/color_controls.js:94
 msgid "Time Color"
 msgstr ""
 
-#: dist/prefs/ui/color_controls.js:97 dist/prefs/color_controls.js:128
 #: dist/prefs/pages/color_page/color_controls.js:97
 msgid "Date Color"
 msgstr ""
 
-#: dist/prefs/ui/color_controls.js:100 dist/prefs/color_controls.js:131
 #: dist/prefs/pages/color_page/color_controls.js:100
 msgid "Divider Color"
-msgstr ""
-
-#: dist/prefs/color.js:45 dist/prefs/pages/color_page/index.js:47
-#: dist/prefs/pages/color_page/color_page.js:45
-msgid "Color mode"
-msgstr ""
-
-#: dist/prefs/color.js:46 dist/prefs/pages/color_page/index.js:48
-#: dist/prefs/pages/color_page/color_page.js:46
-msgid "Choose which color source to use"
-msgstr ""
-
-#: dist/prefs/dialog.clean.js:20
-msgid "General"
-msgstr ""
-
-#: dist/prefs/dialog.clean.js:22
-msgid "Placeholder"
-msgstr ""
-
-#: dist/prefs/dialog.clean.js:24 dist/prefs/dialog.js:21
-msgid "Clock Settings"
-msgstr ""
-
-#: dist/prefs/dialog.js:21
-msgid "Customize the appearance and behavior of the clock"
-msgstr ""
-
-#: dist/prefs/formatters.js:37 dist/prefs/pages/general_page/formatters.js:37
-msgid "Time Format"
-msgstr ""
-
-#: dist/prefs/formatters.js:38 dist/prefs/pages/general_page/formatters.js:38
-msgid "Choose time format"
-msgstr ""
-
-#: dist/prefs/bindings.js:17 dist/prefs/helpers.js:20
-msgid "Error binding settings for"
-msgstr ""
-
-#: dist/prefs/general.js:68 dist/prefs/pages/general_page/general_page.js:68
-msgid "Divider Preset"
-msgstr ""
-
-#: dist/prefs/general.js:69 dist/prefs/pages/general_page/general_page.js:69
-msgid "Choose a preset divider or select custom"
-msgstr ""
-
-#: dist/prefs/general.js:75 dist/prefs/pages/general_page/general_page.js:75
-msgid "Custom Divider Text"
-msgstr ""
-
-#: dist/prefs/pages/color_page/index.js:34
-msgid "Default"
-msgstr ""
-
-#: dist/prefs/pages/color_page/index.js:36
-msgid "Accent Color"
-msgstr ""
-
-#: dist/prefs/pages/color_page/index.js:37
-msgid "Custom Colors"
 msgstr ""
 
 #: dist/constants/times/core.js:7 dist/constants/times/core.js:67

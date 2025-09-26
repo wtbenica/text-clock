@@ -13,6 +13,10 @@ import {
   GROUP_DESCRIPTIONS,
 } from "../../../constants/prefs.js";
 import {
+  ACCENT_COLOR_STYLE_NAMES,
+  ACCENT_COLOR_STYLE_DESCRIPTIONS,
+} from "../../../constants/index.js";
+import {
   addClockColorRow as _addClockColorRow,
   addDateColorRow as _addDateColorRow,
   addDividerColorRow as _addDividerColorRow,
@@ -50,6 +54,34 @@ export function addDividerColorRow(
 }
 
 /**
+ * Add the accent color style selection row to a group.
+ */
+export function addAccentStyleRow(
+  group: Adw.PreferencesGroup,
+  settings: Gio.Settings,
+): Adw.ComboRow {
+  const modelStrings = ACCENT_COLOR_STYLE_NAMES.map((name) =>
+    prefsGettext._(name),
+  );
+  const currentSelected = settings.get_enum(SettingsKey.ACCENT_COLOR_STYLE);
+
+  const accentStyleRow = new Adw.ComboRow({
+    title: prefsGettext._("Accent Style"),
+    subtitle: prefsGettext._("Choose accent color variation"),
+    model: new Gtk.StringList({ strings: modelStrings }),
+    selected: currentSelected,
+  });
+
+  group.add(accentStyleRow);
+
+  accentStyleRow.connect("notify::selected", () => {
+    settings.set_enum(SettingsKey.ACCENT_COLOR_STYLE, accentStyleRow.selected);
+  });
+
+  return accentStyleRow;
+}
+
+/**
  * Add the color mode selection row and related color rows to a group.
  *
  * The color mode row controls whether the extension uses the system default
@@ -83,6 +115,7 @@ export function addColorModeRow(
   group.add(colorModeRow);
 
   const styleSvc = new StyleService(settings);
+  const accentStyleRow = addAccentStyleRow(group, settings);
   const clockColorRow = addClockColorRow(group, settings, styleSvc);
   const dateColorRow = addDateColorRow(group, settings, styleSvc);
   const dividerColorRow = addDividerColorRow(group, settings, styleSvc);
@@ -116,10 +149,15 @@ export function addColorModeRow(
 
   const updateColorRowsVisibility = () => {
     const selectedMode = colorModeRow.selected;
+    const isAccent = supportsAccentColor && selectedMode === 1;
     const isCustom = supportsAccentColor
       ? selectedMode === 2
       : selectedMode === 1;
 
+    // Show accent style row only when accent color mode is selected
+    accentStyleRow.visible = isAccent;
+
+    // Show custom color rows only when custom colors mode is selected
     clockColorRow.visible = isCustom;
     dividerColorRow.visible = isCustom;
     dateColorRow.visible = isCustom;
@@ -147,6 +185,7 @@ export function addColorModeRow(
 
 export default {
   addColorModeRow,
+  addAccentStyleRow,
   addClockColorRow,
   addDateColorRow,
   addDividerColorRow,

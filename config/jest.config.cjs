@@ -31,11 +31,19 @@ module.exports = {
         '!**/constants/**/extension.ts',
         '!**/constants/**/prefs.ts',
         '!src/extension.ts',
-        '!src/ui/**',
-        // Exclude GNOME Shell-only files from coverage to avoid errors in Node/test environment
-        '!src/utils/gettext_utils_prefs.ts',
-        '!src/utils/gettext_utils_ext.ts',
         '!src/prefs.ts',
+        // Exclude UI files (require GTK runtime)
+        '!src/ui/**',
+        '!src/prefs/**',
+        // Exclude GNOME Shell runtime services
+        '!src/services/style_service.ts',
+        '!src/services/notification_service.ts',
+        '!src/services/settings_manager.ts',
+        // Exclude gettext utilities (environment-dependent)
+        '!src/utils/gettext/gettext_utils_prefs.ts',
+        '!src/utils/gettext/gettext_utils_ext.ts',
+        // Exclude GJS-specific logger
+        '!src/utils/logging/logger_gjs.ts',
     ],
     coverageDirectory: '<rootDir>/coverage',
     coverageReporters: ['text', 'lcov', 'html'],

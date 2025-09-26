@@ -20,6 +20,14 @@ lint:
 	@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is required to run linter" >&2; exit 1; }
 	@yarn lint || { echo "ERROR: Linting failed" >&2; exit 1; }
 
+## coverage            Run tests with coverage reporting
+coverage: node_modules/
+	@echo "Running tests with coverage..."
+	@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is required to run tests" >&2; exit 1; }
+	@yarn tsc -p config/tsconfig.test.json >/dev/null 2>&1 || { echo "ERROR: TypeScript compilation failed" >&2; exit 1; }
+	@yarn test --coverage || { echo "ERROR: Coverage analysis failed" >&2; exit 1; }
+	@echo "Coverage report generated: coverage/lcov-report/index.html"
+
 ## validate            Run build and tests (used as the default CI-style check)
 validate: lint test build
 	@echo "Validation completed successfully."

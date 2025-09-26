@@ -150,14 +150,13 @@ locale/: $(MO_FILES)
 # Generate a new POT file
 po/text-clock@benica.dev.pot: $(DIST_DIR)/extension.js
 	@echo "Generating a new POT file..."
-	@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is required to generate POT files; please install and try again."; exit 1; }
-	@yarn tsc -p config/tsconfig.pot.json || { echo "TypeScript compilation failed"; exit 1; }
-	# Ensure we actually have JS files to scan; fail early if none are found.
+	@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is required to generate POT files; please install and try again." >&2; exit 1; }
+	@yarn tsc -p config/tsconfig.pot.json >/dev/null 2>&1 || { echo "ERROR: TypeScript compilation failed" >&2; exit 1; }
 	@js_count=$$(find $(DIST_DIR) -type f -name '*.js' | wc -l); \
 	if [ "$$js_count" -eq 0 ]; then \
-		echo "No JS files found in $(DIST_DIR) for POT generation"; exit 1; \
+		echo "ERROR: No JS files found in $(DIST_DIR) for POT generation" >&2; exit 1; \
 	fi; \
-	find $(DIST_DIR) -type f -name '*.js' -print0 | xargs -0 xgettext --from-code=UTF-8 --keyword=_ --output=po/text-clock@benica.dev.pot || { echo "Generating POT file failed"; exit 1; }
+	find $(DIST_DIR) -type f -name '*.js' -print0 | xargs -0 xgettext --from-code=UTF-8 --keyword=_ --output=po/text-clock@benica.dev.pot >/dev/null 2>&1 || { echo "ERROR: Generating POT file failed" >&2; exit 1; }
 
 
 ## Compile extension resources (strict)

@@ -17,6 +17,7 @@ import { logWarn } from "../utils/error_utils.js";
 import { getDividerText } from "../constants/index.js";
 import SettingsKey from "../models/settings_keys.js";
 import { Color } from "../models/color.js";
+import { applyAccentStyle } from "./accent_style_config.js";
 
 /**
  * Configuration for styling elements
@@ -196,6 +197,7 @@ export class StyleService {
   #connectToSettings(): void {
     const colorSettings = [
       SettingsKey.COLOR_MODE,
+      SettingsKey.ACCENT_COLOR_STYLE,
       SettingsKey.CLOCK_COLOR,
       SettingsKey.DATE_COLOR,
       SettingsKey.DIVIDER_COLOR,
@@ -266,11 +268,20 @@ export class StyleService {
     if (colorMode === 1) {
       // Accent color mode
       const accentColor = this.getAccentColor();
-      clockColor = accentColor.lighten(0.7);
-      dateColor = accentColor;
-      // Use a darkened version of the accent color for the divider so it remains
-      // distinct when accent color is selected.
-      dividerColor = accentColor.lighten(0.7);
+      const accentStyle = this.#settings.get_enum(
+        SettingsKey.ACCENT_COLOR_STYLE,
+      );
+
+      // Use the configuration system to apply the selected accent style
+      const {
+        clockColor: accentClockColor,
+        dateColor: accentDateColor,
+        dividerColor: accentDividerColor,
+      } = applyAccentStyle(accentColor, accentStyle);
+
+      clockColor = accentClockColor;
+      dateColor = accentDateColor;
+      dividerColor = accentDividerColor;
     } else if (colorMode === 2) {
       // Custom colors mode, but allow per-section "use accent" overrides
       const accentColor = this.getAccentColor();
