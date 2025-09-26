@@ -47,10 +47,12 @@ export default class TextClockPrefs extends ExtensionPreferences {
     const shellVersion = getShellVersion();
     const supportsAccentColor = shellVersion >= 47;
 
-    const page = createAndAddPageToWindow(window);
+    // Create two separate pages: General settings and Colors.
+    const generalPage = createAndAddPageToWindow(window, "General");
+    const colorsPage = createAndAddPageToWindow(window, "Colors");
 
     const clockSettingsGroup = createAndAddGroupToPage(
-      page,
+      generalPage,
       "Clock Settings",
       "Customize the appearance and behavior of the clock",
     );
@@ -62,7 +64,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
     addDividerPresetRow(clockSettingsGroup, settings);
 
     const clockColorSettingsGroup = createAndAddGroupToPage(
-      page,
+      colorsPage,
       "Clock Colors",
       "Customize the colors of the clock and date text",
     );
