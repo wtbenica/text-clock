@@ -14,8 +14,16 @@ import Gtk from "gi://Gtk";
 import Gdk from "gi://Gdk";
 
 // @ts-ignore: runtime resource provided by GNOME Shell
-import { ExtensionPreferences } from "resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js";
-import { prefsGettext } from "./utils/gettext/gettext_utils_prefs.js";
+import {
+  ExtensionPreferences,
+  gettext as _,
+  ngettext,
+  pgettext,
+} from "resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js";
+import {
+  prefsGettext,
+  initPrefsGettext,
+} from "./utils/gettext/gettext_utils_prefs.js";
 import { WINDOW_TITLE } from "./constants/prefs.js";
 import { gjsLogger } from "./utils/logging/logger_gjs.js";
 
@@ -23,6 +31,9 @@ import { gjsLogger } from "./utils/logging/logger_gjs.js";
 import { getShellVersion } from "./prefs/helpers.js";
 import { createGeneralPage } from "./prefs/pages/general_page/index.js";
 import { createColorsPage } from "./prefs/pages/color_page/index.js";
+
+// Initialize gettext functions with the real GNOME Shell functions
+initPrefsGettext(_, ngettext, pgettext);
 
 /**
  * Preferences UI entrypoint for the Text Clock extension.
