@@ -45,3 +45,61 @@ start-dev-branch: check-deps
 	git add version.json package.json metadata.json README.md >/dev/null 2>&1 || { echo "ERROR: Failed to stage files" >&2; exit 1; }; \
 	git commit -m "Bump version to $$new_version" >/dev/null 2>&1 || { echo "ERROR: Failed to commit changes" >&2; exit 1; }; \
 	@echo "Development branch $$branch_name created successfully."
+
+## === Version Updates ===
+
+## update-version      Update version number on current branch (TYPE=patch|minor|major)
+update-version: check-deps
+	@if [ -z "$(TYPE)" ]; then \
+		echo "ERROR: TYPE parameter is required. Usage: make update-version TYPE=patch|minor|major" >&2; \
+		exit 1; \
+	fi
+	@./scripts/update-version.sh $(TYPE) $(if $(EXTRA_FLAGS),$(EXTRA_FLAGS))
+
+## update-version-rename Update version and rename current branch (TYPE=patch|minor|major)
+update-version-rename: check-deps
+	@if [ -z "$(TYPE)" ]; then \
+		echo "ERROR: TYPE parameter is required. Usage: make update-version-rename TYPE=patch|minor|major" >&2; \
+		exit 1; \
+	fi
+	@./scripts/update-version.sh --rename-branch $(TYPE) $(if $(EXTRA_FLAGS),$(EXTRA_FLAGS))
+
+## update-version-dry  Show what version update would do without executing (TYPE=patch|minor|major)
+update-version-dry: check-deps
+	@if [ -z "$(TYPE)" ]; then \
+		echo "ERROR: TYPE parameter is required. Usage: make update-version-dry TYPE=patch|minor|major" >&2; \
+		exit 1; \
+	fi
+	@./scripts/update-version.sh --dry-run $(TYPE) $(if $(EXTRA_FLAGS),$(EXTRA_FLAGS))
+
+## update-version-force Update version without confirmation prompts (TYPE=patch|minor|major)
+update-version-force: check-deps
+	@if [ -z "$(TYPE)" ]; then \
+		echo "ERROR: TYPE parameter is required. Usage: make update-version-force TYPE=patch|minor|major" >&2; \
+		exit 1; \
+	fi
+	@./scripts/update-version.sh --force $(TYPE) $(if $(EXTRA_FLAGS),$(EXTRA_FLAGS))
+
+## update-version-files-only Update version in files only, no git operations (TYPE=patch|minor|major)
+update-version-files-only: check-deps
+	@if [ -z "$(TYPE)" ]; then \
+		echo "ERROR: TYPE parameter is required. Usage: make update-version-files-only TYPE=patch|minor|major" >&2; \
+		exit 1; \
+	fi
+	@./scripts/update-version.sh --no-git $(TYPE) $(if $(EXTRA_FLAGS),$(EXTRA_FLAGS))
+
+## update-version-files-only-dry Preview file-only version update without executing (TYPE=patch|minor|major)
+update-version-files-only-dry: check-deps
+	@if [ -z "$(TYPE)" ]; then \
+		echo "ERROR: TYPE parameter is required. Usage: make update-version-files-only-dry TYPE=patch|minor|major" >&2; \
+		exit 1; \
+	fi
+	@./scripts/update-version.sh --no-git --dry-run $(TYPE) $(if $(EXTRA_FLAGS),$(EXTRA_FLAGS))
+
+## update-version-files-only-force Update version in files only without confirmation (TYPE=patch|minor|major)
+update-version-files-only-force: check-deps
+	@if [ -z "$(TYPE)" ]; then \
+		echo "ERROR: TYPE parameter is required. Usage: make update-version-files-only-force TYPE=patch|minor|major" >&2; \
+		exit 1; \
+	fi
+	@./scripts/update-version.sh --no-git --force $(TYPE) $(if $(EXTRA_FLAGS),$(EXTRA_FLAGS))

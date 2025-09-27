@@ -135,7 +135,62 @@ Then submit the ZIP file to https://extensions.gnome.org/upload/
 
 ```bash
 # Start development for next version
-make start-dev-branch TYPE=patch   # 1.0.5 → 1.0.6
+make start-dev-branch TYPE=patch   # 1.1.0 → 1.1.1
 ```
 
 This creates a new development branch with incremented version numbers.
+
+### 4. Version Updates During Development
+
+If you realize your version branch needs a different version number (e.g., started as v1.1.1 but should be v1.2.0):
+
+```bash
+# Preview what would change
+make update-version-dry TYPE=minor
+
+# Update version on current branch
+make update-version TYPE=minor
+
+# Update version AND rename branch to match
+make update-version-rename TYPE=minor
+
+# Skip confirmation prompts
+make update-version-force TYPE=patch
+
+# Update files only (no git operations)
+make update-version-files-only TYPE=minor
+
+# Preview files-only update
+make update-version-files-only-dry TYPE=minor
+
+# Files-only update without confirmation
+make update-version-files-only-force TYPE=minor
+```
+
+**What gets updated:**
+- `package.json` - main version field
+- `metadata.json` - version-name and version number
+- `README.md` - all version references and download links  
+- `aur/PKGBUILD` - package version
+- `RELEASE_NOTES.md` - header version
+- `po/*.po` files - project version strings
+- Script examples in documentation
+
+**Script Options:**
+- **Default**: Update files and commit with git
+- **`--rename-branch`**: Also rename current branch to match new version
+- **`--no-git`**: Update files only, no git operations (no commit, no branch rename)
+- **`--dry-run`**: Preview changes without executing
+- **`--force`**: Skip confirmation prompts
+
+**Files-only mode** is perfect when:
+- You have uncommitted changes you don't want to lose
+- You want to review version updates before committing
+- You're updating version numbers as part of a larger set of changes
+- You want to handle git operations manually
+
+**When to use each mode:**
+- `update-version` - Standard case: clean working directory, ready to commit
+- `update-version-rename` - When you also need to rename the branch
+- `update-version-files-only` - When you have uncommitted work or want manual git control
+- `*-dry` variants - Always safe to run for previewing changes
