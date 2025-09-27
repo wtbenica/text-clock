@@ -5,7 +5,7 @@ export const WINDOW_TITLE = "Text Clock Prefs";
 
 export const PAGE_ICONS = {
   GENERAL: "tc-settings-symbolic",
-  COLORS: "preferences-color-symbolic",
+  COLORS: "tc-color-symbolic",
 };
 
 export const DIVIDER_PRESETS = ["|", "•", "‖", "—", "Custom"];
