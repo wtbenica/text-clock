@@ -105,6 +105,20 @@ export const ACCENT_STYLE_CONFIGS: readonly AccentStyleConfig[] = [
     dividerColor: () => new Color("#FFFFFF"),
   },
   {
+    name: "Contrast",
+    description: "Time white, date normal, divider white",
+    clockColor: () => new Color("#FFFFFF"),
+    dateColor: (accent) => accent.lighten(0.1),
+    dividerColor: () => new Color("#FFFFFF"),
+  },
+  {
+    name: "Contrast Reverse",
+    description: "Time normal, date white, divider normal",
+    clockColor: (accent) => accent.lighten(0.1),
+    dateColor: () => new Color("#FFFFFF"),
+    dividerColor: (accent) => accent,
+  },
+  {
     name: "Light Variant",
     description: "All elements lighter",
     clockColor: (accent) => accent.lighten(),
