@@ -40,6 +40,9 @@ import { logWarn, logErr } from "../utils/error_utils.js";
 import { fuzzinessFromEnumIndex } from "../utils/parse_utils.js";
 import { Fuzziness } from "../core/clock_formatter.js";
 
+/** Default enum index for 5 minutes fuzziness */
+const DEFAULT_FUZZINESS_INDEX = 1;
+
 /**
  * Callback function for settings changes.
  *
@@ -274,13 +277,10 @@ export class SettingsManager {
    * }
    * ```
    */
-  /** Default enum index for 5 minutes fuzziness */
-  private static readonly DEFAULT_FUZZINESS_INDEX = 1;
-
   getFuzziness(): Fuzziness {
     const fuzzIndex = this.getEnum(
       SettingsKey.FUZZINESS,
-      SettingsManager.DEFAULT_FUZZINESS_INDEX,
+      DEFAULT_FUZZINESS_INDEX,
     ); // Default to 5 minutes
     return fuzzinessFromEnumIndex(fuzzIndex);
   }

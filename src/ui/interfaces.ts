@@ -6,7 +6,17 @@
 import { WordPack } from "../word_pack.js";
 // Use plain `any` for GJS types in interfaces so unit tests (node) compile cleanly.
 type StBoxLayout = any;
-type StLabel = any;
+/**
+ * Represents a St.Label from gi://St, used for displaying text in the GNOME Shell UI.
+ * Only includes properties and methods used by the extension for type safety.
+ */
+export interface StLabel {
+  text: string;
+  set_text(text: string): void;
+  style: string;
+  // Add other properties/methods as needed for your usage.
+}
+
 import { Fuzziness } from "../core/clock_formatter.js";
 import { Color } from "../models/color.js";
 

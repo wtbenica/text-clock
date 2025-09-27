@@ -186,7 +186,7 @@ export class ClockFormatter {
     timeFormat: TimeFormat,
     fuzziness: Fuzziness,
   ): { time: string; divider: string; date: string } {
-    validateDate(date, "ClockFormatter.getClockParts");
+    validateDate(date, "ClockFormatter.getClockText");
     if (fuzziness <= 0) {
       throw new Error("Fuzziness must be a positive number");
     }

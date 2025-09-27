@@ -106,7 +106,6 @@ export function addColorModeRow(
   } else if (!supportsAccentColor && currentSelected === COLOR_MODE_CUSTOM) {
     currentSelected = COLOR_MODE_ACCENT;
   }
-  settings.set_enum(SettingsKey.COLOR_MODE, COLOR_MODE_DEFAULT);
   const colorModeRow = new Adw.ComboRow({
     title: prefsGettext._("Color mode"),
     subtitle: prefsGettext._("Choose which color source to use"),

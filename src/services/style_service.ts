@@ -556,13 +556,8 @@ export class StyleService {
           this.#settings.get_string(SettingsKey.DIVIDER_COLOR),
         );
       }
-    } else if (colorMode === ColorMode.DEFAULT) {
-      // Default mode
-      clockColor = new Color("#FFFFFF");
-      dateColor = new Color("#FFFFFF");
-      dividerColor = new Color("#FFFFFF");
     } else {
-      // Default mode
+      // Default mode (ColorMode.DEFAULT or any unexpected value)
       clockColor = new Color("#FFFFFF");
       dateColor = new Color("#FFFFFF");
       dividerColor = new Color("#FFFFFF");

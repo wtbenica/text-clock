@@ -109,47 +109,40 @@ export function createColorControlWidget(
     }
   };
 
-  // Listen for accent color changes from the system
-  let accentColorWatcher: number | null = null;
-  const startAccentColorWatcher = () => {
-    if (accentColorWatcher !== null) {
-      return; // Already watching
-    }
-
-    accentColorWatcher = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1000, () => {
-      // Only update if we're in accent mode
-      if (accentSwitch.get_active()) {
-        try {
-          const currentAccentColor = styleSvc.getAccentColor().toString();
-          const currentButtonColor = colorButton.get_rgba().to_string();
-
-          // Check if the accent color has changed
-          if (currentAccentColor !== currentButtonColor) {
-            updateColorPicker();
-          }
-        } catch (e) {
-          logErr(e, "Error checking accent color changes");
-        }
-      }
-      return true; // Continue watching
-    });
-  };
-
-  const stopAccentColorWatcher = () => {
-    if (accentColorWatcher !== null) {
-      GLib.source_remove(accentColorWatcher);
-      accentColorWatcher = null;
-    }
-  };
-
-  // Start/stop watcher based on accent switch state
-  const manageAccentWatcher = () => {
+  /**
+   * Update accent color display when window receives focus.
+   * Only updates if accent mode is active to avoid unnecessary work.
+   */
+  const updateOnWindowFocus = () => {
     if (accentSwitch.get_active()) {
-      startAccentColorWatcher();
-    } else {
-      stopAccentColorWatcher();
+      updateColorPicker();
     }
   };
+
+  // Connect to window focus events for accent color updates
+  const setupWindowFocusListener = () => {
+    const prefsWindow = control.get_root() as Adw.PreferencesWindow | null;
+    if (prefsWindow) {
+      prefsWindow.connect("notify::is-active", () => {
+        if (prefsWindow.is_active) {
+          updateOnWindowFocus();
+        }
+      });
+    }
+  };
+
+  // Try to set up window focus listener immediately, or defer until window is available
+  if (control.get_root()) {
+    setupWindowFocusListener();
+  } else {
+    // Wait until control is added to window hierarchy
+    const notifyHandler = control.connect("notify::root", () => {
+      if (control.get_root()) {
+        setupWindowFocusListener();
+        control.disconnect(notifyHandler);
+      }
+    });
+  }
 
   try {
     settings.bind(
@@ -162,10 +155,10 @@ export function createColorControlWidget(
     logErr(e, `Error binding ${errorContext}`);
   }
 
+  // Update colors when accent switch is toggled
   accentSwitch.connect("state-set", () => {
     GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
       updateColorPicker();
-      manageAccentWatcher(); // Start/stop watching based on new state
       return false;
     });
   });
@@ -178,13 +171,8 @@ export function createColorControlWidget(
     }
   });
 
-  // Cleanup function to stop watcher when widget is destroyed
-  control.connect("destroy", () => {
-    stopAccentColorWatcher();
-  });
-
+  // Initial color setup
   updateColorPicker();
-  manageAccentWatcher(); // Start watching if needed
 
   control.append(switchLabel);
   control.append(accentSwitch);
@@ -193,7 +181,6 @@ export function createColorControlWidget(
   (control as any)._colorButton = colorButton;
   (control as any)._accentSwitch = accentSwitch;
   (control as any)._updateColorPicker = updateColorPicker;
-  (control as any)._stopAccentColorWatcher = stopAccentColorWatcher; // Expose cleanup function
 
   return control;
 }
