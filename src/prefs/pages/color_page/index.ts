@@ -6,12 +6,7 @@ import { logErr, logWarn } from "../../../utils/error_utils.js";
 import { StyleService } from "../../../services/style_service.js";
 import SettingsKey from "../../../models/settings_keys.js";
 import { createAndAddPageToWindow } from "../../ui/groups.js";
-import {
-  PAGE_TITLES,
-  PAGE_ICONS,
-  GROUP_TITLES,
-  GROUP_DESCRIPTIONS,
-} from "../../../constants/prefs.js";
+import { PAGE_ICONS } from "../../../constants/prefs.js";
 import { ACCENT_COLOR_STYLE_NAMES } from "../../../constants/index.js";
 import {
   addClockColorRow as _addClockColorRow,
@@ -205,15 +200,12 @@ export function createColorsPage(
   settings: Gio.Settings,
   supportsAccentColor: boolean,
 ) {
-  const page = createAndAddPageToWindow(
-    window,
-    PAGE_TITLES.COLORS,
-    PAGE_ICONS.COLORS,
-  );
+  const { _ } = prefsGettext;
+  const page = createAndAddPageToWindow(window, _("Colors"), PAGE_ICONS.COLORS);
 
   const colorGroup = new Adw.PreferencesGroup({
-    title: prefsGettext._(GROUP_TITLES.CLOCK_COLORS),
-    description: prefsGettext._(GROUP_DESCRIPTIONS.CLOCK_COLORS),
+    title: _("Clock Colors"),
+    description: _("Customize the colors of the clock and date text"),
   });
   page.add(colorGroup);
 

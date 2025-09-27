@@ -1,18 +1,18 @@
 import Adw from "gi://Adw";
-import { prefsGettext } from "../../utils/gettext/gettext_utils_prefs.js";
 
 /**
  * Create and add a PreferencesPage to the window.
  *
  * @param window - Adw.PreferencesWindow instance
+ * @param title - Already translated title string
+ * @param icon_name - Icon name for the page
  * @returns Adw.PreferencesPage the created page
  */
 export function createAndAddPageToWindow(
   window: Adw.PreferencesWindow,
-  title_tag: string,
+  title: string,
   icon_name: string,
 ) {
-  const title = prefsGettext._(title_tag);
   const pageProps: any = { title };
   pageProps.icon_name = icon_name;
   const page = new Adw.PreferencesPage(pageProps);
@@ -24,18 +24,18 @@ export function createAndAddPageToWindow(
  * Create and add an Adw.PreferencesGroup to a page.
  *
  * @param page - the preferences page
- * @param title_tag - localization key or tag for the group's title
- * @param description_tag - localization key or tag for the group's description
+ * @param title - Already translated title string
+ * @param description - Already translated description string
  * @returns Adw.PreferencesGroup the created group
  */
 export function createAndAddGroupToPage(
   page: Adw.PreferencesPage,
-  title_tag: string,
-  description_tag: string,
+  title: string,
+  description: string,
 ) {
   const group = new Adw.PreferencesGroup({
-    title: prefsGettext._(title_tag),
-    description: prefsGettext._(description_tag),
+    title,
+    description,
   });
   page.add(group);
   return group;

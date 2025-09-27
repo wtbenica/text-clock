@@ -5,9 +5,15 @@
 
 import { GettextFunctions } from "../gettext/gettext_utils.js";
 
-// In GNOME Shell, these are provided via the resource:/// imports. For tests
-// we provide no-op fallbacks so TypeScript compilation doesn't require the
-// resource:/// module to exist.
+/**
+ * Extension context gettext utilities.
+ *
+ * This module provides gettext functions for the extension context.
+ * It attempts to use the real GNOME Shell gettext functions when available,
+ * and falls back to test-friendly functions during testing/compilation.
+ */
+
+// Default fallback functions for testing
 let _fn: (msgid: string) => string = (s) => s;
 let _n: (msgid: string, msgid_plural: string, n: number) => string = (
   s,
@@ -16,20 +22,27 @@ let _n: (msgid: string, msgid_plural: string, n: number) => string = (
 ) => (n === 1 ? s : p);
 let _p: (msgctxt: string, msgid: string) => string = (_ctx, s) => s;
 
-try {
-  const res = (imports as any).resource?.org?.gnome?.shell?.extensions
-    ?.extension;
-  if (res) {
-    _fn = res.gettext;
-    _n = res.ngettext;
-    _p = res.pgettext;
-  }
-} catch {
-  // leave fallbacks
+/**
+ * Initialize gettext functions with runtime dependencies.
+ * This should be called by the extension during initialization.
+ */
+export function initExtensionGettext(
+  gettext: (msgid: string) => string,
+  ngettext: (msgid: string, msgid_plural: string, n: number) => string,
+  pgettext: (msgctxt: string, msgid: string) => string,
+): void {
+  _fn = gettext;
+  _n = ngettext;
+  _p = pgettext;
 }
 
+/**
+ * Gettext functions for extension context (main extension code).
+ * Uses injected functions when available, falls back to test functions.
+ */
 export const extensionGettext: GettextFunctions = {
-  _: _fn,
-  ngettext: _n,
-  pgettext: _p,
+  _: (msgid: string) => _fn(msgid),
+  ngettext: (msgid: string, msgid_plural: string, n: number) =>
+    _n(msgid, msgid_plural, n),
+  pgettext: (msgctxt: string, msgid: string) => _p(msgctxt, msgid),
 };

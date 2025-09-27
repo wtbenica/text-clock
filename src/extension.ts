@@ -14,6 +14,8 @@ import { panel } from "resource:///org/gnome/shell/ui/main.js";
 import {
   Extension,
   gettext as _,
+  ngettext,
+  pgettext,
 } from "resource:///org/gnome/shell/extensions/extension.js";
 
 import { TextClockLabel } from "./ui/clock_widget.js";
@@ -24,12 +26,18 @@ import SettingsKey from "./models/settings_keys.js";
 import { logErr, logWarn } from "./utils/error_utils.js";
 import { fuzzinessFromEnumIndex } from "./utils/parse_utils.js";
 import { createTranslatePackGetter } from "./utils/translate/translate_pack_utils.js";
-import { extensionGettext } from "./utils/gettext/gettext_utils_ext.js";
+import {
+  extensionGettext,
+  initExtensionGettext,
+} from "./utils/gettext/gettext_utils_ext.js";
 import { SettingsManager } from "./services/settings_manager.js";
 import { StyleService } from "./services/style_service.js";
 import { NotificationService } from "./services/notification_service.js";
 
 const CLOCK_STYLE_CLASS_NAME = "clock";
+
+// Initialize gettext functions with the real GNOME Shell functions
+initExtensionGettext(_, ngettext, pgettext);
 
 /**
  * Translation pack provider for the extension runtime environment.

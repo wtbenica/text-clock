@@ -8,8 +8,7 @@ import {
 } from "../../ui/rows.js";
 import { prefsGettext } from "../../../utils/gettext/gettext_utils_prefs.js";
 import SettingsKey from "../../../models/settings_keys.js";
-import { PrefItems } from "../../../constants/index.js";
-import { FUZZINESS_OPTIONS, DIVIDER_PRESET } from "../../../constants/prefs.js";
+import { DIVIDER_PRESETS } from "../../../constants/prefs.js";
 
 // Index of the custom divider preset in DIVIDER_PRESET.OPTIONS
 const CUSTOM_DIVIDER_PRESET_INDEX = 4;
@@ -17,12 +16,7 @@ import {
   createAndAddPageToWindow,
   createAndAddGroupToPage,
 } from "../../ui/groups.js";
-import {
-  PAGE_TITLES,
-  PAGE_ICONS,
-  GROUP_TITLES,
-  GROUP_DESCRIPTIONS,
-} from "../../../constants/prefs.js";
+import { PAGE_ICONS } from "../../../constants/prefs.js";
 import { addTimeFormatComboRow } from "./formatters.js";
 
 /**
@@ -36,9 +30,10 @@ export function addShowDateSwitchRow(
   group: Adw.PreferencesGroup,
   settings: Gio.Settings,
 ): Adw.SwitchRow {
+  const { _ } = prefsGettext;
   const showDateSwitchInfo = {
-    title: prefsGettext._(PrefItems.SHOW_DATE.title),
-    subtitle: prefsGettext._(PrefItems.SHOW_DATE.subtitle),
+    title: _("Show Date"),
+    subtitle: _("Show the date in the clock"),
   };
   return addSwitchRow(
     group,
@@ -62,17 +57,16 @@ export function addShowWeekdaySwitchRow(
   group: Adw.PreferencesGroup,
   settings: Gio.Settings,
 ): Adw.SwitchRow {
+  const { _ } = prefsGettext;
   const showWeekdaySwitchInfo = {
-    title: prefsGettext._(PrefItems.SHOW_WEEKDAY.title),
-    subtitle: prefsGettext._(PrefItems.SHOW_WEEKDAY.subtitle),
-    sensitive: settings!.get_boolean(SettingsKey.SHOW_DATE),
+    title: _("Show Weekday"),
+    subtitle: _("Show the day of the week in the clock"),
   };
   return addSwitchRow(
     group,
     showWeekdaySwitchInfo,
     settings,
     SettingsKey.SHOW_WEEKDAY,
-    [{ settingKey: SettingsKey.SHOW_DATE, property: "sensitive" }],
   );
 }
 
@@ -90,10 +84,14 @@ export function createFuzzinessComboRow(
   group: Adw.PreferencesGroup,
   settings: Gio.Settings,
 ): Adw.ComboRow {
-  const fuzzinessComboInfo = {
-    title: prefsGettext._(PrefItems.FUZZINESS.title),
-    subtitle: prefsGettext._(PrefItems.FUZZINESS.subtitle),
-    model: new Gtk.StringList({ strings: FUZZINESS_OPTIONS }),
+  const { _ } = prefsGettext;
+
+  const fuzzinessOptions = [_("one"), _("five"), _("ten"), _("fifteen")];
+
+  const fuzzinessComboRowInfo = {
+    title: _("Fuzziness"),
+    subtitle: _("How precise the time displayed should be"),
+    model: new Gtk.StringList({ strings: fuzzinessOptions }),
     selected: settings!.get_enum(SettingsKey.FUZZINESS),
   };
 
@@ -101,7 +99,7 @@ export function createFuzzinessComboRow(
     group,
     settings,
     SettingsKey.FUZZINESS,
-    fuzzinessComboInfo,
+    fuzzinessComboRowInfo,
   );
 }
 
@@ -118,10 +116,16 @@ export function addDividerPresetRow(
   group: Adw.PreferencesGroup,
   settings: Gio.Settings,
 ): void {
+  const { _ } = prefsGettext;
+  // Translate the divider preset options (except the actual divider symbols)
+  const translatedOptions = [...DIVIDER_PRESETS];
+  // Only translate "Custom" - keep the actual divider symbols as-is
+  translatedOptions[translatedOptions.length - 1] = _("Custom");
+
   const presetInfo = {
-    title: prefsGettext._(DIVIDER_PRESET.TITLE),
-    subtitle: prefsGettext._(DIVIDER_PRESET.SUBTITLE),
-    model: new Gtk.StringList({ strings: DIVIDER_PRESET.OPTIONS }),
+    title: _("Divider Preset"),
+    subtitle: _("Choose a preset divider or select custom"),
+    model: new Gtk.StringList({ strings: translatedOptions }),
     selected: settings!.get_enum(SettingsKey.DIVIDER_PRESET),
   };
 
@@ -133,7 +137,7 @@ export function addDividerPresetRow(
   );
 
   const customEntryRow = new Adw.EntryRow({
-    title: prefsGettext._(DIVIDER_PRESET.CUSTOM_TITLE),
+    title: _("Custom Divider Text"),
     text: settings.get_string(SettingsKey.CUSTOM_DIVIDER_TEXT),
   });
   group.add(customEntryRow);
@@ -163,16 +167,17 @@ export function createGeneralPage(
   window: Adw.PreferencesWindow,
   settings: Gio.Settings,
 ) {
+  const { _ } = prefsGettext;
   const page = createAndAddPageToWindow(
     window,
-    PAGE_TITLES.GENERAL,
+    _("General"),
     PAGE_ICONS.GENERAL,
   );
 
   const clockSettingsGroup = createAndAddGroupToPage(
     page,
-    GROUP_TITLES.CLOCK_SETTINGS,
-    GROUP_DESCRIPTIONS.CLOCK_SETTINGS,
+    _("Clock Settings"),
+    _("Customize the appearance and behavior of the clock"),
   );
 
   addShowDateSwitchRow(clockSettingsGroup, settings);
