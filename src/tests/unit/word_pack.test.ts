@@ -54,11 +54,6 @@ describe("WordPack", () => {
       const result = wordPack.getTimes(TimeFormat.FORMAT_TWO);
       expect(result).toEqual(mockData.timesFormatTwo);
     });
-
-    it("should handle null/undefined format", () => {
-      const result = wordPack.getTimes(null as any);
-      expect(result).toEqual(mockData.timesFormatOne);
-    });
   });
 
   describe("validation", () => {

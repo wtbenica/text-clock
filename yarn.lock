@@ -4243,7 +4243,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lint-staged@npm:^16.2.0":
+"lint-staged@npm:^16.2.1":
   version: 16.2.1
   resolution: "lint-staged@npm:16.2.1"
   dependencies:
@@ -5267,7 +5267,7 @@ __metadata:
     husky: "npm:^9.1.7"
     jest: "npm:30.1.3"
     jest-util: "npm:^30.0.5"
-    lint-staged: "npm:^16.2.0"
+    lint-staged: "npm:^16.2.1"
     prettier: "npm:3.6.2"
     ts-jest: "npm:29.4.4"
     ts-node: "npm:^10.9.2"
