@@ -4,7 +4,7 @@ import GLib from "gi://GLib";
 import Gio from "gi://Gio";
 import Adw from "gi://Adw";
 import { prefsGettext } from "../../../utils/gettext/gettext_utils_prefs.js";
-import { logErr, logInfo } from "../../../utils/error_utils.js";
+import { logErr } from "../../../utils/error_utils.js";
 
 export function createColorControlWidget(
   settings: Gio.Settings,
@@ -53,12 +53,10 @@ export function createColorControlWidget(
 
   const updateColorPicker = () => {
     const useAccent = accentSwitch.get_active();
-    logInfo(`[ColorPicker] updateColorPicker called, useAccent: ${useAccent}`);
 
     if (useAccent) {
       try {
         const accentColor = styleSvc.getAccentColor().toString();
-        logInfo(`[ColorPicker] Setting accent color: ${accentColor}`);
         const rgba = new Gdk.RGBA();
         rgba.parse(accentColor);
 
@@ -93,21 +91,18 @@ export function createColorControlWidget(
 
         // Switch to fake button
         colorStack.set_visible_child_name("fake");
-        logInfo(`[ColorPicker] Switched to fake color button`);
       } catch (e) {
         logErr(e, "Error setting accent color");
       }
     } else {
       try {
         const customColor = settings.get_string(colorSettingsKey);
-        logInfo(`[ColorPicker] Setting custom color: ${customColor}`);
         const rgba = new Gdk.RGBA();
         rgba.parse(customColor);
         colorButton.set_rgba(rgba);
 
         // Switch to real button
         colorStack.set_visible_child_name("real");
-        logInfo(`[ColorPicker] Switched to real color button`);
       } catch (e) {
         logErr(e, "Error setting custom color");
       }
@@ -121,9 +116,6 @@ export function createColorControlWidget(
       return; // Already watching
     }
 
-    logInfo(
-      `[ColorPicker] Starting accent color watcher for ${colorSettingsKey}`,
-    );
     accentColorWatcher = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1000, () => {
       // Only update if we're in accent mode
       if (accentSwitch.get_active()) {
@@ -133,9 +125,6 @@ export function createColorControlWidget(
 
           // Check if the accent color has changed
           if (currentAccentColor !== currentButtonColor) {
-            logInfo(
-              `[ColorPicker] Accent color changed from ${currentButtonColor} to ${currentAccentColor}`,
-            );
             updateColorPicker();
           }
         } catch (e) {
@@ -148,9 +137,6 @@ export function createColorControlWidget(
 
   const stopAccentColorWatcher = () => {
     if (accentColorWatcher !== null) {
-      logInfo(
-        `[ColorPicker] Stopping accent color watcher for ${colorSettingsKey}`,
-      );
       GLib.source_remove(accentColorWatcher);
       accentColorWatcher = null;
     }
@@ -177,7 +163,6 @@ export function createColorControlWidget(
   }
 
   accentSwitch.connect("state-set", () => {
-    logInfo(`[ColorPicker] Accent switch state-set triggered`);
     GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
       updateColorPicker();
       manageAccentWatcher(); // Start/stop watching based on new state
@@ -186,28 +171,18 @@ export function createColorControlWidget(
   });
 
   colorButton.connect("color-set", () => {
-    logInfo(
-      `[ColorPicker] Color button color-set triggered, accent active: ${accentSwitch.get_active()}`,
-    );
     if (!accentSwitch.get_active()) {
       // Only process color changes when not in accent mode (i.e., when real button is visible)
       const newRgba = colorButton.get_rgba();
-      logInfo(`[ColorPicker] Processing color change: ${newRgba.to_string()}`);
       settings.set_string(colorSettingsKey, newRgba.to_string());
     }
   });
 
   // Cleanup function to stop watcher when widget is destroyed
   control.connect("destroy", () => {
-    logInfo(
-      `[ColorPicker] Widget destroyed, cleaning up accent color watcher for ${colorSettingsKey}`,
-    );
     stopAccentColorWatcher();
   });
 
-  logInfo(
-    `[ColorPicker] Initial updateColorPicker call for ${colorSettingsKey}`,
-  );
   updateColorPicker();
   manageAccentWatcher(); // Start watching if needed
 
