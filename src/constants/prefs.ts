@@ -28,7 +28,7 @@ export const GROUP_DESCRIPTIONS = {
   CLOCK_COLORS: "Customize the colors of the clock and date text",
 };
 
-export const FUZZINESS_OPTIONS = ["1", "5", "10", "15"];
+export const FUZZINESS_OPTIONS = ["one", "five", "ten", "fifteen"];
 
 export const DIVIDER_PRESET = {
   TITLE: "Divider Preset",

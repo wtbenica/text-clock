@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-26 13:38-0700\n"
+"POT-Creation-Date: 2025-09-26 21:13-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,23 +41,23 @@ msgstr ""
 msgid "Choose accent color variation"
 msgstr ""
 
-#: dist/prefs/pages/color_page/index.js:53
+#: dist/prefs/pages/color_page/index.js:56
 msgid "Default"
 msgstr ""
 
-#: dist/prefs/pages/color_page/index.js:55
+#: dist/prefs/pages/color_page/index.js:58
 msgid "Accent Color"
 msgstr ""
 
-#: dist/prefs/pages/color_page/index.js:56
+#: dist/prefs/pages/color_page/index.js:59
 msgid "Custom Colors"
 msgstr ""
 
-#: dist/prefs/pages/color_page/index.js:66
+#: dist/prefs/pages/color_page/index.js:69
 msgid "Color mode"
 msgstr ""
 
-#: dist/prefs/pages/color_page/index.js:67
+#: dist/prefs/pages/color_page/index.js:70
 msgid "Choose which color source to use"
 msgstr ""
 
@@ -65,15 +65,15 @@ msgstr ""
 msgid "Accent"
 msgstr ""
 
-#: dist/prefs/pages/color_page/color_controls.js:94
+#: dist/prefs/pages/color_page/color_controls.js:168
 msgid "Time Color"
 msgstr ""
 
-#: dist/prefs/pages/color_page/color_controls.js:97
+#: dist/prefs/pages/color_page/color_controls.js:171
 msgid "Date Color"
 msgstr ""
 
-#: dist/prefs/pages/color_page/color_controls.js:100
+#: dist/prefs/pages/color_page/color_controls.js:174
 msgid "Divider Color"
 msgstr ""
 
@@ -1130,17 +1130,17 @@ msgstr ""
 msgid "thirty first"
 msgstr ""
 
-#: dist/services/notification_service.js:41
+#: dist/services/notification_service.js:106
 msgid "Text Clock updated"
 msgstr ""
 
-#: dist/services/notification_service.js:42
+#: dist/services/notification_service.js:107
 #, javascript-format
 msgid ""
 "Text Clock was updated to version %s. You can now change the clock color and "
 "divider text in Preferences."
 msgstr ""
 
-#: dist/services/notification_service.js:49
+#: dist/services/notification_service.js:114
 msgid "Open Preferences"
 msgstr ""

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-26 13:38-0700\n"
+"POT-Creation-Date: 2025-09-26 21:13-0700\n"
 "PO-Revision-Date: 2024-07-20 18:12-0700\n"
 "Last-Translator: Wesley Benica <wesley@benica.dev>\n"
 "Language-Team: \n"
@@ -24,59 +24,59 @@ msgstr ""
 
 #: dist/prefs/helpers.js:20
 msgid "Error binding settings for"
-msgstr ""
+msgstr "Error vinculando configuración para"
 
 #: dist/prefs/pages/general_page/formatters.js:37
 msgid "Time Format"
-msgstr ""
+msgstr "Formato de Hora"
 
 #: dist/prefs/pages/general_page/formatters.js:38
 msgid "Choose time format"
-msgstr ""
+msgstr "Elegir formato de hora"
 
 #: dist/prefs/pages/color_page/index.js:33
 msgid "Accent Style"
-msgstr ""
+msgstr "Estilo de Acento"
 
 #: dist/prefs/pages/color_page/index.js:34
 msgid "Choose accent color variation"
-msgstr ""
-
-#: dist/prefs/pages/color_page/index.js:53
-msgid "Default"
-msgstr ""
-
-#: dist/prefs/pages/color_page/index.js:55
-msgid "Accent Color"
-msgstr ""
+msgstr "Elegir variación de color de acento"
 
 #: dist/prefs/pages/color_page/index.js:56
+msgid "Default"
+msgstr "Predeterminado"
+
+#: dist/prefs/pages/color_page/index.js:58
+msgid "Accent Color"
+msgstr "Color de Acento"
+
+#: dist/prefs/pages/color_page/index.js:59
 msgid "Custom Colors"
-msgstr ""
+msgstr "Colores Personalizados"
 
-#: dist/prefs/pages/color_page/index.js:66
+#: dist/prefs/pages/color_page/index.js:69
 msgid "Color mode"
-msgstr ""
+msgstr "Modo de color"
 
-#: dist/prefs/pages/color_page/index.js:67
+#: dist/prefs/pages/color_page/index.js:70
 msgid "Choose which color source to use"
-msgstr ""
+msgstr "Elegir qué fuente de color usar"
 
 #: dist/prefs/pages/color_page/color_controls.js:17
 msgid "Accent"
-msgstr ""
+msgstr "Acento"
 
-#: dist/prefs/pages/color_page/color_controls.js:94
+#: dist/prefs/pages/color_page/color_controls.js:168
 msgid "Time Color"
-msgstr ""
+msgstr "Color de Hora"
 
-#: dist/prefs/pages/color_page/color_controls.js:97
+#: dist/prefs/pages/color_page/color_controls.js:171
 msgid "Date Color"
-msgstr ""
+msgstr "Color de Fecha"
 
-#: dist/prefs/pages/color_page/color_controls.js:100
+#: dist/prefs/pages/color_page/color_controls.js:174
 msgid "Divider Color"
-msgstr ""
+msgstr "Color de Separador"
 
 #: dist/constants/times/core.js:7 dist/constants/times/core.js:67
 #, javascript-format
@@ -262,181 +262,181 @@ msgstr "%s y veintinueve"
 #, javascript-format
 msgctxt "format one"
 msgid "half past %s"
-msgstr "media %s"
+msgstr "%s y media"
 
 #: dist/constants/times/core.js:38
 #, javascript-format
 msgctxt "format one"
 msgid "twenty nine to %s"
-msgstr "veintinueve para %s"
+msgstr "%s menos veintinueve"
 
 #: dist/constants/times/core.js:39
 #, javascript-format
 msgctxt "format one"
 msgid "twenty eight to %s"
-msgstr "veintiocho para %s"
+msgstr "%s menos veintiocho"
 
 #: dist/constants/times/core.js:40
 #, javascript-format
 msgctxt "format one"
 msgid "twenty seven to %s"
-msgstr "vientisiete para %s"
+msgstr "%s menos veintisiete"
 
 #: dist/constants/times/core.js:41
 #, javascript-format
 msgctxt "format one"
 msgid "twenty six to %s"
-msgstr "vientiocho para %s"
+msgstr "%s menos veintiséis"
 
 #: dist/constants/times/core.js:42
 #, javascript-format
 msgctxt "format one"
 msgid "twenty five to %s"
-msgstr "veinticinco para %s"
+msgstr "%s menos veinticinco"
 
 #: dist/constants/times/core.js:43
 #, javascript-format
 msgctxt "format one"
 msgid "twenty four to %s"
-msgstr "veinticuatro para %s"
+msgstr "%s menos veinticuatro"
 
 #: dist/constants/times/core.js:44
 #, javascript-format
 msgctxt "format one"
 msgid "twenty three to %s"
-msgstr "veintitrés para %s"
+msgstr "%s menos veintitrés"
 
 #: dist/constants/times/core.js:45
 #, javascript-format
 msgctxt "format one"
 msgid "twenty two to %s"
-msgstr "veintidós para %s"
+msgstr "%s menos veintidós"
 
 #: dist/constants/times/core.js:46
 #, javascript-format
 msgctxt "format one"
 msgid "twenty one to %s"
-msgstr "veintiuno para %s"
+msgstr "%s menos veintiuno"
 
 #: dist/constants/times/core.js:47
 #, javascript-format
 msgctxt "format one"
 msgid "twenty to %s"
-msgstr "veinte para %s"
+msgstr "%s menos veinte"
 
 #: dist/constants/times/core.js:48
 #, javascript-format
 msgctxt "format one"
 msgid "nineteen to %s"
-msgstr "diecinueve para %s"
+msgstr "%s menos diecinueve"
 
 #: dist/constants/times/core.js:49
 #, javascript-format
 msgctxt "format one"
 msgid "eighteen to %s"
-msgstr "dieciocho para %s"
+msgstr "%s menos dieciocho"
 
 #: dist/constants/times/core.js:50
 #, javascript-format
 msgctxt "format one"
 msgid "seventeen to %s"
-msgstr "diecisiete para %s"
+msgstr "%s menos diecisiete"
 
 #: dist/constants/times/core.js:51
 #, javascript-format
 msgctxt "format one"
 msgid "sixteen to %s"
-msgstr "dieciséis para %s"
+msgstr "%s menos dieciséis"
 
 #: dist/constants/times/core.js:52
 #, javascript-format
 msgctxt "format one"
 msgid "quarter to %s"
-msgstr "cuarto para %s"
+msgstr "%s menos cuarto"
 
 #: dist/constants/times/core.js:53
 #, javascript-format
 msgctxt "format one"
 msgid "fourteen to %s"
-msgstr "catorce para %s"
+msgstr "%s menos catorce"
 
 #: dist/constants/times/core.js:54
 #, javascript-format
 msgctxt "format one"
 msgid "thirteen to %s"
-msgstr "trece para %s"
+msgstr "%s menos trece"
 
 #: dist/constants/times/core.js:55
 #, javascript-format
 msgctxt "format one"
 msgid "twelve to %s"
-msgstr "doce para %s"
+msgstr "%s menos doce"
 
 #: dist/constants/times/core.js:56
 #, javascript-format
 msgctxt "format one"
 msgid "eleven to %s"
-msgstr "once para %s"
+msgstr "%s menos once"
 
 #: dist/constants/times/core.js:57
 #, javascript-format
 msgctxt "format one"
 msgid "ten to %s"
-msgstr "diez para %s"
+msgstr "%s menos diez"
 
 #: dist/constants/times/core.js:58
 #, javascript-format
 msgctxt "format one"
 msgid "nine to %s"
-msgstr "nueve para %s"
+msgstr "%s menos nueve"
 
 #: dist/constants/times/core.js:59
 #, javascript-format
 msgctxt "format one"
 msgid "eight to %s"
-msgstr "ocho para %s"
+msgstr "%s menos ocho"
 
 #: dist/constants/times/core.js:60
 #, javascript-format
 msgctxt "format one"
 msgid "seven to %s"
-msgstr "siete para %s"
+msgstr "%s menos siete"
 
 #: dist/constants/times/core.js:61
 #, javascript-format
 msgctxt "format one"
 msgid "six to %s"
-msgstr "seis para %s"
+msgstr "%s menos seis"
 
 #: dist/constants/times/core.js:62
 #, javascript-format
 msgctxt "format one"
 msgid "five to %s"
-msgstr "cinco para %s"
+msgstr "%s menos cinco"
 
 #: dist/constants/times/core.js:63
 #, javascript-format
 msgctxt "format one"
 msgid "four to %s"
-msgstr "cuatro para %s"
+msgstr "%s menos cuatro"
 
 #: dist/constants/times/core.js:64
 #, javascript-format
 msgctxt "format one"
 msgid "three to %s"
-msgstr "tres para %s"
+msgstr "%s menos tres"
 
 #: dist/constants/times/core.js:65
 #, javascript-format
 msgctxt "format one"
 msgid "two to %s"
-msgstr "dos para %s"
+msgstr "%s menos dos"
 
 #: dist/constants/times/core.js:66
 #, javascript-format
 msgctxt "format one"
 msgid "one to %s"
-msgstr "uno para %s"
+msgstr "%s menos uno"
 
 #: dist/constants/times/core.js:69
 msgctxt "Should be able to replace %s in format one templates"
@@ -458,55 +458,55 @@ msgstr "%s en punto"
 #, javascript-format
 msgctxt "format two"
 msgid "%s oh one"
-msgstr "%s cero uno"
+msgstr "%s uno"
 
 #: dist/constants/times/core.js:74
 #, javascript-format
 msgctxt "format two"
 msgid "%s oh two"
-msgstr "%s cero dos"
+msgstr "%s dos"
 
 #: dist/constants/times/core.js:75
 #, javascript-format
 msgctxt "format two"
 msgid "%s oh three"
-msgstr "%s cero tres"
+msgstr "%s tres"
 
 #: dist/constants/times/core.js:76
 #, javascript-format
 msgctxt "format two"
 msgid "%s oh four"
-msgstr "%s cero cuatro"
+msgstr "%s cuatro"
 
 #: dist/constants/times/core.js:77
 #, javascript-format
 msgctxt "format two"
 msgid "%s oh five"
-msgstr "%s cero cinco"
+msgstr "%s cinco"
 
 #: dist/constants/times/core.js:78
 #, javascript-format
 msgctxt "format two"
 msgid "%s oh six"
-msgstr "%s cero seis"
+msgstr "%s seis"
 
 #: dist/constants/times/core.js:79
 #, javascript-format
 msgctxt "format two"
 msgid "%s oh seven"
-msgstr "%s cero siete"
+msgstr "%s siete"
 
 #: dist/constants/times/core.js:80
 #, javascript-format
 msgctxt "format two"
 msgid "%s oh eight"
-msgstr "%s cero ocho"
+msgstr "%s ocho"
 
 #: dist/constants/times/core.js:81
 #, javascript-format
 msgctxt "format two"
 msgid "%s oh nine"
-msgstr "%s cero nueve"
+msgstr "%s nueve"
 
 #: dist/constants/times/core.js:82
 #, javascript-format
@@ -1131,17 +1131,19 @@ msgstr "treinta"
 msgid "thirty first"
 msgstr "treinta y uno"
 
-#: dist/services/notification_service.js:41
+#: dist/services/notification_service.js:106
 msgid "Text Clock updated"
-msgstr ""
+msgstr "Text Clock actualizado"
 
-#: dist/services/notification_service.js:42
+#: dist/services/notification_service.js:107
 #, javascript-format
 msgid ""
 "Text Clock was updated to version %s. You can now change the clock color and "
 "divider text in Preferences."
 msgstr ""
+"Text Clock fue actualizado a la versión %s. Ahora puedes cambiar el color del "
+"reloj y el texto separador en Preferencias."
 
-#: dist/services/notification_service.js:49
+#: dist/services/notification_service.js:114
 msgid "Open Preferences"
-msgstr ""
+msgstr "Abrir Preferencias"
