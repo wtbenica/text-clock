@@ -11,7 +11,6 @@ import {
   TimeFormat,
   Fuzziness,
 } from "../core/clock_formatter.js";
-import { PrefItems } from "../constants/index.js";
 import { parseFuzziness } from "../utils/parse_utils.js";
 import { Color } from "../models/color.js";
 import { ITextClock, CLOCK_LABEL_PROPERTIES } from "../types/ui.js";
@@ -33,8 +32,8 @@ export const TextClockLabel = GObject.registerClass(
       ),
       "show-date": GObject.ParamSpec.boolean(
         CLOCK_LABEL_PROPERTIES.SHOW_DATE,
-        PrefItems.SHOW_DATE.title,
-        PrefItems.SHOW_DATE.subtitle,
+        "Show Date",
+        "Show the date in the clock",
         GObject.ParamFlags.READWRITE,
         true,
       ),
@@ -47,15 +46,15 @@ export const TextClockLabel = GObject.registerClass(
       ),
       "show-weekday": GObject.ParamSpec.boolean(
         CLOCK_LABEL_PROPERTIES.SHOW_WEEKDAY,
-        PrefItems.SHOW_WEEKDAY.title,
-        PrefItems.SHOW_WEEKDAY.subtitle,
+        "Show Weekday",
+        "Show the day of the week in the clock",
         GObject.ParamFlags.READWRITE,
         true,
       ),
       "time-format": GObject.ParamSpec.string(
         CLOCK_LABEL_PROPERTIES.TIME_FORMAT,
-        PrefItems.TIME_FORMAT.title,
-        PrefItems.TIME_FORMAT.subtitle,
+        "Time Format",
+        "Write the time out in this format",
         GObject.ParamFlags.READWRITE,
         TimeFormat.FORMAT_ONE,
       ),

@@ -24,7 +24,6 @@ import {
   prefsGettext,
   initPrefsGettext,
 } from "./utils/gettext/gettext_utils_prefs.js";
-import { WINDOW_TITLE } from "./constants/prefs.js";
 import { gjsLogger } from "./utils/logging/logger_gjs.js";
 
 // SettingsKey is not needed in this thin wrapper
@@ -63,7 +62,7 @@ export default class TextClockPrefs extends ExtensionPreferences {
     window.search_enabled = true;
 
     // Title (localized)
-    window.title = prefsGettext._(WINDOW_TITLE);
+    window.title = prefsGettext._("Text Clock Prefs");
 
     // If a compiled gresource binary is present in the extension's
     // directory, register it so the preferences UI can use extension-provided

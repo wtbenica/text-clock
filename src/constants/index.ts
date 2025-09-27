@@ -1,13 +1,11 @@
 /**
  * Shared top-level constants used across the Text Clock extension.
  *
- * This module centralizes all extension constants including preference text,
- * error messages, settings key mappings, and enum value mappings. It provides
- * a single source of truth for string literals, configuration arrays, and
- * type definitions used throughout the extension.
+ * This module centralizes all extension constants including error messages,
+ * settings key mappings, and enum value mappings. It provides a single source
+ * of truth for configuration arrays and type definitions used throughout the extension.
  *
  * The constants support:
- * - Preference UI text and descriptions
  * - Centralized error message definitions
  * - GSettings enum index to value mappings
  * - Color mode and accent style configurations
@@ -15,10 +13,7 @@
  *
  * @example
  * ```typescript
- * import { PrefItems, Errors, SETTINGS, getDividerText } from './constants/index.js';
- *
- * // Preference text
- * const showDateTitle = PrefItems.SHOW_DATE.title; // "Show Date"
+ * import { Errors, SETTINGS, getDividerText } from './constants/index.js';
  *
  * // Error messages
  * console.error(Errors.ERROR_INVALID_TIME_FORMAT);
@@ -30,50 +25,6 @@
  * const divider = getDividerText(0, ''); // " | " (pipe preset)
  * ```
  */
-
-/**
- * Type definition for preference item text content.
- *
- * Defines the structure for preference row text including both the main title
- * and descriptive subtitle shown in the preferences UI.
- */
-type PrefsText = {
-  /** Main title displayed prominently for the preference item */
-  title: string;
-
-  /** Descriptive subtitle explaining the preference's function */
-  subtitle: string;
-};
-
-/**
- * Text content for preference items in the extension settings UI.
- *
- * Provides human-readable titles and descriptions for each configurable
- * preference. Used by the preferences UI to generate consistent, descriptive
- * labels for settings rows.
- */
-export const PrefItems: Record<string, PrefsText> = {
-  SHOW_DATE: {
-    title: "Show Date",
-    subtitle: "Show the date in the clock",
-  },
-  SHOW_WEEKDAY: {
-    title: "Show Weekday",
-    subtitle: "Show the weekday as part of the date",
-  },
-  TIME_FORMAT: {
-    title: "Time Format",
-    subtitle: "Write the time out in this format",
-  },
-  FUZZINESS: {
-    title: "Fuzziness",
-    subtitle: "Round the minutes to the nearest multiple of this number",
-  },
-  COLOR_MODE: {
-    title: "Color Mode",
-    subtitle: "Choose how to color the clock text",
-  },
-};
 
 /**
  * Centralized error message definitions for the extension.

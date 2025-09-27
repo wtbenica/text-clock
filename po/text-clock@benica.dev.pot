@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-26 21:58-0700\n"
+"POT-Creation-Date: 2025-09-27 13:13-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,60 +17,207 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: dist/prefs/helpers.js:20
-msgid "Error binding settings for"
+#: dist/services/notification_service.js:107
+msgid "Text Clock updated"
 msgstr ""
 
-#: dist/prefs/pages/general_page/formatters.js:37
-msgid "Time Format"
+#: dist/services/notification_service.js:108
+#, javascript-format
+msgid ""
+"Text Clock was updated to version %s. You can now change the clock color and "
+"divider text in Preferences."
 msgstr ""
 
-#: dist/prefs/pages/general_page/formatters.js:38
-msgid "Choose time format"
+#: dist/services/notification_service.js:115
+msgid "Open Preferences"
 msgstr ""
 
-#: dist/prefs/pages/color_page/index.js:33
-msgid "Accent Style"
+#: dist/constants/dates/core.js:7
+#, javascript-format
+msgctxt ""
+"This is how someone would say the day of the month only. As in, \"My rent is "
+"due on the %s.\""
+msgid "the %s"
 msgstr ""
 
-#: dist/prefs/pages/color_page/index.js:34
-msgid "Choose accent color variation"
+#: dist/constants/dates/core.js:9
+#, javascript-format
+msgctxt ""
+"The day of the week and the date. The date will be substituted in the %s. "
+"For example, \"Sunday the fifth\"."
+msgid "sunday the %s"
 msgstr ""
 
-#: dist/prefs/pages/color_page/index.js:56
-msgid "Default"
+#: dist/constants/dates/core.js:10
+#, javascript-format
+msgctxt ""
+"The day of the week and the date. The date will be substituted in the %s. "
+"For example, \"Monday the sixth\"."
+msgid "monday the %s"
 msgstr ""
 
-#: dist/prefs/pages/color_page/index.js:58
-msgid "Accent Color"
+#: dist/constants/dates/core.js:11
+#, javascript-format
+msgctxt ""
+"The day of the week and the date. The date will be substituted in the %s. "
+"For example, \"Tuesday the seventh\"."
+msgid "tuesday the %s"
 msgstr ""
 
-#: dist/prefs/pages/color_page/index.js:59
-msgid "Custom Colors"
+#: dist/constants/dates/core.js:12
+#, javascript-format
+msgctxt ""
+"The day of the week and the date. The date will be substituted in the %s. "
+"For example, \"Wednesday the eighth\"."
+msgid "wednesday the %s"
 msgstr ""
 
-#: dist/prefs/pages/color_page/index.js:69
-msgid "Color mode"
+#: dist/constants/dates/core.js:13
+#, javascript-format
+msgctxt ""
+"The day of the week and the date. The date will be substituted in the %s. "
+"For example, \"Thursday the ninth\"."
+msgid "thursday the %s"
 msgstr ""
 
-#: dist/prefs/pages/color_page/index.js:70
-msgid "Choose which color source to use"
+#: dist/constants/dates/core.js:14
+#, javascript-format
+msgctxt ""
+"The day of the week and the date. The date will be substituted in the %s. "
+"For example, \"Friday the tenth\"."
+msgid "friday the %s"
 msgstr ""
 
-#: dist/prefs/pages/color_page/color_controls.js:17
-msgid "Accent"
+#: dist/constants/dates/core.js:15
+#, javascript-format
+msgctxt ""
+"The day of the week and the date. The date will be substituted in the %s. "
+"For example, \"Saturday the eleventh\"."
+msgid "saturday the %s"
 msgstr ""
 
-#: dist/prefs/pages/color_page/color_controls.js:168
-msgid "Time Color"
+#: dist/constants/dates/core.js:18
+msgid "first"
 msgstr ""
 
-#: dist/prefs/pages/color_page/color_controls.js:171
-msgid "Date Color"
+#: dist/constants/dates/core.js:19
+msgid "second"
 msgstr ""
 
-#: dist/prefs/pages/color_page/color_controls.js:174
-msgid "Divider Color"
+#: dist/constants/dates/core.js:20
+msgid "third"
+msgstr ""
+
+#: dist/constants/dates/core.js:21
+msgid "fourth"
+msgstr ""
+
+#: dist/constants/dates/core.js:22
+msgid "fifth"
+msgstr ""
+
+#: dist/constants/dates/core.js:23
+msgid "sixth"
+msgstr ""
+
+#: dist/constants/dates/core.js:24
+msgid "seventh"
+msgstr ""
+
+#: dist/constants/dates/core.js:25
+msgid "eighth"
+msgstr ""
+
+#: dist/constants/dates/core.js:26
+msgid "ninth"
+msgstr ""
+
+#: dist/constants/dates/core.js:27
+msgid "tenth"
+msgstr ""
+
+#: dist/constants/dates/core.js:28
+msgid "eleventh"
+msgstr ""
+
+#: dist/constants/dates/core.js:29
+msgid "twelfth"
+msgstr ""
+
+#: dist/constants/dates/core.js:30
+msgid "thirteenth"
+msgstr ""
+
+#: dist/constants/dates/core.js:31
+msgid "fourteenth"
+msgstr ""
+
+#: dist/constants/dates/core.js:32
+msgid "fifteenth"
+msgstr ""
+
+#: dist/constants/dates/core.js:33
+msgid "sixteenth"
+msgstr ""
+
+#: dist/constants/dates/core.js:34
+msgid "seventeenth"
+msgstr ""
+
+#: dist/constants/dates/core.js:35
+msgid "eighteenth"
+msgstr ""
+
+#: dist/constants/dates/core.js:36
+msgid "nineteenth"
+msgstr ""
+
+#: dist/constants/dates/core.js:37
+msgid "twentieth"
+msgstr ""
+
+#: dist/constants/dates/core.js:38
+msgid "twenty first"
+msgstr ""
+
+#: dist/constants/dates/core.js:39
+msgid "twenty second"
+msgstr ""
+
+#: dist/constants/dates/core.js:40
+msgid "twenty third"
+msgstr ""
+
+#: dist/constants/dates/core.js:41
+msgid "twenty fourth"
+msgstr ""
+
+#: dist/constants/dates/core.js:42
+msgid "twenty fifth"
+msgstr ""
+
+#: dist/constants/dates/core.js:43
+msgid "twenty sixth"
+msgstr ""
+
+#: dist/constants/dates/core.js:44
+msgid "twenty seventh"
+msgstr ""
+
+#: dist/constants/dates/core.js:45
+msgid "twenty eighth"
+msgstr ""
+
+#: dist/constants/dates/core.js:46
+msgid "twenty ninth"
+msgstr ""
+
+#: dist/constants/dates/core.js:47
+msgid "thirtieth"
+msgstr ""
+
+#: dist/constants/dates/core.js:48
+msgid "thirty first"
 msgstr ""
 
 #: dist/constants/times/core.js:7 dist/constants/times/core.js:67
@@ -938,205 +1085,146 @@ msgctxt "exactly noon"
 msgid "noon"
 msgstr ""
 
-#: dist/constants/dates/core.js:7
-#, javascript-format
-msgctxt ""
-"This is how someone would say the day of the month only. As in, \"My rent is "
-"due on the %s.\""
-msgid "the %s"
+#: dist/ui/prefs.js:75
+msgid "Text Clock"
 msgstr ""
 
-#: dist/constants/dates/core.js:9
-#, javascript-format
-msgctxt ""
-"The day of the week and the date. The date will be substituted in the %s. "
-"For example, \"Sunday the fifth\"."
-msgid "sunday the %s"
+#: dist/ui/prefs.js:89 dist/prefs/pages/general_page/index.js:117
+msgid "Clock Settings"
 msgstr ""
 
-#: dist/constants/dates/core.js:10
-#, javascript-format
-msgctxt ""
-"The day of the week and the date. The date will be substituted in the %s. "
-"For example, \"Monday the sixth\"."
-msgid "monday the %s"
+#: dist/ui/prefs.js:90 dist/prefs/pages/general_page/index.js:117
+msgid "Customize the appearance and behavior of the clock"
 msgstr ""
 
-#: dist/constants/dates/core.js:11
-#, javascript-format
-msgctxt ""
-"The day of the week and the date. The date will be substituted in the %s. "
-"For example, \"Tuesday the seventh\"."
-msgid "tuesday the %s"
+#: dist/prefs.js:50
+msgid "Text Clock Prefs"
 msgstr ""
 
-#: dist/constants/dates/core.js:12
-#, javascript-format
-msgctxt ""
-"The day of the week and the date. The date will be substituted in the %s. "
-"For example, \"Wednesday the eighth\"."
-msgid "wednesday the %s"
+#: dist/prefs/helpers.js:20
+msgid "Error binding settings for"
 msgstr ""
 
-#: dist/constants/dates/core.js:13
-#, javascript-format
-msgctxt ""
-"The day of the week and the date. The date will be substituted in the %s. "
-"For example, \"Thursday the ninth\"."
-msgid "thursday the %s"
+#: dist/prefs/pages/color_page/color_controls.js:17
+msgid "Accent"
 msgstr ""
 
-#: dist/constants/dates/core.js:14
-#, javascript-format
-msgctxt ""
-"The day of the week and the date. The date will be substituted in the %s. "
-"For example, \"Friday the tenth\"."
-msgid "friday the %s"
+#: dist/prefs/pages/color_page/color_controls.js:168
+msgid "Time Color"
 msgstr ""
 
-#: dist/constants/dates/core.js:15
-#, javascript-format
-msgctxt ""
-"The day of the week and the date. The date will be substituted in the %s. "
-"For example, \"Saturday the eleventh\"."
-msgid "saturday the %s"
+#: dist/prefs/pages/color_page/color_controls.js:171
+msgid "Date Color"
 msgstr ""
 
-#: dist/constants/dates/core.js:18
-msgid "first"
+#: dist/prefs/pages/color_page/color_controls.js:174
+msgid "Divider Color"
 msgstr ""
 
-#: dist/constants/dates/core.js:19
-msgid "second"
+#: dist/prefs/pages/color_page/index.js:33
+msgid "Accent Style"
 msgstr ""
 
-#: dist/constants/dates/core.js:20
-msgid "third"
+#: dist/prefs/pages/color_page/index.js:34
+msgid "Choose accent color variation"
 msgstr ""
 
-#: dist/constants/dates/core.js:21
-msgid "fourth"
+#: dist/prefs/pages/color_page/index.js:56
+msgid "Default"
 msgstr ""
 
-#: dist/constants/dates/core.js:22
-msgid "fifth"
+#: dist/prefs/pages/color_page/index.js:58
+msgid "Accent Color"
 msgstr ""
 
-#: dist/constants/dates/core.js:23
-msgid "sixth"
+#: dist/prefs/pages/color_page/index.js:59
+msgid "Custom Colors"
 msgstr ""
 
-#: dist/constants/dates/core.js:24
-msgid "seventh"
+#: dist/prefs/pages/color_page/index.js:69
+msgid "Color mode"
 msgstr ""
 
-#: dist/constants/dates/core.js:25
-msgid "eighth"
+#: dist/prefs/pages/color_page/index.js:70
+msgid "Choose which color source to use"
 msgstr ""
 
-#: dist/constants/dates/core.js:26
-msgid "ninth"
+#: dist/prefs/pages/color_page/index.js:158
+msgid "Colors"
 msgstr ""
 
-#: dist/constants/dates/core.js:27
-msgid "tenth"
+#: dist/prefs/pages/color_page/index.js:160
+msgid "Clock Colors"
 msgstr ""
 
-#: dist/constants/dates/core.js:28
-msgid "eleventh"
+#: dist/prefs/pages/color_page/index.js:161
+msgid "Customize the colors of the clock and date text"
 msgstr ""
 
-#: dist/constants/dates/core.js:29
-msgid "twelfth"
+#: dist/prefs/pages/general_page/formatters.js:37
+msgid "Time Format"
 msgstr ""
 
-#: dist/constants/dates/core.js:30
-msgid "thirteenth"
+#: dist/prefs/pages/general_page/formatters.js:38
+msgid "Choose time format"
 msgstr ""
 
-#: dist/constants/dates/core.js:31
-msgid "fourteenth"
+#: dist/prefs/pages/general_page/index.js:21
+msgid "Show Date"
 msgstr ""
 
-#: dist/constants/dates/core.js:32
-msgid "fifteenth"
+#: dist/prefs/pages/general_page/index.js:22
+msgid "Show the date in the clock"
 msgstr ""
 
-#: dist/constants/dates/core.js:33
-msgid "sixteenth"
+#: dist/prefs/pages/general_page/index.js:39
+msgid "Show Weekday"
 msgstr ""
 
-#: dist/constants/dates/core.js:34
-msgid "seventeenth"
+#: dist/prefs/pages/general_page/index.js:40
+msgid "Show the day of the week in the clock"
 msgstr ""
 
-#: dist/constants/dates/core.js:35
-msgid "eighteenth"
+#: dist/prefs/pages/general_page/index.js:57
+msgid "one"
 msgstr ""
 
-#: dist/constants/dates/core.js:36
-msgid "nineteenth"
+#: dist/prefs/pages/general_page/index.js:58
+msgid "five"
 msgstr ""
 
-#: dist/constants/dates/core.js:37
-msgid "twentieth"
+#: dist/prefs/pages/general_page/index.js:59
+msgid "ten"
 msgstr ""
 
-#: dist/constants/dates/core.js:38
-msgid "twenty first"
+#: dist/prefs/pages/general_page/index.js:60
+msgid "fifteen"
 msgstr ""
 
-#: dist/constants/dates/core.js:39
-msgid "twenty second"
+#: dist/prefs/pages/general_page/index.js:63
+msgid "Fuzziness"
 msgstr ""
 
-#: dist/constants/dates/core.js:40
-msgid "twenty third"
+#: dist/prefs/pages/general_page/index.js:64
+msgid "How precise the time displayed should be"
 msgstr ""
 
-#: dist/constants/dates/core.js:41
-msgid "twenty fourth"
+#: dist/prefs/pages/general_page/index.js:84
+msgid "Custom"
 msgstr ""
 
-#: dist/constants/dates/core.js:42
-msgid "twenty fifth"
+#: dist/prefs/pages/general_page/index.js:86
+msgid "Divider Preset"
 msgstr ""
 
-#: dist/constants/dates/core.js:43
-msgid "twenty sixth"
+#: dist/prefs/pages/general_page/index.js:87
+msgid "Choose a preset divider or select custom"
 msgstr ""
 
-#: dist/constants/dates/core.js:44
-msgid "twenty seventh"
+#: dist/prefs/pages/general_page/index.js:93
+msgid "Custom Divider Text"
 msgstr ""
 
-#: dist/constants/dates/core.js:45
-msgid "twenty eighth"
-msgstr ""
-
-#: dist/constants/dates/core.js:46
-msgid "twenty ninth"
-msgstr ""
-
-#: dist/constants/dates/core.js:47
-msgid "thirtieth"
-msgstr ""
-
-#: dist/constants/dates/core.js:48
-msgid "thirty first"
-msgstr ""
-
-#: dist/services/notification_service.js:106
-msgid "Text Clock updated"
-msgstr ""
-
-#: dist/services/notification_service.js:107
-#, javascript-format
-msgid ""
-"Text Clock was updated to version %s. You can now change the clock color and "
-"divider text in Preferences."
-msgstr ""
-
-#: dist/services/notification_service.js:114
-msgid "Open Preferences"
+#: dist/prefs/pages/general_page/index.js:116
+msgid "General"
 msgstr ""

@@ -43,7 +43,7 @@ clean:
 ## === Installation ===
 
 ## install             Install for the current user only (~/.local/share/gnome-shell/extensions)
-install: create_ext_dir build
+install: create_ext_dir build i18n-compile
 	@echo "Installing extension..."
 	@rm -rf $(GNOME_SHELL_EXT_DIR)/$(NAME)@$(DOMAIN) >/dev/null 2>&1 || { echo "ERROR: Failed to remove existing extension" >&2; exit 1; }
 	@cp -R $(DIST_DIR) $(GNOME_SHELL_EXT_DIR)/$(NAME)@$(DOMAIN) || { echo "ERROR: Failed to copy extension files" >&2; exit 1; }
@@ -68,7 +68,7 @@ uninstall:
 	fi
 
 ## install-system      Install for all users - requires sudo (/usr/share/gnome-shell/extensions)
-install-system: build
+install-system: build i18n-compile
 	@echo "Installing the extension system-wide..."
 	@if [ "$$EUID" -ne 0 ]; then \
 		echo "System-wide installation requires root privileges."; \

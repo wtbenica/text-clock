@@ -6,9 +6,9 @@
 import GLib from "gi://GLib";
 import * as Main from "resource:///org/gnome/shell/ui/main.js";
 import * as MessageTray from "resource:///org/gnome/shell/ui/messageTray.js";
-import { gettext as _ } from "resource:///org/gnome/shell/extensions/extension.js";
 
 import { logWarn, logErr } from "../utils/error_utils.js";
+import { extensionGettext } from "../utils/gettext/gettext_utils_ext.js";
 
 /**
  * Configuration object for creating and displaying notifications.
@@ -151,6 +151,7 @@ export class NotificationService {
     currentVersion: string,
     onOpenPreferences: () => void,
   ): void {
+    const { _ } = extensionGettext;
     const title = _("Text Clock updated");
     const body = _(
       "Text Clock was updated to version %s. You can now change the clock color and divider text in Preferences.",
