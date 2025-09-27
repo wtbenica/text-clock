@@ -1,4 +1,4 @@
-## Text Clock GNOME Extension v1.0.6
+## Text Clock GNOME Extension v1.1.0
 
 [![Release](https://img.shields.io/github/v/release/wtbenica/text-clock?label=release)](https://github.com/wtbenica/text-clock/releases)
 [![License](https://img.shields.io/github/license/wtbenica/text-clock)](LICENSE)
@@ -66,7 +66,7 @@ This extension is available on [extensions.gnome.org](https://extensions.gnome.o
 
 You can download the latest release of the extension as a ZIP file:
 
-1. Download this [ZIP file (v1.0.6)](https://github.com/wtbenica/text-clock/releases/download/v1.0.6/text-clock@benica.dev.zip) from Github.
+1. Download this [ZIP file (v1.1.0)](https://github.com/wtbenica/text-clock/releases/download/v1.1.0/text-clock@benica.dev.zip) from Github.
 2. Extract the ZIP file to `~/.local/share/gnome-shell/extensions/`.
 3. Restart GNOME Shell for the changes to take effect. On Wayland, log out and back in. On X11, press Alt+F2, type `r`, and then press Enter.
 

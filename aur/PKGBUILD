@@ -1,7 +1,7 @@
 # Maintainer: Wesley Benica <wesley at benica dot dev>
 
 pkgname=gnome-shell-extension-text-clock
-pkgver=1.0.6
+pkgver=1.1.0
 pkgrel=1
 pkgdesc="A simple text clock for the GNOME Shell top panel"
 arch=('any')
