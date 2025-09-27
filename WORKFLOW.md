@@ -29,9 +29,16 @@ Before triggering any release, ensure the following housekeeping tasks are compl
 
 ### Documentation
 
-- [ ] CHANGELOG.md updated with new features/fixes
+- [ ] RELEASE_NOTES.md updated with new features/fixes
 - [ ] README.md reflects current features and compatibility
 - [ ] Version compatibility verified (currently GNOME Shell 45+)
+
+### Translations
+
+- [ ] Translation template updated: `make i18n-update`
+- [ ] Existing translations reviewed and updated in `po/` folder
+- [ ] New strings marked for translation using gettext utilities
+- [ ] Translation compilation tested: `make i18n-compile`
 
 ## 🔄 Release Process
 
@@ -50,25 +57,37 @@ This orchestrates the entire release process by calling individual targets in se
 
 #### Create Pull Request
 
+```bash
+make create-pr        # Create PR from current branch to main
+make create-pr-draft  # Create draft PR (for testing CI first)
+```
+
+
 `gh pr create --base main --head BRANCH_NAME --title "Release vX.Y.Z"`
 
 - Uses `gh pr create` to open the pull request from your development branch to main
 - Sets title: "Release v{version}"
 - Provides automated description
+- **No arguments needed** - automatically uses current branch
 
 #### Validation (GitHub Actions)
 
 Automated validation runs in GitHub Actions when PR is created:
 
-- ESLint linting (`yarn lint`)
-- REUSE compliance (`reuse lint`)
-- Full validation pipeline (`make validate` or `make`)
-  - TypeScript compilation
-  - Runs the comprehensive test suite (unit + integration)
-  - Build validation
+- **Linting**: `make lint` (ESLint TypeScript validation)
+- **Test Coverage**: `make coverage` (runs full test suite with coverage reporting)
+- **Build validation**: `make build` (TypeScript compilation + packaging)
+- **Translation check**: `make pot` (generates/validates translation files)
+- **Dependency validation**: `make check-deps`
+- **Local validation** can be run with: `make validate` (lint + test + build)
 - **Blocks merge** if any checks fail
 
 #### Merge to Main
+
+```bash
+make merge-pr         # Merge the current branch's PR
+make wait-for-ci      # Wait for status checks to pass first
+```
 
 `gh pr merge`
 
@@ -78,8 +97,12 @@ Automated validation runs in GitHub Actions when PR is created:
 
 #### GitHub Release
 
-`make release` or `make release-auto`
+```bash
+make release-gh       # Create GitHub release (with prompts)
+make release-gh-auto  # Create GitHub release (auto-accept)
+```
 
+- **No arguments needed** - reads version from `package.json`
 - Creates git tag `v{version}`
 - GitHub Actions generate release notes
 - Builds and attaches extension ZIP file (`text-clock@benica.dev.zip`)
@@ -87,7 +110,10 @@ Automated validation runs in GitHub Actions when PR is created:
 
 #### AUR Package Update
 
-`make release-aur` or `make release-aur-auto`
+```bash
+make update-aur       # Update AUR package (with prompts)
+make update-aur-auto  # Update AUR package (auto-accept)
+```
 
 - Downloads GitHub release ZIP
 - Calculates SHA256 checksums

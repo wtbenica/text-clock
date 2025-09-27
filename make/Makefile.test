@@ -25,7 +25,7 @@ coverage: node_modules/
 	@echo "Running tests with coverage..."
 	@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is required to run tests" >&2; exit 1; }
 	@yarn tsc -p config/tsconfig.test.json >/dev/null 2>&1 || { echo "ERROR: TypeScript compilation failed" >&2; exit 1; }
-	@yarn test --coverage || { echo "ERROR: Coverage analysis failed" >&2; exit 1; }
+	@yarn test --coverage --coverageThreshold='{"global":{"branches":80,"functions":90,"lines":90,"statements":90}}' || { echo "ERROR: Coverage analysis failed" >&2; exit 1; }
 	@find po -type f -name "*.po~" -exec rm -f {} \; >/dev/null 2>&1 || true
 	@echo "Coverage report generated: coverage/lcov-report/index.html"
 

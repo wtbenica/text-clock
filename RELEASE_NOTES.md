@@ -1,22 +1,12 @@
-# Release Notes: Text Clock (colorful branch)
+# Release Notes: Text Clock v1.1.0
 
-## Highlights
-- Customizable clock display: colors, font, divider, and text options
-- Improved error handling and centralized logging
-- Enhanced settings management and UI logic
-- GPG signature verification and release integrity improvements
-- Expanded unit test coverage for utilities and formatting
-- Refactored scripts and Makefiles for clarity and automation
+## Major Features
+- **Complete Color Customization System**: Full control over clock, date, and divider colors with accent color presets and custom color support
+- **Accent Color Style Configurations**: Multiple pre-built color themes with variations for different visual preferences *(requires GNOME Shell 47+)*  
+- **Enhanced Preferences Interface**: Redesigned settings with dedicated pages for general and color configuration
+- **Update Notification System**: Persistent notifications for new versions with direct access to preferences
+- **Divider Customization**: Preset divider options and custom text functionality
 
-## Changes
-- Implemented customizable colors and font for clock display
-- Added divider preset and custom text functionality in settings
-- Enhanced TextClockLabel to store time, divider, and date text separately for improved styling
-- Improved error logging with centralized logErr usage
-- Refactored clock text generation, date adjustment, and hour name retrieval logic
-- Expanded unit tests for color, error, fuzziness, and translation utilities
-- Added public key and GPG signature verification instructions for releases
-- Improved AUR packaging, documentation, and sync scripts
-- Updated Makefile organization, help output, and release automation scripts
-- Fixed bugs related to settings persistence and error message formatting
-- Updated copyright and license headers
+## Bug Fixes & Refinements
+- Improved error message formatting and logging consistency
+- Enhanced Spanish translations and internationalization support
