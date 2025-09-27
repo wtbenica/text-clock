@@ -64,10 +64,13 @@ export function setLogger(logger: Logger): void {
 
 // Conditionally import gettext - use a fallback for test environment
 let _: (msgid: string) => string;
-try {
-  // This will work in the GNOME Shell environment
+/**
+ * Attempts to use GNOME Shell's gettext if available.
+ * Falls back to identity function in test or non-GNOME environments.
+ */
+if (typeof imports !== "undefined" && imports.gettext) {
   ({ gettext: _ } = imports.gettext);
-} catch {
+} else {
   // Fallback for test environment or when GNOME Shell imports aren't available
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _ = (msgid: string) => msgid;
