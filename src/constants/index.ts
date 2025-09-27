@@ -92,9 +92,9 @@ export const FUZZINESS_ENUM_MINUTES: number[] = [1, 5, 10, 15];
  * representing the "custom" option (handled separately).
  */
 export const DIVIDER_PRESET_TEXTS: string[] = [
-  " | ",
+  " ┃ ",
   " • ",
-  " ‖ ",
+  " ● ",
   " — ",
   "custom",
 ];

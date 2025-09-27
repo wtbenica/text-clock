@@ -32,8 +32,8 @@
 
   <enum id="org.gnome.shell.extensions.text-clock.divider-preset">
     <value value="0" nick="pipe"/>
-    <value value="1" nick="bullet"/>
-    <value value="2" nick="double-pipe"/>
+    <value value="1" nick="dot"/>
+    <value value="2" nick="circle"/>
     <value value="3" nick="dash"/>
     <value value="4" nick="custom"/>
   </enum>
@@ -141,7 +141,7 @@
       </description>
     </key>
     <key name="divider-preset" enum="org.gnome.shell.extensions.text-clock.divider-preset">
-      <default>"bullet"</default>
+      <default>"circle"</default>
       <summary>Divider preset</summary>
       <description>
             The preset to use for the divider between time and date.

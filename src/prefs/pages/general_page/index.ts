@@ -9,15 +9,15 @@ import {
 import { prefsGettext } from "../../../utils/gettext/gettext_utils_prefs.js";
 import SettingsKey from "../../../models/settings_keys.js";
 import { DIVIDER_PRESETS } from "../../../constants/prefs.js";
-
-// Index of the custom divider preset in DIVIDER_PRESET.OPTIONS
-const CUSTOM_DIVIDER_PRESET_INDEX = 4;
 import {
   createAndAddPageToWindow,
   createAndAddGroupToPage,
 } from "../../ui/groups.js";
 import { PAGE_ICONS } from "../../../constants/prefs.js";
 import { addTimeFormatComboRow } from "./formatters.js";
+
+// Index of the custom divider preset in DIVIDER_PRESET.OPTIONS
+const CUSTOM_DIVIDER_PRESET_INDEX = 5;
 
 /**
  * Add a switch row that toggles showing the date.

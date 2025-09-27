@@ -8,4 +8,4 @@ export const PAGE_ICONS = {
   COLORS: "tc-color-symbolic",
 };
 
-export const DIVIDER_PRESETS = ["|", "•", "‖", "—", "Custom"];
+export const DIVIDER_PRESETS = ["┃", "•", "●", "—", "Custom"];
