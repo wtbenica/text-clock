@@ -23,7 +23,7 @@
   ],
   "exclude": [
     "../src/tests",
-    "../src/utils/logger_console.ts",
+    "../src/utils/logging/logger_console.ts",
     "../node_modules",
     "../dist"
   ]

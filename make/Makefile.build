@@ -11,58 +11,44 @@
 compile: $(DIST_DIR)/extension.js
 
 ## build               Prepare $(DIST_DIR) for distribution (copy metadata, schemas, locale)
-build: $(DIST_DIR)/extension.js schemas/gschemas.compiled locale/
+build: $(DIST_DIR)/extension.js schemas/gschemas.compiled locale/ resources/preferences.gresource
 	@echo "Building distribution package..."
 	@mkdir -p $(DIST_DIR)
 	@cp -r schemas $(DIST_DIR)/ 2>/dev/null || true
 	@cp metadata.json $(DIST_DIR)/ 2>/dev/null || true
+	@cp -f resources/preferences.gresource $(DIST_DIR)/ || { echo "ERROR: Failed to copy compiled resource" >&2; exit 1; }
 	@cp -r $(LOCALE_DIR) $(DIST_DIR)/ 2>/dev/null || true
-	@echo "Distribution package ready in $(DIST_DIR)/"
+	@echo "Distribution package ready."
 
 ## pack                Create the distribution zip file
 pack: build ${ZIP_FILE}
 
 ## clean               Remove build artifacts (dist/, node_modules/, zip file, locale/, schemas/gschemas.compiled, yarn.lock)
 clean:
-	@echo "Cleaning up..."
-	@rm -rf $(DIST_DIR) || { echo "Removing dist directory failed"; exit 1; }
-	@rm -rf node_modules/ || { echo "Removing node_modules directory failed"; exit 1; }
-	@rm -f ${ZIP_FILE} || { echo "Removing zip file failed"; exit 1; }
-	@rm -rf $(LOCALE_DIR) || { echo "Removing locale directory failed"; exit 1; }
-	@rm -f schemas/gschemas.compiled || { echo "Removing compiled GSettings schemas failed"; exit 1; }
-	@rm -f yarn.lock || { echo "Removing yarn.lock file failed"; exit 1; }
-	@echo "Removing any .zip, .zip.* and .zip.sig, .zip.sig.* files in repository (including aur/)..."
-	@find . -type f \( -name "*.zip" -o -name "*.zip.*" -o -name "*.zip.sig" -o -name "*.zip.sig.*" \) -print -exec rm -f {} \; || { echo "Removing zip files failed"; exit 1; }
-	@echo "Removing AUR packaging artifacts in aur/ (keys, package archives)..."
+	@echo "Cleaning build artifacts..."
+	@rm -rf $(DIST_DIR) >/dev/null 2>&1 || { echo "ERROR: Failed to remove dist directory" >&2; exit 1; }
+	@rm -rf node_modules/ >/dev/null 2>&1 || { echo "ERROR: Failed to remove node_modules" >&2; exit 1; }
+	@rm -f ${ZIP_FILE} >/dev/null 2>&1 || { echo "ERROR: Failed to remove zip file" >&2; exit 1; }
+	@rm -rf $(LOCALE_DIR) >/dev/null 2>&1 || { echo "ERROR: Failed to remove locale directory" >&2; exit 1; }
+	@rm -f schemas/gschemas.compiled >/dev/null 2>&1 || { echo "ERROR: Failed to remove compiled schemas" >&2; exit 1; }
+	@rm -f yarn.lock >/dev/null 2>&1 || { echo "ERROR: Failed to remove yarn.lock" >&2; exit 1; }
+	@find . -type f \( -name "*.zip" -o -name "*.zip.*" -o -name "*.zip.sig" -o -name "*.zip.sig.*" \) -exec rm -f {} \; >/dev/null 2>&1 || { echo "ERROR: Failed to remove zip files" >&2; exit 1; }
 	@if [ -d "aur" ]; then \
-		find aur -type f \( -name "*.key" -o -name "*.pkg.tar.*" -o -name "*.pkg.tar.zst" \) -print -exec rm -f {} \; || { echo "Removing aur packaging artifacts failed"; exit 1; }; \
+		find aur -type f \( -name "*.key" -o -name "*.pkg.tar.*" -o -name "*.pkg.tar.zst" \) -exec rm -f {} \; >/dev/null 2>&1 || { echo "ERROR: Failed to remove AUR artifacts" >&2; exit 1; }; \
 	fi
-	@echo "Cleaning up complete."
+	@echo "Build artifacts cleaned."
 
 ## === Installation ===
 
 ## install             Install for the current user only (~/.local/share/gnome-shell/extensions)
 install: create_ext_dir build
-	@echo "Installing the extension..."
-	@rm -rf $(GNOME_SHELL_EXT_DIR)/$(NAME)@$(DOMAIN) || { echo "Removing existing extension failed"; exit 1; }
-	@cp -R $(DIST_DIR) $(GNOME_SHELL_EXT_DIR)/$(NAME)@$(DOMAIN) || { echo "Copying extension failed"; exit 1; }
-
-	# Install GSettings schema for the current user so Gio.Settings can use it
-	@echo "Installing GSettings schema to user schemas directory..."
-	@mkdir -p $(HOME)/.local/share/glib-2.0/schemas || { echo "Creating user schemas dir failed"; exit 1; }
-	@cp -f schemas/org.gnome.shell.extensions.$(NAME).gschema.xml $(HOME)/.local/share/glib-2.0/schemas/ || { echo "Copying schema to user schemas dir failed"; exit 1; }
-	@glib-compile-schemas $(HOME)/.local/share/glib-2.0/schemas || { echo "Compiling user GSettings schemas failed"; exit 1; }
-	@echo "Installation complete."
-
-## install-ext         Build, install, and reload the extension for development
-install-ext: build install
-	@echo "Installing and reloading the extension (development helper)..."
-	@command -v gnome-extensions >/dev/null 2>&1 && \
-		( gnome-extensions disable text-clock@benica.dev || true; \
-		sleep 0.2; \
-		gnome-extensions enable text-clock@benica.dev || true ) || \
-		(echo "gnome-extensions not available; please log out/in to reload the shell");
-	@echo "install-ext: done"
+	@echo "Installing extension..."
+	@rm -rf $(GNOME_SHELL_EXT_DIR)/$(NAME)@$(DOMAIN) >/dev/null 2>&1 || { echo "ERROR: Failed to remove existing extension" >&2; exit 1; }
+	@cp -R $(DIST_DIR) $(GNOME_SHELL_EXT_DIR)/$(NAME)@$(DOMAIN) || { echo "ERROR: Failed to copy extension files" >&2; exit 1; }
+	@mkdir -p $(HOME)/.local/share/glib-2.0/schemas || { echo "ERROR: Failed to create user schemas directory" >&2; exit 1; }
+	@cp -f schemas/org.gnome.shell.extensions.$(NAME).gschema.xml $(HOME)/.local/share/glib-2.0/schemas/ || { echo "ERROR: Failed to copy schema file" >&2; exit 1; }
+	@glib-compile-schemas $(HOME)/.local/share/glib-2.0/schemas >/dev/null 2>&1 || { echo "ERROR: Failed to compile user schemas" >&2; exit 1; }
+	@echo "Extension installed successfully."
 
 ## uninstall           Uninstall from the current user (~/.local/share/gnome-shell/extensions)
 uninstall:
@@ -129,25 +115,24 @@ ${ZIP_FILE}: metadata.json node_modules/ $(DIST_DIR)/extension.js schemas/gschem
 
 # Ensure the local GNOME Shell extensions directory exists
 create_ext_dir:
-	@echo "Ensuring GNOME Shell extensions directory exists..."
-	@mkdir -p $(GNOME_SHELL_EXT_DIR) || { echo "Creating GNOME Shell extensions directory failed"; exit 1; }
+	@mkdir -p $(GNOME_SHELL_EXT_DIR) || { echo "ERROR: Failed to create GNOME Shell extensions directory" >&2; exit 1; }
 
 # Compile TypeScript files
 $(DIST_DIR)/extension.js: $(TS_FILES) node_modules/
-	@echo "Compiling TypeScript files..."
-	@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is required for building; please install and try again."; exit 1; }
-	@yarn tsc -p config/tsconfig.json || { echo "TypeScript compilation failed"; exit 1; }
+	@echo "Compiling TypeScript..."
+	@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is required for compilation" >&2; exit 1; }
+	@yarn tsc -p config/tsconfig.json || { echo "ERROR: TypeScript compilation failed" >&2; exit 1; }
 
 # Ensure node modules are installed based on package.json before proceeding
 node_modules/: package.json
-		@echo "Installing node modules..."
-		@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is required to install dependencies; please install and try again."; exit 1; }
-		@yarn install --immutable || { echo "yarn install failed"; exit 1; }
+	@echo "Installing dependencies..."
+	@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is required to install dependencies" >&2; exit 1; }
+	@yarn install --silent || { echo "ERROR: Failed to install dependencies" >&2; exit 1; }
 
 # Compile GSettings schemas
 schemas/gschemas.compiled: schemas/org.gnome.shell.extensions.$(NAME).gschema.xml
 	@echo "Compiling GSettings schemas..."
-	glib-compile-schemas schemas || { echo "GSettings schema compilation failed"; exit 1; }
+	@glib-compile-schemas schemas >/dev/null 2>&1 || { echo "ERROR: GSettings schema compilation failed" >&2; exit 1; }
 
 # Generate a new POT file (collects translatable strings from compiled JS)
 pot: po/${NAME}@${DOMAIN}.pot
@@ -163,8 +148,32 @@ locale/: $(MO_FILES)
 	done
 
 # Generate a new POT file
-po/text-clock@benica.dev.pot: dist/constants/dates/extension.js dist/constants/times/extension.js
+po/text-clock@benica.dev.pot: $(DIST_DIR)/extension.js
 	@echo "Generating a new POT file..."
-	@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is required to generate POT files; please install and try again."; exit 1; }
-	@yarn tsc -p config/tsconfig.pot.json || { echo "TypeScript compilation failed"; exit 1; }
-	@xgettext --from-code=UTF-8 --keyword=_ --output=po/text-clock@benica.dev.pot dist/constants_*_extension.js || { echo "Generating POT file failed"; exit 1; }
+	@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is required to generate POT files; please install and try again." >&2; exit 1; }
+	@yarn tsc -p config/tsconfig.pot.json >/dev/null 2>&1 || { echo "ERROR: TypeScript compilation failed" >&2; exit 1; }
+	@js_count=$$(find $(DIST_DIR) -type f -name '*.js' | wc -l); \
+	if [ "$$js_count" -eq 0 ]; then \
+		echo "ERROR: No JS files found in $(DIST_DIR) for POT generation" >&2; exit 1; \
+	fi; \
+	find $(DIST_DIR) -type f -name '*.js' -print0 | xargs -0 xgettext --from-code=UTF-8 --keyword=_ --output=po/text-clock@benica.dev.pot >/dev/null 2>&1 || { echo "ERROR: Generating POT file failed" >&2; exit 1; }
+
+
+## Compile extension resources (strict)
+resources/preferences.gresource: resources/preferences.gresource.xml
+	@echo "Compiling extension resources (preferences.gresource)..."
+	@if [ ! -f resources/preferences.gresource.xml ]; then \
+		echo "ERROR: resources/preferences.gresource.xml is missing. Resource XML is required."; exit 1; \
+	fi
+	@command -v glib-compile-resources >/dev/null 2>&1 || { echo "ERROR: glib-compile-resources is required to compile resources"; exit 1; }
+	@glib-compile-resources resources/preferences.gresource.xml --target=resources/preferences.gresource --sourcedir=resources || { echo "glib-compile-resources failed (check referenced files in resources/preferences.gresource.xml)"; exit 1; }
+
+
+## Diagnostic: check which resource files referenced by the XML are missing
+.PHONY: check-resources
+check-resources:
+	@echo "Checking resources referenced by resources/preferences.gresource.xml..."
+	@if [ ! -f resources/preferences.gresource.xml ]; then \
+		echo "ERROR: resources/preferences.gresource.xml not found"; exit 1; \
+	fi
+	@python3 scripts/check-resources.py

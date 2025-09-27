@@ -27,6 +27,15 @@
     "files": [
         "../src/constants/dates/core.ts",
         "../src/constants/times/core.ts",
-        "../src/utils/gettext_utils.ts"
+        "../src/utils/gettext/gettext_utils.ts",
+        "../src/utils/gettext/gettext_utils_ext.ts",
+        "../src/utils/gettext/gettext_utils_prefs.ts",
+        "../src/utils/logging/logger_interface.ts",
+        "../src/utils/logging/logger_console.ts",
+        "../src/utils/parse_utils.ts",
+        "../src/utils/style/style_utils.ts",
+        "../src/utils/translate/translate_pack_utils.ts",
+        "../src/utils/color/color_utils.ts",
+        "../src/utils/color/accent_color_utils.ts"
     ]
 }

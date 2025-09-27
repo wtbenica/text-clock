@@ -20,11 +20,11 @@ import { TextClockLabel } from "./ui/clock_widget.js";
 import { CLOCK_LABEL_PROPERTIES } from "./types/ui.js";
 import { WordPack } from "./word_pack.js";
 import { Errors } from "./constants/index.js";
-import SettingsKey from "./models/settings_keys";
+import SettingsKey from "./models/settings_keys.js";
 import { logErr, logWarn } from "./utils/error_utils.js";
-import { fuzzinessFromEnumIndex } from "./utils/fuzziness_utils.js";
-import { createTranslatePackGetter } from "./utils/translate_pack_utils.js";
-import { extensionGettext } from "./utils/gettext_utils_ext.js";
+import { fuzzinessFromEnumIndex } from "./utils/parse_utils.js";
+import { createTranslatePackGetter } from "./utils/translate/translate_pack_utils.js";
+import { extensionGettext } from "./utils/gettext/gettext_utils_ext.js";
 import { SettingsManager } from "./services/settings_manager.js";
 import { StyleService } from "./services/style_service.js";
 import { NotificationService } from "./services/notification_service.js";
@@ -32,16 +32,47 @@ import { NotificationService } from "./services/notification_service.js";
 const CLOCK_STYLE_CLASS_NAME = "clock";
 
 /**
- * @returns a word pack that contains the strings for telling the time and date
+ * Translation pack provider for the extension runtime environment.
+ *
+ * Creates a WordPack with localized strings for time and date formatting
+ * using the extension's gettext context. This provides access to translated
+ * text throughout the extension's runtime code.
+ *
+ * @returns Function that creates a WordPack with current locale translations
  */
 export const TRANSLATE_PACK = createTranslatePackGetter(extensionGettext);
 
 /**
- * TextClock extension for GNOME Shell
+ * Main Text Clock extension class for GNOME Shell.
  *
- * A GNOME Shell extension that hides the clock in the top bar and adds a new
- * clock label that displays the time as text, e.g. "five past noon". It can also
- * display the date and weekday, e.g. "five past noon | Monday the first".
+ * This extension replaces GNOME Shell's default digital clock with a textual
+ * representation of the time, displaying phrases like "five past noon" instead
+ * of "12:05". It integrates seamlessly with the GNOME Shell top bar and
+ * provides comprehensive customization options.
+ *
+ * Key features:
+ * - Textual time display with multiple formats and fuzziness levels
+ * - Optional date and weekday display
+ * - Comprehensive color customization with accent color integration
+ * - Live system accent color monitoring
+ * - Automatic preference migration and update notifications
+ * - Clean integration with GNOME Shell's UI and theming
+ *
+ * The extension manages multiple services:
+ * - SettingsManager: Reactive settings handling with type safety
+ * - StyleService: Color and appearance management with live updates
+ * - NotificationService: User notifications for updates and errors
+ *
+ * Architecture follows GNOME Shell extension patterns with proper resource
+ * management, signal handling, and cleanup to prevent memory leaks.
+ *
+ * @example
+ * ```typescript
+ * // Extension lifecycle is managed by GNOME Shell
+ * const extension = new TextClock(metadata);
+ * extension.enable();  // Called by GNOME Shell when extension activates
+ * extension.disable(); // Called by GNOME Shell when extension deactivates
+ * ```
  */
 export default class TextClock extends Extension {
   #settings?: Gio.Settings;
@@ -55,6 +86,20 @@ export default class TextClock extends Extension {
   #clockLabel?: any;
   #translatePack?: WordPack;
 
+  /**
+   * Enable the extension - called by GNOME Shell when extension activates.
+   *
+   * Performs complete extension initialization including service setup,
+   * UI integration, and settings binding. This method must complete successfully
+   * for the extension to function properly.
+   *
+   * Initialization sequence:
+   * 1. Initialize core services (settings, styling, notifications)
+   * 2. Show update notifications if needed
+   * 3. Integrate with GNOME Shell's date menu button
+   * 4. Create and place the text clock widget
+   * 5. Bind settings for reactive updates
+   */
   enable() {
     this.#initServices();
     this.#maybeShowUpdateNotification();
@@ -63,13 +108,32 @@ export default class TextClock extends Extension {
     this.#bindSettingsToClockLabel();
   }
 
+  /**
+   * Disable the extension - called by GNOME Shell when extension deactivates.
+   *
+   * Performs complete cleanup to restore GNOME Shell's original state and
+   * prevent memory leaks. Essential for proper extension lifecycle management
+   * in the GNOME Shell environment.
+   *
+   * Cleanup sequence:
+   * 1. Restore original clock display in the top bar
+   * 2. Clean up all services and disconnect signal handlers
+   * 3. Clear references to prevent memory leaks
+   */
   disable() {
     this.#restoreClockDisplay();
     this.#cleanup();
   }
 
-  // Private Methods
-  // Initialize all services
+  /**
+   * Initialize all core services required by the extension.
+   *
+   * Sets up the service layer including settings management, styling system,
+   * and notification handling. Services are initialized in dependency order
+   * to ensure proper functionality.
+   *
+   * @private
+   */
   #initServices() {
     // Initialize settings first
     this.#settings = (this as any).getSettings();

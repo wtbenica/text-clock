@@ -7,7 +7,7 @@
  * Shared date constants (core) - do not import runtime gettext here.
  */
 
-import { GettextFunctions } from "../../utils/gettext_utils.js";
+import { GettextFunctions } from "../../utils/gettext/gettext_utils.js";
 
 export function createDateConstants(fns: GettextFunctions) {
   const { _, pgettext } = fns;

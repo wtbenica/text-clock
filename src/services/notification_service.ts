@@ -11,27 +11,82 @@ import { gettext as _ } from "resource:///org/gnome/shell/extensions/extension.j
 import { logWarn, logErr } from "../utils/error_utils.js";
 
 /**
- * Configuration for showing notifications
+ * Configuration object for creating and displaying notifications.
+ *
+ * Defines all the properties needed to create a notification, including
+ * basic content, appearance, and interactive actions.
  */
 export interface NotificationConfig {
+  /** The notification title shown prominently */
   title: string;
+
+  /** The notification body text with detailed information */
   body: string;
+
+  /** Optional icon name for the notification (uses default if not provided) */
   iconName?: string;
+
+  /** Whether the notification should persist until manually dismissed */
   isResident?: boolean;
+
+  /** Optional array of interactive actions the user can perform */
   actions?: NotificationAction[];
 }
 
 /**
- * Action that can be added to a notification
+ * Interactive action that can be added to a notification.
+ *
+ * Allows users to perform specific actions directly from the notification,
+ * such as opening preferences or dismissing update notices.
  */
 export interface NotificationAction {
+  /** Text label shown on the action button */
   label: string;
+
+  /** Function called when the user clicks the action button */
   callback: () => void;
 }
 
 /**
- * Service responsible for managing extension notifications
- * Handles creation, display, and lifecycle of notifications
+ * Service responsible for managing extension notifications in GNOME Shell.
+ *
+ * Provides a comprehensive interface for creating, displaying, and managing
+ * notifications within the GNOME Shell environment. Handles the complexities
+ * of GNOME's notification system including message sources, persistence,
+ * actions, and proper cleanup.
+ *
+ * Key features:
+ * - Simple text notifications for basic messages
+ * - Rich notifications with actions and persistence
+ * - Delayed notification scheduling for timing-sensitive messages
+ * - Automatic message source management
+ * - Graceful fallbacks when notification system is unavailable
+ * - Proper resource cleanup to prevent memory leaks
+ *
+ * @example
+ * ```typescript
+ * const notificationService = new NotificationService('Text Clock');
+ *
+ * // Simple notification
+ * notificationService.showSimpleNotification(
+ *   'Settings Changed',
+ *   'Clock colors have been updated'
+ * );
+ *
+ * // Rich notification with action
+ * notificationService.showNotification({
+ *   title: 'Extension Updated',
+ *   body: 'New features are available',
+ *   isResident: true,
+ *   actions: [{
+ *     label: 'Open Preferences',
+ *     callback: () => openPreferences()
+ *   }]
+ * });
+ *
+ * // Cleanup
+ * notificationService.destroy();
+ * ```
  */
 export class NotificationService {
   private static readonly DEFAULT_ICON =
@@ -41,15 +96,31 @@ export class NotificationService {
   private extensionName: string;
   private notificationSource?: MessageTray.Source;
 
+  /**
+   * Create a new notification service for the specified extension.
+   *
+   * @param extensionName - Name of the extension (shown as notification source)
+   */
   constructor(extensionName: string) {
     this.extensionName = extensionName;
   }
 
   /**
-   * Shows a simple notification with title and body
+   * Shows a simple notification with title and body text.
    *
-   * @param title - The notification title
-   * @param body - The notification body text
+   * Convenience method for displaying basic notifications without additional
+   * configuration. Uses default icon and behavior settings.
+   *
+   * @param title - The notification title shown prominently
+   * @param body - The notification body text with detailed information
+   *
+   * @example
+   * ```typescript
+   * notificationService.showSimpleNotification(
+   *   'Settings Saved',
+   *   'Your preferences have been updated successfully'
+   * );
+   * ```
    */
   showSimpleNotification(title: string, body: string): void {
     this.showNotification({
@@ -59,10 +130,22 @@ export class NotificationService {
   }
 
   /**
-   * Shows a notification for extension updates with delay
+   * Shows a notification for extension updates with interactive preferences access.
    *
-   * @param currentVersion - The current extension version
-   * @param onOpenPreferences - Callback to open preferences
+   * Displays a delayed, persistent notification informing users about extension
+   * updates and providing direct access to preferences. The notification includes
+   * version information and an action button for opening preferences.
+   *
+   * @param currentVersion - The current extension version to display
+   * @param onOpenPreferences - Callback function to open the extension preferences
+   *
+   * @example
+   * ```typescript
+   * notificationService.showUpdateNotification(
+   *   '1.2.0',
+   *   () => extension.openPreferences()
+   * );
+   * ```
    */
   showUpdateNotification(
     currentVersion: string,
@@ -96,9 +179,33 @@ export class NotificationService {
   }
 
   /**
-   * Shows a notification with full configuration options
+   * Shows a notification with full configuration options.
    *
-   * @param config - The notification configuration
+   * Creates and displays a notification using the complete configuration
+   * object, allowing for custom icons, persistence, actions, and other
+   * advanced features. Includes error handling with fallback mechanisms.
+   *
+   * @param config - Complete notification configuration object
+   *
+   * @example
+   * ```typescript
+   * notificationService.showNotification({
+   *   title: 'Configuration Error',
+   *   body: 'Invalid color format detected',
+   *   iconName: 'dialog-warning-symbolic',
+   *   isResident: true,
+   *   actions: [
+   *     {
+   *       label: 'Reset to Default',
+   *       callback: () => resetColorSettings()
+   *     },
+   *     {
+   *       label: 'Open Help',
+   *       callback: () => showHelp()
+   *     }
+   *   ]
+   * });
+   * ```
    */
   showNotification(config: NotificationConfig): void {
     try {
@@ -114,10 +221,23 @@ export class NotificationService {
   }
 
   /**
-   * Schedules a notification to be shown after a delay
+   * Schedules a notification to be shown after a specified delay.
    *
-   * @param config - The notification configuration
-   * @param delaySeconds - Delay in seconds before showing
+   * Useful for timing-sensitive notifications that should appear after
+   * the shell UI is fully ready or when you want to delay notification
+   * display for better user experience.
+   *
+   * @param config - Complete notification configuration object
+   * @param delaySeconds - Delay in seconds before showing the notification
+   *
+   * @example
+   * ```typescript
+   * // Show update notification 5 seconds after extension loads
+   * notificationService.scheduleNotification({
+   *   title: 'Extension Loaded',
+   *   body: 'Text Clock is ready to use'
+   * }, 5);
+   * ```
    */
   scheduleNotification(config: NotificationConfig, delaySeconds: number): void {
     try {
@@ -135,7 +255,23 @@ export class NotificationService {
   }
 
   /**
-   * Cleans up notification resources
+   * Cleans up notification resources and prevents memory leaks.
+   *
+   * Clears internal references to notification sources. The GNOME Shell
+   * message tray automatically handles cleanup of actual notification
+   * sources, so this method primarily clears internal state.
+   *
+   * Should be called when the extension is disabled or the service is
+   * no longer needed.
+   *
+   * @example
+   * ```typescript
+   * class TextClockExtension extends Extension {
+   *   disable() {
+   *     this.notificationService.destroy();
+   *   }
+   * }
+   * ```
    */
   destroy(): void {
     // Note: MessageTray sources are automatically cleaned up by GNOME Shell

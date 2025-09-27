@@ -1,23 +1,56 @@
-/*
- * SPDX-FileCopyrightText: 2024 Wesley Benica <wesley@benica.dev>
- * SPDX-License-Identifier: GPL-3.0-or-later
+/**
+ * Shared top-level constants used across the Text Clock extension.
  *
- * Shared top-level constants used across the extension.
+ * This module centralizes all extension constants including preference text,
+ * error messages, settings key mappings, and enum value mappings. It provides
+ * a single source of truth for string literals, configuration arrays, and
+ * type definitions used throughout the extension.
+ *
+ * The constants support:
+ * - Preference UI text and descriptions
+ * - Centralized error message definitions
+ * - GSettings enum index to value mappings
+ * - Color mode and accent style configurations
+ * - Backwards-compatible settings key access
+ *
+ * @example
+ * ```typescript
+ * import { PrefItems, Errors, SETTINGS, getDividerText } from './constants/index.js';
+ *
+ * // Preference text
+ * const showDateTitle = PrefItems.SHOW_DATE.title; // "Show Date"
+ *
+ * // Error messages
+ * console.error(Errors.ERROR_INVALID_TIME_FORMAT);
+ *
+ * // Settings keys
+ * const colorModeSetting = SETTINGS.COLOR_MODE; // "color-mode"
+ *
+ * // Dynamic divider text
+ * const divider = getDividerText(0, ''); // " | " (pipe preset)
+ * ```
  */
 
 /**
- * Holds the title and subtitle for a preference item
+ * Type definition for preference item text content.
  *
- * @param title: { string } The title of the preference item
- * @param subtitle: {string} The subtitle of the preference item
+ * Defines the structure for preference row text including both the main title
+ * and descriptive subtitle shown in the preferences UI.
  */
 type PrefsText = {
+  /** Main title displayed prominently for the preference item */
   title: string;
+
+  /** Descriptive subtitle explaining the preference's function */
   subtitle: string;
 };
 
 /**
- * The title and subtitles for each preference row
+ * Text content for preference items in the extension settings UI.
+ *
+ * Provides human-readable titles and descriptions for each configurable
+ * preference. Used by the preferences UI to generate consistent, descriptive
+ * labels for settings rows.
  */
 export const PrefItems: Record<string, PrefsText> = {
   SHOW_DATE: {
@@ -43,7 +76,11 @@ export const PrefItems: Record<string, PrefsText> = {
 };
 
 /**
- * The error messages for the extension
+ * Centralized error message definitions for the extension.
+ *
+ * Provides consistent, descriptive error messages used throughout the
+ * extension for logging and debugging. Centralizing error messages
+ * ensures consistency and makes them easier to maintain and localize.
  */
 export const Errors: Record<string, string> = {
   ERROR_RETRIEVE_DATE_MENU: "Error retrieving date menu",
@@ -62,8 +99,13 @@ export const Errors: Record<string, string> = {
 import SettingsKey from "../models/settings_keys";
 
 /**
- * Backwards-compatible `SETTINGS` object.
- * Values are sourced from `models/settings_keys.ts` to centralize keys.
+ * Backwards-compatible settings key mappings.
+ *
+ * Provides a centralized mapping of setting names to their GSettings keys.
+ * Values are sourced from `models/settings_keys.ts` to maintain a single
+ * source of truth while preserving backwards compatibility with existing code.
+ *
+ * @deprecated Consider using SettingsKey enum directly for new code
  */
 export const SETTINGS = {
   SHOW_DATE: SettingsKey.SHOW_DATE,
@@ -82,12 +124,22 @@ export const SETTINGS = {
   LAST_SEEN_VERSION: SettingsKey.LAST_SEEN_VERSION,
 };
 
-// Map GSettings enum index -> fuzziness minutes.
-// Schema enum values (in gschema.xml) are ordered as: 1, 5, 10, 15
+/**
+ * Maps GSettings enum indices to fuzziness values in minutes.
+ *
+ * The GSettings schema defines fuzziness as an enum with indices 0-3
+ * corresponding to 1, 5, 10, and 15 minute rounding intervals.
+ * This array provides the mapping from enum index to actual minute values.
+ */
 export const FUZZINESS_ENUM_MINUTES: number[] = [1, 5, 10, 15];
 
-// Map GSettings enum index -> divider text.
-// Schema enum values (in gschema.xml) are ordered as: pipe, bullet, double-pipe, dash, custom
+/**
+ * Maps GSettings enum indices to divider text presets.
+ *
+ * The GSettings schema defines divider presets as an enum with indices 0-4.
+ * This array provides the actual text strings for each preset, with index 4
+ * representing the "custom" option (handled separately).
+ */
 export const DIVIDER_PRESET_TEXTS: string[] = [
   " | ",
   " • ",
@@ -96,16 +148,60 @@ export const DIVIDER_PRESET_TEXTS: string[] = [
   "custom",
 ];
 
-// Map GSettings enum index -> color mode.
-// Schema enum values (in gschema.xml) are ordered as: default, accent, custom
+/**
+ * Maps GSettings enum indices to color mode names.
+ *
+ * The GSettings schema defines color modes as an enum with indices 0-2.
+ * This array provides human-readable names for each color mode used in the UI.
+ */
 export const COLOR_MODE_NAMES: string[] = [
   "Default",
   "Accent Color",
   "Custom Colors",
 ];
 
+// Import accent style configuration to ensure consistency
+import { ACCENT_STYLE_CONFIGS } from "../services/accent_style_config.js";
+
 /**
- * Get the actual divider text based on preset and custom text
+ * Maps GSettings enum indices to accent color style names and descriptions.
+ *
+ * These arrays are dynamically generated from the accent style configuration
+ * to ensure consistency between the settings schema and the actual style
+ * implementations. Used for populating UI dropdowns and descriptions.
+ */
+export const ACCENT_COLOR_STYLE_NAMES: string[] = ACCENT_STYLE_CONFIGS.map(
+  (config) => config.name,
+);
+export const ACCENT_COLOR_STYLE_DESCRIPTIONS: string[] =
+  ACCENT_STYLE_CONFIGS.map((config) => config.description);
+
+/**
+ * Get the actual divider text based on preset index and custom text.
+ *
+ * Resolves the final divider text to display based on the user's divider
+ * preset selection. For preset indices 0-3, returns the corresponding preset
+ * text. For index 4 ("custom"), returns the user's custom text string.
+ *
+ * @param presetIndex - GSettings enum index for the divider preset (0-4)
+ * @param customText - User-provided custom divider text (used when presetIndex is 4)
+ * @returns The actual divider text to display, with fallback to bullet if invalid
+ *
+ * @example
+ * ```typescript
+ * // Preset dividers
+ * getDividerText(0, '');           // " | " (pipe)
+ * getDividerText(1, '');           // " • " (bullet)
+ * getDividerText(2, '');           // " ‖ " (double pipe)
+ * getDividerText(3, '');           // " — " (em dash)
+ *
+ * // Custom divider
+ * getDividerText(4, ' → ');        // " → " (custom arrow)
+ * getDividerText(4, '');           // '' (empty custom text)
+ *
+ * // Invalid index (fallback)
+ * getDividerText(999, '');         // " • " (bullet fallback)
+ * ```
  */
 export function getDividerText(
   presetIndex: number,

@@ -1,4 +1,4 @@
-import { createTranslatePack } from "../../utils/translate_pack_utils.js";
+import { createTranslatePack } from "../../utils/translate/translate_pack_utils.js";
 import { WordPack } from "../../word_pack.js";
 
 describe("createTranslatePack", () => {

@@ -51,23 +51,24 @@ include make/Makefile.test
 include make/Makefile.release
 include make/Makefile.aur
 include make/Makefile.version
+include make/Makefile.i18n
 
 
 ## check-deps          Verify required tools are available (yarn, node, glib-compile-schemas, zip, xgettext)
 check-deps:
 	@echo "Checking required tools..."
-	@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is not installed or not on PATH. Install and retry."; exit 1; }
+	@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is not installed or not on PATH" >&2; exit 1; }
 	@yarn_version=$$(yarn --version 2>/dev/null || echo "0") && \
 	major=$$(echo $$yarn_version | sed -E 's/^([0-9]+).*/\1/') && \
 	if [ -z "$$major" ] || [ $$major -lt 4 ]; then \
-		echo "ERROR: Yarn v4 or later is required (found: $$yarn_version). Please install the recommended Yarn version."; exit 1; \
+		echo "ERROR: Yarn v4 or later is required (found: $$yarn_version)" >&2; exit 1; \
 	fi
-	@command -v node >/dev/null 2>&1 || { echo "ERROR: node is not installed or not on PATH."; exit 1; }
-	@command -v perl >/dev/null 2>&1 || { echo "ERROR: perl is not installed or not on PATH."; exit 1; }
-	@command -v glib-compile-schemas >/dev/null 2>&1 || { echo "ERROR: glib-compile-schemas is not installed or not on PATH."; exit 1; }
-	@command -v zip >/dev/null 2>&1 || { echo "ERROR: zip is not installed or not on PATH."; exit 1; }
-	@command -v xgettext >/dev/null 2>&1 || { echo "ERROR: xgettext (gettext) is not installed or not on PATH."; exit 1; }
-	@yarn_version=$$(yarn --version 2>/dev/null || echo "0") && echo "check-deps: OK (yarn $$yarn_version)"
+	@command -v node >/dev/null 2>&1 || { echo "ERROR: node is not installed or not on PATH" >&2; exit 1; }
+	@command -v perl >/dev/null 2>&1 || { echo "ERROR: perl is not installed or not on PATH" >&2; exit 1; }
+	@command -v glib-compile-schemas >/dev/null 2>&1 || { echo "ERROR: glib-compile-schemas is not installed or not on PATH" >&2; exit 1; }
+	@command -v zip >/dev/null 2>&1 || { echo "ERROR: zip is not installed or not on PATH" >&2; exit 1; }
+	@command -v xgettext >/dev/null 2>&1 || { echo "ERROR: xgettext (gettext) is not installed or not on PATH" >&2; exit 1; }
+	@echo "All required tools are available."
 
 ### === Functions ===
 

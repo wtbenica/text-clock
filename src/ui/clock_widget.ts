@@ -12,10 +12,10 @@ import {
   Fuzziness,
 } from "../core/clock_formatter.js";
 import { PrefItems } from "../constants/index.js";
-import { parseFuzziness } from "../utils/fuzziness_utils.js";
+import { parseFuzziness } from "../utils/parse_utils.js";
 import { Color } from "../models/color.js";
 import { ITextClock, CLOCK_LABEL_PROPERTIES } from "../types/ui.js";
-import { buildStyles } from "../utils/style_utils.js";
+import { buildStyles } from "../utils/style/style_utils.js";
 
 /**
  * A label that displays the time (and date) as text "five past noon" or "five

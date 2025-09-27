@@ -5,21 +5,50 @@
 
 /**
  * Represents a color with validation, normalization, and utility methods.
+ *
+ * The Color class provides a robust way to handle colors in the text-clock extension,
+ * supporting various input formats and providing utility methods for color manipulation.
+ * All colors are normalized to consistent formats to ensure reliable operations.
+ *
+ * @example
+ * ```typescript
+ * const blue = new Color("#3584E4");
+ * const lighter = blue.lighten(0.3);
+ * const darker = blue.darken(0.2);
+ * console.log(blue.toString()); // "#3584E4"
+ * ```
  */
 export class Color {
+  /** The normalized color string representation */
   private readonly normalized: string;
 
+  /**
+   * Creates a new Color instance from a color string.
+   *
+   * @param color - The color string to parse (hex, rgb, rgba formats supported)
+   * @throws {Error} When the color format is invalid or unsupported
+   */
   constructor(color: string) {
     this.normalized = Color.validateAndNormalize(color);
   }
 
   /**
-   * Validates and normalizes a color string.
-   * Supports hex (#RRGGBB, #RGB), rgb(...) formats, CSS custom properties, and GNOME Shell theme properties.
+   * Validates and normalizes a color string to a consistent format.
    *
-   * @param color The color string to validate and normalize.
-   * @returns The normalized color string.
-   * @throws Error if the color format is invalid.
+   * This method accepts hex (#RRGGBB, #RGB) and rgb/rgba functional notation,
+   * converting them to normalized formats. CSS variables and theme properties
+   * are not accepted as they prevent numeric color operations.
+   *
+   * @param color - The color string to validate and normalize
+   * @returns The normalized color string (hex colors are uppercase)
+   * @throws {Error} When the color format is invalid, unsupported, or contains invalid RGB values
+   *
+   * @example
+   * ```typescript
+   * Color.validateAndNormalize("#abc");     // "#AABBCC"
+   * Color.validateAndNormalize("#123456");  // "#123456"
+   * Color.validateAndNormalize("rgb(255, 0, 0)"); // "rgb(255, 0, 0)"
+   * ```
    */
   static validateAndNormalize(color: string): string {
     // Only accept concrete color formats (hex or rgb/rgba).
@@ -53,15 +82,35 @@ export class Color {
   }
 
   /**
-   * Returns the normalized color string.
+   * Returns the normalized color string representation.
+   *
+   * @returns The color as a normalized string (hex format is uppercase)
+   *
+   * @example
+   * ```typescript
+   * const color = new Color("#abc");
+   * console.log(color.toString()); // "#AABBCC"
+   * ```
    */
   toString(): string {
     return this.normalized;
   }
 
   /**
-   * Lighten the color by blending with white.
-   * amount is fraction between 0 and 1 (default 0.5)
+   * Creates a lighter version of the color by blending with white.
+   *
+   * For hex colors, this performs mathematical RGB blending. For other formats,
+   * this uses CSS color-mix() expressions where supported.
+   *
+   * @param amount - The lightening amount (0-1, where 0 = no change, 1 = white). Defaults to 0.5
+   * @returns A new Color instance representing the lighter color
+   *
+   * @example
+   * ```typescript
+   * const blue = new Color("#0000FF");
+   * const lightBlue = blue.lighten(0.3); // 30% lighter
+   * const veryLight = blue.lighten(0.8); // 80% lighter
+   * ```
    */
   lighten(amount = 0.5): Color {
     const s = this.normalized;
@@ -86,8 +135,20 @@ export class Color {
   }
 
   /**
-   * Darken the color by blending with black.
-   * amount is fraction between 0 and 1 (default 0.2)
+   * Creates a darker version of the color by blending with black.
+   *
+   * For hex colors, this performs mathematical RGB blending by reducing each
+   * channel proportionally. For other formats, this uses CSS color-mix() expressions.
+   *
+   * @param amount - The darkening amount (0-1, where 0 = no change, 1 = black). Defaults to 0.3
+   * @returns A new Color instance representing the darker color
+   *
+   * @example
+   * ```typescript
+   * const blue = new Color("#0000FF");
+   * const darkBlue = blue.darken(0.2); // 20% darker
+   * const veryDark = blue.darken(0.7); // 70% darker
+   * ```
    */
   darken(amount = 0.3): Color {
     const s = this.normalized;
