@@ -77,11 +77,11 @@ export interface AccentStyleConfig {
  */
 export const ACCENT_STYLE_CONFIGS: readonly AccentStyleConfig[] = [
   {
-    name: "Standard",
+    name: "Duotone",
     description: "Time lighter, date normal",
-    clockColor: (accent) => accent.lighten(0.3),
+    clockColor: (accent) => accent.lighten(),
     dateColor: (accent) => accent,
-    dividerColor: (accent) => accent.lighten(0.3),
+    dividerColor: (accent) => accent.lighten(),
   },
   {
     name: "Solid",
@@ -89,13 +89,6 @@ export const ACCENT_STYLE_CONFIGS: readonly AccentStyleConfig[] = [
     clockColor: (accent) => accent,
     dateColor: (accent) => accent,
     dividerColor: (accent) => accent,
-  },
-  {
-    name: "Duotone",
-    description: "Time lighter, date normal",
-    clockColor: (accent) => accent.lighten(0.3),
-    dateColor: (accent) => accent,
-    dividerColor: (accent) => accent.lighten(0.3),
   },
   {
     name: "Racing Stripe",
@@ -107,23 +100,23 @@ export const ACCENT_STYLE_CONFIGS: readonly AccentStyleConfig[] = [
   {
     name: "Racing Stripe Duotone",
     description: "Time lighter, date normal, divider white",
-    clockColor: (accent) => accent.lighten(0.3),
+    clockColor: (accent) => accent.lighten(),
     dateColor: (accent) => accent,
     dividerColor: () => new Color("#FFFFFF"),
   },
   {
     name: "Light Variant",
     description: "All elements lighter",
-    clockColor: (accent) => accent.lighten(0.5),
-    dateColor: (accent) => accent.lighten(0.3),
-    dividerColor: (accent) => accent.lighten(0.5),
+    clockColor: (accent) => accent.lighten(),
+    dateColor: (accent) => accent.lighten(),
+    dividerColor: (accent) => accent.lighten(),
   },
   {
     name: "Dark Variant",
     description: "All elements darker",
-    clockColor: (accent) => accent.darken(0.2),
-    dateColor: (accent) => accent.darken(0.1),
-    dividerColor: (accent) => accent.darken(0.2),
+    clockColor: (accent) => accent.darken(),
+    dateColor: (accent) => accent.darken(),
+    dividerColor: (accent) => accent.darken(),
   },
 ] as const;
 

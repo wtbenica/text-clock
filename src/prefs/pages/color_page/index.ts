@@ -12,10 +12,7 @@ import {
   GROUP_TITLES,
   GROUP_DESCRIPTIONS,
 } from "../../../constants/prefs.js";
-import {
-  ACCENT_COLOR_STYLE_NAMES,
-  ACCENT_COLOR_STYLE_DESCRIPTIONS,
-} from "../../../constants/index.js";
+import { ACCENT_COLOR_STYLE_NAMES } from "../../../constants/index.js";
 import {
   addClockColorRow as _addClockColorRow,
   addDateColorRow as _addDateColorRow,

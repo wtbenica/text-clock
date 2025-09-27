@@ -49,7 +49,8 @@ export function getShellVersion(): number {
   try {
     const [ok, out] = GLib.spawn_command_line_sync("gnome-shell --version");
     if (ok && out) {
-      const outStr = out.toString();
+      // Use GLib.ByteArray to properly convert Uint8Array to string
+      const outStr = imports.byteArray.toString(out);
       const parsed = parseGnomeShellVersionString(outStr);
       if (!Number.isNaN(parsed)) return parsed;
     }
