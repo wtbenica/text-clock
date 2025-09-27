@@ -86,6 +86,10 @@ export function addAccentStyleRow(
  * creates the color rows (time/date/divider) and wires visibility and
  * accent-color change listeners.
  */
+const COLOR_MODE_DEFAULT = 0;
+const COLOR_MODE_ACCENT = 1;
+const COLOR_MODE_CUSTOM = 2;
+
 export function addColorModeRow(
   group: Adw.PreferencesGroup,
   settings: Gio.Settings,
@@ -96,13 +100,13 @@ export function addColorModeRow(
   modelStrings.push(prefsGettext._("Custom Colors"));
 
   let currentSelected = settings.get_enum(SettingsKey.COLOR_MODE);
-  if (!supportsAccentColor && currentSelected === 1) {
-    currentSelected = 0;
-    settings.set_enum(SettingsKey.COLOR_MODE, 0);
-  } else if (!supportsAccentColor && currentSelected === 2) {
-    currentSelected = 1;
+  if (!supportsAccentColor && currentSelected === COLOR_MODE_ACCENT) {
+    currentSelected = COLOR_MODE_DEFAULT;
+    settings.set_enum(SettingsKey.COLOR_MODE, COLOR_MODE_DEFAULT);
+  } else if (!supportsAccentColor && currentSelected === COLOR_MODE_CUSTOM) {
+    currentSelected = COLOR_MODE_ACCENT;
   }
-
+  settings.set_enum(SettingsKey.COLOR_MODE, COLOR_MODE_DEFAULT);
   const colorModeRow = new Adw.ComboRow({
     title: prefsGettext._("Color mode"),
     subtitle: prefsGettext._("Choose which color source to use"),
@@ -146,10 +150,10 @@ export function addColorModeRow(
 
   const updateColorRowsVisibility = () => {
     const selectedMode = colorModeRow.selected;
-    const isAccent = supportsAccentColor && selectedMode === 1;
+    const isAccent = supportsAccentColor && selectedMode === COLOR_MODE_ACCENT;
     const isCustom = supportsAccentColor
-      ? selectedMode === 2
-      : selectedMode === 1;
+      ? selectedMode === COLOR_MODE_CUSTOM
+      : selectedMode === COLOR_MODE_ACCENT;
 
     // Show accent style row only when accent color mode is selected
     accentStyleRow.visible = isAccent;
@@ -172,7 +176,8 @@ export function addColorModeRow(
 
   colorModeRow.connect("notify::selected", () => {
     let settingValue = colorModeRow.selected;
-    if (!supportsAccentColor && settingValue === 1) settingValue = 2;
+    if (!supportsAccentColor && settingValue === COLOR_MODE_ACCENT)
+      settingValue = COLOR_MODE_CUSTOM;
     settings.set_enum(SettingsKey.COLOR_MODE, settingValue);
     updateColorRowsVisibility();
   });

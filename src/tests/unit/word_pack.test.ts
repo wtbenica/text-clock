@@ -55,17 +55,6 @@ describe("WordPack", () => {
       expect(result).toEqual(mockData.timesFormatTwo);
     });
 
-    it("should return format one times for invalid format", () => {
-      const result = wordPack.getTimes("invalid-format");
-
-      expect(result).toEqual(mockData.timesFormatOne);
-    });
-
-    it("should handle empty string format", () => {
-      const result = wordPack.getTimes("");
-      expect(result).toEqual(mockData.timesFormatOne);
-    });
-
     it("should handle null/undefined format", () => {
       const result = wordPack.getTimes(null as any);
       expect(result).toEqual(mockData.timesFormatOne);

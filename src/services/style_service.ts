@@ -491,11 +491,18 @@ export class StyleService {
     );
     const colorMode = this.#settings.get_enum(SettingsKey.COLOR_MODE);
 
+    // Define color mode enum for clarity
+    enum ColorMode {
+      DEFAULT = 0,
+      ACCENT = 1,
+      CUSTOM = 2,
+    }
+
     let clockColor: Color;
     let dateColor: Color;
     let dividerColor: Color;
 
-    if (colorMode === 1) {
+    if (colorMode === ColorMode.ACCENT) {
       // Accent color mode
       const accentColor = this.getAccentColor();
       const accentStyle = this.#settings.get_enum(
@@ -512,7 +519,7 @@ export class StyleService {
       clockColor = accentClockColor;
       dateColor = accentDateColor;
       dividerColor = accentDividerColor;
-    } else if (colorMode === 2) {
+    } else if (colorMode === ColorMode.CUSTOM) {
       // Custom colors mode, but allow per-section "use accent" overrides
       const accentColor = this.getAccentColor();
 
@@ -549,8 +556,13 @@ export class StyleService {
           this.#settings.get_string(SettingsKey.DIVIDER_COLOR),
         );
       }
+    } else if (colorMode === ColorMode.DEFAULT) {
+      // Default mode
+      clockColor = new Color("#FFFFFF");
+      dateColor = new Color("#FFFFFF");
+      dividerColor = new Color("#FFFFFF");
     } else {
-      // Default mode (0)
+      // Default mode
       clockColor = new Color("#FFFFFF");
       dateColor = new Color("#FFFFFF");
       dividerColor = new Color("#FFFFFF");

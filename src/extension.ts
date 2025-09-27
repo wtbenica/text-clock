@@ -20,7 +20,7 @@ import { TextClockLabel } from "./ui/clock_widget.js";
 import { CLOCK_LABEL_PROPERTIES } from "./types/ui.js";
 import { WordPack } from "./word_pack.js";
 import { Errors } from "./constants/index.js";
-import SettingsKey from "./models/settings_keys";
+import SettingsKey from "./models/settings_keys.js";
 import { logErr, logWarn } from "./utils/error_utils.js";
 import { fuzzinessFromEnumIndex } from "./utils/parse_utils.js";
 import { createTranslatePackGetter } from "./utils/translate/translate_pack_utils.js";

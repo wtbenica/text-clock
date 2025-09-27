@@ -141,7 +141,13 @@ export class WordPack {
    * console.log(times[30]); // "half past one" (for X:30)
    * ```
    */
-  getTimes(timeFormat: string): string[] {
+  /**
+   * Retrieves the appropriate time expressions array for the given format.
+   *
+   * @param timeFormat - The time format identifier (TimeFormat enum)
+   * @returns Array of 60 time expressions corresponding to minutes 0-59
+   */
+  getTimes(timeFormat: TimeFormat): string[] {
     return timeFormat === TimeFormat.FORMAT_TWO
       ? this.timesFormatTwo
       : this.timesFormatOne;

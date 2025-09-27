@@ -10,6 +10,9 @@ import { prefsGettext } from "../../../utils/gettext/gettext_utils_prefs.js";
 import SettingsKey from "../../../models/settings_keys.js";
 import { PrefItems } from "../../../constants/index.js";
 import { FUZZINESS_OPTIONS, DIVIDER_PRESET } from "../../../constants/prefs.js";
+
+// Index of the custom divider preset in DIVIDER_PRESET.OPTIONS
+const CUSTOM_DIVIDER_PRESET_INDEX = 4;
 import {
   createAndAddPageToWindow,
   createAndAddGroupToPage,
@@ -137,7 +140,7 @@ export function addDividerPresetRow(
 
   const updateCustomEntryVisibility = () => {
     const selectedPreset = presetRow.selected;
-    const isCustom = selectedPreset === 4;
+    const isCustom = selectedPreset === CUSTOM_DIVIDER_PRESET_INDEX;
     customEntryRow.visible = isCustom;
   };
 

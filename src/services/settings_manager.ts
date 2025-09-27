@@ -274,8 +274,14 @@ export class SettingsManager {
    * }
    * ```
    */
+  /** Default enum index for 5 minutes fuzziness */
+  private static readonly DEFAULT_FUZZINESS_INDEX = 1;
+
   getFuzziness(): Fuzziness {
-    const fuzzIndex = this.getEnum(SettingsKey.FUZZINESS, 1); // Default to 5 minutes
+    const fuzzIndex = this.getEnum(
+      SettingsKey.FUZZINESS,
+      SettingsManager.DEFAULT_FUZZINESS_INDEX,
+    ); // Default to 5 minutes
     return fuzzinessFromEnumIndex(fuzzIndex);
   }
 
