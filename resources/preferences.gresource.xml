@@ -2,5 +2,6 @@
 <gresources>
   <gresource prefix="/org/gnome/shell/extensions/text-clock/preferences">
     <file>icons/tc-settings-symbolic.svg</file>
+    <file>icons/tc-color-symbolic.svg</file>
   </gresource>
 </gresources>
