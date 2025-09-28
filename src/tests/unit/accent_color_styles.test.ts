@@ -8,12 +8,12 @@
  * rather than testing property existence (which TypeScript already guarantees).
  */
 
-import { Color } from "../../models/color.js";
+import { Color } from "../../domain/models/color.js";
 import {
   ACCENT_STYLE_CONFIGS,
-  getAccentStyleConfig,
   applyAccentStyle,
-} from "../../services/preference_configs.js";
+  getAccentStyleConfig,
+} from "../../application/services/preference_configs.js";
 
 describe("AccentColorStyles", () => {
   const testColor = new Color("#3584E4"); // GNOME Blue

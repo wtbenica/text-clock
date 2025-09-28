@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import SettingsKey from "../../models/settings_keys.js";
+import SettingsKey from "../../domain/models/settings_keys.js";
 
 describe("Constants and Configuration", () => {
   describe("Settings Constants", () => {
@@ -30,7 +30,7 @@ describe("Constants and Configuration", () => {
 
   describe("Error Messages", () => {
     it("should have error constants available", () => {
-      const { Errors } = require("../../constants/index.js");
+      const { Errors } = require("../../infrastructure/constants/index.js");
 
       expect(Errors).toBeDefined();
       expect(typeof Errors).toBe("object");

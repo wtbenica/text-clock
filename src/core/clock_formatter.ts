@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { validateDate } from "../infrastructure/utils/error_utils.js";
 import { WordPack } from "../word_pack.js";
-import { validateDate } from "../utils/error_utils.js";
 
 /**
  * Time format styles available for clock text display.
