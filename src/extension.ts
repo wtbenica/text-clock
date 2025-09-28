@@ -18,8 +18,8 @@ import {
   pgettext,
 } from "resource:///org/gnome/shell/extensions/extension.js";
 
-import { TextClockLabel } from "./ui/clock_widget.js";
-import { CLOCK_LABEL_PROPERTIES } from "./types/ui.js";
+import { TextClockLabel } from "./ui/clock_widget";
+import { CLOCK_LABEL_PROPERTIES, ITextClock } from "./types/ui.js";
 import { WordPack } from "./word_pack.js";
 import { Errors } from "./constants/index.js";
 import SettingsKey from "./models/settings_keys.js";
@@ -91,7 +91,7 @@ export default class TextClock extends Extension {
   #clock?: GnomeDesktop.WallClock;
   #clockDisplay?: St.Label;
   #topBox?: St.BoxLayout;
-  #clockLabel?: any;
+  #clockLabel?: ITextClock;
   #translatePack?: WordPack;
 
   /**
@@ -147,8 +147,8 @@ export default class TextClock extends Extension {
     this.#settings = (this as any).getSettings();
 
     // Initialize services directly
-    this.#settingsManager = new SettingsManager(this.#settings as any);
-    this.#styleService = new StyleService(this.#settings as any);
+    this.#settingsManager = new SettingsManager(this.#settings!);
+    this.#styleService = new StyleService(this.#settings!);
     this.#notificationService = new NotificationService("Text Clock");
   }
 
@@ -160,7 +160,7 @@ export default class TextClock extends Extension {
 
     // Extension metadata is provided by the base Extension class; access
     // via (this as any).metadata which mirrors metadata.json at build time.
-    const meta: any = (this as any).metadata || {};
+    const meta: any = this.metadata || {};
     const currentVersionName: string =
       meta["version-name"] || String(meta.version || "");
 
@@ -235,7 +235,7 @@ export default class TextClock extends Extension {
     // Set initial fuzziness
     const fuzzValue = this.#settingsManager!.getFuzziness();
     (this.#clockLabel as any).fuzzyMinutes = fuzzValue;
-    this.#topBox.add_child(this.#clockLabel! as any);
+    this.#topBox!.add_child(this.#clockLabel as any);
 
     // Apply initial styles
     this.#applyStyles();
@@ -287,7 +287,7 @@ export default class TextClock extends Extension {
         1,
       );
       const fuzzValue = fuzzinessFromEnumIndex(enumIndex);
-      (this.#clockLabel as any).fuzzyMinutes = fuzzValue;
+      this.#clockLabel!.fuzzyMinutes = fuzzValue;
     });
 
     // Subscribe to time format changes
@@ -295,13 +295,13 @@ export default class TextClock extends Extension {
       SettingsKey.TIME_FORMAT,
       (newValue: any) => {
         if (newValue) {
-          (this.#clockLabel as any).timeFormat = newValue;
+          this.#clockLabel!.timeFormat = newValue;
         }
       },
     );
 
     // Register the clock label with the style service for automatic updates
-    this.#styleService!.registerTarget(this.#clockLabel as any);
+    this.#styleService!.registerTarget(this.#clockLabel!);
   }
 
   // Apply styles to the clock label
