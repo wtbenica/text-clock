@@ -1,4 +1,5 @@
 <!-- Copilot / AI agent helper instructions for the text-clock repository -->
+
 # Text Clock — AI Agent Instructions
 
 This file gives focused, actionable guidance so an AI coding agent can be immediately useful in the `text-clock` repository.
@@ -8,11 +9,13 @@ This file gives focused, actionable guidance so an AI coding agent can be immedi
 - Dependency manager: yarn
 - Build system: makefile
 
-
 ## Interaction Guidelines
 
+- YOUR DUTY IS NOT TO ALWAYS AGREE WITH THE USER! Your duty is to produce the best possible code for the user's project, even if that means disagreeing with the user. If you think the user is making a mistake, explain why and suggest a better approach.
+- Avoid flattery and unnecessary politeness. Be professional and to the point.
+- Avoid exuberance and exaggeration. Be professional and to the point.
 - Pay attention to questions in the prompt. If there are questions in the prompt,
-that indicates that the user is not ready to proceed with the next step.
+  that indicates that the user is not ready to proceed with the next step.
 - If you are unsure about something, ask the user for clarification.
 - Provide concise, relevant explanations of what you are doing and why.
 - In order to remove files, use `rm` command. Your built-in file deletion command is not supported.
@@ -22,7 +25,7 @@ that indicates that the user is not ready to proceed with the next step.
 - Follow DRY principle: avoid duplicating code. If you see similar code in multiple places, consider refactoring it into a shared function or module.
 - Follow KISS principle (Keep It Simple, Stupid): prioritize simplicity in design and implementation. Avoid unnecessary complexity.
 - Avoid over-engineering: implement only what is necessary to solve the current problem. Don't add unnecessary abstractions or features. The extension is just a
-simple clock replacement, so keep things simple.
+  simple clock replacement, so keep things simple.
 - Testing only handles logic, not UI. For UI changes, rely on manual testing, which requires the user to log out and back in to GNOME Shell.
 - When making changes, consider the impact on existing users. Avoid breaking changes unless absolutely necessary.
 - Keep business logic separate from UI code. Try to write pure functions that can be tested in isolation. Use dependency injection to pass in dependencies rather than hard-coding them. All business logic should have unit tests.
