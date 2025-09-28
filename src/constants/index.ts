@@ -1,5 +1,5 @@
 /**
- * Shared top-level constants used across the Text Clock extension.
+ * Shared top-level constants used across theimport SettingsKey from "../models/settings_keys.js";ext Clock extension.
  *
  * This module centralizes all extension constants including error messages,
  * settings key mappings, and enum value mappings. It provides a single source
@@ -47,8 +47,7 @@ export const Errors: Record<string, string> = {
   ERROR_INVALID_TIME_FORMAT: "Invalid time format",
 };
 
-import SettingsKey from "../models/settings_keys";
-import { getDividerPresetConfig } from "../services/preference_configs";
+import SettingsKey from "../models/settings_keys.js";
 
 /**
  * Backwards-compatible settings key mappings.
@@ -77,44 +76,10 @@ export const SETTINGS = {
 };
 
 /**
- * Get the actual divider text based on preset index and custom text.
+ * Re-export divider text function for backward compatibility.
  *
- * Resolves the final divider text to display based on the user's divider
- * preset selection. For preset indices 0-3, returns the corresponding preset
- * text. For index 4 ("custom"), returns the user's custom text string.
- *
- * @param presetIndex - GSettings enum index for the divider preset (0-4)
- * @param customText - User-provided custom divider text (used when presetIndex is 4)
- * @returns The actual divider text to display, with fallback to bullet if invalid
- *
- * @example
- * ```typescript
- * // Preset dividers
- * getDividerText(0, '');           // " | " (pipe)
- * getDividerText(1, '');           // " • " (bullet)
- * getDividerText(2, '');           // " ‖ " (double pipe)
- * getDividerText(3, '');           // " — " (em dash)
- *
- * // Custom divider
- * getDividerText(4, ' → ');        // " → " (custom arrow)
- * getDividerText(4, '');           // '' (empty custom text)
- *
- * // Invalid index (fallback)
- * getDividerText(999, '');         // " • " (bullet fallback)
- * ```
+ * @param presetIndex - GSettings enum index for divider preset
+ * @param customText - Custom divider text when preset is "custom"
+ * @returns The actual divider text to display
  */
-export function getDividerText(
-  presetIndex: number,
-  customText: string,
-): string {
-  const config = getDividerPresetConfig(presetIndex);
-
-  // Proper discriminated union: check for the presence of the discriminating property
-  if ("isCustom" in config) {
-    // This is CustomPreferenceConfig
-    return customText;
-  }
-
-  // This is ValuePreferenceConfig<string> - has 'value' property
-  return config.value;
-}
+export { getDividerText } from "../services/preference_configs.js";

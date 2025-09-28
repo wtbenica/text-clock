@@ -19,13 +19,13 @@
  *
  * @example
  * ```typescript
- * import { getDividerPresetConfig, getFuzzinessConfig } from './preference_configs.js';
+ * import { getDividerPresetConfig } from './preference_configs.js';
  *
  * const dividerConfig = getDividerPresetConfig(1); // bullet
  * console.log(dividerConfig.displayName); // "•"
  * console.log(dividerConfig.value); // " • "
  *
- * const fuzzConfig = getFuzzinessConfig(2); // 10 minutes
+ * const fuzzConfig = FUZZINESS_CONFIGS[2]; // 10 minutes
  * console.log(fuzzConfig.displayName); // "10 minutes"
  * console.log(fuzzConfig.value); // 10
  * ```
@@ -367,18 +367,6 @@ export function applyAccentStyle(baseColor: Color, styleIndex: number) {
 }
 
 /**
- * Get fuzziness configuration by enum index.
- *
- * @param index - GSettings enum index (0-3)
- * @returns Fuzziness configuration or first option if invalid
- */
-export function getFuzzinessConfig(
-  index: number,
-): ValuePreferenceConfig<number> {
-  return FUZZINESS_CONFIGS[index] || FUZZINESS_CONFIGS[0];
-}
-
-/**
  * Get divider preset configuration by enum index.
  *
  * @param index - GSettings enum index (0-4)
@@ -388,30 +376,6 @@ export function getDividerPresetConfig(
   index: number,
 ): ValuePreferenceConfig<string> | CustomPreferenceConfig {
   return DIVIDER_PRESET_CONFIGS[index] || DIVIDER_PRESET_CONFIGS[0];
-}
-
-/**
- * Get time format configuration by enum index.
- *
- * @param index - GSettings enum index (0-1)
- * @returns Time format configuration or first option if invalid
- */
-export function getTimeFormatConfig(
-  index: number,
-): ValuePreferenceConfig<string> {
-  return TIME_FORMAT_CONFIGS[index] || TIME_FORMAT_CONFIGS[0];
-}
-
-/**
- * Get color mode configuration by enum index.
- *
- * @param index - GSettings enum index (0-2)
- * @returns Color mode configuration or first option if invalid
- */
-export function getColorModeConfig(
-  index: number,
-): ValuePreferenceConfig<string> {
-  return COLOR_MODE_CONFIGS[index] || COLOR_MODE_CONFIGS[0];
 }
 
 /**

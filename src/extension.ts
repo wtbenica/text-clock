@@ -280,8 +280,13 @@ export default class TextClock extends Extension {
     );
 
     // Subscribe to fuzziness changes
-    this.#settingsManager.subscribe(SettingsKey.FUZZINESS, (newValue: any) => {
-      const fuzzValue = fuzzinessFromEnumIndex(newValue);
+    this.#settingsManager.subscribe(SettingsKey.FUZZINESS, () => {
+      // For enum settings, ensure we get the numeric index
+      const enumIndex = this.#settingsManager!.getEnum(
+        SettingsKey.FUZZINESS,
+        1,
+      );
+      const fuzzValue = fuzzinessFromEnumIndex(enumIndex);
       (this.#clockLabel as any).fuzzyMinutes = fuzzValue;
     });
 
