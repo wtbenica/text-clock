@@ -1,5 +1,5 @@
 /**
- * Shared top-level constants used across theimport SettingsKey from "../models/settings_keys.js";ext Clock extension.
+ * Shared top-level constants used across the Text Clock extension.
  *
  * This module centralizes all extension constants including error messages,
  * settings key mappings, and enum value mappings. It provides a single source

@@ -312,7 +312,7 @@ export const ACCENT_STYLE_CONFIGS: readonly AccentStyleConfig[] = [
     description: ({ _ }) => _("Time white, date normal, divider white"),
     clockColor: () => new Color("#FFFFFF"),
     dateColor: (accent) => accent.lighten(0.1),
-    dividerColor: () => new Color("#FFFFFF"),
+    dividerColor: (accent) => accent.lighten(0.1),
   },
   {
     schemaValue: "contrast-reverse",
@@ -320,7 +320,7 @@ export const ACCENT_STYLE_CONFIGS: readonly AccentStyleConfig[] = [
     description: ({ _ }) => _("Time normal, date white, divider normal"),
     clockColor: (accent) => accent.lighten(0.1),
     dateColor: () => new Color("#FFFFFF"),
-    dividerColor: (accent) => accent,
+    dividerColor: () => new Color("#FFFFFF"),
   },
   {
     schemaValue: "light-variant",

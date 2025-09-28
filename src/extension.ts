@@ -18,7 +18,7 @@ import {
   pgettext,
 } from "resource:///org/gnome/shell/extensions/extension.js";
 
-import { TextClockLabel } from "./ui/clock_widget";
+import { TextClockLabel } from "./ui/clock_widget.js";
 import { CLOCK_LABEL_PROPERTIES, ITextClock } from "./types/ui.js";
 import { WordPack } from "./word_pack.js";
 import { Errors } from "./constants/index.js";
