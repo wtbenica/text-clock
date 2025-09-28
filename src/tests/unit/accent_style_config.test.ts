@@ -12,7 +12,7 @@ import {
   applyAccentStyle,
   ACCENT_STYLE_CONFIGS,
   getAccentStyleConfig,
-} from "../../services/accent_style_config.js";
+} from "../../services/preference_configs.js";
 
 describe("AccentStyleConfig", () => {
   const testColor = new Color("#3584E4"); // GNOME Blue
@@ -22,29 +22,25 @@ describe("AccentStyleConfig", () => {
       expect(ACCENT_STYLE_CONFIGS.length).toBeGreaterThan(0);
     });
 
-    it("should have valid configurations for all styles", () => {
-      ACCENT_STYLE_CONFIGS.forEach((config) => {
-        expect(config).toHaveProperty("name");
-        expect(config).toHaveProperty("description");
-        expect(config).toHaveProperty("clockColor");
-        expect(config).toHaveProperty("dateColor");
-        expect(config).toHaveProperty("dividerColor");
-        expect(typeof config.name).toBe("string");
-        expect(typeof config.description).toBe("string");
-        expect(typeof config.clockColor).toBe("function");
-        expect(typeof config.dateColor).toBe("function");
-        expect(typeof config.dividerColor).toBe("function");
-      });
+    it("should have unique schema values", () => {
+      const schemaValues = ACCENT_STYLE_CONFIGS.map(
+        (config) => config.schemaValue,
+      );
+      const uniqueValues = new Set(schemaValues);
+      expect(uniqueValues.size).toBe(schemaValues.length);
     });
 
-    it("should have consistent array mapping", () => {
-      // Test that array indices map correctly to configurations
-      for (let i = 0; i < ACCENT_STYLE_CONFIGS.length; i++) {
-        const config = ACCENT_STYLE_CONFIGS[i];
-        expect(config).toBeDefined();
-        expect(config.name).toBeTruthy();
-        expect(config.description).toBeTruthy();
-      }
+    it("should have non-empty display names and descriptions", () => {
+      const mockGettext = {
+        _: (text: string) => text,
+        ngettext: () => "",
+        pgettext: (_: string, text: string) => text,
+      };
+
+      ACCENT_STYLE_CONFIGS.forEach((config) => {
+        expect(config.displayName(mockGettext)).toBeTruthy();
+        expect(config.description?.(mockGettext)).toBeTruthy();
+      });
     });
   });
 
@@ -53,8 +49,6 @@ describe("AccentStyleConfig", () => {
       for (let i = 0; i < ACCENT_STYLE_CONFIGS.length; i++) {
         const config = getAccentStyleConfig(i);
         expect(config).toBe(ACCENT_STYLE_CONFIGS[i]);
-        expect(config.name).toBeTruthy();
-        expect(config.description).toBeTruthy();
       }
     });
 

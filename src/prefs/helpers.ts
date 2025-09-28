@@ -33,7 +33,7 @@ export function bindSettingsToProperty(
 // TRANSLATE PACK — prefs-scoped translate pack getter
 export const TRANSLATE_PACK = createTranslatePackGetter(prefsGettext);
 
-// Version utilities (merged from version.ts)
+// Version utilities
 // GNOME Shell imports for version detection (may not exist in all contexts)
 declare const imports: any;
 
@@ -77,29 +77,8 @@ export function getShellVersion(): number {
   return 45;
 }
 
-// Re-exports for UI and page helpers
+// Core UI utilities still in use
 export {
   createAndAddPageToWindow,
   createAndAddGroupToPage,
 } from "./ui/groups.js";
-export { addComboRow, addSwitchRow, addEntryRowBinding } from "./ui/rows.js";
-export {
-  createColorControlWidget,
-  createColorRow,
-} from "./pages/color_page/color_controls.js";
-export {
-  addColorModeRow,
-  addClockColorRow,
-  addDateColorRow,
-  addDividerColorRow,
-} from "./pages/color_page/index.js";
-export {
-  getTimeFormatsList,
-  addTimeFormatComboRow,
-} from "./pages/general_page/formatters.js";
-export {
-  addShowDateSwitchRow,
-  addShowWeekdaySwitchRow,
-  createFuzzinessComboRow,
-  addDividerPresetRow,
-} from "./pages/general_page/index.js";

@@ -41,7 +41,7 @@ import { logWarn } from "../utils/error_utils.js";
 import { getDividerText } from "../constants/index.js";
 import SettingsKey from "../models/settings_keys.js";
 import { Color } from "../models/color.js";
-import { applyAccentStyle } from "./accent_style_config.js";
+import { applyAccentStyle } from "./preference_configs.js";
 
 /**
  * Configuration object for styling UI elements.

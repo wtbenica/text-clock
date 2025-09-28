@@ -48,6 +48,7 @@ export const Errors: Record<string, string> = {
 };
 
 import SettingsKey from "../models/settings_keys";
+import { getDividerPresetConfig } from "../services/preference_configs";
 
 /**
  * Backwards-compatible settings key mappings.
@@ -74,58 +75,6 @@ export const SETTINGS = {
   CUSTOM_DIVIDER_TEXT: SettingsKey.CUSTOM_DIVIDER_TEXT,
   LAST_SEEN_VERSION: SettingsKey.LAST_SEEN_VERSION,
 };
-
-/**
- * Maps GSettings enum indices to fuzziness values in minutes.
- *
- * The GSettings schema defines fuzziness as an enum with indices 0-3
- * corresponding to 1, 5, 10, and 15 minute rounding intervals.
- * This array provides the mapping from enum index to actual minute values.
- */
-export const FUZZINESS_ENUM_MINUTES: number[] = [1, 5, 10, 15];
-
-/**
- * Maps GSettings enum indices to divider text presets.
- *
- * The GSettings schema defines divider presets as an enum with indices 0-4.
- * This array provides the actual text strings for each preset, with index 4
- * representing the "custom" option (handled separately).
- */
-export const DIVIDER_PRESET_TEXTS: string[] = [
-  " ┃ ",
-  " • ",
-  " ● ",
-  " — ",
-  "custom",
-];
-
-/**
- * Maps GSettings enum indices to color mode names.
- *
- * The GSettings schema defines color modes as an enum with indices 0-2.
- * This array provides human-readable names for each color mode used in the UI.
- */
-export const COLOR_MODE_NAMES: string[] = [
-  "Default",
-  "Accent Color",
-  "Custom Colors",
-];
-
-// Import accent style configuration to ensure consistency
-import { ACCENT_STYLE_CONFIGS } from "../services/accent_style_config.js";
-
-/**
- * Maps GSettings enum indices to accent color style names and descriptions.
- *
- * These arrays are dynamically generated from the accent style configuration
- * to ensure consistency between the settings schema and the actual style
- * implementations. Used for populating UI dropdowns and descriptions.
- */
-export const ACCENT_COLOR_STYLE_NAMES: string[] = ACCENT_STYLE_CONFIGS.map(
-  (config) => config.name,
-);
-export const ACCENT_COLOR_STYLE_DESCRIPTIONS: string[] =
-  ACCENT_STYLE_CONFIGS.map((config) => config.description);
 
 /**
  * Get the actual divider text based on preset index and custom text.
@@ -158,9 +107,14 @@ export function getDividerText(
   presetIndex: number,
   customText: string,
 ): string {
-  if (presetIndex === 4) {
-    // custom
+  const config = getDividerPresetConfig(presetIndex);
+
+  // Proper discriminated union: check for the presence of the discriminating property
+  if ("isCustom" in config) {
+    // This is CustomPreferenceConfig
     return customText;
   }
-  return DIVIDER_PRESET_TEXTS[presetIndex] || " • ";
+
+  // This is ValuePreferenceConfig<string> - has 'value' property
+  return config.value;
 }

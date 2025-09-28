@@ -5,6 +5,8 @@
 # Testing and validation targets
 # This file contains targets for running tests, validation, and CI checks
 
+.PHONY: test lint coverage i18n-validate validate ci-dry-run
+
 ## === Testing & Validation ===
 
 ## test                Compile from TypeScript and run tests
@@ -29,8 +31,39 @@ coverage: node_modules/
 	@find po -type f -name "*.po~" -exec rm -f {} \; >/dev/null 2>&1 || true
 	@echo "Coverage report generated: coverage/lcov-report/index.html"
 
+## i18n-validate       Validate that all translatable strings are translated (no missing/fuzzy)
+i18n-validate:
+	@echo "Validating translations..."
+	@if [ ! -d "po" ] || [ -z "$$(ls -A po 2>/dev/null)" ]; then \
+		echo "ERROR: No PO files found in 'po/'. Run 'make i18n-update' to create/update PO files from POT." >&2; \
+		exit 1; \
+	fi
+	@validation_failed=0; \
+	for f in po/*.po; do \
+		if [ ! -f "$$f" ]; then continue; fi; \
+		lang=$$(basename "$$f" .po); \
+		command -v msgattrib >/dev/null 2>&1 || { echo "ERROR: msgattrib is required for translation validation" >&2; exit 1; }; \
+		untranslated=$$(msgattrib --no-obsolete --untranslated "$$f" 2>/dev/null | grep -c '^msgid' || true); \
+		fuzzy=$$(grep -c '^#, fuzzy' "$$f" || true); \
+		total=$$(grep -c '^msgid "' "$$f" || true); \
+		if [ "$$total" -gt 0 ]; then total=$$((total - 1)); fi; \
+		if [ "$$untranslated" -gt 0 ]; then \
+			echo "ERROR: $$lang has $$untranslated untranslated strings. Please complete translations in po/$$lang.po" >&2; \
+			validation_failed=1; \
+		fi; \
+		if [ "$$fuzzy" -gt 0 ]; then \
+			echo "ERROR: $$lang has $$fuzzy fuzzy translations. Please review and fix fuzzy translations in po/$$lang.po" >&2; \
+			validation_failed=1; \
+		fi; \
+	done; \
+	if [ "$$validation_failed" -eq 1 ]; then \
+		echo "ERROR: Translation validation failed. Run 'make i18n-report' for details." >&2; \
+		exit 1; \
+	fi
+	@echo "All translations are complete and validated."
+
 ## validate            Run build and tests (used as the default CI-style check)
-validate: lint test build
+validate: lint test build i18n-validate
 	@find po -type f -name "*.po~" -exec rm -f {} \; >/dev/null 2>&1 || true
 	@echo "Validation completed successfully."
 

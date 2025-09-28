@@ -24,7 +24,7 @@
  */
 
 import { Fuzziness } from "../core/clock_formatter.js";
-import { FUZZINESS_ENUM_MINUTES } from "../constants/index.js";
+import { getFuzzinessConfig } from "../services/preference_configs.js";
 
 /**
  * Convert a GSettings enum index to the corresponding Fuzziness enum value.
@@ -33,7 +33,7 @@ import { FUZZINESS_ENUM_MINUTES } from "../constants/index.js";
  * Fuzziness enum used throughout the codebase. Handles invalid indices gracefully
  * by falling back to the default 5-minute fuzziness.
  *
- * The mapping uses the FUZZINESS_ENUM_MINUTES constant to convert index → minutes → enum.
+ * The mapping uses the unified preference system to convert index → minutes → enum.
  *
  * @param index - The GSettings enum index (0-3 for 1, 5, 10, 15 minutes respectively)
  * @returns The corresponding Fuzziness enum value, defaults to FIVE_MINUTES for invalid indices
@@ -48,7 +48,7 @@ import { FUZZINESS_ENUM_MINUTES } from "../constants/index.js";
  * ```
  */
 export function fuzzinessFromEnumIndex(index: number): Fuzziness {
-  const minutes = FUZZINESS_ENUM_MINUTES[index] ?? 5;
+  const minutes = getFuzzinessConfig(index).value;
   switch (minutes) {
     case 1:
       return Fuzziness.ONE_MINUTE;

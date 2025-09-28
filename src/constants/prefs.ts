@@ -8,4 +8,5 @@ export const PAGE_ICONS = {
   COLORS: "tc-color-symbolic",
 };
 
+// @deprecated Use DIVIDER_PRESET_CONFIGS from preference_configs.ts for new code
 export const DIVIDER_PRESETS = ["┃", "•", "●", "—", "Custom"];

@@ -5,6 +5,8 @@
 # Version management targets
 # This file contains targets for bumping versions and managing releases
 
+.PHONY: start-dev-branch update-version update-version-rename update-version-dry update-version-force update-version-files-only update-version-files-only-dry update-version-files-only-force
+
 ## === Version Management ===
 
 ## start-dev-branch    Start development branch for new version (TYPE=patch|minor|major)

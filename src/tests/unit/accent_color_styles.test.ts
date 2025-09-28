@@ -4,79 +4,64 @@
  */
 
 /**
- * Tests for accent color style variations.
+ * Tests for accent color style behavior - focuses on actual functionality
+ * rather than testing property existence (which TypeScript already guarantees).
  */
 
 import { Color } from "../../models/color.js";
 import {
-  ACCENT_COLOR_STYLE_NAMES,
-  ACCENT_COLOR_STYLE_DESCRIPTIONS,
-} from "../../constants/index.js";
-import {
   ACCENT_STYLE_CONFIGS,
   getAccentStyleConfig,
   applyAccentStyle,
-} from "../../services/accent_style_config.js";
+} from "../../services/preference_configs.js";
 
 describe("AccentColorStyles", () => {
-  describe("ACCENT_COLOR_STYLE_NAMES", () => {
-    it("should have style names", () => {
-      expect(ACCENT_COLOR_STYLE_NAMES.length).toBeGreaterThan(0);
-    });
+  const testColor = new Color("#3584E4"); // GNOME Blue
 
-    it("should match configuration names", () => {
-      const configNames = ACCENT_STYLE_CONFIGS.map((config) => config.name);
-      expect(ACCENT_COLOR_STYLE_NAMES).toEqual(configNames);
-    });
+  describe("Color transformation behavior", () => {
+    it("should produce different results for different styles", () => {
+      // Test that different accent styles actually produce different results
+      const results = ACCENT_STYLE_CONFIGS.map((config) => ({
+        clock: config.clockColor(testColor),
+        date: config.dateColor(testColor),
+        divider: config.dividerColor(testColor),
+      }));
 
-    it("should have consistent mapping with configurations", () => {
-      ACCENT_COLOR_STYLE_NAMES.forEach((name, index) => {
-        expect(ACCENT_STYLE_CONFIGS[index]).toBeDefined();
-        expect(ACCENT_STYLE_CONFIGS[index].name).toBe(name);
-      });
-    });
-  });
-
-  describe("ACCENT_COLOR_STYLE_DESCRIPTIONS", () => {
-    it("should have same length as names", () => {
-      expect(ACCENT_COLOR_STYLE_DESCRIPTIONS).toHaveLength(
-        ACCENT_COLOR_STYLE_NAMES.length,
-      );
-    });
-
-    it("should match configuration descriptions", () => {
-      const configDescriptions = ACCENT_STYLE_CONFIGS.map(
-        (config) => config.description,
-      );
-      expect(ACCENT_COLOR_STYLE_DESCRIPTIONS).toEqual(configDescriptions);
-    });
-
-    it("should have consistent mapping with configurations", () => {
-      ACCENT_COLOR_STYLE_DESCRIPTIONS.forEach((description, index) => {
-        expect(ACCENT_STYLE_CONFIGS[index]).toBeDefined();
-        expect(ACCENT_STYLE_CONFIGS[index].description).toBe(description);
-      });
+      // At least some styles should be different
+      const uniqueResults = new Set(results.map((r) => JSON.stringify(r)));
+      expect(uniqueResults.size).toBeGreaterThan(1);
     });
   });
 
-  describe("ACCENT_STYLE_CONFIGS", () => {
-    it("should have configurations", () => {
-      expect(ACCENT_STYLE_CONFIGS.length).toBeGreaterThan(0);
+  describe("getAccentStyleConfig", () => {
+    it("should return correct config for valid indices", () => {
+      for (let i = 0; i < ACCENT_STYLE_CONFIGS.length; i++) {
+        expect(getAccentStyleConfig(i)).toBe(ACCENT_STYLE_CONFIGS[i]);
+      }
     });
 
-    it("should have all required properties", () => {
-      ACCENT_STYLE_CONFIGS.forEach((config) => {
-        expect(config).toHaveProperty("name");
-        expect(config).toHaveProperty("description");
-        expect(config).toHaveProperty("clockColor");
-        expect(config).toHaveProperty("dateColor");
-        expect(config).toHaveProperty("dividerColor");
-        expect(typeof config.clockColor).toBe("function");
-        expect(typeof config.dateColor).toBe("function");
-        expect(typeof config.dividerColor).toBe("function");
-        expect(config.name).toBeTruthy();
-        expect(config.description).toBeTruthy();
-      });
+    it("should handle invalid indices gracefully", () => {
+      expect(getAccentStyleConfig(-1)).toBe(ACCENT_STYLE_CONFIGS[0]);
+      expect(getAccentStyleConfig(999)).toBe(ACCENT_STYLE_CONFIGS[0]);
+    });
+  });
+
+  describe("applyAccentStyle", () => {
+    it("should return styled colors for valid indices", () => {
+      for (let i = 0; i < ACCENT_STYLE_CONFIGS.length; i++) {
+        const result = applyAccentStyle(testColor, i);
+        expect(result.clockColor).toBeInstanceOf(Color);
+        expect(result.dateColor).toBeInstanceOf(Color);
+        expect(result.dividerColor).toBeInstanceOf(Color);
+      }
+    });
+
+    it("should handle invalid indices gracefully", () => {
+      const result = applyAccentStyle(testColor, -1);
+      expect(result.clockColor).toBeInstanceOf(Color);
+
+      const result2 = applyAccentStyle(testColor, 999);
+      expect(result2.clockColor).toBeInstanceOf(Color);
     });
   });
 

@@ -5,6 +5,8 @@
 # Release automation targets
 # This file contains targets for creating releases, managing PRs, and publishing
 
+.PHONY: release release-dry release-auto release-pr wait-for-ci merge-pr switch-to-main release-gh release-gh-dry release-gh-auto update-aur update-aur-dry update-aur-auto create-pr create-pr-draft promote-pr pr-wait-and-merge release-test release-test-dry release-test-auto
+
 ## === Full Release Workflows ===
 
 ## release             Create PR, wait for checks, merge, create GitHub release, update AUR
