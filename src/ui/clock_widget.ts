@@ -17,8 +17,43 @@ import { ITextClock, CLOCK_LABEL_PROPERTIES } from "../types/ui.js";
 import { buildStyles } from "../utils/style/style_utils.js";
 
 /**
- * A label that displays the time (and date) as text "five past noon" or "five
- * past noon | monday the 1st".
+ * A customizable text-based clock widget for GNOME Shell's top bar.
+ *
+ * TextClockLabel displays time and date information as human-readable text
+ * instead of traditional digital format. It supports multiple time formats,
+ * configurable fuzziness levels, optional date display, and comprehensive
+ * color customization.
+ *
+ * Features:
+ * - Text-based time display (e.g., "five past noon" instead of "12:05")
+ * - Optional date and weekday display with customizable divider
+ * - Multiple time formats and fuzziness levels for approximate time
+ * - Individual color control for time, date, and divider elements
+ * - Reactive updates when settings change
+ * - Integration with GNOME Shell's theme system
+ *
+ * The widget is composed of three separate St.Label elements:
+ * - timeLabel: Displays the text-based time
+ * - dividerLabel: Shows separator between time and date
+ * - dateLabel: Shows the formatted date/weekday information
+ *
+ * @example
+ * ```typescript
+ * const clockLabel = new TextClockLabel({
+ *   translatePack: wordPack,
+ *   showDate: true,
+ *   showWeekday: true,
+ *   timeFormat: TimeFormat.FORMAT_ONE,
+ *   dividerText: " | "
+ * });
+ *
+ * // Set colors
+ * clockLabel.setClockColor(new Color("#FF0000"));
+ * clockLabel.setDateColor(new Color("#0000FF"));
+ *
+ * // Update fuzziness
+ * clockLabel.fuzzyMinutes = Fuzziness.QUARTER_HOUR;
+ * ```
  */
 export const TextClockLabel = GObject.registerClass(
   {
@@ -120,9 +155,12 @@ export const TextClockLabel = GObject.registerClass(
     }
 
     /**
-     * Whether to show the date in the clock
+     * Controls whether to display the date alongside the time.
      *
-     * @param {boolean} value
+     * When enabled, shows formatted date information (e.g., "the 15th" or
+     * "Monday the 15th") separated from the time by the configured divider text.
+     *
+     * @param value - True to show date, false to show time only
      */
     set showDate(value: boolean) {
       this.#showDate = value;
@@ -130,9 +168,12 @@ export const TextClockLabel = GObject.registerClass(
     }
 
     /**
-     * Whether to show the weekday as part of the date
+     * Controls whether to include the weekday name in the date display.
      *
-     * @param {boolean} value
+     * Only takes effect when showDate is also enabled. When true, displays
+     * weekday names like "Monday the 15th" instead of just "the 15th".
+     *
+     * @param value - True to include weekday name, false for date only
      */
     set showWeekday(value: boolean) {
       this.#showWeekday = value;
@@ -140,18 +181,26 @@ export const TextClockLabel = GObject.registerClass(
     }
 
     /**
-     * The clock update signal
+     * Signal handler for clock updates from GNOME Shell's WallClock.
      *
-     * @param {string} _
+     * This setter is bound to the GnomeDesktop.WallClock's "clock" property
+     * to automatically update the display when the system time changes.
+     * The parameter value is ignored as it's just a trigger signal.
+     *
+     * @param _ - Unused clock signal value
      */
     set clockUpdate(_: string) {
       this.updateClock();
     }
 
     /**
-     * THe format used to display the time
+     * Sets the time format for text generation.
      *
-     * @param {string} value
+     * Controls which set of localized time expressions to use when converting
+     * numerical time to text. Different formats may use alternative phrasing
+     * or sentence structures for the same time values.
+     *
+     * @param value - TimeFormat enum value (FORMAT_ONE or FORMAT_TWO)
      */
     set timeFormat(value: TimeFormat) {
       this.#timeFormat = value;
@@ -159,9 +208,13 @@ export const TextClockLabel = GObject.registerClass(
     }
 
     /**
-     * The translation pack
+     * Sets the localized word pack for text generation.
      *
-     * @param {WordPack} value
+     * The WordPack contains all localized strings needed to generate text-based
+     * time and date displays. Changing this allows for language switching or
+     * updating translations without recreating the widget.
+     *
+     * @param value - WordPack instance with localized text strings
      */
     set translatePack(value: WordPack) {
       this.#translatePack = value;
@@ -170,9 +223,13 @@ export const TextClockLabel = GObject.registerClass(
     }
 
     /**
-     * The fuzziness of the clock
+     * Sets the time fuzziness level for approximate time display.
      *
-     * @param {Fuzziness} value
+     * Fuzziness controls how precisely the time is displayed, rounding to
+     * the nearest interval (e.g., 5 minutes, quarter hour). Higher fuzziness
+     * results in more conversational but less precise time display.
+     *
+     * @param value - Fuzziness enum value or string representation
      */
     set fuzzyMinutes(value: Fuzziness | string) {
       this.#fuzzyMinutes = parseFuzziness(value);
@@ -180,7 +237,12 @@ export const TextClockLabel = GObject.registerClass(
     }
 
     /**
-     * Updates the clock label text
+     * Updates the clock display with current time and date information.
+     *
+     * Retrieves the current system time, formats it using the ClockFormatter
+     * with current settings (fuzziness, format, date/weekday display), and
+     * updates the individual label components. Called automatically when
+     * settings change or time updates.
      */
     updateClock() {
       const date = new Date();
@@ -197,6 +259,13 @@ export const TextClockLabel = GObject.registerClass(
       this.applyStyling();
     }
 
+    /**
+     * Applies current styling to all label components.
+     *
+     * Builds CSS styles from the current color configuration and applies
+     * them to the time, date, and divider labels. Also updates the text
+     * content of each label component.
+     */
     applyStyling() {
       const styles = buildStyles(
         this.clockColor,
@@ -214,21 +283,53 @@ export const TextClockLabel = GObject.registerClass(
       this.dividerLabel.set_style(styles.dividerStyle);
     }
 
+    /**
+     * Sets the color for the time display portion.
+     *
+     * Updates the time label's color and immediately applies the new styling.
+     * The color affects only the time text (e.g., "five past noon").
+     *
+     * @param color - Color instance for the time text
+     */
     setClockColor(color: Color) {
       this.clockColor = color;
       this.applyStyling();
     }
 
+    /**
+     * Sets the color for the date display portion.
+     *
+     * Updates the date label's color and immediately applies the new styling.
+     * The color affects only the date text (e.g., "Monday the 15th").
+     *
+     * @param color - Color instance for the date text
+     */
     setDateColor(color: Color) {
       this.dateColor = color;
       this.applyStyling();
     }
 
+    /**
+     * Sets the color for the divider between time and date.
+     *
+     * Updates the divider label's color and immediately applies the new styling.
+     * The color affects only the separator text (e.g., " | ").
+     *
+     * @param color - Color instance for the divider text
+     */
     setDividerColor(color: Color) {
       this.dividerColor = color;
       this.applyStyling();
     }
 
+    /**
+     * Updates the divider text displayed between time and date.
+     *
+     * Changes the separator text and updates both the formatter and the
+     * display. Common divider texts include " | ", " • ", or " - ".
+     *
+     * @param text - New divider text to display
+     */
     setDividerText(text: string) {
       this.dividerText = text;
       this.#formatter.divider = text;

@@ -5,7 +5,7 @@
 # Build and packaging targets
 # This file contains targets for compiling, building, and packaging the extension
 
-.PHONY: compile build pack clean install uninstall install-system uninstall-system create_ext_dir pot check-resources
+.PHONY: compile build pack docs docs-serve clean install uninstall install-system uninstall-system create_ext_dir pot check-resources
 
 ## === Main Build Targets ===
 
@@ -26,7 +26,20 @@ build: $(DIST_DIR)/extension.js schemas/gschemas.compiled locale/ resources/pref
 ## pack                Create the distribution zip file
 pack: build ${ZIP_FILE}
 
-## clean               Remove build artifacts (dist/, node_modules/, zip file, locale/, schemas/gschemas.compiled, yarn.lock, .po~ backup files)
+## docs                Generate API documentation using TypeDoc
+docs: node_modules/
+	@echo "Generating API documentation..."
+	@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is required for documentation generation" >&2; exit 1; }
+	@yarn docs || { echo "ERROR: Documentation generation failed" >&2; exit 1; }
+	@echo "Documentation generated in docs/ directory"
+
+## docs-serve          Generate and serve documentation locally on port 8080
+docs-serve: docs
+	@echo "Serving documentation at http://localhost:8080"
+	@echo "Press Ctrl+C to stop the server"
+	@cd docs && python3 -m http.server 8080
+
+## clean               Remove build artifacts (dist/, node_modules/, zip file, locale/, schemas/gschemas.compiled, yarn.lock, .po~ backup files, docs/)
 clean:
 	@echo "Cleaning build artifacts..."
 	@rm -rf $(DIST_DIR) >/dev/null 2>&1 || { echo "ERROR: Failed to remove dist directory" >&2; exit 1; }
@@ -35,6 +48,7 @@ clean:
 	@rm -rf $(LOCALE_DIR) >/dev/null 2>&1 || { echo "ERROR: Failed to remove locale directory" >&2; exit 1; }
 	@rm -f schemas/gschemas.compiled >/dev/null 2>&1 || { echo "ERROR: Failed to remove compiled schemas" >&2; exit 1; }
 	@rm -f yarn.lock >/dev/null 2>&1 || { echo "ERROR: Failed to remove yarn.lock" >&2; exit 1; }
+	@rm -rf docs/ >/dev/null 2>&1 || { echo "ERROR: Failed to remove docs directory" >&2; exit 1; }
 	@find . -type f \( -name "*.zip" -o -name "*.zip.*" -o -name "*.zip.sig" -o -name "*.zip.sig.*" \) -exec rm -f {} \; >/dev/null 2>&1 || { echo "ERROR: Failed to remove zip files" >&2; exit 1; }
 	@find po -type f -name "*.po~" -exec rm -f {} \; >/dev/null 2>&1 || { echo "ERROR: Failed to remove .po~ backup files" >&2; exit 1; }
 	@if [ -d "aur" ]; then \

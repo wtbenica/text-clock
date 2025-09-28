@@ -1,0 +1,52 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "../src/extension.ts",
+    "../src/prefs.ts", 
+    "../src/word_pack.ts",
+    "../src/ui/clock_widget.ts",
+    "../src/services/settings_manager.ts",
+    "../src/services/style_service.ts",
+    "../src/services/notification_service.ts",
+    "../src/models/color.ts",
+    "../src/models/settings_keys.ts",
+    "../src/types/ui.ts",
+    "../src/utils/color/color_utils.ts",
+    "../src/utils/color/accent_color_utils.ts",
+    "../src/utils/parse_utils.ts",
+    "../src/utils/style/style_utils.ts",
+    "../src/core/clock_formatter.ts"
+  ],
+  "tsconfig": "../config/tsconfig.json",
+  "out": "../docs",
+  "name": "Text Clock Extension API Documentation",
+  "readme": "../README.md",
+  "theme": "default",
+  "includeVersion": true,
+  "sort": ["source-order"],
+  "categorizeByGroup": true,
+  "exclude": [
+    "**/*.test.ts",
+    "**/tests/**/*",
+    "**/node_modules/**/*"
+  ],
+  "excludePrivate": false,
+  "excludeProtected": false,
+  "excludeInternal": false,
+  "validation": {
+    "invalidLink": true,
+    "notExported": true,
+    "notDocumented": false
+  },
+  "treatWarningsAsErrors": false,
+  "cleanOutputDir": true,
+  "sidebarLinks": {
+    "GitHub": "https://github.com/wtbenica/text-clock",
+    "Issues": "https://github.com/wtbenica/text-clock/issues"
+  },
+  "navigationLinks": {
+    "GitHub": "https://github.com/wtbenica/text-clock"
+  },
+  "searchInComments": true,
+  "searchInDocuments": true
+}
