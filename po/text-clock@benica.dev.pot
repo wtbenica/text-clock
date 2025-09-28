@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-27 13:13-0700\n"
+"POT-Creation-Date: 2025-09-27 15:01-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,6 +30,105 @@ msgstr ""
 
 #: dist/services/notification_service.js:115
 msgid "Open Preferences"
+msgstr ""
+
+#: dist/services/preference_configs.js:43
+msgid "one minute"
+msgstr ""
+
+#: dist/services/preference_configs.js:44
+msgid "Most precise time display"
+msgstr ""
+
+#: dist/services/preference_configs.js:49
+msgid "five minutes"
+msgstr ""
+
+#: dist/services/preference_configs.js:50
+msgid "Slightly fuzzy time display"
+msgstr ""
+
+#: dist/services/preference_configs.js:55
+msgid "ten minutes"
+msgstr ""
+
+#: dist/services/preference_configs.js:56
+msgid "Moderately fuzzy time display"
+msgstr ""
+
+#: dist/services/preference_configs.js:61
+msgid "fifteen minutes"
+msgstr ""
+
+#: dist/services/preference_configs.js:62
+msgid "Most fuzzy time display"
+msgstr ""
+
+#: dist/services/preference_configs.js:76
+msgid "Vertical line divider"
+msgstr ""
+
+#: dist/services/preference_configs.js:82
+msgid "Bullet point divider"
+msgstr ""
+
+#: dist/services/preference_configs.js:88
+msgid "Filled circle divider"
+msgstr ""
+
+#: dist/services/preference_configs.js:94
+msgid "Em dash divider"
+msgstr ""
+
+#: dist/services/preference_configs.js:99
+msgid "Custom"
+msgstr ""
+
+#: dist/services/preference_configs.js:100
+msgid "Use custom divider text"
+msgstr ""
+
+#: dist/services/preference_configs.js:140
+msgid "Format One"
+msgstr ""
+
+#: dist/services/preference_configs.js:142
+msgid "Standard time format"
+msgstr ""
+
+#: dist/services/preference_configs.js:149
+msgid "Format Two"
+msgstr ""
+
+#: dist/services/preference_configs.js:151
+msgid "Alternative time format"
+msgstr ""
+
+#: dist/services/preference_configs.js:163
+#: dist/prefs/pages/color_page/index.js:56
+msgid "Default"
+msgstr ""
+
+#: dist/services/preference_configs.js:164
+msgid "Use system default colors"
+msgstr ""
+
+#: dist/services/preference_configs.js:169
+#: dist/prefs/pages/color_page/index.js:58
+msgid "Accent Color"
+msgstr ""
+
+#: dist/services/preference_configs.js:170
+msgid "Use system accent color"
+msgstr ""
+
+#: dist/services/preference_configs.js:175
+#: dist/prefs/pages/color_page/index.js:59
+msgid "Custom Colors"
+msgstr ""
+
+#: dist/services/preference_configs.js:176
+msgid "Use custom color selection"
 msgstr ""
 
 #: dist/constants/dates/core.js:7
@@ -1085,24 +1184,16 @@ msgctxt "exactly noon"
 msgid "noon"
 msgstr ""
 
-#: dist/ui/prefs.js:75
-msgid "Text Clock"
-msgstr ""
-
-#: dist/ui/prefs.js:89 dist/prefs/pages/general_page/index.js:117
-msgid "Clock Settings"
-msgstr ""
-
-#: dist/ui/prefs.js:90 dist/prefs/pages/general_page/index.js:117
-msgid "Customize the appearance and behavior of the clock"
-msgstr ""
-
 #: dist/prefs.js:50
 msgid "Text Clock Prefs"
 msgstr ""
 
 #: dist/prefs/helpers.js:20
 msgid "Error binding settings for"
+msgstr ""
+
+#: dist/prefs/ui/preference_ui_factory.js:131
+msgid "Custom Text"
 msgstr ""
 
 #: dist/prefs/pages/color_page/color_controls.js:17
@@ -1129,18 +1220,6 @@ msgstr ""
 msgid "Choose accent color variation"
 msgstr ""
 
-#: dist/prefs/pages/color_page/index.js:56
-msgid "Default"
-msgstr ""
-
-#: dist/prefs/pages/color_page/index.js:58
-msgid "Accent Color"
-msgstr ""
-
-#: dist/prefs/pages/color_page/index.js:59
-msgid "Custom Colors"
-msgstr ""
-
 #: dist/prefs/pages/color_page/index.js:69
 msgid "Color mode"
 msgstr ""
@@ -1161,7 +1240,23 @@ msgstr ""
 msgid "Customize the colors of the clock and date text"
 msgstr ""
 
+#: dist/prefs/pages/general_page/index_new_system.js:18
+#: dist/prefs/pages/general_page/index.js:18
+msgid "General"
+msgstr ""
+
+#: dist/prefs/pages/general_page/index_new_system.js:19
+#: dist/prefs/pages/general_page/index.js:19
+msgid "Clock Settings"
+msgstr ""
+
+#: dist/prefs/pages/general_page/index_new_system.js:19
+#: dist/prefs/pages/general_page/index.js:19
+msgid "Customize the appearance and behavior of the clock"
+msgstr ""
+
 #: dist/prefs/pages/general_page/formatters.js:37
+#: dist/prefs/pages/general_page/index.js:32
 msgid "Time Format"
 msgstr ""
 
@@ -1169,62 +1264,42 @@ msgstr ""
 msgid "Choose time format"
 msgstr ""
 
-#: dist/prefs/pages/general_page/index.js:21
+#: dist/prefs/pages/general_page/index.js:22
 msgid "Show Date"
 msgstr ""
 
-#: dist/prefs/pages/general_page/index.js:22
+#: dist/prefs/pages/general_page/index.js:23
 msgid "Show the date in the clock"
 msgstr ""
 
-#: dist/prefs/pages/general_page/index.js:39
+#: dist/prefs/pages/general_page/index.js:27
 msgid "Show Weekday"
 msgstr ""
 
-#: dist/prefs/pages/general_page/index.js:40
+#: dist/prefs/pages/general_page/index.js:28
 msgid "Show the day of the week in the clock"
 msgstr ""
 
-#: dist/prefs/pages/general_page/index.js:57
-msgid "one"
+#: dist/prefs/pages/general_page/index.js:33
+msgid "Choose the time display format"
 msgstr ""
 
-#: dist/prefs/pages/general_page/index.js:58
-msgid "five"
-msgstr ""
-
-#: dist/prefs/pages/general_page/index.js:59
-msgid "ten"
-msgstr ""
-
-#: dist/prefs/pages/general_page/index.js:60
-msgid "fifteen"
-msgstr ""
-
-#: dist/prefs/pages/general_page/index.js:63
+#: dist/prefs/pages/general_page/index.js:37
 msgid "Fuzziness"
 msgstr ""
 
-#: dist/prefs/pages/general_page/index.js:64
+#: dist/prefs/pages/general_page/index.js:38
 msgid "How precise the time displayed should be"
 msgstr ""
 
-#: dist/prefs/pages/general_page/index.js:84
-msgid "Custom"
-msgstr ""
-
-#: dist/prefs/pages/general_page/index.js:86
+#: dist/prefs/pages/general_page/index.js:42
 msgid "Divider Preset"
 msgstr ""
 
-#: dist/prefs/pages/general_page/index.js:87
+#: dist/prefs/pages/general_page/index.js:43
 msgid "Choose a preset divider or select custom"
 msgstr ""
 
-#: dist/prefs/pages/general_page/index.js:93
+#: dist/prefs/pages/general_page/index.js:45
 msgid "Custom Divider Text"
-msgstr ""
-
-#: dist/prefs/pages/general_page/index.js:116
-msgid "General"
 msgstr ""

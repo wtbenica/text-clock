@@ -5,6 +5,8 @@
 # AUR package management targets
 # This file contains targets for syncing and managing AUR packages
 
+.PHONY: sync-aur sync-aur-init
+
 # AUR configuration
 AUR_REPO ?= $(HOME)/Development/gnome-shell-extension-text-clock
 SYNC_AUR_ARGS ?=

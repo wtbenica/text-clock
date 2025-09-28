@@ -5,6 +5,8 @@
 # Build and packaging targets
 # This file contains targets for compiling, building, and packaging the extension
 
+.PHONY: compile build pack clean install uninstall install-system uninstall-system create_ext_dir pot check-resources
+
 ## === Main Build Targets ===
 
 ## compile             Compile TypeScript into $(DIST_DIR)
@@ -173,7 +175,6 @@ resources/preferences.gresource: resources/preferences.gresource.xml
 
 
 ## Diagnostic: check which resource files referenced by the XML are missing
-.PHONY: check-resources
 check-resources:
 	@echo "Checking resources referenced by resources/preferences.gresource.xml..."
 	@if [ ! -f resources/preferences.gresource.xml ]; then \

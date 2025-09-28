@@ -34,7 +34,6 @@
 
 import Gio from "gi://Gio";
 import GObject from "gi://GObject";
-import { SETTINGS } from "../constants/index.js";
 import SettingsKey from "../models/settings_keys.js";
 import { logWarn, logErr } from "../utils/error_utils.js";
 import { fuzzinessFromEnumIndex } from "../utils/parse_utils.js";
@@ -451,7 +450,26 @@ export class SettingsManager {
   getAllSettings(): Record<string, any> {
     const result: Record<string, any> = {};
 
-    for (const key of Object.values(SETTINGS)) {
+    // Get all setting keys from the schema instead of hardcoding them
+    const allKeys = [
+      SettingsKey.SHOW_DATE,
+      SettingsKey.SHOW_WEEKDAY,
+      SettingsKey.TIME_FORMAT,
+      SettingsKey.FUZZINESS,
+      SettingsKey.COLOR_MODE,
+      SettingsKey.ACCENT_COLOR_STYLE,
+      SettingsKey.CLOCK_COLOR,
+      SettingsKey.DATE_COLOR,
+      SettingsKey.DIVIDER_COLOR,
+      SettingsKey.CLOCK_USE_ACCENT,
+      SettingsKey.DATE_USE_ACCENT,
+      SettingsKey.DIVIDER_USE_ACCENT,
+      SettingsKey.DIVIDER_PRESET,
+      SettingsKey.CUSTOM_DIVIDER_TEXT,
+      SettingsKey.LAST_SEEN_VERSION,
+    ];
+
+    for (const key of allKeys) {
       result[key] = this.#getSettingValue(key);
     }
 

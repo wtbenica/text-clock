@@ -7,7 +7,8 @@ import { StyleService } from "../../../services/style_service.js";
 import SettingsKey from "../../../models/settings_keys.js";
 import { createAndAddPageToWindow } from "../../ui/groups.js";
 import { PAGE_ICONS } from "../../../constants/prefs.js";
-import { ACCENT_COLOR_STYLE_NAMES } from "../../../constants/index.js";
+import { PREFERENCE_CONFIGS } from "../../../services/preference_configs.js";
+import { createEnumComboRow } from "../../ui/preference_ui_factory.js";
 import {
   addClockColorRow as _addClockColorRow,
   addDateColorRow as _addDateColorRow,
@@ -52,25 +53,16 @@ export function addAccentStyleRow(
   group: Adw.PreferencesGroup,
   settings: Gio.Settings,
 ): Adw.ComboRow {
-  const modelStrings = ACCENT_COLOR_STYLE_NAMES.map((name) =>
-    prefsGettext._(name),
+  return createEnumComboRow(
+    group,
+    settings,
+    SettingsKey.ACCENT_COLOR_STYLE,
+    PREFERENCE_CONFIGS.ACCENT_STYLE,
+    {
+      title: "Accent Style",
+      subtitle: "Choose accent color variation",
+    },
   );
-  const currentSelected = settings.get_enum(SettingsKey.ACCENT_COLOR_STYLE);
-
-  const accentStyleRow = new Adw.ComboRow({
-    title: prefsGettext._("Accent Style"),
-    subtitle: prefsGettext._("Choose accent color variation"),
-    model: new Gtk.StringList({ strings: modelStrings }),
-    selected: currentSelected,
-  });
-
-  group.add(accentStyleRow);
-
-  accentStyleRow.connect("notify::selected", () => {
-    settings.set_enum(SettingsKey.ACCENT_COLOR_STYLE, accentStyleRow.selected);
-  });
-
-  return accentStyleRow;
 }
 
 /**
