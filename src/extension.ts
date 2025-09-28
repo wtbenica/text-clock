@@ -5,34 +5,33 @@
 
 import Clutter from "gi://Clutter";
 import Gio from "gi://Gio";
+import GnomeDesktop from "gi://GnomeDesktop";
 import GObject from "gi://GObject";
 import St from "gi://St";
-import GnomeDesktop from "gi://GnomeDesktop";
-
-import { DateMenuButton } from "resource:///org/gnome/shell/ui/dateMenu.js";
-import { panel } from "resource:///org/gnome/shell/ui/main.js";
 import {
   Extension,
   gettext as _,
   ngettext,
   pgettext,
 } from "resource:///org/gnome/shell/extensions/extension.js";
+import { DateMenuButton } from "resource:///org/gnome/shell/ui/dateMenu.js";
+import { panel } from "resource:///org/gnome/shell/ui/main.js";
 
-import { TextClockLabel } from "./ui/clock_widget.js";
-import { CLOCK_LABEL_PROPERTIES, ITextClock } from "./types/ui.js";
-import { WordPack } from "./word_pack.js";
-import { Errors } from "./constants/index.js";
-import SettingsKey from "./models/settings_keys.js";
-import { logErr, logWarn } from "./utils/error_utils.js";
-import { fuzzinessFromEnumIndex } from "./utils/parse_utils.js";
-import { createTranslatePackGetter } from "./utils/translate/translate_pack_utils.js";
+import { Errors } from "./infrastructure/constants/index.js";
+import SettingsKey from "./domain/models/settings_keys.js";
+import { NotificationService } from "./application/services/notification_service.js";
+import { SettingsManager } from "./application/services/settings_manager.js";
+import { StyleService } from "./application/services/style_service.js";
+import { CLOCK_LABEL_PROPERTIES, ITextClock } from "./domain/types/ui.js";
+import { TextClockLabel } from "./presentation/widgets/clock_widget.js";
+import { logErr, logWarn } from "./infrastructure/utils/error_utils.js";
 import {
   extensionGettext,
   initExtensionGettext,
-} from "./utils/gettext/gettext_utils_ext.js";
-import { SettingsManager } from "./services/settings_manager.js";
-import { StyleService } from "./services/style_service.js";
-import { NotificationService } from "./services/notification_service.js";
+} from "./infrastructure/utils/gettext/gettext_utils_ext.js";
+import { fuzzinessFromEnumIndex } from "./infrastructure/utils/parse_utils.js";
+import { createTranslatePackGetter } from "./infrastructure/utils/translate/translate_pack_utils.js";
+import { WordPack } from "./word_pack.js";
 
 const CLOCK_STYLE_CLASS_NAME = "clock";
 

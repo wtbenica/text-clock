@@ -12,6 +12,7 @@ package-lock.json
 
 ### Build outputs
 dist/
+docs/
 *.zip
 *.tgz
 gschemas.compiled

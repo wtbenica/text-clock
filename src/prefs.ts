@@ -5,14 +5,13 @@
 
 import Adw from "gi://Adw";
 // @ts-ignore: imported for runtime only (GJS)
+import Gdk from "gi://Gdk";
+// @ts-ignore: imported for runtime only (GJS)
 import Gio from "gi://Gio";
 // @ts-ignore: imported for runtime only (GJS)
 import GLib from "gi://GLib";
 // @ts-ignore: imported for runtime only (GJS)
 import Gtk from "gi://Gtk";
-// @ts-ignore: imported for runtime only (GJS)
-import Gdk from "gi://Gdk";
-
 // @ts-ignore: runtime resource provided by GNOME Shell
 import {
   ExtensionPreferences,
@@ -20,16 +19,16 @@ import {
   ngettext,
   pgettext,
 } from "resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js";
-import {
-  prefsGettext,
-  initPrefsGettext,
-} from "./utils/gettext/gettext_utils_prefs.js";
-import { gjsLogger } from "./utils/logging/logger_gjs.js";
 
 // SettingsKey is not needed in this thin wrapper
-import { getShellVersion } from "./prefs/helpers.js";
-import { createGeneralPage } from "./prefs/pages/general_page/index.js";
-import { createColorsPage } from "./prefs/pages/color_page/index.js";
+import { getShellVersion } from "./presentation/preferences/helpers.js";
+import { createColorsPage } from "./presentation/preferences/pages/color_page/index.js";
+import { createGeneralPage } from "./presentation/preferences/pages/general_page/index.js";
+import {
+  initPrefsGettext,
+  prefsGettext,
+} from "./infrastructure/utils/gettext/gettext_utils_prefs.js";
+import { gjsLogger } from "./infrastructure/utils/logging/logger_gjs.js";
 
 // Initialize gettext functions with the real GNOME Shell functions
 initPrefsGettext(_, ngettext, pgettext);
