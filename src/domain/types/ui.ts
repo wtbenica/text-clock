@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2024-2025 Wesley Benica <wesley@benica.dev>
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /**
  * User interface type definitions and constants for the Text Clock extension.
  *

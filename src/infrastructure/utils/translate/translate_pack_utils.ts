@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2024-2025 Wesley Benica <wesley@benica.dev>
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { createDateConstants } from "../../constants/dates/core.js";
 import { createTimeConstants } from "../../constants/times/core.js";
 import { WordPack } from "../../../word_pack.js";

@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+
+# SPDX-FileCopyrightText: 2024-2025 Wesley Benica <wesley@benica.dev>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 """
 Check referenced files in resources/preferences.gresource.xml and report missing ones.
 Exit codes:

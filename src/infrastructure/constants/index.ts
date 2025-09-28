@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2024-2025 Wesley Benica <wesley@benica.dev>
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /**
  * Shared top-level constants used across theimport SettingsKey from "../../domain/models/settings_keys.js";Text Clock extension.
  *

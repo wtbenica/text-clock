@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2024-2025 Wesley Benica <wesley@benica.dev>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 # Internationalization helpers for text-clock
 # This file provides convenient targets for POT/PO maintenance and compiling
 # translations into runtime .mo files.

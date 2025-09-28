@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2024-2025 Wesley Benica <wesley@benica.dev>
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /**
  * Utilities for handling GNOME's accent color system.
  *

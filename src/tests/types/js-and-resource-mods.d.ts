@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2024-2025 Wesley Benica <wesley@benica.dev>
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 // Test-only declarations to help tsc resolve test imports that use .js extensions
 // and GJS/resource module specifiers. Kept intentionally loose (any) to avoid
 // creating brittle type mappings for the test environment.
