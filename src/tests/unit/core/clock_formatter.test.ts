@@ -116,8 +116,7 @@ describe("ClockFormatter", () => {
   });
 
   describe("constructor", () => {
-    it("should create a formatter with a word pack", () => {
-      expect(formatter).toBeInstanceOf(ClockFormatter);
+    it("should create a formatter with the provided word pack", () => {
       expect(formatter.wordPack).toBe(wordPack);
     });
   });
@@ -299,7 +298,8 @@ describe("ClockFormatter", () => {
         TimeFormat.FORMAT_ONE,
         Fuzziness.FIFTEEN_MINUTES,
       );
-      expect(result).toBeDefined();
+      // With 15-minute fuzziness, 15:17 should round to 15:15
+      expect(result).toBe("quarter past three");
     });
   });
 });

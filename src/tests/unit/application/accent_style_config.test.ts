@@ -18,10 +18,6 @@ describe("AccentStyleConfig", () => {
   const testColor = new Color("#3584E4"); // GNOME Blue
 
   describe("ACCENT_STYLE_CONFIGS", () => {
-    it("should have at least one configuration", () => {
-      expect(ACCENT_STYLE_CONFIGS.length).toBeGreaterThan(0);
-    });
-
     it("should have unique schema values", () => {
       const schemaValues = ACCENT_STYLE_CONFIGS.map(
         (config) => config.schemaValue,

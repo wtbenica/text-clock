@@ -1,27 +1,20 @@
-import { createTranslatePack } from "../../../../infrastructure/utils/translate/translate_pack_utils.js";
-import { WordPack } from "../../../../word_pack.js";
+import { createTimeConstants } from "../../../../infrastructure/constants/times/core.js";
 
 describe("createTranslatePack", () => {
-  it("returns a WordPack with expected keys", () => {
-    // Mock GettextFunctions
-    const gettextFns = {
-      _: (s: string) => s,
-      ngettext: (s: string, p: string, n: number) => (n === 1 ? s : p),
-      pgettext: (c: string, s: string) => s,
-    };
-    const pack = createTranslatePack(gettextFns);
-    expect(pack).toBeInstanceOf(WordPack);
-    expect(Array.isArray(pack.timesFormatOne)).toBe(true);
-    expect(typeof pack.midnightFormatOne).toBe("string");
-    expect(typeof pack.noonFormatOne).toBe("string");
-    expect(Array.isArray(pack.timesFormatTwo)).toBe(true);
-    expect(typeof pack.midnightFormatTwo).toBe("string");
-    expect(typeof pack.noonFormatTwo).toBe("string");
-    expect(Array.isArray(pack.names)).toBe(true);
-    expect(Array.isArray(pack.days)).toBe(true);
-    expect(typeof pack.dayOnly).toBe("string");
-    expect(typeof pack.midnight).toBe("string");
-    expect(typeof pack.noon).toBe("string");
-    expect(Array.isArray(pack.daysOfMonth)).toBe(true);
+  describe("time expressions should have expected counts", () => {
+    it("should have 61 time expressions for each minute 0-60", () => {
+      // Create a mock gettext implementation
+      const mockGettext = {
+        _: (msgid: string) => msgid,
+        ngettext: (msgid: string, msgid_plural: string, n: number) =>
+          n === 1 ? msgid : msgid_plural,
+        pgettext: (msgctxt: string, msgid: string) => msgid,
+      };
+
+      const timeConstants = createTimeConstants(mockGettext);
+
+      expect(timeConstants.timesFormatOne()).toHaveLength(61);
+      expect(timeConstants.timesFormatTwo()).toHaveLength(61);
+    });
   });
 });

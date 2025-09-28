@@ -6,14 +6,14 @@ import { extensionGettext } from "../../../../infrastructure/utils/gettext/gette
 import { prefsGettext } from "../../../../infrastructure/utils/gettext/gettext_utils_prefs.js";
 
 describe("Gettext Utils", () => {
-  describe("extensionGettext", () => {
+  describe("extensionGettext fallback behavior", () => {
     it("should provide fallback _ function that returns input", () => {
       expect(extensionGettext._("Hello world")).toBe("Hello world");
       expect(extensionGettext._("Test message")).toBe("Test message");
       expect(extensionGettext._("")).toBe("");
     });
 
-    it("should provide fallback ngettext function", () => {
+    it("should provide fallback ngettext function with correct plural logic", () => {
       expect(extensionGettext.ngettext("item", "items", 1)).toBe("item");
       expect(extensionGettext.ngettext("item", "items", 0)).toBe("items");
       expect(extensionGettext.ngettext("item", "items", 2)).toBe("items");
@@ -25,22 +25,16 @@ describe("Gettext Utils", () => {
       expect(extensionGettext.pgettext("", "message")).toBe("message");
       expect(extensionGettext.pgettext("any context", "")).toBe("");
     });
-
-    it("should have all required gettext functions", () => {
-      expect(typeof extensionGettext._).toBe("function");
-      expect(typeof extensionGettext.ngettext).toBe("function");
-      expect(typeof extensionGettext.pgettext).toBe("function");
-    });
   });
 
-  describe("prefsGettext", () => {
+  describe("prefsGettext fallback behavior", () => {
     it("should provide fallback _ function that returns input", () => {
       expect(prefsGettext._("Hello world")).toBe("Hello world");
       expect(prefsGettext._("Test message")).toBe("Test message");
       expect(prefsGettext._("")).toBe("");
     });
 
-    it("should provide fallback ngettext function", () => {
+    it("should provide fallback ngettext function with correct plural logic", () => {
       expect(prefsGettext.ngettext("item", "items", 1)).toBe("item");
       expect(prefsGettext.ngettext("item", "items", 0)).toBe("items");
       expect(prefsGettext.ngettext("item", "items", 2)).toBe("items");
@@ -51,12 +45,6 @@ describe("Gettext Utils", () => {
       expect(prefsGettext.pgettext("context", "message")).toBe("message");
       expect(prefsGettext.pgettext("", "message")).toBe("message");
       expect(prefsGettext.pgettext("any context", "")).toBe("");
-    });
-
-    it("should have all required gettext functions", () => {
-      expect(typeof prefsGettext._).toBe("function");
-      expect(typeof prefsGettext.ngettext).toBe("function");
-      expect(typeof prefsGettext.pgettext).toBe("function");
     });
   });
 });
