@@ -93,6 +93,8 @@ export const enum SettingsKey {
   // Internal State
   /** Last seen extension version for update notifications (string) */
   LAST_SEEN_VERSION = "last-seen-version",
+  /** Temporarily saved accent style when date/weekday is hidden (nullable enum index) */
+  ACCENT_STYLE_SAVED_BEFORE_HIDE = "accent-style-saved-before-hide",
 }
 
 export default SettingsKey;

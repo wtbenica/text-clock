@@ -95,6 +95,19 @@ export interface AccentStyleConfig extends BasePreferenceConfig {
 
   /** Transform function for divider color */
   dividerColor: (accent: Color) => Color;
+  /**
+   * When true, this accent style expects the date/weekday/divider to be
+   * visible for its visual intent to make sense. If the date is hidden,
+   * callers may choose to fall back to using the clock color for date/divider
+   * so the UI remains sensible.
+   */
+  requiresDateVisible?: boolean;
+  /**
+   * Optional fallback index to use when this style is unavailable (for
+   * example because the date/weekday/divider is hidden). The index refers to
+   * the position in `ACCENT_STYLE_CONFIGS` to use as an equivalent style.
+   */
+  fallbackIndex?: number;
 }
 
 /**
@@ -255,6 +268,8 @@ export const ACCENT_STYLE_CONFIGS: readonly AccentStyleConfig[] = [
     clockColor: (accent) => accent.lighten(),
     dateColor: (accent) => accent,
     dividerColor: (accent) => accent.lighten(),
+    requiresDateVisible: true,
+    fallbackIndex: 6, // light-variant when date is hidden
   },
   {
     schemaValue: "solid",
@@ -271,6 +286,8 @@ export const ACCENT_STYLE_CONFIGS: readonly AccentStyleConfig[] = [
     clockColor: (accent) => accent,
     dateColor: (accent) => accent,
     dividerColor: () => new Color("#FFFFFF"),
+    requiresDateVisible: true,
+    fallbackIndex: 1, // solid when date is hidden
   },
   {
     schemaValue: "racing-stripe-duotone",
@@ -279,6 +296,8 @@ export const ACCENT_STYLE_CONFIGS: readonly AccentStyleConfig[] = [
     clockColor: (accent) => accent.lighten(),
     dateColor: (accent) => accent,
     dividerColor: () => new Color("#FFFFFF"),
+    requiresDateVisible: true,
+    fallbackIndex: 6, // light-variant
   },
   {
     schemaValue: "contrast",
@@ -287,6 +306,8 @@ export const ACCENT_STYLE_CONFIGS: readonly AccentStyleConfig[] = [
     clockColor: () => new Color("#FFFFFF"),
     dateColor: (accent) => accent.lighten(0.1),
     dividerColor: (accent) => accent.lighten(0.1),
+    requiresDateVisible: true,
+    fallbackIndex: 6, // light-variant
   },
   {
     schemaValue: "contrast-reverse",
@@ -295,6 +316,8 @@ export const ACCENT_STYLE_CONFIGS: readonly AccentStyleConfig[] = [
     clockColor: (accent) => accent.lighten(0.1),
     dateColor: () => new Color("#FFFFFF"),
     dividerColor: () => new Color("#FFFFFF"),
+    requiresDateVisible: true,
+    fallbackIndex: 6, // light-variant
   },
   {
     schemaValue: "light-variant",
@@ -331,10 +354,28 @@ export function getAccentStyleConfig(index: number): AccentStyleConfig {
  * @param styleIndex - GSettings enum index for the accent style
  * @returns Object with transformed colors for clock, date, and divider
  */
-export function applyAccentStyle(baseColor: Color, styleIndex: number) {
+export function applyAccentStyle(
+  baseColor: Color,
+  styleIndex: number,
+  showDate: boolean = true,
+) {
   const config = getAccentStyleConfig(styleIndex);
+
+  const clock = config.clockColor(baseColor);
+
+  // If the style expects the date/divider to be visible but the caller
+  // indicates the date is hidden, fall back to using the clock color for
+  // date and divider so the UI remains sensible.
+  if (config.requiresDateVisible && !showDate) {
+    return {
+      clockColor: clock,
+      dateColor: clock,
+      dividerColor: clock,
+    };
+  }
+
   return {
-    clockColor: config.clockColor(baseColor),
+    clockColor: clock,
     dateColor: config.dateColor(baseColor),
     dividerColor: config.dividerColor(baseColor),
   };
