@@ -136,26 +136,26 @@ export class NotificationService {
    * updates and providing direct access to preferences. The notification includes
    * version information and an action button for opening preferences.
    *
-   * @param currentVersion - The current extension version to display
+   * @param title - Custom notification title
+   * @param body - Custom notification body message
    * @param onOpenPreferences - Callback function to open the extension preferences
    *
    * @example
    * ```typescript
-   * notificationService.showUpdateNotification(
-   *   '1.2.0',
-   *   () => extension.openPreferences()
-   * );
+   * // Using release message utilities:
+   * import { getUpdateNotificationTitle, generateUpdateMessage } from '../constants/release_messages.js';
+   *
+   * const title = getUpdateNotificationTitle('1.0.6', extensionGettext);
+   * const body = generateUpdateMessage('1.0.6', extensionGettext);
+   * notificationService.showUpdateNotification(title, body, () => extension.openPreferences());
    * ```
    */
   showUpdateNotification(
-    currentVersion: string,
+    title: string,
+    body: string,
     onOpenPreferences: () => void,
   ): void {
     const { _ } = extensionGettext;
-    const title = _("Text Clock updated");
-    const body = _(
-      "Text Clock was updated to version %s. You can now change the clock color and divider text in Preferences.",
-    ).replace("%s", currentVersion);
 
     const config: NotificationConfig = {
       title,

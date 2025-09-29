@@ -43,10 +43,10 @@ describe("Color", () => {
   });
 
   describe("lighten method", () => {
-    it("should lighten hex colors with default amount (0.5)", () => {
+    it("should lighten hex colors with default amount (0.3)", () => {
       const red = new Color("#FF0000");
       const lightRed = red.lighten();
-      expect(lightRed.toString()).toBe("#FF8080"); // 50% blend with white
+      expect(lightRed.toString()).toBe("#FF4D4D"); // 30% blend with white
     });
 
     it("should lighten hex colors with custom amount", () => {
@@ -72,10 +72,10 @@ describe("Color", () => {
   });
 
   describe("darken method", () => {
-    it("should darken hex colors with default amount (0.3)", () => {
+    it("should darken hex colors with default amount (0.2)", () => {
       const white = new Color("#FFFFFF");
       const darkened = white.darken();
-      expect(darkened.toString()).toBe("#B3B3B3"); // 70% of original
+      expect(darkened.toString()).toBe("#CCCCCC"); // 80% of original
     });
 
     it("should darken hex colors with custom amount", () => {

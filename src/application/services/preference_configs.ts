@@ -280,7 +280,7 @@ export const ACCENT_STYLE_CONFIGS: readonly AccentStyleConfig[] = [
     displayName: ({ _ }) => _("Duotone"),
     description: ({ _ }) => _("Time lighter, date normal"),
     clockColor: (accent) => accent.lighten(),
-    dateColor: (accent) => accent,
+    dateColor: (accent) => accent.darken(),
     dividerColor: (accent) => accent.lighten(),
   },
   {
@@ -296,7 +296,7 @@ export const ACCENT_STYLE_CONFIGS: readonly AccentStyleConfig[] = [
     displayName: ({ _ }) => _("Racing Stripe Duotone"),
     description: ({ _ }) => _("Time lighter, date normal, divider white"),
     clockColor: (accent) => accent.lighten(),
-    dateColor: (accent) => accent,
+    dateColor: (accent) => accent.darken(),
     dividerColor: () => new Color("#FFFFFF"),
   },
   {
@@ -313,7 +313,7 @@ export const ACCENT_STYLE_CONFIGS: readonly AccentStyleConfig[] = [
     description: ({ _ }) => _("Time normal, date white, divider normal"),
     clockColor: (accent) => accent,
     dateColor: () => new Color("#FFFFFF"),
-    dividerColor: () => new Color("#FFFFFF"),
+    dividerColor: (accent) => accent,
   },
 ] as const;
 

@@ -23,6 +23,10 @@ import { NotificationService } from "./application/services/notification_service
 import { SettingsManager } from "./application/services/settings_manager.js";
 import { StyleService } from "./application/services/style_service.js";
 import SystemClockSync from "./application/services/system_clock_sync.js";
+import {
+  getUpdateNotificationTitle,
+  generateUpdateMessage,
+} from "./infrastructure/constants/release_messages.js";
 import { CLOCK_LABEL_PROPERTIES, ITextClock } from "./domain/types/ui.js";
 import { TextClockLabel } from "./presentation/widgets/clock_widget.js";
 import { logErr, logWarn } from "./infrastructure/utils/error_utils.js";
@@ -184,8 +188,15 @@ export default class TextClock extends Extension {
     );
 
     if (lastSeen !== currentVersionName) {
+      // Generate notification content using release messages
+      const title = getUpdateNotificationTitle(
+        currentVersionName,
+        extensionGettext,
+      );
+      const body = generateUpdateMessage(currentVersionName, extensionGettext);
+
       // Show update notification using the service
-      this.#notificationService.showUpdateNotification(currentVersionName, () =>
+      this.#notificationService.showUpdateNotification(title, body, () =>
         (this as any).openPreferences(),
       );
 
