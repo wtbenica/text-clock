@@ -1,4 +1,6 @@
-## Text Clock GNOME Extension v1.1.0
+<h2><img src="media/icon.png" alt="Text Clock Logo" style="height:3.5em; vertical-align:middle; margin-right:0.5em;" /> Text Clock GNOME Extension v1.1.0</h2>
+
+![Screenshot of Text Clock](media/screenshot.png "Screenshot of Text Clock Extension")
 
 [![Release](https://img.shields.io/github/v/release/wtbenica/text-clock?label=release)](https://github.com/wtbenica/text-clock/releases)
 [![License](https://img.shields.io/github/license/wtbenica/text-clock)](LICENSE)
@@ -6,7 +8,13 @@
 ![Dependabot alerts](https://img.shields.io/github/issues-raw/wtbenica/text-clock/dependabot)
 ![CI](https://github.com/wtbenica/text-clock/actions/workflows/validate.yml/badge.svg)
 
-![Screenshot of Text Clock](media/screenshot.png "Screenshot of Text Clock Extension")
+### New in v1.1.0
+
+- Accent color themes and custom color options
+- Enhanced preferences UI and dedicated color settings
+- Divider customization and improved Spanish translations
+
+See the full release notes: [RELEASE_NOTES.md](RELEASE_NOTES.md)
 
 ### Overview
 
@@ -77,6 +85,7 @@ For added security, you can verify the integrity and authenticity of the downloa
 1. **Install GPG** (if not already installed):
 
 2. **Download and import the public key**:
+
    ```bash
    # Download from the repository
    wget https://raw.githubusercontent.com/wtbenica/text-clock/main/ci-pub.asc
@@ -86,6 +95,7 @@ For added security, you can verify the integrity and authenticity of the downloa
    ```
 
 3. **Verify the ZIP file** (replace `X.Y.Z` with the version number):
+
    ```bash
    gpg --verify text-clock@benica.dev-X.Y.Z.zip.sig text-clock@benica.dev-X.Y.Z.zip
    ```
@@ -93,7 +103,7 @@ For added security, you can verify the integrity and authenticity of the downloa
    - **Success**: You'll see "gpg: Good signature from [key details]".
    - **Failure**: Indicates a potential issue—re-download or check the key fingerprint.
 
-The public key fingerprint is `50483D39B066B9CAC0B0189A433660C4BA3A31AC`. You can download the full public key from the repository's [`ci-pub.asc`](https://raw.githubusercontent.com/wtbenica/text-clock/main/ci-pub.asc ) file to import it.
+The public key fingerprint is `50483D39B066B9CAC0B0189A433660C4BA3A31AC`. You can download the full public key from the repository's [`ci-pub.asc`](https://raw.githubusercontent.com/wtbenica/text-clock/main/ci-pub.asc) file to import it.
 
 #### From Source
 
@@ -119,11 +129,11 @@ You can verify your system has the required tools by running `make check-deps`.
 
 1. The source files are hosted on GitHub. You can download the source files as a [ZIP file](https://github.com/wtbenica/text-clock/archive/refs/heads/main.zip) or clone the repository using Git:
 
-   | Method     | Command                                                  |
-   | ---------- | -------------------------------------------------------- |
+   | Method     | Command                                                |
+   | ---------- | ------------------------------------------------------ |
    | HTTPS      | `git clone https://github.com/wtbenica/text-clock.git` |
-   | SSH        | `git clone git@github.com:wtbenica/text-clock.git`       |
-   | GitHub CLI | `gh repo clone wtbenica/text-clock`                      |
+   | SSH        | `git clone git@github.com:wtbenica/text-clock.git`     |
+   | GitHub CLI | `gh repo clone wtbenica/text-clock`                    |
 
    Refer to [GitHub's documentation on cloning repositories](https://docs.github.com/en/get-started/getting-started-with-git/about-remote-repositories) for more information.
 
