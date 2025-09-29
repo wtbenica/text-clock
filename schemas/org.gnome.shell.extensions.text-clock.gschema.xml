@@ -45,14 +45,14 @@
   </enum>
 
   <enum id="org.gnome.shell.extensions.text-clock.accent-color-style">
-    <value value="0" nick="duotone"/>
-    <value value="1" nick="solid"/>
-    <value value="2" nick="racing-stripe"/>
-    <value value="3" nick="racing-stripe-duotone"/>
-    <value value="4" nick="contrast"/>
-    <value value="5" nick="contrast-reverse"/>
-    <value value="6" nick="light-variant"/>
-    <value value="7" nick="dark-variant"/>
+    <value value="0" nick="solid"/>
+    <value value="1" nick="light-variant"/>
+    <value value="2" nick="dark-variant"/>
+    <value value="3" nick="duotone"/>
+    <value value="4" nick="racing-stripe"/>
+    <value value="5" nick="racing-stripe-duotone"/>
+    <value value="6" nick="contrast"/>
+    <value value="7" nick="contrast-reverse"/>
   </enum>
 
   <schema id='org.gnome.shell.extensions.text-clock' path='/org/gnome/shell/extensions/text-clock/'>
@@ -92,7 +92,7 @@
       </description>
     </key>
     <key name="accent-color-style" enum="org.gnome.shell.extensions.text-clock.accent-color-style">
-      <default>"duotone"</default>
+      <default>"solid"</default>
       <summary>Accent color style</summary>
       <description>
             The style variation to use when color mode is set to accent color.

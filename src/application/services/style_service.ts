@@ -512,14 +512,12 @@ export class StyleService {
 
       // Determine whether the date is currently shown so accent styles that
       // expect the date/divider to be present can fall back appropriately.
-      const showDate = this.#settings.get_boolean(SettingsKey.SHOW_DATE);
-
       // Use the configuration system to apply the selected accent style.
       const {
         clockColor: accentClockColor,
         dateColor: accentDateColor,
         dividerColor: accentDividerColor,
-      } = applyAccentStyle(accentColor, accentStyle, showDate);
+      } = applyAccentStyle(accentColor, accentStyle);
 
       clockColor = accentClockColor;
       dateColor = accentDateColor;

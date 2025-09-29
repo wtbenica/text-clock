@@ -60,118 +60,75 @@ export function addAccentStyleRow(
   group: Adw.PreferencesGroup,
   settings: Gio.Settings,
 ): Adw.ComboRow {
-  // We need to present a filtered list when the date/weekday aren't shown
-  // because some accent styles only make sense with the date/divider visible.
   const allConfigs = PREFERENCE_CONFIGS.ACCENT_STYLE;
 
-  // Helper to build the visible model and a mapping from visible index ->
-  // original index in ACCENT_STYLE_CONFIGS.
-  const buildModel = (showDateOrWeekday: boolean) => {
-    const visibleConfigs = allConfigs.filter((c) => {
-      // If a config requires the date to be visible and the date/weekday are
-      // not showing, hide it from the list.
-      if ((c as any).requiresDateVisible && !showDateOrWeekday) return false;
-      return true;
-    });
+  /**
+   * Build a grouped model with section headers and mapping to original indices.
+   * Headers are marked with -1 to make them non-selectable.
+   */
+  const buildGroupedModel = () => {
+    const strings: string[] = [];
+    const mapping: number[] = []; // Maps display index to original config index
 
-    const strings = visibleConfigs.map((c) => c.displayName(prefsGettext));
-    const mapping: number[] = visibleConfigs.map((vc) =>
-      allConfigs.findIndex((c) => c === vc),
-    );
+    // Monochrome section (first 3 styles: solid, light-variant, dark-variant)
+    strings.push(prefsGettext._("Monochrome"));
+    mapping.push(-1); // Header marker
 
-    return { strings, mapping } as const;
+    for (let i = 0; i < 3; i++) {
+      const config = allConfigs[i];
+      strings.push(`  ${config.displayName(prefsGettext)}`);
+      mapping.push(i);
+    }
+
+    // Multicolor section (remaining styles: duotone, racing-stripe, etc.)
+    strings.push(prefsGettext._("Multicolor (better with date/weekday)"));
+    mapping.push(-1); // Header marker
+
+    for (let i = 3; i < allConfigs.length; i++) {
+      const config = allConfigs[i];
+      strings.push(`  ${config.displayName(prefsGettext)}`);
+      mapping.push(i);
+    }
+
+    return { strings, mapping };
   };
 
-  // Determine initial visibility based on settings
-  const showDate = settings.get_boolean(SettingsKey.SHOW_DATE);
-  const showWeekday = settings.get_boolean(SettingsKey.SHOW_WEEKDAY);
-  const showDateOrWeekday = showDate || showWeekday;
-
-  const { strings, mapping } = buildModel(showDateOrWeekday);
-
-  // Map the stored enum (which refers to the original configs array) to a
-  // visible index for the combo.
+  const { strings, mapping } = buildGroupedModel();
   const storedIndex = settings.get_enum(SettingsKey.ACCENT_COLOR_STYLE);
-  let selectedVisible = mapping.indexOf(storedIndex);
-  if (selectedVisible === -1) selectedVisible = 0;
+
+  // Find the display index for the currently stored value
+  const selectedDisplayIndex = mapping.findIndex(
+    (index) => index === storedIndex,
+  );
 
   const comboRow = new Adw.ComboRow({
     title: prefsGettext._("Accent Style"),
     subtitle: prefsGettext._("Choose accent color variation"),
     model: new Gtk.StringList({ strings }),
-    selected: selectedVisible,
+    selected: selectedDisplayIndex >= 0 ? selectedDisplayIndex : 0,
   });
 
   group.add(comboRow);
 
-  // When the user selects a visible item, write the original index to
-  // settings so the underlying code keeps using the canonical config index.
+  // Handle selection changes, preventing selection of headers
   comboRow.connect("notify::selected", () => {
-    const visibleIdx = comboRow.selected;
-    const realIdx = mapping[visibleIdx] ?? 0;
-    settings.set_enum(SettingsKey.ACCENT_COLOR_STYLE, realIdx);
-  });
+    const selectedDisplayIndex = comboRow.selected;
+    const originalIndex = mapping[selectedDisplayIndex];
 
-  // Update the combo when date/weekday visibility changes
-  const updateForDateVisibility = () => {
-    const sDate = settings.get_boolean(SettingsKey.SHOW_DATE);
-    const sWeek = settings.get_boolean(SettingsKey.SHOW_WEEKDAY);
-    const showAny = sDate || sWeek;
-    const built = buildModel(showAny);
-    comboRow.model = new Gtk.StringList({ strings: built.strings });
-
-    // Attempt to preserve the current logical selection by mapping the
-    // stored settings value to the new visible list. Also implement the
-    // save/restore policy: if styles that require the date are hidden when
-    // the user turns off date/weekday, we save the previous canonical value
-    // and switch to the configured fallback so the UI remains sensible.
-    const currentStored = settings.get_enum(SettingsKey.ACCENT_COLOR_STYLE);
-
-    if (!showAny) {
-      // We're hiding date/weekday. If the currently selected canonical style
-      // requires the date, save it and switch to its fallback.
-      const currentConfig = PREFERENCE_CONFIGS.ACCENT_STYLE[currentStored];
-      if ((currentConfig as any)?.requiresDateVisible) {
-        // Save the canonical index so we can restore it when date/weekday
-        // are shown again.
-        settings.set_enum(
-          SettingsKey.ACCENT_STYLE_SAVED_BEFORE_HIDE as any,
-          currentStored,
-        );
-
-        // Use the fallback index if available; otherwise default to 1
-        // (solid) which is a safe neutral choice.
-        const fallback = (currentConfig as any).fallbackIndex ?? 1;
-        settings.set_enum(SettingsKey.ACCENT_COLOR_STYLE, fallback);
-      }
-    } else {
-      // Date/weekday are shown. If we have a saved value from before the
-      // hide, restore it and clear the saved key.
-      const saved = settings.get_enum(
-        SettingsKey.ACCENT_STYLE_SAVED_BEFORE_HIDE as any,
+    // If user selected a header (originalIndex === -1), revert to previous valid selection
+    if (originalIndex === -1) {
+      const currentStored = settings.get_enum(SettingsKey.ACCENT_COLOR_STYLE);
+      const validDisplayIndex = mapping.findIndex(
+        (index) => index === currentStored,
       );
-      if (typeof saved === "number" && saved >= 0) {
-        settings.set_enum(SettingsKey.ACCENT_COLOR_STYLE, saved);
-        // Clear the saved value by setting a sentinel (-1) which is used to
-        // indicate 'none'. The schema should accept -1 for our transient
-        // internal key; if not, the preferences manager treats it as a
-        // normal integer which is fine for local use.
-        settings.set_enum(
-          SettingsKey.ACCENT_STYLE_SAVED_BEFORE_HIDE as any,
-          -1,
-        );
+      if (validDisplayIndex >= 0) {
+        comboRow.selected = validDisplayIndex;
       }
+      return;
     }
 
-    let visIdx = built.mapping.indexOf(
-      settings.get_enum(SettingsKey.ACCENT_COLOR_STYLE),
-    );
-    if (visIdx === -1) visIdx = 0;
-    comboRow.selected = visIdx;
-  };
-
-  settings.connect("changed::show-date", updateForDateVisibility);
-  settings.connect("changed::show-weekday", updateForDateVisibility);
+    settings.set_enum(SettingsKey.ACCENT_COLOR_STYLE, originalIndex);
+  });
 
   return comboRow;
 }
