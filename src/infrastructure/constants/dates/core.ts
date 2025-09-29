@@ -49,6 +49,17 @@ export function createDateConstants(fns: GettextFunctions) {
     ),
   ];
 
+  // Plain weekday names for standalone weekday display (Sunday..Saturday)
+  const weekdayNames: () => string[] = () => [
+    pgettext("Short standalone weekday name", "sunday"),
+    pgettext("Short standalone weekday name", "monday"),
+    pgettext("Short standalone weekday name", "tuesday"),
+    pgettext("Short standalone weekday name", "wednesday"),
+    pgettext("Short standalone weekday name", "thursday"),
+    pgettext("Short standalone weekday name", "friday"),
+    pgettext("Short standalone weekday name", "saturday"),
+  ];
+
   const daysOfMonth: () => string[] = () => [
     _("first"),
     _("second"),
@@ -86,6 +97,7 @@ export function createDateConstants(fns: GettextFunctions) {
   return {
     dateOnly,
     weekdays,
+    weekdayNames,
     daysOfMonth,
   } as const;
 }

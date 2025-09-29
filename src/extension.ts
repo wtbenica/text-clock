@@ -22,6 +22,7 @@ import SettingsKey from "./domain/models/settings_keys.js";
 import { NotificationService } from "./application/services/notification_service.js";
 import { SettingsManager } from "./application/services/settings_manager.js";
 import { StyleService } from "./application/services/style_service.js";
+import SystemClockSync from "./application/services/system_clock_sync.js";
 import { CLOCK_LABEL_PROPERTIES, ITextClock } from "./domain/types/ui.js";
 import { TextClockLabel } from "./presentation/widgets/clock_widget.js";
 import { logErr, logWarn } from "./infrastructure/utils/error_utils.js";
@@ -86,6 +87,7 @@ export default class TextClock extends Extension {
   #settingsManager?: SettingsManager;
   #styleService?: StyleService;
   #notificationService?: NotificationService;
+  #systemClockSync?: SystemClockSync;
   #dateMenu?: IDateMenuButton;
   #clock?: GnomeDesktop.WallClock;
   #clockDisplay?: St.Label;
@@ -109,6 +111,12 @@ export default class TextClock extends Extension {
    */
   enable() {
     this.#initServices();
+    // Start mirroring system clock settings (if available)
+    try {
+      this.#systemClockSync?.start();
+    } catch (e) {
+      logWarn(`Failed to start SystemClockSync: ${e}`);
+    }
     this.#maybeShowUpdateNotification();
     this.#retrieveDateMenu();
     this.#placeClockLabel();
@@ -149,6 +157,9 @@ export default class TextClock extends Extension {
     this.#settingsManager = new SettingsManager(this.#settings!);
     this.#styleService = new StyleService(this.#settings!);
     this.#notificationService = new NotificationService("Text Clock");
+    // Mirror system clock settings into extension settings so prefs and
+    // runtime behavior reflect the user's system clock choices.
+    this.#systemClockSync = new SystemClockSync(this.#settings!);
   }
 
   // When the extension is enabled check whether we have a stored last-seen
@@ -315,6 +326,7 @@ export default class TextClock extends Extension {
     if (this.#styleService) this.#styleService.destroy();
     if (this.#settingsManager) this.#settingsManager.destroy();
     if (this.#notificationService) this.#notificationService.destroy();
+    if (this.#systemClockSync) this.#systemClockSync.stop();
 
     // Destroy UI components
     if (this.#clockLabel) (this.#clockLabel as any).destroy();

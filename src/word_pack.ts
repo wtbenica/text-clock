@@ -63,6 +63,12 @@ export class WordPack {
   /** Weekday names with date placeholders (e.g., "Monday the %s") */
   days: string[];
 
+  /**
+   * Plain weekday names for standalone weekday display (e.g., "Monday").
+   * Translators should provide these in order Sunday..Saturday.
+   */
+  dayNames: string[];
+
   /** Date-only format template (e.g., "the %s") */
   dayOnly: string;
 
@@ -119,6 +125,7 @@ export class WordPack {
     noonFormatTwo,
     names,
     days,
+    dayNames,
     dayOnly,
     midnight,
     noon,
@@ -132,6 +139,7 @@ export class WordPack {
     noonFormatTwo: string;
     names: string[];
     days: string[];
+    dayNames: string[];
     dayOnly: string;
     midnight: string;
     noon: string;
@@ -145,6 +153,7 @@ export class WordPack {
     this.noonFormatTwo = noonFormatTwo;
     this.names = names;
     this.days = days;
+    this.dayNames = dayNames;
     this.dayOnly = dayOnly;
     this.midnight = midnight;
     this.noon = noon;

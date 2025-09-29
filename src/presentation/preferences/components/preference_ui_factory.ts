@@ -90,7 +90,7 @@ export interface PreferenceRowConfig {
 export function createEnumComboRow<T extends BasePreferenceConfig>(
   group: Adw.PreferencesGroup,
   settings: Gio.Settings,
-  settingsKey: SettingsKey,
+  settingsKey: SettingsKey | string,
   configs: readonly T[],
   rowConfig: PreferenceRowConfig,
 ): Adw.ComboRow {
@@ -144,7 +144,7 @@ export function createEnumComboRow<T extends BasePreferenceConfig>(
 export function createBooleanSwitchRow(
   group: Adw.PreferencesGroup,
   settings: Gio.Settings,
-  settingsKey: SettingsKey,
+  settingsKey: SettingsKey | string,
   rowConfig: PreferenceRowConfig,
 ): Adw.SwitchRow {
   const { _ } = prefsGettext;
@@ -188,8 +188,8 @@ export function createBooleanSwitchRow(
 export function createPresetWithCustomRow<T extends BasePreferenceConfig>(
   group: Adw.PreferencesGroup,
   settings: Gio.Settings,
-  presetSettingsKey: SettingsKey,
-  customSettingsKey: SettingsKey,
+  presetSettingsKey: SettingsKey | string,
+  customSettingsKey: SettingsKey | string,
   configs: readonly T[],
   rowConfig: PreferenceRowConfig,
   customRowConfig?: PreferenceRowConfig,
@@ -260,8 +260,8 @@ export function createPresetWithCustomRow<T extends BasePreferenceConfig>(
 export function createDependentComboRow<T extends BasePreferenceConfig>(
   group: Adw.PreferencesGroup,
   settings: Gio.Settings,
-  settingsKey: SettingsKey,
-  dependencyKey: SettingsKey,
+  settingsKey: SettingsKey | string,
+  dependencyKey: SettingsKey | string,
   configs: readonly T[],
   rowConfig: PreferenceRowConfig,
 ): Adw.ComboRow {
@@ -297,8 +297,8 @@ export function createDependentComboRow<T extends BasePreferenceConfig>(
 export function createDependentSwitchRow(
   group: Adw.PreferencesGroup,
   settings: Gio.Settings,
-  settingsKey: SettingsKey,
-  dependencyKey: SettingsKey,
+  settingsKey: SettingsKey | string,
+  dependencyKey: SettingsKey | string,
   rowConfig: PreferenceRowConfig,
 ): Adw.SwitchRow {
   const switchRow = createBooleanSwitchRow(

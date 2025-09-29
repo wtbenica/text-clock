@@ -19,6 +19,7 @@ export function createTranslatePack(gettextFns: GettextFunctions): WordPack {
     noonFormatTwo: timeConstants.noonFormatTwo(),
     names: timeConstants.hourNames(),
     days: dateConstants.weekdays(),
+    dayNames: dateConstants.weekdayNames(),
     dayOnly: dateConstants.dateOnly(),
     midnight: timeConstants.midnight(),
     noon: timeConstants.noon(),

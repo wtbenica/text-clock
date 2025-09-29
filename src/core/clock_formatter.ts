@@ -201,10 +201,18 @@ export class ClockFormatter {
     const roundedHour = (shouldRoundUp ? hours + 1 : hours) % 24;
     const hourName = this.#getHourName(roundedHour, minuteBucket, timeFormat);
     const time = this.#getTimeString(hourName, minuteBucket, timeFormat);
-    const divider = showDate ? this.divider : "";
-    const dateStr = showDate
-      ? this.#getDisplayedDate(date, minuteBucket, showWeekday)
-      : "";
+    // Support showing weekday alone (when showDate is false but showWeekday is true).
+    const wantsWeekdayOnly = !showDate && showWeekday;
+    const divider = showDate || wantsWeekdayOnly ? this.divider : "";
+
+    let dateStr = "";
+    if (showDate) {
+      dateStr = this.#getDisplayedDate(date, minuteBucket, showWeekday);
+    } else if (wantsWeekdayOnly) {
+      const adjustedDate = this.#adjustDateForRounding(date, minuteBucket);
+      // Use standalone weekday names (Sunday..Saturday) provided by translators.
+      dateStr = this.wordPack.dayNames[adjustedDate.getDay()];
+    }
 
     return { time, divider, date: dateStr };
   }

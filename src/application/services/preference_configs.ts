@@ -143,7 +143,7 @@ export const DIVIDER_PRESET_CONFIGS: readonly (
     schemaValue: "pipe",
     displayName: () => "┃", // Don't translate the symbol itself
     description: ({ _ }) => _("Vertical line divider"),
-    value: " ┃ ",
+    value: " | ",
   },
   {
     schemaValue: "dot",
@@ -199,8 +199,8 @@ function generateSampleTime(
     );
 
     return clockText;
-  } catch {
-    logWarn("Error generating sample time");
+  } catch (err) {
+    logWarn(`Error generating sample time: ${err}`);
     return fallback; // Use provided fallback instead of empty string
   }
 }
@@ -237,32 +237,6 @@ export const TIME_FORMAT_CONFIGS: readonly ValuePreferenceConfig<string>[] = [
     },
     description: ({ _ }) => _("Alternative time format"),
     value: "format-two",
-  },
-] as const;
-
-/**
- * Configuration for color mode options.
- *
- * Maps schema enum values to color mode identifiers.
- */
-export const COLOR_MODE_CONFIGS: readonly ValuePreferenceConfig<string>[] = [
-  {
-    schemaValue: "default",
-    displayName: ({ _ }) => _("Default"),
-    description: ({ _ }) => _("Use system default colors"),
-    value: "default",
-  },
-  {
-    schemaValue: "accent",
-    displayName: ({ _ }) => _("Accent Color"),
-    description: ({ _ }) => _("Use system accent color"),
-    value: "accent",
-  },
-  {
-    schemaValue: "custom",
-    displayName: ({ _ }) => _("Custom Colors"),
-    description: ({ _ }) => _("Use custom color selection"),
-    value: "custom",
   },
 ] as const;
 
@@ -403,36 +377,6 @@ export function getDividerText(
 }
 
 /**
- * Generic helper to map over any preference configuration array.
- *
- * This is more flexible than the previous getDisplayNames/getDescriptions functions
- * as it allows consumers to specify exactly what they want to extract.
- *
- * @param configs - Array of preference configurations
- * @param mapper - Function to extract the desired data from each config
- * @param gettext - Gettext functions for translation
- * @returns Array of mapped values
- *
- * @example
- * ```typescript
- * // Get display names
- * const names = mapPreferenceConfigs(ACCENT_STYLE_CONFIGS,
- *   (config, gt) => config.displayName(gt), gettext);
- *
- * // Get schema values
- * const schemas = mapPreferenceConfigs(TIME_FORMAT_CONFIGS,
- *   (config) => config.schemaValue);
- * ```
- */
-export function mapPreferenceConfigs<T, C extends BasePreferenceConfig>(
-  configs: readonly C[],
-  mapper: (config: C, gettext?: GettextFunctions) => T,
-  gettext?: GettextFunctions,
-): T[] {
-  return configs.map((config) => mapper(config, gettext));
-}
-
-/**
  * Unified registry of all preference configurations.
  *
  * Single source of truth that combines all preference types into one object.
@@ -443,6 +387,5 @@ export const PREFERENCE_CONFIGS = {
   FUZZINESS: FUZZINESS_CONFIGS,
   DIVIDER_PRESET: DIVIDER_PRESET_CONFIGS,
   TIME_FORMAT: TIME_FORMAT_CONFIGS,
-  COLOR_MODE: COLOR_MODE_CONFIGS,
   ACCENT_STYLE: ACCENT_STYLE_CONFIGS,
 } as const;

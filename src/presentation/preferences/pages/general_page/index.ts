@@ -17,9 +17,9 @@ import {
   createAndAddGroupToPage,
   createAndAddPageToWindow,
 } from "../../components/groups.js";
+import { logWarn } from "../../../../infrastructure/utils/error_utils.js";
 import {
   createBooleanSwitchRow,
-  createDependentSwitchRow,
   createEnumComboRow,
   createPresetWithCustomRow,
 } from "../../components/preference_ui_factory.js";
@@ -52,22 +52,101 @@ export function createGeneralPage(
   );
 
   // Simple boolean switch - automatically bound to settings
-  createBooleanSwitchRow(clockSettingsGroup, settings, SettingsKey.SHOW_DATE, {
-    title: _("Show Date"),
-    subtitle: _("Show the date in the clock"),
-  });
+  // Bind the Show Date switch to the system clock setting so the user's
+  // GNOME Settings choice is reflected here.
+  // Create a system settings instance for org.gnome.desktop.interface and
+  // bind the widget to its keys. Fall back to extension settings if system
+  // schema isn't available.
+  const systemSettings = (() => {
+    try {
+      return new Gio.Settings({ schema: "org.gnome.desktop.interface" });
+    } catch (e) {
+      logWarn(`Could not open org.gnome.desktop.interface schema: ${e}`);
+      return null;
+    }
+  })();
 
-  // Dependent switch - sensitivity automatically bound to SHOW_DATE
-  createDependentSwitchRow(
-    clockSettingsGroup,
-    settings,
-    SettingsKey.SHOW_WEEKDAY,
-    SettingsKey.SHOW_DATE,
-    {
-      title: _("Show Weekday"),
-      subtitle: _("Show the day of the week in the clock"),
-    },
-  );
+  if (systemSettings) {
+    // Create the UI row backed by system settings
+    createBooleanSwitchRow(
+      clockSettingsGroup,
+      systemSettings as Gio.Settings,
+      "clock-show-date",
+      {
+        title: _("Show Date"),
+        subtitle: _("Show the date in the clock"),
+      },
+    );
+    // Also keep the extension key in sync: when the system key changes, copy it
+    // into extension settings so runtime reads the extension schema as usual.
+    try {
+      systemSettings.connect("changed::clock-show-date", () => {
+        try {
+          const val = systemSettings.get_boolean("clock-show-date");
+          settings.set_boolean(SettingsKey.SHOW_DATE, val);
+        } catch (e) {
+          logWarn(
+            `Failed to apply org.gnome.desktop.interface.clock-show-date to extension setting: ${e}`,
+          );
+        }
+      });
+    } catch (e) {
+      logWarn(
+        `Failed to connect to org.gnome.desktop.interface changed::clock-show-date: ${e}`,
+      );
+    }
+  } else {
+    // Fall back to binding extension settings if system schema isn't present
+    createBooleanSwitchRow(
+      clockSettingsGroup,
+      settings,
+      SettingsKey.SHOW_DATE,
+      {
+        title: _("Show Date"),
+        subtitle: _("Show the date in the clock"),
+      },
+    );
+  }
+
+  // Bind Show Weekday to system clock setting as well. GNOME treats weekday
+  // independently of date, so we create an independent binding here.
+  if (systemSettings) {
+    createBooleanSwitchRow(
+      clockSettingsGroup,
+      systemSettings as Gio.Settings,
+      "clock-show-weekday",
+      {
+        title: _("Show Weekday"),
+        subtitle: _("Show the day of the week in the clock"),
+      },
+    );
+    try {
+      systemSettings.connect("changed::clock-show-weekday", () => {
+        try {
+          const val = systemSettings.get_boolean("clock-show-weekday");
+          settings.set_boolean(SettingsKey.SHOW_WEEKDAY, val);
+        } catch (e) {
+          logWarn(
+            `Failed to apply org.gnome.desktop.interface.clock-show-weekday to extension setting: ${e}`,
+          );
+        }
+      });
+    } catch (e) {
+      logWarn(
+        `Failed to connect to org.gnome.desktop.interface changed::clock-show-weekday: ${e}`,
+      );
+    }
+  } else {
+    createBooleanSwitchRow(
+      clockSettingsGroup,
+      settings,
+      SettingsKey.SHOW_WEEKDAY,
+      {
+        title: _("Show Weekday"),
+        subtitle: _("Show the day of the week in the clock"),
+      },
+    );
+  }
 
   // Simple enum combo - automatically populated from config
   createEnumComboRow(
