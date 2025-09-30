@@ -35,11 +35,8 @@ export function bindSettingsToProperty(
   }
 }
 
-// TRANSLATE PACK — prefs-scoped translate pack getter
 export const TRANSLATE_PACK = createTranslatePackGetter(prefsGettext);
 
-// Version utilities
-// GNOME Shell imports for version detection (may not exist in all contexts)
 declare const imports: any;
 
 export function getShellVersion(): number {
@@ -54,10 +51,20 @@ export function getShellVersion(): number {
   try {
     const [ok, out] = GLib.spawn_command_line_sync("gnome-shell --version");
     if (ok && out) {
-      // Use GLib.ByteArray to properly convert Uint8Array to string
-      const outStr = imports.byteArray.toString(out);
-      const parsed = parseGnomeShellVersionString(outStr);
-      if (!Number.isNaN(parsed)) return parsed;
+      let outStr: string | null = null;
+      try {
+        const Decoder = (globalThis as any).TextDecoder;
+        outStr = new Decoder("utf-8").decode(out as Uint8Array);
+      } catch (e) {
+        logWarn(
+          `Failed to decode gnome-shell version output with TextDecoder: ${e}`,
+        );
+      }
+
+      if (outStr) {
+        const parsed = parseGnomeShellVersionString(outStr);
+        if (!Number.isNaN(parsed)) return parsed;
+      }
     }
   } catch (e) {
     logWarn(`Could not run 'gnome-shell --version': ${e}`);

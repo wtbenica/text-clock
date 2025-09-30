@@ -10,6 +10,7 @@ This file gives focused, actionable guidance so an AI coding agent can be immedi
 - Build system: makefile
 
 IMPORTANT INSTRUCTIONS:
+
 - When you are done with your changes, run 'make validate' to ensure that linting, type checking, and tests all pass. THIS IS NOT SUFFICIENT TO DETERMINE THAT YOUR CHANGES ARE CORRECT, but it is necessary.
 - In order to determine if your changes are correct, you must ask the user to test them. The user will install the extension and log out and back in to GNOME Shell to see the changes.
 
@@ -19,9 +20,9 @@ IMPORTANT INSTRUCTIONS:
 - Avoid flattery and unnecessary politeness. Be professional and to the point.
 - Avoid exuberance and exaggeration. Be professional and to the point.
 - The user is not a complete idiot. You can ask them to do things. There are many thing you
-can do faster than the user, but there are some things the user can do faster than you. If
-you get confused or stuck, ask the user for help. Just as you are a resource for the user, the
-user is a resource for you.
+  can do faster than the user, but there are some things the user can do faster than you. If
+  you get confused or stuck, ask the user for help. Just as you are a resource for the user, the
+  user is a resource for you.
 - Pay attention to questions in the prompt. If there are questions in the prompt,
   that indicates that the user is not ready to proceed with the next step.
 - If you are unsure about something, ask the user for clarification.
@@ -42,3 +43,5 @@ user is a resource for you.
 - Do not use comments that refer to changes that you have made, e.g. "changed X to Y," "X can now be found in Y," etc. Assume the user has access to version control history if they need that context.
 - Avoid creating documentation files. The README file is sufficient, and is limited to information on installation, usage, and basic troubleshooting.
 - RELEASE_NOTES.md is used for CI/CD release notes. Do not add any other documentation files. Keep this file up to date with each release.
+- Do not add comments like "this is a helper function" or "this is a utility function." Such comments are redundant and do not add value. Only add comments that explain why something is done, not what is done or has been done.
+- Don't offer to make commits or pull requests. The user will handle that.
