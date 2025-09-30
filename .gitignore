@@ -53,6 +53,7 @@ constants_*_test.generated.ts
 
 # GPG private key exports and signing artifacts (do not commit)
 ci-secret.asc
+ci-secret.asc.b64
 *.gpg
 *.key
 *.secret
