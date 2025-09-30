@@ -128,6 +128,10 @@ export class StyleService {
   #ifaceSettings: Gio.Settings | null = null;
   #ifaceSignalConnection: number | null = null;
 
+  // Cache for the last known accent color to avoid redundant reads
+  #accentColorName: string | null = null;
+  #accentColor: Color | null = null;
+
   /**
    * Create a new StyleService instance.
    *
@@ -331,11 +335,17 @@ export class StyleService {
       if (ifaceSettings && ifaceSettings.get_string) {
         const accent = ifaceSettings.get_string("accent-color");
         if (accent) {
+          if (accent === this.#accentColorName && this.#accentColor) {
+            return this.#accentColor;
+          }
+          this.#accentColorName = accent;
+
           // If the accent is a named token (e.g. "yellow"), map it to a hex value.
           const mapped = accentNameToHex(accent);
           if (mapped) {
             try {
-              return new Color(mapped);
+              this.#accentColor = new Color(mapped);
+              return this.#accentColor;
             } catch (e) {
               logWarn(`Mapped accent color invalid: ${e}`);
             }
@@ -343,7 +353,8 @@ export class StyleService {
 
           // Otherwise try constructing Color directly (may throw if not concrete)
           try {
-            return new Color(accent);
+            this.#accentColor = new Color(accent);
+            return this.#accentColor;
           } catch (e) {
             logWarn(
               `org.gnome.desktop.interface.accent-color present but invalid: ${e}`,
@@ -355,8 +366,12 @@ export class StyleService {
       logWarn(`Could not read org.gnome.desktop.interface.accent-color: ${e}`);
     }
 
-    // No concrete accent color available; fall back to white
-    return new Color("#FFFFFF");
+    // No concrete accent color available; cache and return white fallback
+    if (this.#accentColorName !== "fallback" || !this.#accentColor) {
+      this.#accentColorName = "fallback";
+      this.#accentColor = new Color("#FFFFFF");
+    }
+    return this.#accentColor;
   }
 
   /**
@@ -398,6 +413,11 @@ export class StyleService {
       this.#ifaceSignalConnection = null;
     }
     this.#ifaceSettings = null;
+
+    // Clear accent color cache
+    this.#accentColorName = null;
+    this.#accentColor = null;
+
     // Clear all targets
     this.#targets.clear();
   }
@@ -460,6 +480,10 @@ export class StyleService {
       this.#ifaceSignalConnection = this.#ifaceSettings.connect(
         "changed::accent-color",
         () => {
+          // Invalidate accent color cache when system accent changes
+          this.#accentColorName = null;
+          this.#accentColor = null;
+
           // Only update if we're actually using accent color mode; applyToAllTargets
           // will read the current color mode and act accordingly.
           this.applyToAllTargets();
