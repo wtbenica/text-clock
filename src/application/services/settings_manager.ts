@@ -588,41 +588,61 @@ export class SettingsManager {
    * @returns The setting value in its native type, or undefined if retrieval fails
    */
   #getSettingValue(key: SettingsKey | string): any {
+    // Use a robust try-catch approach that attempts each getter method
+    // This prevents failures due to schema changes or unusual enum implementations
+
+    // First, verify the key exists in the schema
     try {
-      // We need to determine the type of the setting
-      // This is a simplified approach - in a more robust implementation,
-      // we might want to use the schema to determine the exact type
-
-      // Try different types based on common setting patterns
       const schema = this.#settings.settings_schema;
-      if (!schema) {
-        logWarn(`No schema found for settings`);
+      if (!schema || !schema.has_key(key as string)) {
+        logWarn(`Setting key "${key}" not found in schema`);
         return undefined;
-      }
-
-      const schemaKey = schema.get_key(key as string);
-      if (!schemaKey) {
-        logWarn(`No schema key found for "${key}"`);
-        return undefined;
-      }
-
-      const typeString = schemaKey.get_value_type().dup_string();
-
-      switch (typeString) {
-        case "b": // boolean
-          return this.#settings.get_boolean(key);
-        case "s": // string
-          return this.#settings.get_string(key);
-        case "i": // integer/enum
-          return this.#settings.get_enum(key);
-        default:
-          logWarn(`Unknown setting type "${typeString}" for key "${key}"`);
-          return undefined;
       }
     } catch (error) {
-      logWarn(`Failed to get value for setting "${key}": ${error}`);
+      logWarn(`Failed to check schema for key "${key}": ${error}`);
       return undefined;
     }
+
+    // Try each type in order of likelihood, with individual error handling
+    // Boolean settings are common, try first
+    try {
+      return this.#settings.get_boolean(key);
+    } catch {
+      // Not a boolean, continue to next type
+    }
+
+    // String settings are very common
+    try {
+      return this.#settings.get_string(key);
+    } catch {
+      // Not a string, continue to next type
+    }
+
+    // Enum/integer settings (like time format, fuzziness)
+    try {
+      return this.#settings.get_enum(key);
+    } catch {
+      // Not an enum, continue to next type
+    }
+
+    // Try other less common types as fallbacks
+    try {
+      return this.#settings.get_int(key);
+    } catch {
+      // Not an integer
+    }
+
+    try {
+      return this.#settings.get_double(key);
+    } catch {
+      // Not a double
+    }
+
+    // If all type attempts failed, log a warning and return undefined
+    logWarn(
+      `Unable to determine type for setting "${key}" - all getter methods failed`,
+    );
+    return undefined;
   }
 
   /**
