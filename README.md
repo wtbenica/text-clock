@@ -1,4 +1,10 @@
-<h2><img src="media/icon.png" alt="Text Clock Logo" style="height:3.5em; vertical-align:middle; margin-right:0.5em;" /> Text Clock GNOME Extension v1.1.0</h2>
+<div style="display:flex; align-items:center; gap:0.75rem;">
+   <img src="media/icon.png" alt="Text Clock Logo" style="height:4.5em;" />
+   <div>
+      <h2 style="margin:0; line-height:1;">Text Clock v1.1.0</h2>
+      <div style="color:var(--secondary-text-color,#666);">A simple text clock for the GNOME Shell</div>
+   </div>
+</div>
 
 ![Screenshot of Text Clock](media/screenshots.png "Screenshot of Text Clock Extension")
 
