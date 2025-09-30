@@ -172,8 +172,8 @@ export function addColorModeRow(
   const styleSvc = new StyleService(settings);
   const accentStyleRow = addAccentStyleRow(group, settings);
   const clockColorRow = addClockColorRow(group, settings, styleSvc);
-  const dateColorRow = addDateColorRow(group, settings, styleSvc);
   const dividerColorRow = addDividerColorRow(group, settings, styleSvc);
+  const dateColorRow = addDateColorRow(group, settings, styleSvc);
 
   const clockUpdater = clockColorRow
     ? (clockColorRow as any)._updateColorPicker

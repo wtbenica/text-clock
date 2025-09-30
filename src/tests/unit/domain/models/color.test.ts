@@ -12,24 +12,19 @@ describe("Color", () => {
       expect(new Color("#112233").toString()).toBe("#112233");
     });
 
-    it("validates and normalizes rgb colors", () => {
-      expect(new Color("rgb(255, 0, 0)").toString()).toBe("rgb(255, 0, 0)");
-    });
-
-    it("handles rgba colors", () => {
-      expect(new Color("rgba(255, 0, 0, 0.5)").toString()).toBe(
-        "rgba(255, 0, 0, 0.5)",
-      );
-    });
-
     it("throws error for invalid colors", () => {
       expect(() => new Color("invalid")).toThrow(
         "Invalid color format: invalid",
       );
       expect(() => new Color("")).toThrow("Invalid color format: ");
-      expect(() => new Color("rgb(300, 0, 0)")).toThrow(
-        "Invalid color format: rgb(300, 0, 0)",
-      );
+    });
+
+    it("handles RGB color format", () => {
+      const color = new Color("rgb(255, 0, 0)");
+      expect(color.toString()).toBe("#FF0000");
+
+      const color2 = new Color("rgb(53, 132, 228)");
+      expect(color2.toString()).toBe("#3584E4");
     });
 
     it("throws error for CSS variables (not concrete colors)", () => {

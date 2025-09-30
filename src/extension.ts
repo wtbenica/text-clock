@@ -348,9 +348,13 @@ export default class TextClock extends Extension {
 
   // Restore the clock display to its original appearance
   #restoreClockDisplay() {
-    this.#clockDisplay!.add_style_class_name(CLOCK_STYLE_CLASS_NAME);
-    this.#clockDisplay!.set_width(-1);
-    (this.#clockDisplay as any).show();
+    if (!this.#clockDisplay) {
+      return;
+    }
+
+    this.#clockDisplay.add_style_class_name(CLOCK_STYLE_CLASS_NAME);
+    this.#clockDisplay.set_width(-1);
+    this.#clockDisplay.show();
   }
 
   // Finds the St.BoxLayout child with style class 'clock-display-box'

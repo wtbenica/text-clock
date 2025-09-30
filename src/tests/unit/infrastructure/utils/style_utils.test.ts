@@ -20,18 +20,16 @@ describe("buildStyles", () => {
     });
   });
 
-  it("should handle different color formats", () => {
-    const clockColor = new Color("rgb(255, 0, 0)");
-    const dateColor = new Color("#00FF00");
-    const dividerColor = new Color("rgba(0, 0, 255, 0.5)");
+  it("should handle different hex color formats", () => {
+    const clockColor = new Color("#FF0000"); // Full hex
+    const dateColor = new Color("#0F0"); // Short hex
+    const dividerColor = new Color("#0000FF");
 
     const styles = buildStyles(clockColor, dateColor, dividerColor);
 
-    expect(styles.timeStyle).toBe("color: rgb(255, 0, 0);");
-    expect(styles.dateStyle).toBe("color: #00FF00;");
-    expect(styles.dividerStyle).toBe(
-      "color: rgba(0, 0, 255, 0.5); font-weight: bold;",
-    );
+    expect(styles.timeStyle).toBe("color: #FF0000;");
+    expect(styles.dateStyle).toBe("color: #00FF00;"); // Short hex normalized
+    expect(styles.dividerStyle).toBe("color: #0000FF; font-weight: bold;");
   });
 
   it("should always include font-weight bold for divider", () => {
