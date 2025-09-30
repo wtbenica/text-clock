@@ -12,21 +12,32 @@
 # - `reuse annotate` cannot reliably add shell-style `#` headers to Makefiles, so
 #   Makefiles are listed for manual handling below when detected by `reuse lint`.
 
-.PHONY: reuse-check reuse-fix reuse-fix-all
+.PHONY: reuse-check reuse-fix reuse-fix-all _require-reuse
 
 ## === REUSE Compliance ===
 
+# Internal target to check if reuse tool is available
+_require-reuse:
+	@if ! command -v reuse >/dev/null 2>&1; then \
+		echo "Error: 'reuse' command not found."; \
+		echo "Please install the REUSE tool:"; \
+		echo "  - pip install reuse"; \
+		echo "  - paru -S reuse (Arch Linux)"; \
+		echo "  - Or visit https://reuse.software/ for other installation methods"; \
+		exit 1; \
+	fi
+
 ## reuse-check         Check REUSE compliance (non-blocking)
-reuse-check:
+reuse-check: _require-reuse
 	@echo "Checking REUSE compliance..."
 	@reuse lint || echo "REUSE compliance issues found (see above)"
 
 ## reuse-fix           Automatically add SPDX headers to files missing them
-reuse-fix:
+reuse-fix: _require-reuse
 	@bash -e -c 'set -euo pipefail; echo "Scanning for files missing SPDX headers..."; if reuse lint --quiet >/dev/null 2>&1; then echo "✓ All files already have SPDX headers - nothing to fix"; else echo "Processing files identified by reuse lint..."; (reuse lint 2>/dev/null || true) | grep "^\* " | sed "s/^\* //" > /tmp/reuse-missing-files.tmp || true; processed=0; failed=0; makefiles=""; while IFS= read -r file; do [ -f "$$file" ] || continue; case "$$file" in *.ts|*.js|*.py) if reuse annotate --license GPL-3.0-or-later --copyright "Wesley Benica <wesley@benica.dev>" --year 2024-2025 --skip-existing "$$file" >/dev/null 2>&1; then echo "✓ Added header to: $$file"; processed=$$((processed + 1)); else echo "✗ Failed to add header to: $$file"; failed=$$((failed + 1)); fi ;; *.asc) if reuse annotate --license 0BSD --copyright "Wesley Benica <wesley@benica.dev>" --year 2024-2025 --skip-existing --force-dot-license "$$file" >/dev/null 2>&1; then echo "✓ Added .license file for: $$file"; processed=$$((processed + 1)); else echo "✗ Failed to add .license file for: $$file"; failed=$$((failed + 1)); fi ;; make/Makefile.*|Makefile*) makefiles="$$makefiles\n  - $$file" ;; *) if reuse annotate --license GPL-3.0-or-later --copyright "Wesley Benica <wesley@benica.dev>" --year 2024-2025 --skip-existing --force-dot-license "$$file" >/dev/null 2>&1; then echo "✓ Added .license file for: $$file"; processed=$$((processed + 1)); else echo "✗ Failed to process: $$file"; failed=$$((failed + 1)); fi ;; esac; done < /tmp/reuse-missing-files.tmp; rm -f /tmp/reuse-missing-files.tmp; echo ""; echo "=== SUMMARY ==="; echo "Processed: $$processed files"; [ $$failed -gt 0 ] && echo "Failed: $$failed files"; if [ -n "$$makefiles" ]; then echo "Makefiles requiring manual headers:"; printf "$$makefiles\n"; echo ""; echo "These Makefiles require SPDX headers. Inspect any other Makefile in this repository for the correct header format and copy it into the listed files."; fi; fi'
 
 ## reuse-fix-all       Force add SPDX headers to all source files (for bulk operations)
-reuse-fix-all:
+reuse-fix-all: _require-reuse
 	@echo "Adding SPDX headers to all source files..."
 	@find src -name "*.ts" -o -name "*.js" | xargs -r reuse annotate --license GPL-3.0-or-later --copyright "Wesley Benica <wesley@benica.dev>" --year 2024-2025 --skip-existing 2>/dev/null || true
 	@find scripts -name "*.py" | xargs -r reuse annotate --license GPL-3.0-or-later --copyright "Wesley Benica <wesley@benica.dev>" --year 2024-2025 --skip-existing 2>/dev/null || true

@@ -1,9 +1,16 @@
-<h2><img src="media/icon.png" alt="Text Clock Logo" style="height:3.5em; vertical-align:middle; margin-right:0.5em;" /> Text Clock GNOME Extension v1.1.0</h2>
+<div style="display:flex; align-items:center; gap:0.75rem;">
+   <img src="media/icon.png" alt="Text Clock Logo" style="height:4.5em;" />
+   <div>
+      <h2 style="margin:0; line-height:1;">Text Clock v1.1.0</h2>
+      <div style="color:var(--secondary-text-color,#666);">A simple text clock for the GNOME Shell</div>
+   </div>
+</div>
 
-![Screenshot of Text Clock](media/screenshot.png "Screenshot of Text Clock Extension")
+![Screenshot of Text Clock](media/screenshots.png "Screenshot of Text Clock Extension")
 
 [![Release](https://img.shields.io/github/v/release/wtbenica/text-clock?label=release)](https://github.com/wtbenica/text-clock/releases)
-[![License](https://img.shields.io/github/license/wtbenica/text-clock)](LICENSE)
+[![License](https://img.shields.io/badge/license-gpl%203.0+-green)](https://github.com/wtbenica/text-clock/main/LICENSES/GPL-3.0-or-later.txt)
+[![Contributors](https://img.shields.io/github/contributors/wtbenica/text-clock)](https://github.com/wtbenica/text-clock/graphs/contributors)
 [![Issues](https://img.shields.io/github/issues/wtbenica/text-clock)](https://github.com/wtbenica/text-clock/issues)
 ![Dependabot alerts](https://img.shields.io/github/issues-raw/wtbenica/text-clock/dependabot)
 ![CI](https://github.com/wtbenica/text-clock/actions/workflows/validate.yml/badge.svg)

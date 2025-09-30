@@ -510,7 +510,9 @@ export class StyleService {
         SettingsKey.ACCENT_COLOR_STYLE,
       );
 
-      // Use the configuration system to apply the selected accent style
+      // Determine whether the date is currently shown so accent styles that
+      // expect the date/divider to be present can fall back appropriately.
+      // Use the configuration system to apply the selected accent style.
       const {
         clockColor: accentClockColor,
         dateColor: accentDateColor,

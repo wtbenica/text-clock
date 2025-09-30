@@ -16,7 +16,6 @@ import {
 } from "../../../../infrastructure/utils/error_utils.js";
 import { prefsGettext } from "../../../../infrastructure/utils/gettext/gettext_utils_prefs.js";
 import { createAndAddPageToWindow } from "../../components/groups.js";
-import { createEnumComboRow } from "../../components/preference_ui_factory.js";
 import {
   addClockColorRow as _addClockColorRow,
   addDateColorRow as _addDateColorRow,
@@ -61,16 +60,77 @@ export function addAccentStyleRow(
   group: Adw.PreferencesGroup,
   settings: Gio.Settings,
 ): Adw.ComboRow {
-  return createEnumComboRow(
-    group,
-    settings,
-    SettingsKey.ACCENT_COLOR_STYLE,
-    PREFERENCE_CONFIGS.ACCENT_STYLE,
-    {
-      title: "Accent Style",
-      subtitle: "Choose accent color variation",
-    },
+  const allConfigs = PREFERENCE_CONFIGS.ACCENT_STYLE;
+
+  /**
+   * Build a grouped model with section headers and mapping to original indices.
+   * Headers are marked with -1 to make them non-selectable.
+   */
+  const buildGroupedModel = () => {
+    const strings: string[] = [];
+    const mapping: number[] = []; // Maps display index to original config index
+
+    // Monochrome section (first 3 styles: solid, light-variant, dark-variant)
+    strings.push(prefsGettext._("Monochrome"));
+    mapping.push(-1); // Header marker
+
+    for (let i = 0; i < 3; i++) {
+      const config = allConfigs[i];
+      strings.push(`  ${config.displayName(prefsGettext)}`);
+      mapping.push(i);
+    }
+
+    // Multicolor section (remaining styles: duotone, racing-stripe, etc.)
+    strings.push(prefsGettext._("Multicolor (better with date/weekday)"));
+    mapping.push(-1); // Header marker
+
+    for (let i = 3; i < allConfigs.length; i++) {
+      const config = allConfigs[i];
+      strings.push(`  ${config.displayName(prefsGettext)}`);
+      mapping.push(i);
+    }
+
+    return { strings, mapping };
+  };
+
+  const { strings, mapping } = buildGroupedModel();
+  const storedIndex = settings.get_enum(SettingsKey.ACCENT_COLOR_STYLE);
+
+  // Find the display index for the currently stored value
+  const selectedDisplayIndex = mapping.findIndex(
+    (index) => index === storedIndex,
   );
+
+  const comboRow = new Adw.ComboRow({
+    title: prefsGettext._("Accent Style"),
+    subtitle: prefsGettext._("Choose accent color variation"),
+    model: new Gtk.StringList({ strings }),
+    selected: selectedDisplayIndex >= 0 ? selectedDisplayIndex : 0,
+  });
+
+  group.add(comboRow);
+
+  // Handle selection changes, preventing selection of headers
+  comboRow.connect("notify::selected", () => {
+    const selectedDisplayIndex = comboRow.selected;
+    const originalIndex = mapping[selectedDisplayIndex];
+
+    // If user selected a header (originalIndex === -1), revert to previous valid selection
+    if (originalIndex === -1) {
+      const currentStored = settings.get_enum(SettingsKey.ACCENT_COLOR_STYLE);
+      const validDisplayIndex = mapping.findIndex(
+        (index) => index === currentStored,
+      );
+      if (validDisplayIndex >= 0) {
+        comboRow.selected = validDisplayIndex;
+      }
+      return;
+    }
+
+    settings.set_enum(SettingsKey.ACCENT_COLOR_STYLE, originalIndex);
+  });
+
+  return comboRow;
 }
 
 /**
@@ -159,8 +219,15 @@ export function addColorModeRow(
 
     try {
       const showDate = settings.get_boolean(SettingsKey.SHOW_DATE);
-      dividerColorRow.visible = isCustom && showDate;
-      dateColorRow.visible = isCustom && showDate;
+      const showWeekday = settings.get_boolean(SettingsKey.SHOW_WEEKDAY);
+      const showDateOrWeekday = showDate || showWeekday;
+
+      // Date and divider color controls should be visible when the user
+      // is showing either the date or the weekday (weekday may be shown
+      // independently of the full date). Previously these controls only
+      // appeared when the full date was enabled.
+      dividerColorRow.visible = isCustom && showDateOrWeekday;
+      dateColorRow.visible = isCustom && showDateOrWeekday;
     } catch (e) {
       logErr(e, "Error updating color row visibility");
     }
@@ -177,6 +244,7 @@ export function addColorModeRow(
   });
 
   settings.connect("changed::show-date", () => updateColorRowsVisibility());
+  settings.connect("changed::show-weekday", () => updateColorRowsVisibility());
 }
 
 export default {

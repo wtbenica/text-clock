@@ -102,7 +102,7 @@ export class Color {
    * For hex colors, this performs mathematical RGB blending. For other formats,
    * this uses CSS color-mix() expressions where supported.
    *
-   * @param amount - The lightening amount (0-1, where 0 = no change, 1 = white). Defaults to 0.5
+   * @param amount - The lightening amount (0-1, where 0 = no change, 1 = white). Defaults to 0.3
    * @returns A new Color instance representing the lighter color
    *
    * @example
@@ -112,7 +112,7 @@ export class Color {
    * const veryLight = blue.lighten(0.8); // 80% lighter
    * ```
    */
-  lighten(amount = 0.5): Color {
+  lighten(amount = 0.3): Color {
     const s = this.normalized;
     // If hex, compute numeric blend
     if (s.startsWith("#")) {
@@ -140,7 +140,7 @@ export class Color {
    * For hex colors, this performs mathematical RGB blending by reducing each
    * channel proportionally. For other formats, this uses CSS color-mix() expressions.
    *
-   * @param amount - The darkening amount (0-1, where 0 = no change, 1 = black). Defaults to 0.3
+   * @param amount - The darkening amount (0-1, where 0 = no change, 1 = black). Defaults to 0.2
    * @returns A new Color instance representing the darker color
    *
    * @example
@@ -150,7 +150,7 @@ export class Color {
    * const veryDark = blue.darken(0.7); // 70% darker
    * ```
    */
-  darken(amount = 0.3): Color {
+  darken(amount = 0.2): Color {
     const s = this.normalized;
     if (s.startsWith("#")) {
       const r = parseInt(s.slice(1, 3), 16);

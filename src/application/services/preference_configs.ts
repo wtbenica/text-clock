@@ -243,19 +243,13 @@ export const TIME_FORMAT_CONFIGS: readonly ValuePreferenceConfig<string>[] = [
 /**
  * Registry of all available accent color style configurations.
  *
+ * Organized with monochrome styles first (work well with any display mode),
+ * followed by multicolor styles (better with date/weekday visible).
  * Each configuration specifies color transformation functions for clock, date,
- * and divider elements, providing different visual styles while maintaining
- * consistent theming with the system accent color.
+ * and divider elements.
  */
 export const ACCENT_STYLE_CONFIGS: readonly AccentStyleConfig[] = [
-  {
-    schemaValue: "duotone",
-    displayName: ({ _ }) => _("Duotone"),
-    description: ({ _ }) => _("Time lighter, date normal"),
-    clockColor: (accent) => accent.lighten(),
-    dateColor: (accent) => accent,
-    dividerColor: (accent) => accent.lighten(),
-  },
+  // Monochrome styles - work well with any display mode
   {
     schemaValue: "solid",
     displayName: ({ _ }) => _("Solid"),
@@ -263,38 +257,6 @@ export const ACCENT_STYLE_CONFIGS: readonly AccentStyleConfig[] = [
     clockColor: (accent) => accent,
     dateColor: (accent) => accent,
     dividerColor: (accent) => accent,
-  },
-  {
-    schemaValue: "racing-stripe",
-    displayName: ({ _ }) => _("Racing Stripe"),
-    description: ({ _ }) => _("Time/date solid, divider white"),
-    clockColor: (accent) => accent,
-    dateColor: (accent) => accent,
-    dividerColor: () => new Color("#FFFFFF"),
-  },
-  {
-    schemaValue: "racing-stripe-duotone",
-    displayName: ({ _ }) => _("Racing Stripe Duotone"),
-    description: ({ _ }) => _("Time lighter, date normal, divider white"),
-    clockColor: (accent) => accent.lighten(),
-    dateColor: (accent) => accent,
-    dividerColor: () => new Color("#FFFFFF"),
-  },
-  {
-    schemaValue: "contrast",
-    displayName: ({ _ }) => _("Contrast"),
-    description: ({ _ }) => _("Time white, date normal, divider white"),
-    clockColor: () => new Color("#FFFFFF"),
-    dateColor: (accent) => accent.lighten(0.1),
-    dividerColor: (accent) => accent.lighten(0.1),
-  },
-  {
-    schemaValue: "contrast-reverse",
-    displayName: ({ _ }) => _("Contrast Reverse"),
-    description: ({ _ }) => _("Time normal, date white, divider normal"),
-    clockColor: (accent) => accent.lighten(0.1),
-    dateColor: () => new Color("#FFFFFF"),
-    dividerColor: () => new Color("#FFFFFF"),
   },
   {
     schemaValue: "light-variant",
@@ -312,6 +274,47 @@ export const ACCENT_STYLE_CONFIGS: readonly AccentStyleConfig[] = [
     dateColor: (accent) => accent.darken(),
     dividerColor: (accent) => accent.darken(),
   },
+  // Multicolor styles - better with date/weekday visible
+  {
+    schemaValue: "duotone",
+    displayName: ({ _ }) => _("Duotone"),
+    description: ({ _ }) => _("Time lighter, date normal"),
+    clockColor: (accent) => accent.lighten(),
+    dateColor: (accent) => accent.darken(),
+    dividerColor: (accent) => accent.lighten(),
+  },
+  {
+    schemaValue: "racing-stripe",
+    displayName: ({ _ }) => _("Racing Stripe"),
+    description: ({ _ }) => _("Time/date solid, divider white"),
+    clockColor: (accent) => accent,
+    dateColor: (accent) => accent,
+    dividerColor: () => new Color("#FFFFFF"),
+  },
+  {
+    schemaValue: "racing-stripe-duotone",
+    displayName: ({ _ }) => _("Racing Stripe Duotone"),
+    description: ({ _ }) => _("Time lighter, date normal, divider white"),
+    clockColor: (accent) => accent.lighten(),
+    dateColor: (accent) => accent.darken(),
+    dividerColor: () => new Color("#FFFFFF"),
+  },
+  {
+    schemaValue: "contrast",
+    displayName: ({ _ }) => _("Contrast"),
+    description: ({ _ }) => _("Time white, date normal, divider white"),
+    clockColor: () => new Color("#FFFFFF"),
+    dateColor: (accent) => accent,
+    dividerColor: (accent) => accent,
+  },
+  {
+    schemaValue: "contrast-reverse",
+    displayName: ({ _ }) => _("Contrast Reverse"),
+    description: ({ _ }) => _("Time normal, date white, divider normal"),
+    clockColor: (accent) => accent,
+    dateColor: () => new Color("#FFFFFF"),
+    dividerColor: (accent) => accent,
+  },
 ] as const;
 
 /**
@@ -327,12 +330,17 @@ export function getAccentStyleConfig(index: number): AccentStyleConfig {
 /**
  * Apply accent style transformation to a base color.
  *
+ * Always applies the selected style consistently regardless of date visibility.
+ * This ensures visual consistency - the clock color never changes unexpectedly
+ * when toggling date/weekday visibility.
+ *
  * @param baseColor - The base accent color to transform
  * @param styleIndex - GSettings enum index for the accent style
  * @returns Object with transformed colors for clock, date, and divider
  */
 export function applyAccentStyle(baseColor: Color, styleIndex: number) {
   const config = getAccentStyleConfig(styleIndex);
+
   return {
     clockColor: config.clockColor(baseColor),
     dateColor: config.dateColor(baseColor),
