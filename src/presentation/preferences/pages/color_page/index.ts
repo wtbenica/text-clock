@@ -71,7 +71,7 @@ export function addAccentStyleRow(
     const mapping: number[] = []; // Maps display index to original config index
 
     // Monochrome section (first 3 styles: solid, light-variant, dark-variant)
-    strings.push(prefsGettext._("Monochrome"));
+    strings.push(prefsGettext._("Solid"));
     mapping.push(-1); // Header marker
 
     for (let i = 0; i < 3; i++) {
@@ -81,7 +81,7 @@ export function addAccentStyleRow(
     }
 
     // Multicolor section (remaining styles: duotone, racing-stripe, etc.)
-    strings.push(prefsGettext._("Multicolor (better with date/weekday)"));
+    strings.push(prefsGettext._("Contrasting"));
     mapping.push(-1); // Header marker
 
     for (let i = 3; i < allConfigs.length; i++) {

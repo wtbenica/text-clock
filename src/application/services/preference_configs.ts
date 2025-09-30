@@ -252,7 +252,7 @@ export const ACCENT_STYLE_CONFIGS: readonly AccentStyleConfig[] = [
   // Monochrome styles - work well with any display mode
   {
     schemaValue: "solid",
-    displayName: ({ _ }) => _("Solid"),
+    displayName: ({ _ }) => _("Accent"),
     description: ({ _ }) => _("Time and date same color"),
     clockColor: (accent) => accent,
     dateColor: (accent) => accent,
@@ -260,7 +260,7 @@ export const ACCENT_STYLE_CONFIGS: readonly AccentStyleConfig[] = [
   },
   {
     schemaValue: "light-variant",
-    displayName: ({ _ }) => _("Light Variant"),
+    displayName: ({ _ }) => _("Accent Light"),
     description: ({ _ }) => _("All elements lighter"),
     clockColor: (accent) => accent.lighten(),
     dateColor: (accent) => accent.lighten(),
@@ -268,7 +268,7 @@ export const ACCENT_STYLE_CONFIGS: readonly AccentStyleConfig[] = [
   },
   {
     schemaValue: "dark-variant",
-    displayName: ({ _ }) => _("Dark Variant"),
+    displayName: ({ _ }) => _("Accent Dark"),
     description: ({ _ }) => _("All elements darker"),
     clockColor: (accent) => accent.darken(),
     dateColor: (accent) => accent.darken(),
