@@ -1,0 +1,75 @@
+# SPDX-FileCopyrightText: 2024-2025 Wesley Benica <wesley@benica.dev>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# Testing and validation targets
+# This file contains targets for running tests, validation, and CI checks
+
+.PHONY: test lint coverage i18n-validate validate ci-dry-run
+
+## === Testing & Validation ===
+
+## test                Compile from TypeScript and run tests
+test: node_modules/
+	@echo "Running tests..."
+	@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is required to run tests" >&2; exit 1; }
+	@yarn tsc -p config/tsconfig.test.json || { echo "ERROR: TypeScript compilation failed" >&2; exit 1; }
+	@yarn test || { echo "ERROR: Tests failed" >&2; exit 1; }
+
+## lint                Run TypeScript linter
+lint:
+	@echo "Running linter..."
+	@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is required to run linter" >&2; exit 1; }
+	@yarn lint || { echo "ERROR: Linting failed" >&2; exit 1; }
+
+## coverage            Run tests with coverage reporting
+coverage: node_modules/
+	@echo "Running tests with coverage..."
+	@command -v yarn >/dev/null 2>&1 || { echo "ERROR: yarn is required to run tests" >&2; exit 1; }
+	@yarn tsc -p config/tsconfig.test.json >/dev/null 2>&1 || { echo "ERROR: TypeScript compilation failed" >&2; exit 1; }
+	@yarn test --coverage --coverageThreshold='{"global":{"branches":80,"functions":90,"lines":90,"statements":90}}' || { echo "ERROR: Coverage analysis failed" >&2; exit 1; }
+	@find po -type f -name "*.po~" -exec rm -f {} \; >/dev/null 2>&1 || true
+	@echo "Coverage report generated: coverage/lcov-report/index.html"
+
+## i18n-validate       Validate that all translatable strings are translated (no missing/fuzzy)
+i18n-validate:
+	@echo "Validating translations..."
+	@if [ ! -d "po" ] || [ -z "$$(ls -A po 2>/dev/null)" ]; then \
+		echo "ERROR: No PO files found in 'po/'. Run 'make i18n-update' to create/update PO files from POT." >&2; \
+		exit 1; \
+	fi
+	@validation_failed=0; \
+	for f in po/*.po; do \
+		if [ ! -f "$$f" ]; then continue; fi; \
+		lang=$$(basename "$$f" .po); \
+		command -v msgattrib >/dev/null 2>&1 || { echo "ERROR: msgattrib is required for translation validation" >&2; exit 1; }; \
+		untranslated=$$(msgattrib --no-obsolete --untranslated "$$f" 2>/dev/null | grep -c '^msgid' || true); \
+		fuzzy=$$(grep -c '^#, fuzzy' "$$f" || true); \
+		total=$$(grep -c '^msgid "' "$$f" || true); \
+		if [ "$$total" -gt 0 ]; then total=$$((total - 1)); fi; \
+		if [ "$$untranslated" -gt 0 ]; then \
+			echo "ERROR: $$lang has $$untranslated untranslated strings. Please complete translations in po/$$lang.po" >&2; \
+			validation_failed=1; \
+		fi; \
+		if [ "$$fuzzy" -gt 0 ]; then \
+			echo "ERROR: $$lang has $$fuzzy fuzzy translations. Please review and fix fuzzy translations in po/$$lang.po" >&2; \
+			validation_failed=1; \
+		fi; \
+	done; \
+	if [ "$$validation_failed" -eq 1 ]; then \
+		echo "ERROR: Translation validation failed. Run 'make i18n-report' for details." >&2; \
+		exit 1; \
+	fi
+	@echo "All translations are complete and validated."
+
+## validate            Run build and tests (used as the default CI-style check)
+validate: lint test build i18n-validate
+	@find po -type f -name "*.po~" -exec rm -f {} \; >/dev/null 2>&1 || true
+	@echo "Validation completed successfully."
+
+## ci-dry-run          Run validation + non-destructive release in auto mode (CI dry-run)
+ci-dry-run: check-deps
+	@echo "Starting CI dry-run: validate + non-destructive release"
+	@$(MAKE) node_modules/ || { echo "ERROR: node_modules install failed"; exit 1; }
+	@$(MAKE) validate || { echo "ERROR: validate failed"; exit 1; }
+	@$(MAKE) release-dry ACCEPT_ALL=1 || { echo "ERROR: release-dry failed"; exit 1; }

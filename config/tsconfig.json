@@ -2,6 +2,7 @@
   "compilerOptions": {
     "module": "ES2022",
     "moduleResolution": "bundler",
+    "rootDir": "../src",
     "outDir": "../dist",
     "sourceMap": false,
     "strict": true,
@@ -18,18 +19,12 @@
     "skipLibCheck": true
   },
   "include": [
-    "../config/ambient.d.ts",
+    "../src/**/*.ts",
   ],
-  "files": [
-    "../extension.ts",
-    "../clock_formatter.ts",
-    "../word_pack.ts",
-    "../constants/index.ts",
-    "../constants/dates/extension.ts",
-    "../constants/dates/prefs.ts",
-    "../constants/times/extension.ts",
-    "../constants/times/prefs.ts",
-    "../ui/clock_label.ts",
-    "../ui/prefs.ts",
-  ],
+  "exclude": [
+    "../src/tests",
+    "../src/utils/logging/logger_console.ts",
+    "../node_modules",
+    "../dist"
+  ]
 }

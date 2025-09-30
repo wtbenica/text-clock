@@ -1,0 +1,29 @@
+# SPDX-FileCopyrightText: 2024-2025 Wesley Benica <wesley@benica.dev>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# Build artifacts
+*.tar.gz
+*.tar.xz
+*.zip
+*.zip.*
+*.sig
+*.sig.*
+*.pkg.tar.zst
+pkg/
+src/
+
+# makepkg temporary files
+*.log
+
+# Project scripts (not part of AUR package)
+update-aur.sh
+
+# Editor files
+*~
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db

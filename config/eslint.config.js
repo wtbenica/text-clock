@@ -9,7 +9,7 @@ import tsparser from '@typescript-eslint/parser';
 export default [
   {
     files: ['**/*.ts'],
-    ignores: ['dist/**', 'node_modules/**', '**/*.generated.ts', 'tests/**'],
+    ignores: ['dist/**', 'node_modules/**', '**/*.generated.ts', 'src/tests/**'],
     languageOptions: {
       parser: tsparser,
       parserOptions: {
@@ -49,7 +49,7 @@ export default [
     },
   },
   {
-    files: ['tests/**/*.ts'],
+    files: ['src/tests/**/*.ts'],
     languageOptions: {
       parser: tsparser,
       parserOptions: {

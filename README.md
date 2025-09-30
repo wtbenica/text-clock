@@ -1,12 +1,27 @@
-## Text Clock GNOME Extension v1.0.5
+<div style="display:flex; align-items:center; gap:0.75rem;">
+   <img src="media/icon.png" alt="Text Clock Logo" style="height:4.5em;" />
+   <div>
+      <h2 style="margin:0; line-height:1;">Text Clock v1.1.0</h2>
+      <div style="color:var(--secondary-text-color,#666);">A simple text clock for the GNOME Shell</div>
+   </div>
+</div>
+
+![Screenshot of Text Clock](media/screenshots.png "Screenshot of Text Clock Extension")
 
 [![Release](https://img.shields.io/github/v/release/wtbenica/text-clock?label=release)](https://github.com/wtbenica/text-clock/releases)
-[![License](https://img.shields.io/github/license/wtbenica/text-clock)](LICENSE)
+[![License](https://img.shields.io/badge/license-gpl%203.0+-green)](https://github.com/wtbenica/text-clock/main/LICENSES/GPL-3.0-or-later.txt)
+[![Contributors](https://img.shields.io/github/contributors/wtbenica/text-clock)](https://github.com/wtbenica/text-clock/graphs/contributors)
 [![Issues](https://img.shields.io/github/issues/wtbenica/text-clock)](https://github.com/wtbenica/text-clock/issues)
 ![Dependabot alerts](https://img.shields.io/github/issues-raw/wtbenica/text-clock/dependabot)
 ![CI](https://github.com/wtbenica/text-clock/actions/workflows/validate.yml/badge.svg)
 
-![Screenshot of Text Clock](media/screenshot.png "Screenshot of Text Clock Extension")
+### New in v1.1.0
+
+- Accent color themes and custom color options
+- Enhanced preferences UI and dedicated color settings
+- Divider customization and improved Spanish translations
+
+See the full release notes: [RELEASE_NOTES.md](RELEASE_NOTES.md)
 
 ### Overview
 
@@ -66,9 +81,37 @@ This extension is available on [extensions.gnome.org](https://extensions.gnome.o
 
 You can download the latest release of the extension as a ZIP file:
 
-1. Download this [ZIP file (v1.0.5)](https://github.com/wtbenica/text-clock/releases/download/v1.0.5/text-clock@benica.dev.zip) from Github.
-2. Extract the ZIP file to `~/.local/share/gnome-shell/extensions/`.
-3. Restart GNOME Shell for the changes to take effect. On Wayland, log out and back in. On X11, press Alt+F2, type `r`, and then press Enter.
+1. Download this [ZIP file (v1.1.0)](https://github.com/wtbenica/text-clock/releases/download/v1.1.0/text-clock@benica.dev.zip) from Github.
+2. Create the extension directory: `mkdir -p ~/.local/share/gnome-shell/extensions/text-clock@benica.dev`
+3. Extract the ZIP file to the extension directory: `unzip text-clock@benica.dev.zip -d ~/.local/share/gnome-shell/extensions/text-clock@benica.dev`
+4. Restart GNOME Shell for the changes to take effect. On Wayland, log out and back in. On X11, press Alt+F2, type `r`, and then press Enter.
+
+##### Verifying the Download
+
+For added security, you can verify the integrity and authenticity of the downloaded ZIP file using GPG signatures. This ensures the release was signed by the developer and hasn't been tampered with.
+
+1. **Install GPG** (if not already installed):
+
+2. **Download and import the public key**:
+
+   ```bash
+   # Download from the repository
+   wget https://raw.githubusercontent.com/wtbenica/text-clock/main/ci-pub.asc
+
+   # Import into your GPG keyring
+   gpg --import ci-pub.asc
+   ```
+
+3. **Verify the ZIP file** (replace `X.Y.Z` with the version number):
+
+   ```bash
+   gpg --verify text-clock@benica.dev-X.Y.Z.zip.sig text-clock@benica.dev-X.Y.Z.zip
+   ```
+
+   - **Success**: You'll see "gpg: Good signature from [key details]".
+   - **Failure**: Indicates a potential issue—re-download or check the key fingerprint.
+
+The public key fingerprint is `50483D39B066B9CAC0B0189A433660C4BA3A31AC`. You can download the full public key from the repository's [`ci-pub.asc`](https://raw.githubusercontent.com/wtbenica/text-clock/main/ci-pub.asc) file to import it.
 
 #### From Source
 
@@ -94,11 +137,11 @@ You can verify your system has the required tools by running `make check-deps`.
 
 1. The source files are hosted on GitHub. You can download the source files as a [ZIP file](https://github.com/wtbenica/text-clock/archive/refs/heads/main.zip) or clone the repository using Git:
 
-   | Method     | Command                                                  |
-   | ---------- | -------------------------------------------------------- |
-   | HTTPS      | `git clone https://github.com/benica-dev/text-clock.git` |
-   | SSH        | `git clone git@github.com:wtbenica/text-clock.git`       |
-   | GitHub CLI | `gh repo clone wtbenica/text-clock`                      |
+   | Method     | Command                                                |
+   | ---------- | ------------------------------------------------------ |
+   | HTTPS      | `git clone https://github.com/wtbenica/text-clock.git` |
+   | SSH        | `git clone git@github.com:wtbenica/text-clock.git`     |
+   | GitHub CLI | `gh repo clone wtbenica/text-clock`                    |
 
    Refer to [GitHub's documentation on cloning repositories](https://docs.github.com/en/get-started/getting-started-with-git/about-remote-repositories) for more information.
 

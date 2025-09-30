@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - "v*"
+      - 'v*'
 
 permissions:
   contents: write
@@ -11,6 +11,8 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    env:
+      GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
 
     steps:
       - name: Checkout repository
@@ -24,7 +26,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y glib2.0-dev gettext
+          sudo apt-get install -y glib2.0-dev gettext gnupg
 
       - name: Install Yarn v4
         run: |
@@ -43,6 +45,20 @@ jobs:
         run: |
           make pack
 
+      - name: Import GPG private key (optional)
+        if: ${{ env.GPG_PRIVATE_KEY != '' }}
+        run: |
+          echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+
+      - name: Sign release ZIP (optional)
+        if: ${{ env.GPG_PRIVATE_KEY != '' }}
+        run: |
+          set -euo pipefail
+          ZIP=text-clock@benica.dev.zip
+          sigfile="$ZIP.sig"
+          # Create detached signature (binary)
+          gpg --batch --yes --output "$sigfile" --detach-sign "$ZIP"
+
       - name: Extract version from tag
         id: version
         run: |
@@ -50,20 +66,25 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Version: $VERSION"
 
-      - name: Generate release notes
+      - name: Use custom RELEASE_NOTES.md if present, else generate from commits
         id: release_notes
         run: |
-          if git describe --tags --abbrev=0 HEAD~1 >/dev/null 2>&1; then
-            PREV_TAG=$(git describe --tags --abbrev=0 HEAD~1)
-            echo "## Changes since $PREV_TAG" > release_notes.md
-            echo "" >> release_notes.md
-            git log --pretty=format:"- %s" $PREV_TAG..HEAD >> release_notes.md
+          if [ -f RELEASE_NOTES.md ]; then
+            echo "Using custom RELEASE_NOTES.md for release notes."
+            cp RELEASE_NOTES.md release_notes.md
           else
-            echo "## Changes" > release_notes.md
-            echo "" >> release_notes.md
-            echo "Initial release" >> release_notes.md
+            if git describe --tags --abbrev=0 HEAD~1 >/dev/null 2>&1; then
+              PREV_TAG=$(git describe --tags --abbrev=0 HEAD~1)
+              echo "## Changes since $PREV_TAG" > release_notes.md
+              echo "" >> release_notes.md
+              git log --pretty=format:"- %s" $PREV_TAG..HEAD >> release_notes.md
+            else
+              echo "## Changes" > release_notes.md
+              echo "" >> release_notes.md
+              echo "Initial release" >> release_notes.md
+            fi
           fi
-          echo "Generated release notes:"
+          echo "Release notes to be used:"
           cat release_notes.md
 
       - name: Create GitHub Release
@@ -72,7 +93,8 @@ jobs:
           name: "Text Clock v${{ steps.version.outputs.version }}"
           body_path: release_notes.md
           files: |
-            text-clock@benica.dev.zip
+            text-clock@benica.dev-${{ steps.version.outputs.version }}.zip
+            text-clock@benica.dev-${{ steps.version.outputs.version }}.zip.sig
           draft: false
           prerelease: false
         env:

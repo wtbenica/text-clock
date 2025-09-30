@@ -12,6 +12,7 @@ package-lock.json
 
 ### Build outputs
 dist/
+docs/
 *.zip
 *.tgz
 gschemas.compiled
@@ -43,3 +44,16 @@ constants_*_test.generated.ts
 
 ### Keep ESLint config in repo
 # ESLint config moved to config/eslint.config.js; no need to force-include a root file
+
+### AUR build artifacts
+/aur/pkg/
+/aur/*.pkg.tar.*
+/aur/*.BUILDINFO
+/aur/*.MTREE
+
+# GPG private key exports and signing artifacts (do not commit)
+ci-secret.asc
+*.gpg
+*.key
+*.secret
+*.sig

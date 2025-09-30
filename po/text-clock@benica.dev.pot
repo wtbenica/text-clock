@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-20 18:05-0700\n"
+"POT-Creation-Date: 2025-09-30 12:58-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,221 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: dist/constants_dates_extension.js:21
+#: dist/services/notification_service.js:107
+msgid "Text Clock updated"
+msgstr ""
+
+#: dist/services/notification_service.js:108
+#, javascript-format
+msgid ""
+"Text Clock was updated to version %s. You can now change the clock color and "
+"divider text in Preferences."
+msgstr ""
+
+#: dist/services/notification_service.js:115
+#: dist/application/services/notification_service.js:116
+msgid "Open Preferences"
+msgstr ""
+
+#: dist/services/preference_configs.js:17
+#: dist/application/services/preference_configs.js:44
+msgid "one minute"
+msgstr ""
+
+#: dist/services/preference_configs.js:18
+#: dist/application/services/preference_configs.js:45
+msgid "Most precise time display"
+msgstr ""
+
+#: dist/services/preference_configs.js:23
+#: dist/application/services/preference_configs.js:50
+msgid "five minutes"
+msgstr ""
+
+#: dist/services/preference_configs.js:24
+#: dist/application/services/preference_configs.js:51
+msgid "Slightly fuzzy time display"
+msgstr ""
+
+#: dist/services/preference_configs.js:29
+#: dist/application/services/preference_configs.js:56
+msgid "ten minutes"
+msgstr ""
+
+#: dist/services/preference_configs.js:30
+#: dist/application/services/preference_configs.js:57
+msgid "Moderately fuzzy time display"
+msgstr ""
+
+#: dist/services/preference_configs.js:35
+#: dist/application/services/preference_configs.js:62
+msgid "fifteen minutes"
+msgstr ""
+
+#: dist/services/preference_configs.js:36
+#: dist/application/services/preference_configs.js:63
+msgid "Most fuzzy time display"
+msgstr ""
+
+#: dist/services/preference_configs.js:50
+#: dist/application/services/preference_configs.js:77
+msgid "Vertical line divider"
+msgstr ""
+
+#: dist/services/preference_configs.js:56
+#: dist/application/services/preference_configs.js:83
+msgid "Bullet point divider"
+msgstr ""
+
+#: dist/services/preference_configs.js:62
+#: dist/application/services/preference_configs.js:89
+msgid "Filled circle divider"
+msgstr ""
+
+#: dist/services/preference_configs.js:68
+#: dist/application/services/preference_configs.js:95
+msgid "Em dash divider"
+msgstr ""
+
+#: dist/services/preference_configs.js:73
+#: dist/application/services/preference_configs.js:100
+msgid "Custom"
+msgstr ""
+
+#: dist/services/preference_configs.js:74
+#: dist/application/services/preference_configs.js:101
+msgid "Use custom divider text"
+msgstr ""
+
+#: dist/services/preference_configs.js:112
+#: dist/application/services/preference_configs.js:139
+msgid "Format One"
+msgstr ""
+
+#: dist/services/preference_configs.js:115
+#: dist/application/services/preference_configs.js:142
+msgid "Standard time format"
+msgstr ""
+
+#: dist/services/preference_configs.js:121
+#: dist/application/services/preference_configs.js:148
+msgid "Format Two"
+msgstr ""
+
+#: dist/services/preference_configs.js:124
+#: dist/application/services/preference_configs.js:151
+msgid "Alternative time format"
+msgstr ""
+
+#: dist/services/preference_configs.js:136
+#: dist/presentation/preferences/pages/color_page/index.js:99
+#: dist/prefs/pages/color_page/index.js:48
+msgid "Default"
+msgstr ""
+
+#: dist/services/preference_configs.js:137
+msgid "Use system default colors"
+msgstr ""
+
+#: dist/services/preference_configs.js:142
+#: dist/presentation/preferences/pages/color_page/index.js:101
+#: dist/prefs/pages/color_page/index.js:50
+msgid "Accent Color"
+msgstr ""
+
+#: dist/services/preference_configs.js:143
+msgid "Use system accent color"
+msgstr ""
+
+#: dist/services/preference_configs.js:148
+#: dist/presentation/preferences/pages/color_page/index.js:102
+#: dist/prefs/pages/color_page/index.js:51
+msgid "Custom Colors"
+msgstr ""
+
+#: dist/services/preference_configs.js:149
+msgid "Use custom color selection"
+msgstr ""
+
+#: dist/services/preference_configs.js:163
+#: dist/application/services/preference_configs.js:192
+msgid "Duotone"
+msgstr ""
+
+#: dist/services/preference_configs.js:164
+#: dist/application/services/preference_configs.js:193
+msgid "Time lighter, date normal"
+msgstr ""
+
+#: dist/services/preference_configs.js:171
+#: dist/presentation/preferences/pages/color_page/index.js:42
+msgid "Solid"
+msgstr ""
+
+#: dist/services/preference_configs.js:172
+#: dist/application/services/preference_configs.js:168
+msgid "Time and date same color"
+msgstr ""
+
+#: dist/services/preference_configs.js:179
+#: dist/application/services/preference_configs.js:200
+msgid "Racing Stripe"
+msgstr ""
+
+#: dist/services/preference_configs.js:180
+#: dist/application/services/preference_configs.js:201
+msgid "Time/date solid, divider white"
+msgstr ""
+
+#: dist/services/preference_configs.js:187
+#: dist/application/services/preference_configs.js:208
+msgid "Racing Stripe Duotone"
+msgstr ""
+
+#: dist/services/preference_configs.js:188
+#: dist/application/services/preference_configs.js:209
+msgid "Time lighter, date normal, divider white"
+msgstr ""
+
+#: dist/services/preference_configs.js:195
+#: dist/application/services/preference_configs.js:216
+msgid "Contrast"
+msgstr ""
+
+#: dist/services/preference_configs.js:196
+#: dist/application/services/preference_configs.js:217
+msgid "Time white, date normal, divider white"
+msgstr ""
+
+#: dist/services/preference_configs.js:203
+#: dist/application/services/preference_configs.js:224
+msgid "Contrast Reverse"
+msgstr ""
+
+#: dist/services/preference_configs.js:204
+#: dist/application/services/preference_configs.js:225
+msgid "Time normal, date white, divider normal"
+msgstr ""
+
+#: dist/services/preference_configs.js:211
+msgid "Light Variant"
+msgstr ""
+
+#: dist/services/preference_configs.js:212
+#: dist/application/services/preference_configs.js:176
+msgid "All elements lighter"
+msgstr ""
+
+#: dist/services/preference_configs.js:219
+msgid "Dark Variant"
+msgstr ""
+
+#: dist/services/preference_configs.js:220
+#: dist/application/services/preference_configs.js:184
+msgid "All elements darker"
+msgstr ""
+
+#: dist/constants/dates/core.js:7 dist/infrastructure/constants/dates/core.js:7
 #, javascript-format
 msgctxt ""
 "This is how someone would say the day of the month only. As in, \"My rent is "
@@ -25,7 +239,7 @@ msgctxt ""
 msgid "the %s"
 msgstr ""
 
-#: dist/constants_dates_extension.js:26
+#: dist/constants/dates/core.js:9 dist/infrastructure/constants/dates/core.js:9
 #, javascript-format
 msgctxt ""
 "The day of the week and the date. The date will be substituted in the %s. "
@@ -33,7 +247,8 @@ msgctxt ""
 msgid "sunday the %s"
 msgstr ""
 
-#: dist/constants_dates_extension.js:27
+#: dist/constants/dates/core.js:10
+#: dist/infrastructure/constants/dates/core.js:10
 #, javascript-format
 msgctxt ""
 "The day of the week and the date. The date will be substituted in the %s. "
@@ -41,7 +256,8 @@ msgctxt ""
 msgid "monday the %s"
 msgstr ""
 
-#: dist/constants_dates_extension.js:28
+#: dist/constants/dates/core.js:11
+#: dist/infrastructure/constants/dates/core.js:11
 #, javascript-format
 msgctxt ""
 "The day of the week and the date. The date will be substituted in the %s. "
@@ -49,7 +265,8 @@ msgctxt ""
 msgid "tuesday the %s"
 msgstr ""
 
-#: dist/constants_dates_extension.js:29
+#: dist/constants/dates/core.js:12
+#: dist/infrastructure/constants/dates/core.js:12
 #, javascript-format
 msgctxt ""
 "The day of the week and the date. The date will be substituted in the %s. "
@@ -57,7 +274,8 @@ msgctxt ""
 msgid "wednesday the %s"
 msgstr ""
 
-#: dist/constants_dates_extension.js:30
+#: dist/constants/dates/core.js:13
+#: dist/infrastructure/constants/dates/core.js:13
 #, javascript-format
 msgctxt ""
 "The day of the week and the date. The date will be substituted in the %s. "
@@ -65,7 +283,8 @@ msgctxt ""
 msgid "thursday the %s"
 msgstr ""
 
-#: dist/constants_dates_extension.js:31
+#: dist/constants/dates/core.js:14
+#: dist/infrastructure/constants/dates/core.js:14
 #, javascript-format
 msgctxt ""
 "The day of the week and the date. The date will be substituted in the %s. "
@@ -73,7 +292,8 @@ msgctxt ""
 msgid "friday the %s"
 msgstr ""
 
-#: dist/constants_dates_extension.js:32
+#: dist/constants/dates/core.js:15
+#: dist/infrastructure/constants/dates/core.js:15
 #, javascript-format
 msgctxt ""
 "The day of the week and the date. The date will be substituted in the %s. "
@@ -81,991 +301,1390 @@ msgctxt ""
 msgid "saturday the %s"
 msgstr ""
 
-#: dist/constants_dates_extension.js:38
+#: dist/constants/dates/core.js:18
+#: dist/infrastructure/constants/dates/core.js:28
 msgid "first"
 msgstr ""
 
-#: dist/constants_dates_extension.js:39
+#: dist/constants/dates/core.js:19
+#: dist/infrastructure/constants/dates/core.js:29
 msgid "second"
 msgstr ""
 
-#: dist/constants_dates_extension.js:40
+#: dist/constants/dates/core.js:20
+#: dist/infrastructure/constants/dates/core.js:30
 msgid "third"
 msgstr ""
 
-#: dist/constants_dates_extension.js:41
+#: dist/constants/dates/core.js:21
+#: dist/infrastructure/constants/dates/core.js:31
 msgid "fourth"
 msgstr ""
 
-#: dist/constants_dates_extension.js:42
+#: dist/constants/dates/core.js:22
+#: dist/infrastructure/constants/dates/core.js:32
 msgid "fifth"
 msgstr ""
 
-#: dist/constants_dates_extension.js:43
+#: dist/constants/dates/core.js:23
+#: dist/infrastructure/constants/dates/core.js:33
 msgid "sixth"
 msgstr ""
 
-#: dist/constants_dates_extension.js:44
+#: dist/constants/dates/core.js:24
+#: dist/infrastructure/constants/dates/core.js:34
 msgid "seventh"
 msgstr ""
 
-#: dist/constants_dates_extension.js:45
+#: dist/constants/dates/core.js:25
+#: dist/infrastructure/constants/dates/core.js:35
 msgid "eighth"
 msgstr ""
 
-#: dist/constants_dates_extension.js:46
+#: dist/constants/dates/core.js:26
+#: dist/infrastructure/constants/dates/core.js:36
 msgid "ninth"
 msgstr ""
 
-#: dist/constants_dates_extension.js:47
+#: dist/constants/dates/core.js:27
+#: dist/infrastructure/constants/dates/core.js:37
 msgid "tenth"
 msgstr ""
 
-#: dist/constants_dates_extension.js:48
+#: dist/constants/dates/core.js:28
+#: dist/infrastructure/constants/dates/core.js:38
 msgid "eleventh"
 msgstr ""
 
-#: dist/constants_dates_extension.js:49
+#: dist/constants/dates/core.js:29
+#: dist/infrastructure/constants/dates/core.js:39
 msgid "twelfth"
 msgstr ""
 
-#: dist/constants_dates_extension.js:50
+#: dist/constants/dates/core.js:30
+#: dist/infrastructure/constants/dates/core.js:40
 msgid "thirteenth"
 msgstr ""
 
-#: dist/constants_dates_extension.js:51
+#: dist/constants/dates/core.js:31
+#: dist/infrastructure/constants/dates/core.js:41
 msgid "fourteenth"
 msgstr ""
 
-#: dist/constants_dates_extension.js:52
+#: dist/constants/dates/core.js:32
+#: dist/infrastructure/constants/dates/core.js:42
 msgid "fifteenth"
 msgstr ""
 
-#: dist/constants_dates_extension.js:53
+#: dist/constants/dates/core.js:33
+#: dist/infrastructure/constants/dates/core.js:43
 msgid "sixteenth"
 msgstr ""
 
-#: dist/constants_dates_extension.js:54
+#: dist/constants/dates/core.js:34
+#: dist/infrastructure/constants/dates/core.js:44
 msgid "seventeenth"
 msgstr ""
 
-#: dist/constants_dates_extension.js:55
+#: dist/constants/dates/core.js:35
+#: dist/infrastructure/constants/dates/core.js:45
 msgid "eighteenth"
 msgstr ""
 
-#: dist/constants_dates_extension.js:56
+#: dist/constants/dates/core.js:36
+#: dist/infrastructure/constants/dates/core.js:46
 msgid "nineteenth"
 msgstr ""
 
-#: dist/constants_dates_extension.js:57
+#: dist/constants/dates/core.js:37
+#: dist/infrastructure/constants/dates/core.js:47
 msgid "twentieth"
 msgstr ""
 
-#: dist/constants_dates_extension.js:58
+#: dist/constants/dates/core.js:38
+#: dist/infrastructure/constants/dates/core.js:48
 msgid "twenty first"
 msgstr ""
 
-#: dist/constants_dates_extension.js:59
+#: dist/constants/dates/core.js:39
+#: dist/infrastructure/constants/dates/core.js:49
 msgid "twenty second"
 msgstr ""
 
-#: dist/constants_dates_extension.js:60
+#: dist/constants/dates/core.js:40
+#: dist/infrastructure/constants/dates/core.js:50
 msgid "twenty third"
 msgstr ""
 
-#: dist/constants_dates_extension.js:61
+#: dist/constants/dates/core.js:41
+#: dist/infrastructure/constants/dates/core.js:51
 msgid "twenty fourth"
 msgstr ""
 
-#: dist/constants_dates_extension.js:62
+#: dist/constants/dates/core.js:42
+#: dist/infrastructure/constants/dates/core.js:52
 msgid "twenty fifth"
 msgstr ""
 
-#: dist/constants_dates_extension.js:63
+#: dist/constants/dates/core.js:43
+#: dist/infrastructure/constants/dates/core.js:53
 msgid "twenty sixth"
 msgstr ""
 
-#: dist/constants_dates_extension.js:64
+#: dist/constants/dates/core.js:44
+#: dist/infrastructure/constants/dates/core.js:54
 msgid "twenty seventh"
 msgstr ""
 
-#: dist/constants_dates_extension.js:65
+#: dist/constants/dates/core.js:45
+#: dist/infrastructure/constants/dates/core.js:55
 msgid "twenty eighth"
 msgstr ""
 
-#: dist/constants_dates_extension.js:66
+#: dist/constants/dates/core.js:46
+#: dist/infrastructure/constants/dates/core.js:56
 msgid "twenty ninth"
 msgstr ""
 
-#: dist/constants_dates_extension.js:67
+#: dist/constants/dates/core.js:47
+#: dist/infrastructure/constants/dates/core.js:57
 msgid "thirtieth"
 msgstr ""
 
-#: dist/constants_dates_extension.js:68
+#: dist/constants/dates/core.js:48
+#: dist/infrastructure/constants/dates/core.js:58
 msgid "thirty first"
 msgstr ""
 
-#: dist/constants_times_extension.js:22 dist/constants_times_extension.js:82
+#: dist/constants/times/core.js:7 dist/constants/times/core.js:67
+#: dist/infrastructure/constants/times/core.js:7
+#: dist/infrastructure/constants/times/core.js:67
 #, javascript-format
 msgctxt "format one"
 msgid "%s o'clock"
 msgstr ""
 
-#: dist/constants_times_extension.js:23
+#: dist/constants/times/core.js:8 dist/infrastructure/constants/times/core.js:8
 #, javascript-format
 msgctxt "format one"
 msgid "one past %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:24
+#: dist/constants/times/core.js:9 dist/infrastructure/constants/times/core.js:9
 #, javascript-format
 msgctxt "format one"
 msgid "two past %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:25
+#: dist/constants/times/core.js:10
+#: dist/infrastructure/constants/times/core.js:10
 #, javascript-format
 msgctxt "format one"
 msgid "three past %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:26
+#: dist/constants/times/core.js:11
+#: dist/infrastructure/constants/times/core.js:11
 #, javascript-format
 msgctxt "format one"
 msgid "four past %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:27
+#: dist/constants/times/core.js:12
+#: dist/infrastructure/constants/times/core.js:12
 #, javascript-format
 msgctxt "format one"
 msgid "five past %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:28
+#: dist/constants/times/core.js:13
+#: dist/infrastructure/constants/times/core.js:13
 #, javascript-format
 msgctxt "format one"
 msgid "six past %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:29
+#: dist/constants/times/core.js:14
+#: dist/infrastructure/constants/times/core.js:14
 #, javascript-format
 msgctxt "format one"
 msgid "seven past %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:30
+#: dist/constants/times/core.js:15
+#: dist/infrastructure/constants/times/core.js:15
 #, javascript-format
 msgctxt "format one"
 msgid "eight past %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:31
+#: dist/constants/times/core.js:16
+#: dist/infrastructure/constants/times/core.js:16
 #, javascript-format
 msgctxt "format one"
 msgid "nine past %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:32
+#: dist/constants/times/core.js:17
+#: dist/infrastructure/constants/times/core.js:17
 #, javascript-format
 msgctxt "format one"
 msgid "ten past %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:33
+#: dist/constants/times/core.js:18
+#: dist/infrastructure/constants/times/core.js:18
 #, javascript-format
 msgctxt "format one"
 msgid "eleven past %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:34
+#: dist/constants/times/core.js:19
+#: dist/infrastructure/constants/times/core.js:19
 #, javascript-format
 msgctxt "format one"
 msgid "twelve past %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:35
+#: dist/constants/times/core.js:20
+#: dist/infrastructure/constants/times/core.js:20
 #, javascript-format
 msgctxt "format one"
 msgid "thirteen past %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:36
+#: dist/constants/times/core.js:21
+#: dist/infrastructure/constants/times/core.js:21
 #, javascript-format
 msgctxt "format one"
 msgid "fourteen past %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:37
+#: dist/constants/times/core.js:22
+#: dist/infrastructure/constants/times/core.js:22
 #, javascript-format
 msgctxt "format one"
 msgid "quarter past %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:38
+#: dist/constants/times/core.js:23
+#: dist/infrastructure/constants/times/core.js:23
 #, javascript-format
 msgctxt "format one"
 msgid "sixteen past %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:39
+#: dist/constants/times/core.js:24
+#: dist/infrastructure/constants/times/core.js:24
 #, javascript-format
 msgctxt "format one"
 msgid "seventeen past %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:40
+#: dist/constants/times/core.js:25
+#: dist/infrastructure/constants/times/core.js:25
 #, javascript-format
 msgctxt "format one"
 msgid "eighteen past %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:41
+#: dist/constants/times/core.js:26
+#: dist/infrastructure/constants/times/core.js:26
 #, javascript-format
 msgctxt "format one"
 msgid "nineteen past %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:42
+#: dist/constants/times/core.js:27
+#: dist/infrastructure/constants/times/core.js:27
 #, javascript-format
 msgctxt "format one"
 msgid "twenty past %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:43
+#: dist/constants/times/core.js:28
+#: dist/infrastructure/constants/times/core.js:28
 #, javascript-format
 msgctxt "format one"
 msgid "twenty one past %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:44
+#: dist/constants/times/core.js:29
+#: dist/infrastructure/constants/times/core.js:29
 #, javascript-format
 msgctxt "format one"
 msgid "twenty two past %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:45
+#: dist/constants/times/core.js:30
+#: dist/infrastructure/constants/times/core.js:30
 #, javascript-format
 msgctxt "format one"
 msgid "twenty three past %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:46
+#: dist/constants/times/core.js:31
+#: dist/infrastructure/constants/times/core.js:31
 #, javascript-format
 msgctxt "format one"
 msgid "twenty four past %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:47
+#: dist/constants/times/core.js:32
+#: dist/infrastructure/constants/times/core.js:32
 #, javascript-format
 msgctxt "format one"
 msgid "twenty five past %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:48
+#: dist/constants/times/core.js:33
+#: dist/infrastructure/constants/times/core.js:33
 #, javascript-format
 msgctxt "format one"
 msgid "twenty six past %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:49
+#: dist/constants/times/core.js:34
+#: dist/infrastructure/constants/times/core.js:34
 #, javascript-format
 msgctxt "format one"
 msgid "twenty seven past %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:50
+#: dist/constants/times/core.js:35
+#: dist/infrastructure/constants/times/core.js:35
 #, javascript-format
 msgctxt "format one"
 msgid "twenty eight past %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:51
+#: dist/constants/times/core.js:36
+#: dist/infrastructure/constants/times/core.js:36
 #, javascript-format
 msgctxt "format one"
 msgid "twenty nine past %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:52
+#: dist/constants/times/core.js:37
+#: dist/infrastructure/constants/times/core.js:37
 #, javascript-format
 msgctxt "format one"
 msgid "half past %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:53
+#: dist/constants/times/core.js:38
+#: dist/infrastructure/constants/times/core.js:38
 #, javascript-format
 msgctxt "format one"
 msgid "twenty nine to %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:54
+#: dist/constants/times/core.js:39
+#: dist/infrastructure/constants/times/core.js:39
 #, javascript-format
 msgctxt "format one"
 msgid "twenty eight to %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:55
+#: dist/constants/times/core.js:40
+#: dist/infrastructure/constants/times/core.js:40
 #, javascript-format
 msgctxt "format one"
 msgid "twenty seven to %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:56
+#: dist/constants/times/core.js:41
+#: dist/infrastructure/constants/times/core.js:41
 #, javascript-format
 msgctxt "format one"
 msgid "twenty six to %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:57
+#: dist/constants/times/core.js:42
+#: dist/infrastructure/constants/times/core.js:42
 #, javascript-format
 msgctxt "format one"
 msgid "twenty five to %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:58
+#: dist/constants/times/core.js:43
+#: dist/infrastructure/constants/times/core.js:43
 #, javascript-format
 msgctxt "format one"
 msgid "twenty four to %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:59
+#: dist/constants/times/core.js:44
+#: dist/infrastructure/constants/times/core.js:44
 #, javascript-format
 msgctxt "format one"
 msgid "twenty three to %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:60
+#: dist/constants/times/core.js:45
+#: dist/infrastructure/constants/times/core.js:45
 #, javascript-format
 msgctxt "format one"
 msgid "twenty two to %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:61
+#: dist/constants/times/core.js:46
+#: dist/infrastructure/constants/times/core.js:46
 #, javascript-format
 msgctxt "format one"
 msgid "twenty one to %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:62
+#: dist/constants/times/core.js:47
+#: dist/infrastructure/constants/times/core.js:47
 #, javascript-format
 msgctxt "format one"
 msgid "twenty to %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:63
+#: dist/constants/times/core.js:48
+#: dist/infrastructure/constants/times/core.js:48
 #, javascript-format
 msgctxt "format one"
 msgid "nineteen to %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:64
+#: dist/constants/times/core.js:49
+#: dist/infrastructure/constants/times/core.js:49
 #, javascript-format
 msgctxt "format one"
 msgid "eighteen to %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:65
+#: dist/constants/times/core.js:50
+#: dist/infrastructure/constants/times/core.js:50
 #, javascript-format
 msgctxt "format one"
 msgid "seventeen to %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:66
+#: dist/constants/times/core.js:51
+#: dist/infrastructure/constants/times/core.js:51
 #, javascript-format
 msgctxt "format one"
 msgid "sixteen to %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:67
+#: dist/constants/times/core.js:52
+#: dist/infrastructure/constants/times/core.js:52
 #, javascript-format
 msgctxt "format one"
 msgid "quarter to %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:68
+#: dist/constants/times/core.js:53
+#: dist/infrastructure/constants/times/core.js:53
 #, javascript-format
 msgctxt "format one"
 msgid "fourteen to %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:69
+#: dist/constants/times/core.js:54
+#: dist/infrastructure/constants/times/core.js:54
 #, javascript-format
 msgctxt "format one"
 msgid "thirteen to %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:70
+#: dist/constants/times/core.js:55
+#: dist/infrastructure/constants/times/core.js:55
 #, javascript-format
 msgctxt "format one"
 msgid "twelve to %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:71
+#: dist/constants/times/core.js:56
+#: dist/infrastructure/constants/times/core.js:56
 #, javascript-format
 msgctxt "format one"
 msgid "eleven to %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:72
+#: dist/constants/times/core.js:57
+#: dist/infrastructure/constants/times/core.js:57
 #, javascript-format
 msgctxt "format one"
 msgid "ten to %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:73
+#: dist/constants/times/core.js:58
+#: dist/infrastructure/constants/times/core.js:58
 #, javascript-format
 msgctxt "format one"
 msgid "nine to %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:74
+#: dist/constants/times/core.js:59
+#: dist/infrastructure/constants/times/core.js:59
 #, javascript-format
 msgctxt "format one"
 msgid "eight to %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:75
+#: dist/constants/times/core.js:60
+#: dist/infrastructure/constants/times/core.js:60
 #, javascript-format
 msgctxt "format one"
 msgid "seven to %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:76
+#: dist/constants/times/core.js:61
+#: dist/infrastructure/constants/times/core.js:61
 #, javascript-format
 msgctxt "format one"
 msgid "six to %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:77
+#: dist/constants/times/core.js:62
+#: dist/infrastructure/constants/times/core.js:62
 #, javascript-format
 msgctxt "format one"
 msgid "five to %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:78
+#: dist/constants/times/core.js:63
+#: dist/infrastructure/constants/times/core.js:63
 #, javascript-format
 msgctxt "format one"
 msgid "four to %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:79
+#: dist/constants/times/core.js:64
+#: dist/infrastructure/constants/times/core.js:64
 #, javascript-format
 msgctxt "format one"
 msgid "three to %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:80
+#: dist/constants/times/core.js:65
+#: dist/infrastructure/constants/times/core.js:65
 #, javascript-format
 msgctxt "format one"
 msgid "two to %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:81
+#: dist/constants/times/core.js:66
+#: dist/infrastructure/constants/times/core.js:66
 #, javascript-format
 msgctxt "format one"
 msgid "one to %s"
 msgstr ""
 
-#: dist/constants_times_extension.js:87
+#: dist/constants/times/core.js:69
+#: dist/infrastructure/constants/times/core.js:69
 msgctxt "Should be able to replace %s in format one templates"
 msgid "midnight"
 msgstr ""
 
-#: dist/constants_times_extension.js:91
+#: dist/constants/times/core.js:70
+#: dist/infrastructure/constants/times/core.js:70
 msgctxt "Must be able to replace %s in format one templates"
 msgid "noon"
 msgstr ""
 
-#: dist/constants_times_extension.js:96 dist/constants_times_extension.js:156
+#: dist/constants/times/core.js:72 dist/constants/times/core.js:132
+#: dist/infrastructure/constants/times/core.js:72
+#: dist/infrastructure/constants/times/core.js:132
 #, javascript-format
 msgctxt "format two"
 msgid "%s o'clock"
 msgstr ""
 
-#: dist/constants_times_extension.js:97
+#: dist/constants/times/core.js:73
+#: dist/infrastructure/constants/times/core.js:73
 #, javascript-format
 msgctxt "format two"
 msgid "%s oh one"
 msgstr ""
 
-#: dist/constants_times_extension.js:98
+#: dist/constants/times/core.js:74
+#: dist/infrastructure/constants/times/core.js:74
 #, javascript-format
 msgctxt "format two"
 msgid "%s oh two"
 msgstr ""
 
-#: dist/constants_times_extension.js:99
+#: dist/constants/times/core.js:75
+#: dist/infrastructure/constants/times/core.js:75
 #, javascript-format
 msgctxt "format two"
 msgid "%s oh three"
 msgstr ""
 
-#: dist/constants_times_extension.js:100
+#: dist/constants/times/core.js:76
+#: dist/infrastructure/constants/times/core.js:76
 #, javascript-format
 msgctxt "format two"
 msgid "%s oh four"
 msgstr ""
 
-#: dist/constants_times_extension.js:101
+#: dist/constants/times/core.js:77
+#: dist/infrastructure/constants/times/core.js:77
 #, javascript-format
 msgctxt "format two"
 msgid "%s oh five"
 msgstr ""
 
-#: dist/constants_times_extension.js:102
+#: dist/constants/times/core.js:78
+#: dist/infrastructure/constants/times/core.js:78
 #, javascript-format
 msgctxt "format two"
 msgid "%s oh six"
 msgstr ""
 
-#: dist/constants_times_extension.js:103
+#: dist/constants/times/core.js:79
+#: dist/infrastructure/constants/times/core.js:79
 #, javascript-format
 msgctxt "format two"
 msgid "%s oh seven"
 msgstr ""
 
-#: dist/constants_times_extension.js:104
+#: dist/constants/times/core.js:80
+#: dist/infrastructure/constants/times/core.js:80
 #, javascript-format
 msgctxt "format two"
 msgid "%s oh eight"
 msgstr ""
 
-#: dist/constants_times_extension.js:105
+#: dist/constants/times/core.js:81
+#: dist/infrastructure/constants/times/core.js:81
 #, javascript-format
 msgctxt "format two"
 msgid "%s oh nine"
 msgstr ""
 
-#: dist/constants_times_extension.js:106
+#: dist/constants/times/core.js:82
+#: dist/infrastructure/constants/times/core.js:82
 #, javascript-format
 msgctxt "format two"
 msgid "%s ten"
 msgstr ""
 
-#: dist/constants_times_extension.js:107
+#: dist/constants/times/core.js:83
+#: dist/infrastructure/constants/times/core.js:83
 #, javascript-format
 msgctxt "format two"
 msgid "%s eleven"
 msgstr ""
 
-#: dist/constants_times_extension.js:108
+#: dist/constants/times/core.js:84
+#: dist/infrastructure/constants/times/core.js:84
 #, javascript-format
 msgctxt "format two"
 msgid "%s twelve"
 msgstr ""
 
-#: dist/constants_times_extension.js:109
+#: dist/constants/times/core.js:85
+#: dist/infrastructure/constants/times/core.js:85
 #, javascript-format
 msgctxt "format two"
 msgid "%s thirteen"
 msgstr ""
 
-#: dist/constants_times_extension.js:110
+#: dist/constants/times/core.js:86
+#: dist/infrastructure/constants/times/core.js:86
 #, javascript-format
 msgctxt "format two"
 msgid "%s fourteen"
 msgstr ""
 
-#: dist/constants_times_extension.js:111
+#: dist/constants/times/core.js:87
+#: dist/infrastructure/constants/times/core.js:87
 #, javascript-format
 msgctxt "format two"
 msgid "%s fifteen"
 msgstr ""
 
-#: dist/constants_times_extension.js:112
+#: dist/constants/times/core.js:88
+#: dist/infrastructure/constants/times/core.js:88
 #, javascript-format
 msgctxt "format two"
 msgid "%s sixteen"
 msgstr ""
 
-#: dist/constants_times_extension.js:113
+#: dist/constants/times/core.js:89
+#: dist/infrastructure/constants/times/core.js:89
 #, javascript-format
 msgctxt "format two"
 msgid "%s seventeen"
 msgstr ""
 
-#: dist/constants_times_extension.js:114
+#: dist/constants/times/core.js:90
+#: dist/infrastructure/constants/times/core.js:90
 #, javascript-format
 msgctxt "format two"
 msgid "%s eighteen"
 msgstr ""
 
-#: dist/constants_times_extension.js:115
+#: dist/constants/times/core.js:91
+#: dist/infrastructure/constants/times/core.js:91
 #, javascript-format
 msgctxt "format two"
 msgid "%s nineteen"
 msgstr ""
 
-#: dist/constants_times_extension.js:116
+#: dist/constants/times/core.js:92
+#: dist/infrastructure/constants/times/core.js:92
 #, javascript-format
 msgctxt "format two"
 msgid "%s twenty"
 msgstr ""
 
-#: dist/constants_times_extension.js:117
+#: dist/constants/times/core.js:93
+#: dist/infrastructure/constants/times/core.js:93
 #, javascript-format
 msgctxt "format two"
 msgid "%s twenty one"
 msgstr ""
 
-#: dist/constants_times_extension.js:118
+#: dist/constants/times/core.js:94
+#: dist/infrastructure/constants/times/core.js:94
 #, javascript-format
 msgctxt "format two"
 msgid "%s twenty two"
 msgstr ""
 
-#: dist/constants_times_extension.js:119
+#: dist/constants/times/core.js:95
+#: dist/infrastructure/constants/times/core.js:95
 #, javascript-format
 msgctxt "format two"
 msgid "%s twenty three"
 msgstr ""
 
-#: dist/constants_times_extension.js:120
+#: dist/constants/times/core.js:96
+#: dist/infrastructure/constants/times/core.js:96
 #, javascript-format
 msgctxt "format two"
 msgid "%s twenty four"
 msgstr ""
 
-#: dist/constants_times_extension.js:121
+#: dist/constants/times/core.js:97
+#: dist/infrastructure/constants/times/core.js:97
 #, javascript-format
 msgctxt "format two"
 msgid "%s twenty five"
 msgstr ""
 
-#: dist/constants_times_extension.js:122
+#: dist/constants/times/core.js:98
+#: dist/infrastructure/constants/times/core.js:98
 #, javascript-format
 msgctxt "format two"
 msgid "%s twenty six"
 msgstr ""
 
-#: dist/constants_times_extension.js:123
+#: dist/constants/times/core.js:99
+#: dist/infrastructure/constants/times/core.js:99
 #, javascript-format
 msgctxt "format two"
 msgid "%s twenty seven"
 msgstr ""
 
-#: dist/constants_times_extension.js:124
+#: dist/constants/times/core.js:100
+#: dist/infrastructure/constants/times/core.js:100
 #, javascript-format
 msgctxt "format two"
 msgid "%s twenty eight"
 msgstr ""
 
-#: dist/constants_times_extension.js:125
+#: dist/constants/times/core.js:101
+#: dist/infrastructure/constants/times/core.js:101
 #, javascript-format
 msgctxt "format two"
 msgid "%s twenty nine"
 msgstr ""
 
-#: dist/constants_times_extension.js:126
+#: dist/constants/times/core.js:102
+#: dist/infrastructure/constants/times/core.js:102
 #, javascript-format
 msgctxt "format two"
 msgid "%s thirty"
 msgstr ""
 
-#: dist/constants_times_extension.js:127
+#: dist/constants/times/core.js:103
+#: dist/infrastructure/constants/times/core.js:103
 #, javascript-format
 msgctxt "format two"
 msgid "%s thirty one"
 msgstr ""
 
-#: dist/constants_times_extension.js:128
+#: dist/constants/times/core.js:104
+#: dist/infrastructure/constants/times/core.js:104
 #, javascript-format
 msgctxt "format two"
 msgid "%s thirty two"
 msgstr ""
 
-#: dist/constants_times_extension.js:129
+#: dist/constants/times/core.js:105
+#: dist/infrastructure/constants/times/core.js:105
 #, javascript-format
 msgctxt "format two"
 msgid "%s thirty three"
 msgstr ""
 
-#: dist/constants_times_extension.js:130
+#: dist/constants/times/core.js:106
+#: dist/infrastructure/constants/times/core.js:106
 #, javascript-format
 msgctxt "format two"
 msgid "%s thirty four"
 msgstr ""
 
-#: dist/constants_times_extension.js:131
+#: dist/constants/times/core.js:107
+#: dist/infrastructure/constants/times/core.js:107
 #, javascript-format
 msgctxt "format two"
 msgid "%s thirty five"
 msgstr ""
 
-#: dist/constants_times_extension.js:132
+#: dist/constants/times/core.js:108
+#: dist/infrastructure/constants/times/core.js:108
 #, javascript-format
 msgctxt "format two"
 msgid "%s thirty six"
 msgstr ""
 
-#: dist/constants_times_extension.js:133
+#: dist/constants/times/core.js:109
+#: dist/infrastructure/constants/times/core.js:109
 #, javascript-format
 msgctxt "format two"
 msgid "%s thirty seven"
 msgstr ""
 
-#: dist/constants_times_extension.js:134
+#: dist/constants/times/core.js:110
+#: dist/infrastructure/constants/times/core.js:110
 #, javascript-format
 msgctxt "format two"
 msgid "%s thirty eight"
 msgstr ""
 
-#: dist/constants_times_extension.js:135
+#: dist/constants/times/core.js:111
+#: dist/infrastructure/constants/times/core.js:111
 #, javascript-format
 msgctxt "format two"
 msgid "%s thirty nine"
 msgstr ""
 
-#: dist/constants_times_extension.js:136
+#: dist/constants/times/core.js:112
+#: dist/infrastructure/constants/times/core.js:112
 #, javascript-format
 msgctxt "format two"
 msgid "%s forty"
 msgstr ""
 
-#: dist/constants_times_extension.js:137
+#: dist/constants/times/core.js:113
+#: dist/infrastructure/constants/times/core.js:113
 #, javascript-format
 msgctxt "format two"
 msgid "%s forty one"
 msgstr ""
 
-#: dist/constants_times_extension.js:138
+#: dist/constants/times/core.js:114
+#: dist/infrastructure/constants/times/core.js:114
 #, javascript-format
 msgctxt "format two"
 msgid "%s forty two"
 msgstr ""
 
-#: dist/constants_times_extension.js:139
+#: dist/constants/times/core.js:115
+#: dist/infrastructure/constants/times/core.js:115
 #, javascript-format
 msgctxt "format two"
 msgid "%s forty three"
 msgstr ""
 
-#: dist/constants_times_extension.js:140
+#: dist/constants/times/core.js:116
+#: dist/infrastructure/constants/times/core.js:116
 #, javascript-format
 msgctxt "format two"
 msgid "%s forty four"
 msgstr ""
 
-#: dist/constants_times_extension.js:141
+#: dist/constants/times/core.js:117
+#: dist/infrastructure/constants/times/core.js:117
 #, javascript-format
 msgctxt "format two"
 msgid "%s forty five"
 msgstr ""
 
-#: dist/constants_times_extension.js:142
+#: dist/constants/times/core.js:118
+#: dist/infrastructure/constants/times/core.js:118
 #, javascript-format
 msgctxt "format two"
 msgid "%s forty six"
 msgstr ""
 
-#: dist/constants_times_extension.js:143
+#: dist/constants/times/core.js:119
+#: dist/infrastructure/constants/times/core.js:119
 #, javascript-format
 msgctxt "format two"
 msgid "%s forty seven"
 msgstr ""
 
-#: dist/constants_times_extension.js:144
+#: dist/constants/times/core.js:120
+#: dist/infrastructure/constants/times/core.js:120
 #, javascript-format
 msgctxt "format two"
 msgid "%s forty eight"
 msgstr ""
 
-#: dist/constants_times_extension.js:145
+#: dist/constants/times/core.js:121
+#: dist/infrastructure/constants/times/core.js:121
 #, javascript-format
 msgctxt "format two"
 msgid "%s forty nine"
 msgstr ""
 
-#: dist/constants_times_extension.js:146
+#: dist/constants/times/core.js:122
+#: dist/infrastructure/constants/times/core.js:122
 #, javascript-format
 msgctxt "format two"
 msgid "%s fifty"
 msgstr ""
 
-#: dist/constants_times_extension.js:147
+#: dist/constants/times/core.js:123
+#: dist/infrastructure/constants/times/core.js:123
 #, javascript-format
 msgctxt "format two"
 msgid "%s fifty one"
 msgstr ""
 
-#: dist/constants_times_extension.js:148
+#: dist/constants/times/core.js:124
+#: dist/infrastructure/constants/times/core.js:124
 #, javascript-format
 msgctxt "format two"
 msgid "%s fifty two"
 msgstr ""
 
-#: dist/constants_times_extension.js:149
+#: dist/constants/times/core.js:125
+#: dist/infrastructure/constants/times/core.js:125
 #, javascript-format
 msgctxt "format two"
 msgid "%s fifty three"
 msgstr ""
 
-#: dist/constants_times_extension.js:150
+#: dist/constants/times/core.js:126
+#: dist/infrastructure/constants/times/core.js:126
 #, javascript-format
 msgctxt "format two"
 msgid "%s fifty four"
 msgstr ""
 
-#: dist/constants_times_extension.js:151
+#: dist/constants/times/core.js:127
+#: dist/infrastructure/constants/times/core.js:127
 #, javascript-format
 msgctxt "format two"
 msgid "%s fifty five"
 msgstr ""
 
-#: dist/constants_times_extension.js:152
+#: dist/constants/times/core.js:128
+#: dist/infrastructure/constants/times/core.js:128
 #, javascript-format
 msgctxt "format two"
 msgid "%s fifty six"
 msgstr ""
 
-#: dist/constants_times_extension.js:153
+#: dist/constants/times/core.js:129
+#: dist/infrastructure/constants/times/core.js:129
 #, javascript-format
 msgctxt "format two"
 msgid "%s fifty seven"
 msgstr ""
 
-#: dist/constants_times_extension.js:154
+#: dist/constants/times/core.js:130
+#: dist/infrastructure/constants/times/core.js:130
 #, javascript-format
 msgctxt "format two"
 msgid "%s fifty eight"
 msgstr ""
 
-#: dist/constants_times_extension.js:155
+#: dist/constants/times/core.js:131
+#: dist/infrastructure/constants/times/core.js:131
 #, javascript-format
 msgctxt "format two"
 msgid "%s fifty nine"
 msgstr ""
 
-#: dist/constants_times_extension.js:161 dist/constants_times_extension.js:165
+#: dist/constants/times/core.js:134 dist/constants/times/core.js:135
+#: dist/infrastructure/constants/times/core.js:134
+#: dist/infrastructure/constants/times/core.js:135
 msgctxt "Must be able to replace %s in format two templates"
 msgid "twelve"
 msgstr ""
 
-#: dist/constants_times_extension.js:170
+#: dist/constants/times/core.js:137
+#: dist/infrastructure/constants/times/core.js:137
 msgctxt "00:00 / 12:00 AM"
 msgid "midnight"
 msgstr ""
 
-#: dist/constants_times_extension.js:171
+#: dist/constants/times/core.js:138
+#: dist/infrastructure/constants/times/core.js:138
 msgctxt "01:00 / 01:00 AM"
 msgid "one"
 msgstr ""
 
-#: dist/constants_times_extension.js:172
+#: dist/constants/times/core.js:139
+#: dist/infrastructure/constants/times/core.js:139
 msgctxt "02:00 / 02:00 AM"
 msgid "two"
 msgstr ""
 
-#: dist/constants_times_extension.js:173
+#: dist/constants/times/core.js:140
+#: dist/infrastructure/constants/times/core.js:140
 msgctxt "03:00 / 03:00 AM"
 msgid "three"
 msgstr ""
 
-#: dist/constants_times_extension.js:174
+#: dist/constants/times/core.js:141
+#: dist/infrastructure/constants/times/core.js:141
 msgctxt "04:00 / 04:00 AM"
 msgid "four"
 msgstr ""
 
-#: dist/constants_times_extension.js:175
+#: dist/constants/times/core.js:142
+#: dist/infrastructure/constants/times/core.js:142
 msgctxt "05:00 / 05:00 AM"
 msgid "five"
 msgstr ""
 
-#: dist/constants_times_extension.js:176
+#: dist/constants/times/core.js:143
+#: dist/infrastructure/constants/times/core.js:143
 msgctxt "06:00 / 06:00 AM"
 msgid "six"
 msgstr ""
 
-#: dist/constants_times_extension.js:177
+#: dist/constants/times/core.js:144
+#: dist/infrastructure/constants/times/core.js:144
 msgctxt "07:00 / 07:00 AM"
 msgid "seven"
 msgstr ""
 
-#: dist/constants_times_extension.js:178
+#: dist/constants/times/core.js:145
+#: dist/infrastructure/constants/times/core.js:145
 msgctxt "08:00 / 08:00 AM"
 msgid "eight"
 msgstr ""
 
-#: dist/constants_times_extension.js:179
+#: dist/constants/times/core.js:146
+#: dist/infrastructure/constants/times/core.js:146
 msgctxt "09:00 / 09:00 AM"
 msgid "nine"
 msgstr ""
 
-#: dist/constants_times_extension.js:180
+#: dist/constants/times/core.js:147
+#: dist/infrastructure/constants/times/core.js:147
 msgctxt "10:00 / 10:00 AM"
 msgid "ten"
 msgstr ""
 
-#: dist/constants_times_extension.js:181
+#: dist/constants/times/core.js:148
+#: dist/infrastructure/constants/times/core.js:148
 msgctxt "11:00 / 11:00 AM"
 msgid "eleven"
 msgstr ""
 
-#: dist/constants_times_extension.js:182
+#: dist/constants/times/core.js:149
+#: dist/infrastructure/constants/times/core.js:149
 msgctxt "12:00 / 12:00 PM"
 msgid "noon"
 msgstr ""
 
-#: dist/constants_times_extension.js:183
+#: dist/constants/times/core.js:150
+#: dist/infrastructure/constants/times/core.js:150
 msgctxt "13:00 / 01:00 PM"
 msgid "one"
 msgstr ""
 
-#: dist/constants_times_extension.js:184
+#: dist/constants/times/core.js:151
+#: dist/infrastructure/constants/times/core.js:151
 msgctxt "14:00 / 02:00 PM"
 msgid "two"
 msgstr ""
 
-#: dist/constants_times_extension.js:185
+#: dist/constants/times/core.js:152
+#: dist/infrastructure/constants/times/core.js:152
 msgctxt "15:00 / 03:00 PM"
 msgid "three"
 msgstr ""
 
-#: dist/constants_times_extension.js:186
+#: dist/constants/times/core.js:153
+#: dist/infrastructure/constants/times/core.js:153
 msgctxt "16:00 / 04:00 PM"
 msgid "four"
 msgstr ""
 
-#: dist/constants_times_extension.js:187
+#: dist/constants/times/core.js:154
+#: dist/infrastructure/constants/times/core.js:154
 msgctxt "17:00 / 05:00 PM"
 msgid "five"
 msgstr ""
 
-#: dist/constants_times_extension.js:188
+#: dist/constants/times/core.js:155
+#: dist/infrastructure/constants/times/core.js:155
 msgctxt "18:00 / 06:00 PM"
 msgid "six"
 msgstr ""
 
-#: dist/constants_times_extension.js:189
+#: dist/constants/times/core.js:156
+#: dist/infrastructure/constants/times/core.js:156
 msgctxt "19:00 / 07:00 PM"
 msgid "seven"
 msgstr ""
 
-#: dist/constants_times_extension.js:190
+#: dist/constants/times/core.js:157
+#: dist/infrastructure/constants/times/core.js:157
 msgctxt "20:00 / 08:00 PM"
 msgid "eight"
 msgstr ""
 
-#: dist/constants_times_extension.js:191
+#: dist/constants/times/core.js:158
+#: dist/infrastructure/constants/times/core.js:158
 msgctxt "21:00 / 09:00 PM"
 msgid "nine"
 msgstr ""
 
-#: dist/constants_times_extension.js:192
+#: dist/constants/times/core.js:159
+#: dist/infrastructure/constants/times/core.js:159
 msgctxt "22:00 / 10:00 PM"
 msgid "ten"
 msgstr ""
 
-#: dist/constants_times_extension.js:193
+#: dist/constants/times/core.js:160
+#: dist/infrastructure/constants/times/core.js:160
 msgctxt "23:00 / 11:00 PM"
 msgid "eleven"
 msgstr ""
 
-#: dist/constants_times_extension.js:198
+#: dist/constants/times/core.js:162
+#: dist/infrastructure/constants/times/core.js:162
 msgctxt "exactly midnight"
 msgid "midnight"
 msgstr ""
 
-#: dist/constants_times_extension.js:202
+#: dist/constants/times/core.js:163
+#: dist/infrastructure/constants/times/core.js:163
 msgctxt "exactly noon"
 msgid "noon"
+msgstr ""
+
+#: dist/presentation/preferences/helpers.js:23 dist/prefs/helpers.js:20
+msgid "Error binding settings for"
+msgstr ""
+
+#: dist/presentation/preferences/pages/color_page/color_controls.js:20
+#: dist/application/services/preference_configs.js:167
+#: dist/prefs/pages/color_page/color_controls.js:17
+msgid "Accent"
+msgstr ""
+
+#: dist/presentation/preferences/pages/color_page/color_controls.js:171
+#: dist/prefs/pages/color_page/color_controls.js:168
+msgid "Time Color"
+msgstr ""
+
+#: dist/presentation/preferences/pages/color_page/color_controls.js:174
+#: dist/prefs/pages/color_page/color_controls.js:171
+msgid "Date Color"
+msgstr ""
+
+#: dist/presentation/preferences/pages/color_page/color_controls.js:177
+#: dist/prefs/pages/color_page/color_controls.js:174
+msgid "Divider Color"
+msgstr ""
+
+#: dist/presentation/preferences/pages/color_page/index.js:50
+msgid "Contrasting"
+msgstr ""
+
+#: dist/presentation/preferences/pages/color_page/index.js:64
+msgid "Accent Style"
+msgstr ""
+
+#: dist/presentation/preferences/pages/color_page/index.js:65
+msgid "Choose accent color variation"
+msgstr ""
+
+#: dist/presentation/preferences/pages/color_page/index.js:112
+#: dist/prefs/pages/color_page/index.js:61
+msgid "Color mode"
+msgstr ""
+
+#: dist/presentation/preferences/pages/color_page/index.js:113
+#: dist/prefs/pages/color_page/index.js:62
+msgid "Choose which color source to use"
+msgstr ""
+
+#: dist/presentation/preferences/pages/color_page/index.js:208
+#: dist/prefs/pages/color_page/index.js:150
+msgid "Colors"
+msgstr ""
+
+#: dist/presentation/preferences/pages/color_page/index.js:210
+#: dist/prefs/pages/color_page/index.js:152
+msgid "Clock Colors"
+msgstr ""
+
+#: dist/presentation/preferences/pages/color_page/index.js:211
+#: dist/prefs/pages/color_page/index.js:153
+msgid "Customize the colors of the clock and date text"
+msgstr ""
+
+#: dist/presentation/preferences/pages/general_page/index.js:23
+#: dist/prefs/pages/general_page/index.js:18
+msgid "General"
+msgstr ""
+
+#: dist/presentation/preferences/pages/general_page/index.js:24
+#: dist/prefs/pages/general_page/index.js:19
+msgid "Clock Settings"
+msgstr ""
+
+#: dist/presentation/preferences/pages/general_page/index.js:24
+#: dist/prefs/pages/general_page/index.js:19
+msgid "Customize the appearance and behavior of the clock"
+msgstr ""
+
+#: dist/presentation/preferences/pages/general_page/index.js:43
+#: dist/presentation/preferences/pages/general_page/index.js:66
+#: dist/prefs/pages/general_page/index.js:22
+msgid "Show Date"
+msgstr ""
+
+#: dist/presentation/preferences/pages/general_page/index.js:44
+#: dist/presentation/preferences/pages/general_page/index.js:67
+#: dist/prefs/pages/general_page/index.js:23
+msgid "Show the date in the clock"
+msgstr ""
+
+#: dist/presentation/preferences/pages/general_page/index.js:74
+#: dist/presentation/preferences/pages/general_page/index.js:94
+#: dist/prefs/pages/general_page/index.js:27
+msgid "Show Weekday"
+msgstr ""
+
+#: dist/presentation/preferences/pages/general_page/index.js:75
+#: dist/presentation/preferences/pages/general_page/index.js:95
+#: dist/prefs/pages/general_page/index.js:28
+msgid "Show the day of the week in the clock"
+msgstr ""
+
+#: dist/presentation/preferences/pages/general_page/index.js:100
+#: dist/prefs/pages/general_page/index.js:32
+msgid "Time Format"
+msgstr ""
+
+#: dist/presentation/preferences/pages/general_page/index.js:101
+#: dist/prefs/pages/general_page/index.js:33
+msgid "Choose the time display format"
+msgstr ""
+
+#: dist/presentation/preferences/pages/general_page/index.js:105
+#: dist/prefs/pages/general_page/index.js:37
+msgid "Fuzziness"
+msgstr ""
+
+#: dist/presentation/preferences/pages/general_page/index.js:106
+#: dist/prefs/pages/general_page/index.js:38
+msgid "How precise the time displayed should be"
+msgstr ""
+
+#: dist/presentation/preferences/pages/general_page/index.js:110
+#: dist/prefs/pages/general_page/index.js:42
+msgid "Divider Preset"
+msgstr ""
+
+#: dist/presentation/preferences/pages/general_page/index.js:111
+#: dist/prefs/pages/general_page/index.js:43
+msgid "Choose a preset divider or select custom"
+msgstr ""
+
+#: dist/presentation/preferences/pages/general_page/index.js:113
+#: dist/prefs/pages/general_page/index.js:45
+msgid "Custom Divider Text"
+msgstr ""
+
+#: dist/presentation/preferences/components/preference_ui_factory.js:138
+#: dist/prefs/ui/preference_ui_factory.js:138
+msgid "Custom Text"
+msgstr ""
+
+#: dist/infrastructure/constants/release_messages.js:12
+msgid "Complete color customization with accent-based and custom themes."
+msgstr ""
+
+#: dist/infrastructure/constants/release_messages.js:14
+msgid "Enhanced preferences interface"
+msgstr ""
+
+#: dist/infrastructure/constants/release_messages.js:15
+msgid "Divider customization options"
+msgstr ""
+
+#: dist/infrastructure/constants/release_messages.js:16
+msgid "Improved translations"
+msgstr ""
+
+#: dist/infrastructure/constants/release_messages.js:41
+msgid "Check Preferences for new features."
+msgstr ""
+
+#: dist/infrastructure/constants/release_messages.js:50
+#, javascript-format
+msgid "New: %s Additional improvements: %s"
+msgstr ""
+
+#: dist/infrastructure/constants/release_messages.js:68
+#, javascript-format
+msgid "Text Clock updated to %s"
+msgstr ""
+
+#: dist/infrastructure/constants/dates/core.js:19
+msgctxt "Short standalone weekday name"
+msgid "sunday"
+msgstr ""
+
+#: dist/infrastructure/constants/dates/core.js:20
+msgctxt "Short standalone weekday name"
+msgid "monday"
+msgstr ""
+
+#: dist/infrastructure/constants/dates/core.js:21
+msgctxt "Short standalone weekday name"
+msgid "tuesday"
+msgstr ""
+
+#: dist/infrastructure/constants/dates/core.js:22
+msgctxt "Short standalone weekday name"
+msgid "wednesday"
+msgstr ""
+
+#: dist/infrastructure/constants/dates/core.js:23
+msgctxt "Short standalone weekday name"
+msgid "thursday"
+msgstr ""
+
+#: dist/infrastructure/constants/dates/core.js:24
+msgctxt "Short standalone weekday name"
+msgid "friday"
+msgstr ""
+
+#: dist/infrastructure/constants/dates/core.js:25
+msgctxt "Short standalone weekday name"
+msgid "saturday"
+msgstr ""
+
+#: dist/prefs.js:50
+msgid "Text Clock Prefs"
+msgstr ""
+
+#: dist/application/services/preference_configs.js:175
+msgid "Accent Light"
+msgstr ""
+
+#: dist/application/services/preference_configs.js:183
+msgid "Accent Dark"
 msgstr ""

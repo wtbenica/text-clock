@@ -1,0 +1,66 @@
+# SPDX-FileCopyrightText: 2024-2025 Wesley Benica <wesley@benica.dev>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# Internationalization helpers for text-clock
+# This file provides convenient targets for POT/PO maintenance and compiling
+# translations into runtime .mo files.
+
+.PHONY: i18n i18n-pot i18n-update i18n-report i18n-compile
+
+# Shortcut / summary target
+i18n: i18n-report
+	@echo "I18n status updated."
+
+# Ensure POT is generated (alias)
+i18n-pot: po/text-clock@benica.dev.pot
+	@echo "POT file is up to date."
+
+# Merge the updated POT into every PO file (msgmerge --update)
+i18n-update: i18n-pot
+	@echo "Updating translations..."
+	@command -v msgmerge >/dev/null 2>&1 || { echo "ERROR: msgmerge is required (gettext package)" >&2; exit 1; }
+	@for f in po/*.po; do \
+		if [ ! -f "$$f" ]; then continue; fi; \
+		msgmerge -U "$$f" po/text-clock@benica.dev.pot >/dev/null 2>&1 || { echo "ERROR: msgmerge failed for $$f" >&2; exit 1; }; \
+	done
+	@echo "Translations updated successfully."
+
+# Report translation status for each PO: total, fuzzy, untranslated
+i18n-report:
+	@echo "Translation status report:"
+	@if [ ! -d "po" ] || [ -z "$$(ls -A po 2>/dev/null)" ]; then \
+		echo "  No PO files found in 'po/'. Run 'make i18n-update' to create/update PO files from POT."; \
+		exit 0; \
+	fi
+	@for f in po/*.po; do \
+		if [ ! -f "$$f" ]; then continue; fi; \
+		lang=$$(basename "$$f" .po); \
+		command -v msgattrib >/dev/null 2>&1 || { echo "ERROR: msgattrib is required for i18n-report"; exit 1; }; \
+		untranslated=$$(msgattrib --no-obsolete --untranslated "$$f" 2>/dev/null | grep -c '^msgid' || true); \
+		fuzzy=$$(grep -c '^#, fuzzy' "$$f" || true); \
+		total=$$(grep -c '^msgid "' "$$f" || true); \
+		if [ "$$total" -gt 0 ]; then total=$$((total - 1)); fi; \
+		translated=$$(( total - untranslated )); \
+		printf "  %s: total=%s translated=%s untranslated=%s fuzzy=%s\n" "$$lang" "$$total" "$$translated" "$$untranslated" "$$fuzzy"; \
+		if [ "$$untranslated" -gt 0 ]; then \
+			echo "    Hint: edit po/$$lang.po to add translations. After editing, run: make i18n-compile"; \
+		fi; \
+		if [ "$$fuzzy" -gt 0 ]; then \
+			echo "    Note: $$fuzzy fuzzy translations present in po/$$lang.po. Review and remove 'fuzzy' flag if translation is correct."; \
+		fi; \
+	done
+
+# Compile all po/*.po into locale/<lang>/LC_MESSAGES/<NAME>@<DOMAIN>.mo
+i18n-compile:
+	@echo "Compiling translation files..."
+	@command -v msgfmt >/dev/null 2>&1 || { echo "ERROR: msgfmt is required (gettext package)" >&2; exit 1; }
+	@mkdir -p $(LOCALE_DIR) >/dev/null 2>&1 || { echo "ERROR: Creating locale directory failed" >&2; exit 1; }
+	@for f in po/*.po; do \
+		if [ ! -f "$$f" ]; then continue; fi; \
+		lang=$$(basename "$$f" .po); \
+		outdir="$(LOCALE_DIR)/$$lang/LC_MESSAGES"; \
+		mkdir -p "$$outdir" >/dev/null 2>&1 || { echo "ERROR: Creating $$outdir failed" >&2; exit 1; }; \
+		msgfmt "$$f" -o "$$outdir/$(NAME)@$(DOMAIN).mo" >/dev/null 2>&1 || { echo "ERROR: msgfmt failed for $$f" >&2; exit 1; }; \
+	done
+	@echo "Translation files compiled successfully."
