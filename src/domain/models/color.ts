@@ -3,88 +3,83 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { normalizeColor } from "../../infrastructure/utils/color/color_utils.js";
+
 /**
- * Represents a color with validation, normalization, and utility methods.
+ * Represents a color with validation and utility methods.
  *
- * The Color class provides a robust way to handle colors in the text-clock extension,
- * supporting various input formats and providing utility methods for color manipulation.
- * All colors are normalized to consistent formats to ensure reliable operations.
+ * Supports hex (#RGB, #RRGGBB) and RGB (rgb(r,g,b)) color formats.
+ * All colors are normalized to uppercase hex format for consistency.
  *
  * @example
  * ```typescript
  * const blue = new Color("#3584E4");
+ * const fromRgb = new Color("rgb(53, 132, 228)");
  * const lighter = blue.lighten(0.3);
  * const darker = blue.darken(0.2);
  * console.log(blue.toString()); // "#3584E4"
  * ```
  */
 export class Color {
-  /** The normalized color string representation */
-  private readonly normalized: string;
+  /** The normalized hex color string (always uppercase #RRGGBB format) */
+  private readonly hex: string;
 
   /**
    * Creates a new Color instance from a color string.
    *
-   * @param color - The color string to parse (hex, rgb, rgba formats supported)
-   * @throws {Error} When the color format is invalid or unsupported
+   * @param color - The color string (hex #RGB/#RRGGBB or rgb(r,g,b) format)
+   * @throws {Error} When the color format is invalid
    */
   constructor(color: string) {
-    this.normalized = Color.validateAndNormalize(color);
+    this.hex = Color.validateAndNormalize(color);
   }
 
   /**
-   * Validates and normalizes a color string to a consistent format.
+   * Validates and normalizes a color string.
    *
-   * This method accepts hex (#RRGGBB, #RGB) and rgb/rgba functional notation,
-   * converting them to normalized formats. CSS variables and theme properties
-   * are not accepted as they prevent numeric color operations.
+   * Accepts hex (#RGB, #RRGGBB) and RGB (rgb(r,g,b)) formats, normalizing to uppercase #RRGGBB.
+   * Uses the normalizeColor utility for format conversion, then validates and uppercases the result.
    *
    * @param color - The color string to validate and normalize
-   * @returns The normalized color string (hex colors are uppercase)
-   * @throws {Error} When the color format is invalid, unsupported, or contains invalid RGB values
+   * @returns The normalized hex color string (uppercase #RRGGBB)
+   * @throws {Error} When the color format is invalid
    *
    * @example
    * ```typescript
-   * Color.validateAndNormalize("#abc");     // "#AABBCC"
-   * Color.validateAndNormalize("#123456");  // "#123456"
-   * Color.validateAndNormalize("rgb(255, 0, 0)"); // "rgb(255, 0, 0)"
+   * Color.validateAndNormalize("#abc");           // "#AABBCC"
+   * Color.validateAndNormalize("#123456");        // "#123456"
+   * Color.validateAndNormalize("rgb(255,0,0)");   // "#FF0000"
    * ```
    */
   static validateAndNormalize(color: string): string {
-    // Only accept concrete color formats (hex or rgb/rgba).
+    // Check if the input is recognizable as a color format
+    const isValidFormat =
+      color &&
+      (/^#?[0-9a-fA-F]{3,6}$/.test(color.trim()) ||
+        /^rgb\s*\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)$/i.test(color.trim()));
 
-    // Validate hex color (#RRGGBB or #RGB)
-    const hexMatch = color.match(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/);
-    if (hexMatch) {
-      const hex = hexMatch[1];
-      return hex.length === 3
-        ? `#${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`.toUpperCase()
-        : `#${hex}`.toUpperCase();
+    if (!isValidFormat) {
+      throw new Error(`Invalid color format: ${color}`);
     }
 
-    // Validate rgb(...) and rgba(...) colors
-    const rgbMatch = color.match(
-      /^rgba?\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})(?:,\s*[\d.]+)?\)$/,
-    );
-    if (rgbMatch) {
-      const r = Number(rgbMatch[1]);
-      const g = Number(rgbMatch[2]);
-      const b = Number(rgbMatch[3]);
-      if ([r, g, b].every((v) => v >= 0 && v <= 255)) {
-        return color; // Return as-is for rgba
-      }
+    const normalized = normalizeColor(color);
+
+    // Convert to uppercase and expand 3-digit hex if needed
+    const hexMatch = normalized.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+    if (!hexMatch) {
+      throw new Error(`Invalid color format: ${color}`);
     }
 
-    // Do not accept CSS variables or theme properties here. They are not concrete
-    // color values and prevent numeric operations like lighten/darken.
-
-    throw new Error(`Invalid color format: ${color}`);
+    const hex = hexMatch[1];
+    return hex.length === 3
+      ? `#${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`.toUpperCase()
+      : `#${hex}`.toUpperCase();
   }
 
   /**
-   * Returns the normalized color string representation.
+   * Returns the normalized hex color string.
    *
-   * @returns The color as a normalized string (hex format is uppercase)
+   * @returns The color as an uppercase hex string (#RRGGBB format)
    *
    * @example
    * ```typescript
@@ -93,14 +88,13 @@ export class Color {
    * ```
    */
   toString(): string {
-    return this.normalized;
+    return this.hex;
   }
 
   /**
    * Creates a lighter version of the color by blending with white.
    *
-   * For hex colors, this performs mathematical RGB blending. For other formats,
-   * this uses CSS color-mix() expressions where supported.
+   * Uses mathematical RGB blending: newValue = original + (255 - original) * amount
    *
    * @param amount - The lightening amount (0-1, where 0 = no change, 1 = white). Defaults to 0.3
    * @returns A new Color instance representing the lighter color
@@ -113,32 +107,25 @@ export class Color {
    * ```
    */
   lighten(amount = 0.3): Color {
-    const s = this.normalized;
-    // If hex, compute numeric blend
-    if (s.startsWith("#")) {
-      const r = parseInt(s.slice(1, 3), 16);
-      const g = parseInt(s.slice(3, 5), 16);
-      const b = parseInt(s.slice(5, 7), 16);
-      const nr = Math.round(r + (255 - r) * amount);
-      const ng = Math.round(g + (255 - g) * amount);
-      const nb = Math.round(b + (255 - b) * amount);
-      const hex = `#${nr.toString(16).padStart(2, "0")}${ng
-        .toString(16)
-        .padStart(2, "0")}${nb.toString(16).padStart(2, "0")}`.toUpperCase();
-      return new Color(hex);
-    }
+    const r = parseInt(this.hex.slice(1, 3), 16);
+    const g = parseInt(this.hex.slice(3, 5), 16);
+    const b = parseInt(this.hex.slice(5, 7), 16);
 
-    // For CSS variables or theme properties, return a color-mix CSS expression
-    const pct = Math.round(amount * 100);
-    const keep = 100 - pct;
-    return new Color(`color-mix(in srgb, ${s} ${keep}%, white ${pct}%)`);
+    const nr = Math.round(r + (255 - r) * amount);
+    const ng = Math.round(g + (255 - g) * amount);
+    const nb = Math.round(b + (255 - b) * amount);
+
+    const hex = `#${nr.toString(16).padStart(2, "0")}${ng
+      .toString(16)
+      .padStart(2, "0")}${nb.toString(16).padStart(2, "0")}`.toUpperCase();
+
+    return new Color(hex);
   }
 
   /**
-   * Creates a darker version of the color by blending with black.
+   * Creates a darker version of the color by reducing each RGB channel.
    *
-   * For hex colors, this performs mathematical RGB blending by reducing each
-   * channel proportionally. For other formats, this uses CSS color-mix() expressions.
+   * Uses mathematical RGB blending: newValue = original * (1 - amount)
    *
    * @param amount - The darkening amount (0-1, where 0 = no change, 1 = black). Defaults to 0.2
    * @returns A new Color instance representing the darker color
@@ -151,22 +138,18 @@ export class Color {
    * ```
    */
   darken(amount = 0.2): Color {
-    const s = this.normalized;
-    if (s.startsWith("#")) {
-      const r = parseInt(s.slice(1, 3), 16);
-      const g = parseInt(s.slice(3, 5), 16);
-      const b = parseInt(s.slice(5, 7), 16);
-      const nr = Math.round(r * (1 - amount));
-      const ng = Math.round(g * (1 - amount));
-      const nb = Math.round(b * (1 - amount));
-      const hex = `#${nr.toString(16).padStart(2, "0")}${ng
-        .toString(16)
-        .padStart(2, "0")}${nb.toString(16).padStart(2, "0")}`.toUpperCase();
-      return new Color(hex);
-    }
+    const r = parseInt(this.hex.slice(1, 3), 16);
+    const g = parseInt(this.hex.slice(3, 5), 16);
+    const b = parseInt(this.hex.slice(5, 7), 16);
 
-    const pct = Math.round(amount * 100);
-    const keep = 100 - pct;
-    return new Color(`color-mix(in srgb, ${s} ${keep}%, black ${pct}%)`);
+    const nr = Math.round(r * (1 - amount));
+    const ng = Math.round(g * (1 - amount));
+    const nb = Math.round(b * (1 - amount));
+
+    const hex = `#${nr.toString(16).padStart(2, "0")}${ng
+      .toString(16)
+      .padStart(2, "0")}${nb.toString(16).padStart(2, "0")}`.toUpperCase();
+
+    return new Color(hex);
   }
 }
