@@ -143,7 +143,7 @@ promote-pr:
 	fi; \
 	gh pr ready "$$pr_number" >/dev/null 2>&1 || { echo "ERROR: Failed to promote PR" >&2; exit 1; }; \
 	gh pr view "$$pr_number" --web >/dev/null 2>&1; \
-	@echo "PR #$$pr_number promoted to ready for review."
+	echo "PR #$$pr_number promoted to ready for review."
 
 # pr-wait-and-merge   Wait for status checks on current branch's PR, then merge it
 pr-wait-and-merge: wait-for-ci merge-pr
