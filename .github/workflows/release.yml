@@ -66,8 +66,14 @@ jobs:
         if: ${{ env.GPG_PRIVATE_KEY != '' }}
         run: |
           set -euo pipefail
-          ZIP=text-clock@benica.dev.zip
+          # Locate the versioned ZIP produced by `make pack` (e.g. text-clock@benica.dev-1.1.0.zip)
+          ZIP=$(ls text-clock@benica.dev-*.zip 2>/dev/null | head -n1 || true)
+          if [ -z "$ZIP" ]; then
+            echo "No release ZIP found to sign; skipping signature step.";
+            exit 0;
+          fi
           sigfile="$ZIP.sig"
+          echo "Signing $ZIP -> $sigfile"
           # Create detached signature (binary)
           gpg --batch --yes --output "$sigfile" --detach-sign "$ZIP"
 
