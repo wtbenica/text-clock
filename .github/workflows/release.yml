@@ -66,9 +66,9 @@ jobs:
         if: ${{ env.GPG_PRIVATE_KEY != '' }}
         run: |
           set -euo pipefail
-          # Locate the versioned ZIP produced by `make pack` (e.g. text-clock@benica.dev-1.1.0.zip)
-          ZIP=$(ls text-clock@benica.dev-*.zip 2>/dev/null | head -n1 || true)
-          if [ -z "$ZIP" ]; then
+          # Sign the unversioned ZIP that will be uploaded to the release
+          ZIP="text-clock@benica.dev.zip"
+          if [ ! -f "$ZIP" ]; then
             echo "No release ZIP found to sign; skipping signature step.";
             exit 0;
           fi
