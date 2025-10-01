@@ -97,6 +97,7 @@ export default class TextClock extends Extension {
   #clockDisplay?: St.Label;
   #topBox?: St.BoxLayout;
   #clockLabel?: ITextClock;
+  #clockBinding?: any;
   #translatePack?: WordPack;
 
   /**
@@ -227,6 +228,7 @@ export default class TextClock extends Extension {
     this.#clockDisplay = undefined;
     this.#topBox = undefined;
     this.#clockLabel = undefined;
+    this.#clockBinding = undefined;
     this.#translatePack = undefined;
   }
 
@@ -287,21 +289,23 @@ export default class TextClock extends Extension {
       return;
     }
 
-    // Bind basic properties using settings manager
-    this.#settingsManager.bindProperty(
+    // Set initial values and subscribe to changes for boolean flags
+    (this.#clockLabel as any).showDate = this.#settingsManager.getBoolean(
       SettingsKey.SHOW_DATE,
-      this.#clockLabel as any,
-      CLOCK_LABEL_PROPERTIES.SHOW_DATE,
     );
-
-    this.#settingsManager.bindProperty(
+    (this.#clockLabel as any).showWeekday = this.#settingsManager.getBoolean(
       SettingsKey.SHOW_WEEKDAY,
-      this.#clockLabel as any,
-      CLOCK_LABEL_PROPERTIES.SHOW_WEEKDAY,
     );
 
-    // Bind clock updates
-    this.#clock!.bind_property(
+    this.#settingsManager.subscribe(SettingsKey.SHOW_DATE, (newVal) => {
+      (this.#clockLabel as any).showDate = Boolean(newVal);
+    });
+    this.#settingsManager.subscribe(SettingsKey.SHOW_WEEKDAY, (newVal) => {
+      (this.#clockLabel as any).showWeekday = Boolean(newVal);
+    });
+
+    // Bind wall clock to clock label - store the binding for cleanup
+    this.#clockBinding = (this.#clock as any).bind_property(
       "clock",
       this.#clockLabel as any,
       CLOCK_LABEL_PROPERTIES.CLOCK_UPDATE,
@@ -348,6 +352,11 @@ export default class TextClock extends Extension {
     if (this.#systemClockSync) this.#systemClockSync.stop();
 
     // Destroy UI components
+    if (this.#clockBinding) {
+      this.#clockBinding.unbind();
+      this.#clockBinding = undefined;
+    }
+
     if (this.#clockLabel) (this.#clockLabel as any).destroy();
     if (this.#topBox) this.#topBox.destroy();
 
