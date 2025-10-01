@@ -105,7 +105,12 @@ For added security, you can verify the integrity and authenticity of the downloa
 3. **Verify the ZIP file** (replace `X.Y.Z` with the version number):
 
    ```bash
-   gpg --verify text-clock@benica.dev-X.Y.Z.zip.sig text-clock@benica.dev-X.Y.Z.zip
+   # If you downloaded the release asset from GitHub it will be named
+   # 'text-clock@benica.dev.zip' (unversioned). If you saved it locally with
+   # the version appended, replace X.Y.Z accordingly.
+   gpg --verify text-clock@benica.dev.zip.sig text-clock@benica.dev.zip
+   # or, if you renamed it to include the version:
+   # gpg --verify text-clock@benica.dev-X.Y.Z.zip.sig text-clock@benica.dev-X.Y.Z.zip
    ```
 
    - **Success**: You'll see "gpg: Good signature from [key details]".

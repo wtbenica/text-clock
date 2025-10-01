@@ -75,12 +75,23 @@ log_step "Creating release package..."
 make pack
 
 
-# Rename ZIP to match the release version/tag
+# Prepare ZIP filenames
 BASE_VERSION="$(get_current_version)"
 BASE_FILE="text-clock@benica.dev-${BASE_VERSION}.zip"
-ZIP_FILE="text-clock@benica.dev-${VERSION}.zip"
-if [[ "$BASE_FILE" != "$ZIP_FILE" ]]; then
-    mv "$BASE_FILE" "$ZIP_FILE"
+ZIP_FILE_VERSIONED="text-clock@benica.dev-${VERSION}.zip"
+ZIP_FILE_UNVERSIONED="text-clock@benica.dev.zip"
+# Copy the produced versioned zip to an unversioned name for the GitHub release asset
+if [[ -f "$BASE_FILE" ]]; then
+    cp -f "$BASE_FILE" "$ZIP_FILE_UNVERSIONED"
+else
+    log_warn "Expected $BASE_FILE not found; attempting to find any matching zip"
+    FOUND=$(ls text-clock@benica.dev-*.zip 2>/dev/null | head -n1 || true)
+    if [[ -n "$FOUND" ]]; then
+        cp -f "$FOUND" "$ZIP_FILE_UNVERSIONED"
+    else
+        log_error "No zip file found to upload"
+        exit 1
+    fi
 fi
 
 # Sign if GPG key available (simulate CI signing)
@@ -88,12 +99,12 @@ if [[ -n "${GPG_PRIVATE_KEY:-}" ]]; then
     log_step "Signing release ZIP..."
     echo "$GPG_PRIVATE_KEY" | gpg --batch --import
     set -euo pipefail
-    sigfile="$ZIP_FILE.sig"
-    gpg --batch --yes --output "$sigfile" --detach-sign "$ZIP_FILE"
-    FILES_ARG="$ZIP_FILE $sigfile"
+    sigfile="$ZIP_FILE_UNVERSIONED.sig"
+    gpg --batch --yes --output "$sigfile" --detach-sign "$ZIP_FILE_UNVERSIONED"
+    FILES_ARG="$ZIP_FILE_UNVERSIONED $sigfile"
 else
     log_warn "No GPG_PRIVATE_KEY provided - release will be unsigned"
-    FILES_ARG="$ZIP_FILE"
+    FILES_ARG="$ZIP_FILE_UNVERSIONED"
 fi
 
 

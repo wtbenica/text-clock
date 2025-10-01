@@ -131,6 +131,8 @@ ${ZIP_FILE}: metadata.json node_modules/ $(DIST_DIR)/extension.js schemas/gschem
 	cp metadata.json $(DIST_DIR)/ || { echo "Copying metadata.json failed"; exit 1; }
 	cp -r $(LOCALE_DIR) $(DIST_DIR)/ || { echo "Copying locale directory failed"; exit 1; }
 	(cd $(DIST_DIR) && zip ../${ZIP_FILE} -9r .) || { echo "Zipping extension failed"; exit 1; }
+	# Also provide an unversioned, user-friendly ZIP for GitHub release assets
+	cp -f ${ZIP_FILE} $(NAME)@${DOMAIN}.zip || { echo "Failed to copy ${ZIP_FILE} to $(NAME)@${DOMAIN}.zip"; exit 1; }
 
 # Ensure the local GNOME Shell extensions directory exists
 create_ext_dir:
