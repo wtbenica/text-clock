@@ -15,14 +15,13 @@ makedepends=('unzip' 'curl')
 validpgpkeys=('50483D39B066B9CAC0B0189A433660C4BA3A31AC')
 
 source=(
-    # Download the user-friendly unversioned release asset and signature
     "text-clock@benica.dev.zip::https://github.com/wtbenica/text-clock/releases/download/v${pkgver}/text-clock@benica.dev.zip"
     "text-clock@benica.dev.zip.sig::https://github.com/wtbenica/text-clock/releases/download/v${pkgver}/text-clock@benica.dev.zip.sig"
     # Public key for signature verification
-    "${pkgname}-${pkgver}.key::https://raw.githubusercontent.com/wtbenica/text-clock/colorful/ci-pub.asc"
+    "${pkgname}-${pkgver}.key::https://github.com/wtbenica/text-clock/releases/download/v${pkgver}/ci-pub.asc"
 )
 sha256sums=(
-    'a4fc9a1f6597f2c7948c86c385ce117ca8f1eb2ce60c4dea2d4eddb6b2d0bc1c'
+    '01188f54e64a8958693491a78486a5bac81e8c833597076482d5ff2a9604553d'
     'SKIP'
     'b7f0e54f80361ab240d6c6073c50d84872d7d8af39fa8485c43476656e03d835'
 )

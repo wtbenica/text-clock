@@ -113,6 +113,7 @@ jobs:
           files: |
             text-clock@benica.dev.zip
             text-clock@benica.dev.zip.sig
+            ci-pub.asc
           draft: false
           prerelease: false
         env:
