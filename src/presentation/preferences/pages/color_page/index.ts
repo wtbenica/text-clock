@@ -159,8 +159,15 @@ export function addColorModeRow(
 
     try {
       const showDate = settings.get_boolean(SettingsKey.SHOW_DATE);
-      dividerColorRow.visible = isCustom && showDate;
-      dateColorRow.visible = isCustom && showDate;
+      const showWeekday = settings.get_boolean(SettingsKey.SHOW_WEEKDAY);
+      const showDateOrWeekday = showDate || showWeekday;
+
+      // Date and divider color controls should be visible when the user
+      // is showing either the date or the weekday (weekday may be shown
+      // independently of the full date). Previously these controls only
+      // appeared when the full date was enabled.
+      dividerColorRow.visible = isCustom && showDateOrWeekday;
+      dateColorRow.visible = isCustom && showDateOrWeekday;
     } catch (e) {
       logErr(e, "Error updating color row visibility");
     }
@@ -177,6 +184,7 @@ export function addColorModeRow(
   });
 
   settings.connect("changed::show-date", () => updateColorRowsVisibility());
+  settings.connect("changed::show-weekday", () => updateColorRowsVisibility());
 }
 
 export default {
