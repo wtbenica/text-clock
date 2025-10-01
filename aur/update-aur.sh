@@ -58,12 +58,47 @@ log_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
-# Check arguments
-if [ $# -ne 1 ]; then
+# Parse command line arguments
+VERSION=""
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --dry-run)
+            DRY_RUN=true
+            shift
+            ;;
+        --version)
+            VERSION="$2"
+            shift 2
+            ;;
+        --version=*)
+            VERSION="${1#*=}"
+            shift
+            ;;
+        -h|--help)
+            usage
+            ;;
+        -*)
+            log_error "Unknown option: $1"
+            usage
+            ;;
+        *)
+            if [[ -z "$VERSION" ]]; then
+                VERSION="$1"
+            else
+                log_error "Multiple version arguments provided"
+                usage
+            fi
+            shift
+            ;;
+    esac
+done
+
+# Check that we have a version
+if [[ -z "$VERSION" ]]; then
+    log_error "Version is required"
     usage
 fi
-
-VERSION="$1"
 
 # Validate version format
 if ! echo "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
@@ -128,7 +163,7 @@ if [[ "$DRY_RUN" == true ]]; then
     echo "--- PKGBUILD (updates) ---"
     echo "s/^pkgver=.*/pkgver=${VERSION}/"
     echo "s/^pkgrel=.*/pkgrel=1/"
-    echo "s/^sha256sums=(/,/^)/c\\sha256sums=('${SHA256}' 'SKIP')/"
+    echo "s/^sha256sums=.*/sha256sums=('${SHA256}')/"
     echo
     echo "Would regenerate .SRCINFO using: makepkg --printsrcinfo > .SRCINFO (requires makepkg)"
     log_info "Dry-run complete. No files modified."
@@ -136,7 +171,7 @@ if [[ "$DRY_RUN" == true ]]; then
 fi
 
 log_info "Updating PKGBUILD..."
-sed -i "/^sha256sums=(/,/^)/c\sha256sums=('${SHA256}' 'SKIP')" "$AUR_DIR/PKGBUILD"
+sed -i "s/^sha256sums=.*/sha256sums=('${SHA256}')/" "$AUR_DIR/PKGBUILD"
 
 # Generate .SRCINFO
 log_info "Generating .SRCINFO..."

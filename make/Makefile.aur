@@ -5,7 +5,7 @@
 # AUR package management targets
 # This file contains targets for syncing and managing AUR packages
 
-.PHONY: sync-aur sync-aur-init
+.PHONY: sync-aur sync-aur-init update-aur-local update-aur-local-dry
 
 # AUR configuration
 AUR_REPO ?= $(HOME)/Development/gnome-shell-extension-text-clock
@@ -39,3 +39,15 @@ sync-aur-init:
 	@echo "Initializing AUR clone..."
 	@./scripts/sync-to-aur.sh --init --aur-repo "$(AUR_REPO)" $(SYNC_AUR_ARGS) >/dev/null 2>&1 || { echo "ERROR: AUR initialization failed" >&2; exit 1; }
 	@echo "AUR clone initialized successfully."
+
+## update-aur-local    Update PKGBUILD and .SRCINFO in local aur/ directory (no staging repo)
+##                       - Downloads ZIP from GitHub release and updates checksums locally
+update-aur-local:
+	@echo "Updating local AUR files for version $(CURRENT_VERSION)..."
+	@cd aur && ./update-aur.sh "$(CURRENT_VERSION)"
+	@echo "Local AUR files updated successfully."
+
+## update-aur-local-dry Dry run of local AUR update (shows what would change)
+update-aur-local-dry:
+	@echo "Dry run: updating local AUR files for version $(CURRENT_VERSION)..."
+	@cd aur && ./update-aur.sh --dry-run "$(CURRENT_VERSION)"

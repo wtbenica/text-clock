@@ -24,7 +24,7 @@ build: $(DIST_DIR)/extension.js schemas/gschemas.compiled locale/ resources/pref
 	@echo "Distribution package ready."
 
 ## pack                Create the distribution zip file
-pack: build ${ZIP_FILE}
+pack: build $(NAME)@${DOMAIN}.zip
 
 ## docs                Generate API documentation using TypeDoc
 docs: node_modules/
@@ -44,7 +44,7 @@ clean:
 	@echo "Cleaning build artifacts..."
 	@rm -rf $(DIST_DIR) >/dev/null 2>&1 || { echo "ERROR: Failed to remove dist directory" >&2; exit 1; }
 	@rm -rf node_modules/ >/dev/null 2>&1 || { echo "ERROR: Failed to remove node_modules" >&2; exit 1; }
-	@rm -f ${ZIP_FILE} >/dev/null 2>&1 || { echo "ERROR: Failed to remove zip file" >&2; exit 1; }
+	@rm -f $(NAME)@${DOMAIN}.zip >/dev/null 2>&1 || { echo "ERROR: Failed to remove zip file" >&2; exit 1; }
 	@rm -rf $(LOCALE_DIR) >/dev/null 2>&1 || { echo "ERROR: Failed to remove locale directory" >&2; exit 1; }
 	@rm -f schemas/gschemas.compiled >/dev/null 2>&1 || { echo "ERROR: Failed to remove compiled schemas" >&2; exit 1; }
 	@rm -f yarn.lock >/dev/null 2>&1 || { echo "ERROR: Failed to remove yarn.lock" >&2; exit 1; }
@@ -125,14 +125,12 @@ uninstall-system:
 ### === Helpers ===
 
 # Update the zip file if any of the source files have changed
-${ZIP_FILE}: metadata.json node_modules/ $(DIST_DIR)/extension.js schemas/gschemas.compiled locale/
+$(NAME)@${DOMAIN}.zip: metadata.json node_modules/ $(DIST_DIR)/extension.js schemas/gschemas.compiled locale/
 	@echo "Packaging the extension..."
 	cp -r schemas $(DIST_DIR)/ || { echo "Copying schemas failed"; exit 1; }
 	cp metadata.json $(DIST_DIR)/ || { echo "Copying metadata.json failed"; exit 1; }
 	cp -r $(LOCALE_DIR) $(DIST_DIR)/ || { echo "Copying locale directory failed"; exit 1; }
-	(cd $(DIST_DIR) && zip ../${ZIP_FILE} -9r .) || { echo "Zipping extension failed"; exit 1; }
-	# Also provide an unversioned, user-friendly ZIP for GitHub release assets
-	cp -f ${ZIP_FILE} $(NAME)@${DOMAIN}.zip || { echo "Failed to copy ${ZIP_FILE} to $(NAME)@${DOMAIN}.zip"; exit 1; }
+	(cd $(DIST_DIR) && zip ../$(NAME)@${DOMAIN}.zip -9r .) || { echo "Zipping extension failed"; exit 1; }
 
 # Ensure the local GNOME Shell extensions directory exists
 create_ext_dir:
