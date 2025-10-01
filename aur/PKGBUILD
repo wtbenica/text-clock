@@ -10,27 +10,16 @@ license=('GPL-3.0-or-later')
 install="${pkgname}.install"
 depends=('gnome-shell>=45')
 makedepends=('unzip' 'curl')
-# If you upload a detached signature for the release asset (e.g. text-clock@benica.dev.zip.sig)
-# set your key ID below so `makepkg` can verify the download. Keep empty to skip verification.
-validpgpkeys=('50483D39B066B9CAC0B0189A433660C4BA3A31AC')
 
 source=(
     "text-clock@benica.dev.zip::https://github.com/wtbenica/text-clock/releases/download/v${pkgver}/text-clock@benica.dev.zip"
-    "text-clock@benica.dev.zip.sig::https://github.com/wtbenica/text-clock/releases/download/v${pkgver}/text-clock@benica.dev.zip.sig"
-    # Public key for signature verification
-    "${pkgname}-${pkgver}.key::https://github.com/wtbenica/text-clock/releases/download/v${pkgver}/ci-pub.asc"
 )
 sha256sums=(
-    '01188f54e64a8958693491a78486a5bac81e8c833597076482d5ff2a9604553d'
-    'SKIP'
-    'b7f0e54f80361ab240d6c6073c50d84872d7d8af39fa8485c43476656e03d835'
+    '5de2e87451bcd7cf1b1c8bbb7d534cdd6cf69f99a8da3d0e5e8d02814e868fab'
 )
 noextract=("text-clock@benica.dev.zip")
 
 prepare() {
-    # Import the public key into the build keyring for signature verification
-    gpg --import "${srcdir}/${pkgname}-${pkgver}.key"
-
     # Rename downloaded unversioned asset to include version so AUR helpers keep distinct files
     if [ -f "${srcdir}/text-clock@benica.dev.zip" ]; then
         mv "${srcdir}/text-clock@benica.dev.zip" "${srcdir}/${pkgname}-${pkgver}.zip"
@@ -38,16 +27,6 @@ prepare() {
         # fallback: download directly and name with version
         curl -L -o "${srcdir}/${pkgname}-${pkgver}.zip" \
             "https://github.com/wtbenica/text-clock/releases/download/v${pkgver}/text-clock@benica.dev.zip"
-    fi
-
-    if [ -f "${srcdir}/text-clock@benica.dev.zip.sig" ]; then
-        mv "${srcdir}/text-clock@benica.dev.zip.sig" "${srcdir}/${pkgname}-${pkgver}.zip.sig"
-    else
-        curl -L -o "${srcdir}/${pkgname}-${pkgver}.zip.sig" \
-            "https://github.com/wtbenica/text-clock/releases/download/v${pkgver}/text-clock@benica.dev.zip.sig" || {
-            echo "Failed to download signature file."
-            exit 1
-        }
     fi
 }
 

@@ -11,11 +11,6 @@ pkgbase = gnome-shell-extension-text-clock
 	depends = gnome-shell>=45
 	noextract = text-clock@benica.dev.zip
 	source = text-clock@benica.dev.zip::https://github.com/wtbenica/text-clock/releases/download/v1.1.0/text-clock@benica.dev.zip
-	source = text-clock@benica.dev.zip.sig::https://github.com/wtbenica/text-clock/releases/download/v1.1.0/text-clock@benica.dev.zip.sig
-	source = gnome-shell-extension-text-clock-1.1.0.key::https://raw.githubusercontent.com/wtbenica/text-clock/main/ci-pub.asc
-	validpgpkeys = 50483D39B066B9CAC0B0189A433660C4BA3A31AC
-	sha256sums = 01188f54e64a8958693491a78486a5bac81e8c833597076482d5ff2a9604553d
-	sha256sums = SKIP
-	sha256sums = b7f0e54f80361ab240d6c6073c50d84872d7d8af39fa8485c43476656e03d835
+	sha256sums = 5de2e87451bcd7cf1b1c8bbb7d534cdd6cf69f99a8da3d0e5e8d02814e868fab
 
 pkgname = gnome-shell-extension-text-clock

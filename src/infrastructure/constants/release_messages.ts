@@ -16,16 +16,25 @@ export interface ReleaseInfo {
   /** The version this release info applies to */
   version: string;
 
-  /** Features highlighted in the update notification */
+  /** Features highlighted in the update notification for existing users */
   features: {
-    /** Primary feature to highlight */
+    /** Primary feature to highlight for updates */
     primary: (gettext: GettextFunctions) => string;
 
-    /** Optional secondary features (shown as bullet points or comma-separated) */
+    /** Optional secondary features for updates (shown as bullet points or comma-separated) */
     secondary?: Array<(gettext: GettextFunctions) => string>;
   };
 
-  /** Optional custom notification title (defaults to "Text Clock updated") */
+  /** Features highlighted in the welcome notification for new users */
+  welcomeFeatures?: {
+    /** Primary feature to highlight for new installs */
+    primary: (gettext: GettextFunctions) => string;
+
+    /** Optional secondary features for new installs */
+    secondary?: Array<(gettext: GettextFunctions) => string>;
+  };
+
+  /** Optional custom notification title (defaults to "Text Clock updated" or "Text Clock") */
   customTitle?: (gettext: GettextFunctions) => string;
 }
 
@@ -45,6 +54,15 @@ export const RELEASE_MESSAGES: Record<string, ReleaseInfo> = {
         ({ _ }) => _("Improved translations"),
       ],
     },
+    welcomeFeatures: {
+      primary: ({ _ }) =>
+        _("Complete color customization with accent-based and custom themes."),
+      secondary: [
+        ({ _ }) => _("Modern preferences interface"),
+        ({ _ }) => _("Flexible divider customization"),
+        ({ _ }) => _("Comprehensive translations"),
+      ],
+    },
   },
 };
 
@@ -59,37 +77,52 @@ export function getReleaseInfo(version: string): ReleaseInfo | undefined {
 }
 
 /**
- * Generate a formatted update notification message for a version.
+ * Generate a formatted notification message for a version.
  *
  * @param version - Version string
  * @param gettext - Gettext functions for translation
+ * @param isFirstInstall - Whether this is a first install (affects messaging style)
  * @returns Formatted notification body text
  */
 export function generateUpdateMessage(
   version: string,
   gettext: GettextFunctions,
+  isFirstInstall: boolean = false,
 ): string {
   const releaseInfo = getReleaseInfo(version);
 
   if (!releaseInfo) {
     // Fallback for versions without specific release info
+    if (isFirstInstall) {
+      return gettext._("Check Preferences to explore features.");
+    }
     return gettext._("Check Preferences for new features.");
   }
 
   const { _ } = gettext;
-  const primaryFeature = releaseInfo.features.primary(gettext);
 
-  if (
-    releaseInfo.features.secondary &&
-    releaseInfo.features.secondary.length > 0
-  ) {
-    const secondaryFeatures = releaseInfo.features.secondary
+  // Choose appropriate feature set based on install type
+  const featureSet =
+    isFirstInstall && releaseInfo.welcomeFeatures
+      ? releaseInfo.welcomeFeatures
+      : releaseInfo.features;
+
+  const primaryFeature = featureSet.primary(gettext);
+
+  if (featureSet.secondary && featureSet.secondary.length > 0) {
+    const secondaryFeatures = featureSet.secondary
       .map((fn) => fn(gettext))
       .join(", ");
 
-    return _("New: %s Additional improvements: %s")
-      .replace("%s", primaryFeature)
-      .replace("%s", secondaryFeatures);
+    if (isFirstInstall) {
+      return _("Features: %s Additional capabilities: %s")
+        .replace("%s", primaryFeature)
+        .replace("%s", secondaryFeatures);
+    } else {
+      return _("New: %s Additional improvements: %s")
+        .replace("%s", primaryFeature)
+        .replace("%s", secondaryFeatures);
+    }
   }
 
   return primaryFeature;
@@ -100,16 +133,22 @@ export function generateUpdateMessage(
  *
  * @param version - Version string
  * @param gettext - Gettext functions for translation
+ * @param isFirstInstall - Whether this is a first install (no previous version seen)
  * @returns Notification title
  */
-export function getUpdateNotificationTitle(
+export function getNotificationTitle(
   version: string,
   gettext: GettextFunctions,
+  isFirstInstall: boolean = false,
 ): string {
   const releaseInfo = getReleaseInfo(version);
 
   if (releaseInfo?.customTitle) {
     return releaseInfo.customTitle(gettext);
+  }
+
+  if (isFirstInstall) {
+    return gettext._("Text Clock %s").replace("%s", version);
   }
 
   return gettext._("Text Clock updated to %s").replace("%s", version);

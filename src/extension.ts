@@ -24,7 +24,7 @@ import { SettingsManager } from "./application/services/settings_manager.js";
 import { StyleService } from "./application/services/style_service.js";
 import SystemClockSync from "./application/services/system_clock_sync.js";
 import {
-  getUpdateNotificationTitle,
+  getNotificationTitle,
   generateUpdateMessage,
 } from "./infrastructure/constants/release_messages.js";
 import { CLOCK_LABEL_PROPERTIES, ITextClock } from "./domain/types/ui.js";
@@ -188,12 +188,20 @@ export default class TextClock extends Extension {
     );
 
     if (lastSeen !== currentVersionName) {
+      // Detect if this is a first install (no previous version seen)
+      const isFirstInstall = !lastSeen || lastSeen === "";
+
       // Generate notification content using release messages
-      const title = getUpdateNotificationTitle(
+      const title = getNotificationTitle(
         currentVersionName,
         extensionGettext,
+        isFirstInstall,
       );
-      const body = generateUpdateMessage(currentVersionName, extensionGettext);
+      const body = generateUpdateMessage(
+        currentVersionName,
+        extensionGettext,
+        isFirstInstall,
+      );
 
       // Show update notification using the service
       this.#notificationService.showUpdateNotification(title, body, () =>

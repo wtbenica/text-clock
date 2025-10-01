@@ -3,27 +3,27 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /**
- * Shared top-level constants used across theimport SettingsKey from "../../domain/models/settings_keys.js";Text Clock extension.
+ * Shared top-level constants used across the Text Clock extension.
  *
- * This module centralizes all extension constants including error messages,
- * settings key mappings, and enum value mappings. It provides a single source
- * of truth for configuration arrays and type definitions used throughout the extension.
+ * This module centralizes all extension constants including error messages
+ * and utility functions. It provides a single source of truth for configuration
+ * arrays and type definitions used throughout the extension.
  *
  * The constants support:
  * - Centralized error message definitions
  * - GSettings enum index to value mappings
  * - Color mode and accent style configurations
- * - Backwards-compatible settings key access
+ * - Divider text utility functions
  *
  * @example
  * ```typescript
- * import { Errors, SETTINGS, getDividerText } from './constants/index.js';
+ * import { Errors, getDividerText } from './constants/index.js';
  *
  * // Error messages
  * console.error(Errors.ERROR_INVALID_TIME_FORMAT);
  *
- * // Settings keys
- * const colorModeSetting = SETTINGS.COLOR_MODE; // "color-mode"
+ * // Divider text generation
+ * const divider = getDividerText(1, '→');
  *
  * // Dynamic divider text
  * const divider = getDividerText(0, ''); // " | " (pipe preset)
@@ -49,34 +49,6 @@ export const Errors: Record<string, string> = {
   ERROR_UNABLE_TO_FORMAT_TIME_STRING: "Unable to format time string",
   ERROR_UNABLE_TO_FORMAT_DATE_STRING: "Unable to format date string",
   ERROR_INVALID_TIME_FORMAT: "Invalid time format",
-};
-
-import SettingsKey from "../../domain/models/settings_keys.js";
-
-/**
- * Backwards-compatible settings key mappings.
- *
- * Provides a centralized mapping of setting names to their GSettings keys.
- * Values are sourced from `models/settings_keys.ts` to maintain a single
- * source of truth while preserving backwards compatibility with existing code.
- *
- * @deprecated Consider using SettingsKey enum directly for new code
- */
-export const SETTINGS = {
-  SHOW_DATE: SettingsKey.SHOW_DATE,
-  FUZZINESS: SettingsKey.FUZZINESS,
-  SHOW_WEEKDAY: SettingsKey.SHOW_WEEKDAY,
-  TIME_FORMAT: SettingsKey.TIME_FORMAT,
-  COLOR_MODE: SettingsKey.COLOR_MODE,
-  CLOCK_COLOR: SettingsKey.CLOCK_COLOR,
-  DATE_COLOR: SettingsKey.DATE_COLOR,
-  DIVIDER_COLOR: SettingsKey.DIVIDER_COLOR,
-  CLOCK_USE_ACCENT: SettingsKey.CLOCK_USE_ACCENT,
-  DATE_USE_ACCENT: SettingsKey.DATE_USE_ACCENT,
-  DIVIDER_USE_ACCENT: SettingsKey.DIVIDER_USE_ACCENT,
-  DIVIDER_PRESET: SettingsKey.DIVIDER_PRESET,
-  CUSTOM_DIVIDER_TEXT: SettingsKey.CUSTOM_DIVIDER_TEXT,
-  LAST_SEEN_VERSION: SettingsKey.LAST_SEEN_VERSION,
 };
 
 /**
