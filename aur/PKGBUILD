@@ -22,7 +22,7 @@ source=(
     "${pkgname}-${pkgver}.key::https://raw.githubusercontent.com/wtbenica/text-clock/colorful/ci-pub.asc"
 )
 sha256sums=(
-    'da497e118fbc0143b1ca2fd586adca318a7f50d3d2b415ac6bf4b619f5586eb9'
+    'a4fc9a1f6597f2c7948c86c385ce117ca8f1eb2ce60c4dea2d4eddb6b2d0bc1c'
     'SKIP'
     'b7f0e54f80361ab240d6c6073c50d84872d7d8af39fa8485c43476656e03d835'
 )
