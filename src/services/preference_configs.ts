@@ -35,11 +35,11 @@ import {
   ClockFormatter,
   Fuzziness,
   TimeFormat,
-} from "../../core/clock_formatter.js";
-import { Color } from "../../domain/models/color.js";
-import { logWarn } from "../../infrastructure/utils/error_utils.js";
-import { GettextFunctions } from "../../infrastructure/utils/gettext/gettext_utils.js";
-import { createTranslatePack } from "../../infrastructure/utils/translate/translate_pack_utils.js";
+} from "../core/clock_formatter.js";
+import { Color } from "../domain/models/color.js";
+import { logWarn } from "../utils/error_utils.js";
+import { GettextFunctions } from "../utils/gettext/gettext_utils.js";
+import { createTranslatePack } from "../utils/translate/translate_pack_utils.js";
 
 /**
  * Base interface for all preference option configurations.
@@ -383,17 +383,3 @@ export function getDividerText(
 
   return (config as ValuePreferenceConfig<string>).value;
 }
-
-/**
- * Unified registry of all preference configurations.
- *
- * Single source of truth that combines all preference types into one object.
- * Adding a new preference type here automatically makes it available throughout
- * the system for UI generation, validation, and schema mapping.
- */
-export const PREFERENCE_CONFIGS = {
-  FUZZINESS: FUZZINESS_CONFIGS,
-  DIVIDER_PRESET: DIVIDER_PRESET_CONFIGS,
-  TIME_FORMAT: TIME_FORMAT_CONFIGS,
-  ACCENT_STYLE: ACCENT_STYLE_CONFIGS,
-} as const;

@@ -27,8 +27,8 @@ import { createGeneralPage } from "./presentation/preferences/pages/general_page
 import {
   initPrefsGettext,
   prefsGettext,
-} from "./infrastructure/utils/gettext/gettext_utils_prefs.js";
-import { gjsLogger } from "./infrastructure/utils/logging/logger_gjs.js";
+} from "./utils/gettext/gettext_utils_prefs.js";
+import { gjsLogger } from "./utils/logging/logger_gjs.js";
 
 // Initialize gettext functions with the real GNOME Shell functions
 initPrefsGettext(_, ngettext, pgettext);

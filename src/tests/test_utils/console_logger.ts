@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import type { Logger } from "./logger_interface.js";
+import type { Logger } from "../../utils/logging/logger_interface.js";
 
 export const consoleLogger: Logger = {
   log(...args: unknown[]): void {

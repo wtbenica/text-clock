@@ -17,25 +17,25 @@ import {
 import { DateMenuButton } from "resource:///org/gnome/shell/ui/dateMenu.js";
 import { panel } from "resource:///org/gnome/shell/ui/main.js";
 
-import { Errors } from "./infrastructure/constants/index.js";
+import { Errors } from "./constants/index.js";
 import SettingsKey from "./domain/models/settings_keys.js";
-import { NotificationService } from "./application/services/notification_service.js";
-import { SettingsManager } from "./application/services/settings_manager.js";
-import { StyleService } from "./application/services/style_service.js";
-import SystemClockSync from "./application/services/system_clock_sync.js";
+import { NotificationService } from "./services/notification_service.js";
+import { SettingsManager } from "./services/settings_manager.js";
+import { StyleService } from "./services/style_service.js";
+import SystemClockSync from "./services/system_clock_sync.js";
 import {
   getNotificationTitle,
   generateUpdateMessage,
-} from "./infrastructure/constants/release_messages.js";
+} from "./constants/release_messages.js";
 import { CLOCK_LABEL_PROPERTIES, ITextClock } from "./domain/types/ui.js";
 import { TextClockLabel } from "./presentation/widgets/clock_widget.js";
-import { logErr, logWarn } from "./infrastructure/utils/error_utils.js";
+import { logErr, logWarn } from "./utils/error_utils.js";
 import {
   extensionGettext,
   initExtensionGettext,
-} from "./infrastructure/utils/gettext/gettext_utils_ext.js";
-import { fuzzinessFromEnumIndex } from "./infrastructure/utils/parse_utils.js";
-import { createTranslatePackGetter } from "./infrastructure/utils/translate/translate_pack_utils.js";
+} from "./utils/gettext/gettext_utils_ext.js";
+import { fuzzinessFromEnumIndex } from "./utils/parse_utils.js";
+import { createTranslatePackGetter } from "./utils/translate/translate_pack_utils.js";
 import { WordPack } from "./word_pack.js";
 
 const CLOCK_STYLE_CLASS_NAME = "clock";
@@ -116,7 +116,6 @@ export default class TextClock extends Extension {
    */
   enable() {
     this.#initServices();
-    // Start mirroring system clock settings (if available)
     try {
       this.#systemClockSync?.start();
     } catch (e) {
@@ -162,20 +161,14 @@ export default class TextClock extends Extension {
     this.#settingsManager = new SettingsManager(this.#settings!);
     this.#styleService = new StyleService(this.#settings!);
     this.#notificationService = new NotificationService("Text Clock");
-    // Mirror system clock settings into extension settings so prefs and
-    // runtime behavior reflect the user's system clock choices.
     this.#systemClockSync = new SystemClockSync(this.#settings!);
   }
 
-  // When the extension is enabled check whether we have a stored last-seen
-  // version and, if it differs from the current metadata version-name,
-  // show a short notification and persist the new version-name.
+  // Show notification if last seen version is different from current
   #maybeShowUpdateNotification() {
     if (!this.#settingsManager || !this.#notificationService) return;
 
-    // Extension metadata is provided by the base Extension class; access
-    // via (this as any).metadata which mirrors metadata.json at build time.
-    const meta: any = this.metadata || {};
+    const meta = this.metadata || {};
     const currentVersionName: string =
       meta["version-name"] || String(meta.version || "");
 
@@ -263,20 +256,15 @@ export default class TextClock extends Extension {
       dividerText: currentStyles.dividerText || " | ",
     });
 
-    // Set initial fuzziness
     const fuzzValue = this.#settingsManager!.getFuzziness();
     (this.#clockLabel as any).fuzzyMinutes = fuzzValue;
     this.#topBox!.add_child(this.#clockLabel as any);
 
-    // Apply initial styles
     this.#applyStyles();
 
-    // Insert the top box into the clock display box.
     const clockDisplayBox = this.#findClockDisplayBox();
     clockDisplayBox.add_child(this.#topBox);
 
-    // Remove the style class and hide the original clock display so our
-    // text clock is visible in its place.
     this.#clockDisplay!.remove_style_class_name(CLOCK_STYLE_CLASS_NAME);
     this.#clockDisplay!.set_width(0);
     (this.#clockDisplay as any).hide();
@@ -289,7 +277,6 @@ export default class TextClock extends Extension {
       return;
     }
 
-    // Set initial values and subscribe to changes for boolean flags
     (this.#clockLabel as any).showDate = this.#settingsManager.getBoolean(
       SettingsKey.SHOW_DATE,
     );
@@ -314,7 +301,6 @@ export default class TextClock extends Extension {
 
     // Subscribe to fuzziness changes
     this.#settingsManager.subscribe(SettingsKey.FUZZINESS, () => {
-      // For enum settings, ensure we get the numeric index
       const enumIndex = this.#settingsManager!.getEnum(
         SettingsKey.FUZZINESS,
         1,
@@ -333,7 +319,6 @@ export default class TextClock extends Extension {
       },
     );
 
-    // Register the clock label with the style service for automatic updates
     this.#styleService!.registerTarget(this.#clockLabel!);
   }
 

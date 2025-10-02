@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { createTimeConstants } from "../../../../infrastructure/constants/times/core.js";
+import { createTimeConstants } from "../../../constants/times/core.js";
 
 describe("createTranslatePack", () => {
   describe("time expressions should have expected counts", () => {

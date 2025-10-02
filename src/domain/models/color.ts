@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { normalizeColor } from "../../infrastructure/utils/color/color_utils.js";
+import { normalizeColor } from "../../utils/color/color_utils.js";
 
 /**
  * Represents a color with validation and utility methods.

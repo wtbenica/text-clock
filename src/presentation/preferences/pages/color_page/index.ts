@@ -6,15 +6,12 @@ import Adw from "gi://Adw";
 import Gio from "gi://Gio";
 import Gtk from "gi://Gtk";
 
-import { PAGE_ICONS } from "../../../../infrastructure/constants/preferences.js";
+import { PAGE_ICONS } from "../../../../constants/preferences.js";
 import SettingsKey from "../../../../domain/models/settings_keys.js";
-import { PREFERENCE_CONFIGS } from "../../../../application/services/preference_configs.js";
-import { StyleService } from "../../../../application/services/style_service.js";
-import {
-  logErr,
-  logWarn,
-} from "../../../../infrastructure/utils/error_utils.js";
-import { prefsGettext } from "../../../../infrastructure/utils/gettext/gettext_utils_prefs.js";
+import { StyleService } from "../../../../services/style_service.js";
+import { logErr, logWarn } from "../../../../utils/error_utils.js";
+import { prefsGettext } from "../../../../utils/gettext/gettext_utils_prefs.js";
+import { ACCENT_STYLE_CONFIGS } from "../../../../services/preference_service.js";
 import { createAndAddPageToWindow } from "../../components/groups.js";
 import {
   addClockColorRow as _addClockColorRow,
@@ -60,7 +57,7 @@ export function addAccentStyleRow(
   group: Adw.PreferencesGroup,
   settings: Gio.Settings,
 ): Adw.ComboRow {
-  const allConfigs = PREFERENCE_CONFIGS.ACCENT_STYLE;
+  const allConfigs = ACCENT_STYLE_CONFIGS;
 
   /**
    * Build a grouped model with section headers and mapping to original indices.

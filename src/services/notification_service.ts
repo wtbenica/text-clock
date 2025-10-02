@@ -7,8 +7,8 @@ import GLib from "gi://GLib";
 import * as Main from "resource:///org/gnome/shell/ui/main.js";
 import * as MessageTray from "resource:///org/gnome/shell/ui/messageTray.js";
 
-import { logErr, logWarn } from "../../infrastructure/utils/error_utils.js";
-import { extensionGettext } from "../../infrastructure/utils/gettext/gettext_utils_ext.js";
+import { logErr, logWarn } from "../utils/error_utils.js";
+import { extensionGettext } from "../utils/gettext/gettext_utils_ext.js";
 
 /**
  * Configuration object for creating and displaying notifications.
@@ -167,7 +167,6 @@ export class NotificationService {
           callback: () => {
             try {
               onOpenPreferences();
-              // Note: Notification cleanup is handled in the main callback
             } catch (error) {
               logWarn(`Failed to open preferences: ${String(error)}`);
             }
@@ -275,7 +274,6 @@ export class NotificationService {
    * ```
    */
   destroy(): void {
-    // Note: MessageTray sources are automatically cleaned up by GNOME Shell
     this.notificationSource = undefined;
   }
 

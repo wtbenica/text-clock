@@ -13,8 +13,8 @@ import {
 } from "../../core/clock_formatter.js";
 import { Color } from "../../domain/models/color.js";
 import { CLOCK_LABEL_PROPERTIES, ITextClock } from "../../domain/types/ui.js";
-import { parseFuzziness } from "../../infrastructure/utils/parse_utils.js";
-import { buildStyles } from "../../infrastructure/utils/style/style_utils.js";
+import { parseFuzziness } from "../../utils/parse_utils.js";
+import { buildStyles } from "../../utils/style/style_utils.js";
 import { WordPack } from "../../word_pack.js";
 
 /**

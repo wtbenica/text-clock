@@ -4,7 +4,7 @@
 
 import { createDateConstants } from "../../constants/dates/core.js";
 import { createTimeConstants } from "../../constants/times/core.js";
-import { WordPack } from "../../../word_pack.js";
+import { WordPack } from "../../word_pack.js";
 import { GettextFunctions } from "../gettext/gettext_utils.js";
 
 export function createTranslatePack(gettextFns: GettextFunctions): WordPack {

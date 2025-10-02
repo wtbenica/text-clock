@@ -2,11 +2,11 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { Fuzziness } from "../../../../core/clock_formatter.js";
+import { Fuzziness } from "../../../core/clock_formatter.js";
 import {
   fuzzinessFromEnumIndex,
   parseFuzziness,
-} from "../../../../infrastructure/utils/parse_utils.js";
+} from "../../../utils/parse_utils.js";
 
 describe("fuzzinessFromEnumIndex", () => {
   it("returns correct Fuzziness for valid indices", () => {

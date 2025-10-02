@@ -7,8 +7,8 @@
  * This file runs before all tests and sets up the testing environment
  */
 
-import { setLogger } from "../infrastructure/utils/error_utils.js";
-import { consoleLogger } from "../infrastructure/utils/logging/logger_console.js";
+import { setLogger } from "../utils/error_utils.js";
+import { consoleLogger } from "./test_utils/console_logger.js";
 
 // Add String.prototype.format to match GNOME Shell environment
 declare global {

@@ -5,8 +5,8 @@
 
 import Gio from "gi://Gio";
 
-import SettingsKey from "../../domain/models/settings_keys.js";
-import { logWarn, logErr } from "../../infrastructure/utils/error_utils.js";
+import SettingsKey from "../domain/models/settings_keys.js";
+import { logWarn, logErr } from "../utils/error_utils.js";
 
 /**
  * Service that mirrors selected GNOME desktop clock settings into the

@@ -8,8 +8,8 @@ import Gio from "gi://Gio";
 import GLib from "gi://GLib";
 import Gtk from "gi://Gtk";
 
-import { logErr } from "../../../../infrastructure/utils/error_utils.js";
-import { prefsGettext } from "../../../../infrastructure/utils/gettext/gettext_utils_prefs.js";
+import { logErr } from "../../../../utils/error_utils.js";
+import { prefsGettext } from "../../../../utils/gettext/gettext_utils_prefs.js";
 
 export function createColorControlWidget(
   settings: Gio.Settings,

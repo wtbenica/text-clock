@@ -52,9 +52,9 @@ import SettingsKey from "../../../domain/models/settings_keys.js";
 import {
   BasePreferenceConfig,
   CustomPreferenceConfig,
-} from "../../../application/services/preference_configs.js";
-import { logWarn } from "../../../infrastructure/utils/error_utils.js";
-import { prefsGettext } from "../../../infrastructure/utils/gettext/gettext_utils_prefs.js";
+} from "../../../domain/models/preference_types.js";
+import { logWarn } from "../../../utils/error_utils.js";
+import { prefsGettext } from "../../../utils/gettext/gettext_utils_prefs.js";
 
 /**
  * Configuration for creating preference UI rows.

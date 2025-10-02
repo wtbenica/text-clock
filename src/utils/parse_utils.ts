@@ -27,7 +27,7 @@
  * ```
  */
 
-import { Fuzziness } from "../../core/clock_formatter.js";
+import { Fuzziness } from "../core/clock_formatter.js";
 
 /**
  * Convert a GSettings enum index to the corresponding Fuzziness enum value.

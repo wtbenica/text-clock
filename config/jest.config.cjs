@@ -34,18 +34,18 @@ module.exports = {
         '!src/prefs.ts',
         // Exclude GNOME Shell runtime files that can't be tested without GTK/GJS
         '!src/presentation/**',  // All UI components require GTK runtime
-        '!src/application/services/notification_service.ts',  // Requires GNOME Shell
-        '!src/application/services/settings_manager.ts',      // Requires Gio
-        '!src/application/services/style_service.ts',         // Requires Gio
+        '!src/services/notification_service.ts',  // Requires GNOME Shell
+        '!src/services/settings_manager.ts',      // Requires Gio
+        '!src/services/style_service.ts',         // Requires Gio
         // Exclude environment-dependent gettext utilities
-        '!src/infrastructure/utils/gettext/gettext_utils_prefs.ts',
-        '!src/infrastructure/utils/gettext/gettext_utils_ext.ts',
+        '!src/utils/gettext/gettext_utils_prefs.ts',
+        '!src/utils/gettext/gettext_utils_ext.ts',
         // Exclude GJS-specific logger
-        '!src/infrastructure/utils/logging/logger_gjs.ts',
+        '!src/utils/logging/logger_gjs.ts',
         // Exclude constants files that are just exports for different contexts
-        '!src/infrastructure/constants/**/extension.ts',
-        '!src/infrastructure/constants/**/prefs.ts',
-        '!src/infrastructure/constants/preferences.ts',
+        '!src/constants/**/extension.ts',
+        '!src/constants/**/prefs.ts',
+        '!src/constants/preferences.ts',
     ],
     coverageDirectory: '<rootDir>/coverage',
     coverageReporters: ['text', 'lcov', 'html'],

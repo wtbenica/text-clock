@@ -5,19 +5,19 @@
 import Adw from "gi://Adw";
 import Gio from "gi://Gio";
 
-import { PAGE_ICONS } from "../../../../infrastructure/constants/preferences.js";
+import { PAGE_ICONS } from "../../../../constants/preferences.js";
 import SettingsKey from "../../../../domain/models/settings_keys.js";
 import {
   DIVIDER_PRESET_CONFIGS,
   FUZZINESS_CONFIGS,
-  TIME_FORMAT_CONFIGS,
-} from "../../../../application/services/preference_configs.js";
-import { prefsGettext } from "../../../../infrastructure/utils/gettext/gettext_utils_prefs.js";
+  getTimeFormatConfigsWithSamples,
+} from "../../../../services/preference_service.js";
+import { prefsGettext } from "../../../../utils/gettext/gettext_utils_prefs.js";
 import {
   createAndAddGroupToPage,
   createAndAddPageToWindow,
 } from "../../components/groups.js";
-import { logWarn } from "../../../../infrastructure/utils/error_utils.js";
+import { logWarn } from "../../../../utils/error_utils.js";
 import {
   createBooleanSwitchRow,
   createEnumComboRow,
@@ -148,12 +148,12 @@ export function createGeneralPage(
     );
   }
 
-  // Simple enum combo - automatically populated from config
+  // Simple enum combo - automatically populated from config with sample times
   createEnumComboRow(
     clockSettingsGroup,
     settings,
     SettingsKey.TIME_FORMAT,
-    TIME_FORMAT_CONFIGS,
+    getTimeFormatConfigsWithSamples(prefsGettext),
     {
       title: _("Time Format"),
       subtitle: _("Choose the time display format"),

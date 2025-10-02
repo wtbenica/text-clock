@@ -50,12 +50,3 @@ export const Errors: Record<string, string> = {
   ERROR_UNABLE_TO_FORMAT_DATE_STRING: "Unable to format date string",
   ERROR_INVALID_TIME_FORMAT: "Invalid time format",
 };
-
-/**
- * Re-export divider text function for backward compatibility.
- *
- * @param presetIndex - GSettings enum index for divider preset
- * @param customText - Custom divider text when preset is "custom"
- * @returns The actual divider text to display
- */
-export { getDividerText } from "../../application/services/preference_configs.js";

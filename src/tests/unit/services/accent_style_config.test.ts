@@ -12,7 +12,7 @@ import {
   ACCENT_STYLE_CONFIGS,
   applyAccentStyle,
   getAccentStyleConfig,
-} from "../../../application/services/preference_configs.js";
+} from "../../../services/preference_service.js";
 
 describe("AccentStyleConfig", () => {
   const testColor = new Color("#3584E4"); // GNOME Blue

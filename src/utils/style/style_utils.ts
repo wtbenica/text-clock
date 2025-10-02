@@ -27,7 +27,7 @@
  * ```
  */
 
-import { Color } from "../../../domain/models/color.js";
+import { Color } from "../../domain/models/color.js";
 
 /**
  * CSS style strings for different text clock display elements.

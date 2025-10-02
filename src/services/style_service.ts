@@ -36,12 +36,12 @@
 
 import Gio from "gi://Gio";
 
-import { getDividerText } from "../../infrastructure/constants/index.js";
-import { Color } from "../../domain/models/color.js";
-import SettingsKey from "../../domain/models/settings_keys.js";
-import { accentNameToHex } from "../../infrastructure/utils/color/accent_color_utils.js";
-import { normalizeColor } from "../../infrastructure/utils/color/color_utils.js";
-import { logWarn } from "../../infrastructure/utils/error_utils.js";
+import { getDividerText } from "./preference_service.js";
+import { Color } from "../domain/models/color.js";
+import SettingsKey from "../domain/models/settings_keys.js";
+import { accentNameToHex } from "../utils/color/accent_color_utils.js";
+import { normalizeColor } from "../utils/color/color_utils.js";
+import { logWarn } from "../utils/error_utils.js";
 import { applyAccentStyle } from "./preference_configs.js";
 
 /**

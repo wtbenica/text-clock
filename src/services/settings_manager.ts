@@ -35,13 +35,32 @@
 import Gio from "gi://Gio";
 import GObject from "gi://GObject";
 
-import { Fuzziness } from "../../core/clock_formatter.js";
-import SettingsKey from "../../domain/models/settings_keys.js";
-import { logErr, logWarn } from "../../infrastructure/utils/error_utils.js";
-import { fuzzinessFromEnumIndex } from "../../infrastructure/utils/parse_utils.js";
+import { Fuzziness } from "../core/clock_formatter.js";
+import SettingsKey from "../domain/models/settings_keys.js";
+import { logErr, logWarn } from "../utils/error_utils.js";
+import { fuzzinessFromEnumIndex } from "../utils/parse_utils.js";
 
 /** Default enum index for 5 minutes fuzziness */
 const DEFAULT_FUZZINESS_INDEX = 1;
+
+/** Mapping from setting keys to their types */
+const SETTING_TYPES = {
+  [SettingsKey.SHOW_DATE]: "boolean",
+  [SettingsKey.SHOW_WEEKDAY]: "boolean",
+  [SettingsKey.TIME_FORMAT]: "string",
+  [SettingsKey.FUZZINESS]: "enum",
+  [SettingsKey.COLOR_MODE]: "enum",
+  [SettingsKey.ACCENT_COLOR_STYLE]: "enum",
+  [SettingsKey.CLOCK_COLOR]: "string",
+  [SettingsKey.DATE_COLOR]: "string",
+  [SettingsKey.DIVIDER_COLOR]: "string",
+  [SettingsKey.CLOCK_USE_ACCENT]: "boolean",
+  [SettingsKey.DATE_USE_ACCENT]: "boolean",
+  [SettingsKey.DIVIDER_USE_ACCENT]: "boolean",
+  [SettingsKey.DIVIDER_PRESET]: "enum",
+  [SettingsKey.CUSTOM_DIVIDER_TEXT]: "string",
+  [SettingsKey.LAST_SEEN_VERSION]: "string",
+} as const;
 
 /**
  * Callback function for settings changes.
@@ -356,7 +375,24 @@ export class SettingsManager {
   ): () => void {
     try {
       const connectionId = this.#settings.connect(`changed::${key}`, () => {
-        const newValue = this.#getSettingValue(key);
+        let newValue: any;
+
+        const type = SETTING_TYPES[key as SettingsKey];
+        switch (type) {
+          case "boolean":
+            newValue = this.getBoolean(key);
+            break;
+          case "string":
+            newValue = this.getString(key);
+            break;
+          case "enum":
+            newValue = this.getEnum(key);
+            break;
+          default:
+            logWarn(`Unknown setting type for key: ${key}`);
+            return;
+        }
+
         callback(newValue, key);
       });
 
@@ -414,7 +450,20 @@ export class SettingsManager {
         // Get all current values and call the callback
         const changes: Record<string, any> = {};
         for (const k of keys) {
-          changes[k] = this.#getSettingValue(k);
+          const type = SETTING_TYPES[k as SettingsKey];
+          if (type) {
+            switch (type) {
+              case "boolean":
+                changes[k] = this.getBoolean(k);
+                break;
+              case "string":
+                changes[k] = this.getString(k);
+                break;
+              case "enum":
+                changes[k] = this.getEnum(k);
+                break;
+            }
+          }
         }
         callback(changes);
       });
@@ -449,32 +498,29 @@ export class SettingsManager {
    * ```
    */
   getAllSettings(): Record<string, any> {
-    const result: Record<string, any> = {};
+    const settings: Record<string, any> = {};
 
-    // Get all setting keys from the schema instead of hardcoding them
-    const allKeys = [
-      SettingsKey.SHOW_DATE,
-      SettingsKey.SHOW_WEEKDAY,
-      SettingsKey.TIME_FORMAT,
-      SettingsKey.FUZZINESS,
-      SettingsKey.COLOR_MODE,
-      SettingsKey.ACCENT_COLOR_STYLE,
-      SettingsKey.CLOCK_COLOR,
-      SettingsKey.DATE_COLOR,
-      SettingsKey.DIVIDER_COLOR,
-      SettingsKey.CLOCK_USE_ACCENT,
-      SettingsKey.DATE_USE_ACCENT,
-      SettingsKey.DIVIDER_USE_ACCENT,
-      SettingsKey.DIVIDER_PRESET,
-      SettingsKey.CUSTOM_DIVIDER_TEXT,
-      SettingsKey.LAST_SEEN_VERSION,
-    ];
-
-    for (const key of allKeys) {
-      result[key] = this.#getSettingValue(key);
+    for (const [key, type] of Object.entries(SETTING_TYPES)) {
+      try {
+        switch (type) {
+          case "boolean":
+            settings[key] = this.getBoolean(key);
+            break;
+          case "string":
+            settings[key] = this.getString(key);
+            break;
+          case "enum":
+            settings[key] = this.getEnum(key);
+            break;
+          default:
+            logWarn(`Unknown setting type "${type}" for key: ${key}`);
+        }
+      } catch (error) {
+        logWarn(`Failed to get setting "${key}": ${error}`);
+      }
     }
 
-    return result;
+    return settings;
   }
 
   /**
@@ -576,74 +622,6 @@ export class SettingsManager {
   }
 
   // Private methods
-
-  /**
-   * Get a setting value using the appropriate GSettings method based on its schema type.
-   *
-   * Automatically determines the correct GSettings getter method (get_boolean,
-   * get_string, get_enum) by examining the schema type information. This enables
-   * generic setting access without prior knowledge of the setting type.
-   *
-   * @param key - The settings key to retrieve
-   * @returns The setting value in its native type, or undefined if retrieval fails
-   */
-  #getSettingValue(key: SettingsKey | string): any {
-    // Use a robust try-catch approach that attempts each getter method
-    // This prevents failures due to schema changes or unusual enum implementations
-
-    // First, verify the key exists in the schema
-    try {
-      const schema = this.#settings.settings_schema;
-      if (!schema || !schema.has_key(key as string)) {
-        logWarn(`Setting key "${key}" not found in schema`);
-        return undefined;
-      }
-    } catch (error) {
-      logWarn(`Failed to check schema for key "${key}": ${error}`);
-      return undefined;
-    }
-
-    // Try each type in order of likelihood, with individual error handling
-    // Boolean settings are common, try first
-    try {
-      return this.#settings.get_boolean(key);
-    } catch {
-      // Not a boolean, continue to next type
-    }
-
-    // String settings are very common
-    try {
-      return this.#settings.get_string(key);
-    } catch {
-      // Not a string, continue to next type
-    }
-
-    // Enum/integer settings (like time format, fuzziness)
-    try {
-      return this.#settings.get_enum(key);
-    } catch {
-      // Not an enum, continue to next type
-    }
-
-    // Try other less common types as fallbacks
-    try {
-      return this.#settings.get_int(key);
-    } catch {
-      // Not an integer
-    }
-
-    try {
-      return this.#settings.get_double(key);
-    } catch {
-      // Not a double
-    }
-
-    // If all type attempts failed, log a warning and return undefined
-    logWarn(
-      `Unable to determine type for setting "${key}" - all getter methods failed`,
-    );
-    return undefined;
-  }
 
   /**
    * Unsubscribe from a specific subscription and remove it from tracking.

@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { Color } from "../../../../domain/models/color.js";
-import { buildStyles } from "../../../../infrastructure/utils/style/style_utils.js";
+import { Color } from "../../../domain/models/color.js";
+import { buildStyles } from "../../../utils/style/style_utils.js";
 
 describe("buildStyles", () => {
   it("should create style objects with correct color values", () => {
