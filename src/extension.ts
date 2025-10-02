@@ -17,7 +17,6 @@ import {
 import { DateMenuButton } from "resource:///org/gnome/shell/ui/dateMenu.js";
 import { panel } from "resource:///org/gnome/shell/ui/main.js";
 
-import { Errors } from "./constants/index.js";
 import SettingsKey from "./domain/models/settings_keys.js";
 import { NotificationService } from "./services/notification_service.js";
 import { SettingsManager } from "./services/settings_manager.js";
@@ -375,7 +374,7 @@ export default class TextClock extends Extension {
       return box;
     }
 
-    throw new Error(_(Errors.ERROR_COULD_NOT_FIND_CLOCK_DISPLAY_BOX));
+    throw new Error(_("Could not find clock display box"));
   }
 }
 
