@@ -277,6 +277,57 @@ export class NotificationService {
     this.notificationSource = undefined;
   }
 
+  /**
+   * Formats an array of items as a bulleted list for notification display.
+   *
+   * Creates readable bullet-point text using Unicode bullet characters
+   * and line breaks. Useful for feature lists, change logs, or any
+   * structured information in notifications.
+   *
+   * @param items - Array of text items to format as bullets
+   * @param bulletChar - Unicode bullet character to use (defaults to •)
+   * @returns Formatted string with bullets and line breaks
+   *
+   * @example
+   * ```typescript
+   * const features = ['Accent colors', 'Custom themes', 'New preferences'];
+   * const body = notificationService.formatBulletList(features);
+   * // Result: "• Accent colors\n• Custom themes\n• New preferences"
+   * ```
+   */
+  formatBulletList(items: string[], bulletChar: string = "•"): string {
+    return items.map((item) => `${bulletChar} ${item}`).join("\n");
+  }
+
+  /**
+   * Creates formatted notification body with optional intro text and bullet list.
+   *
+   * Combines introductory text with a formatted bullet list, making it easy
+   * to create well-structured notification content.
+   *
+   * @param intro - Optional introductory text before the bullet list
+   * @param items - Array of items to format as bullets
+   * @param bulletChar - Unicode bullet character to use (defaults to •)
+   * @returns Formatted notification body text
+   *
+   * @example
+   * ```typescript
+   * const body = notificationService.formatNotificationWithList(
+   *   'New in v1.1.0:',
+   *   ['Accent color themes', 'Custom color options', 'Enhanced UI']
+   * );
+   * // Result: "New in v1.1.0:\n• Accent color themes\n• Custom color options\n• Enhanced UI"
+   * ```
+   */
+  formatNotificationWithList(
+    intro: string | null,
+    items: string[],
+    bulletChar: string = "•",
+  ): string {
+    const bulletList = this.formatBulletList(items, bulletChar);
+    return intro ? `${intro}\n${bulletList}` : bulletList;
+  }
+
   // Private Methods
 
   /**
