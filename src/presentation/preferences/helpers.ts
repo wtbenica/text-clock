@@ -2,14 +2,32 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+/**
+ * Helper utilities for the preferences UI.
+ */
+
 import Adw from "gi://Adw";
 import Gio from "gi://Gio";
 import GLib from "gi://GLib";
 
 import { logErr, logWarn } from "../../utils/error_utils.js";
 import { prefsGettext } from "../../utils/gettext/gettext_utils_prefs.js";
-import { parseGnomeShellVersionString } from "../../utils/parse_utils.js";
 import { createTranslatePackGetter } from "../../utils/translate/translate_pack_utils.js";
+
+/**
+ * Extract major version number from GNOME Shell version string.
+ */
+function parseGnomeShellVersionString(
+  input: string | null | undefined,
+): number {
+  if (!input) return NaN;
+  const s = String(input).trim();
+  const re = /(?:GNOME Shell\s*)?(\d+)(?:\.|\b)/i;
+  const m = s.match(re);
+  if (!m) return NaN;
+  const major = parseInt(m[1], 10);
+  return Number.isNaN(major) ? NaN : major;
+}
 
 /**
  * Bind a Gio.Settings key to a property on an ActionRow-like widget.

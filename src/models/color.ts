@@ -3,8 +3,6 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { normalizeColor } from "../../utils/color/color_utils.js";
-
 /**
  * Represents a color with validation and utility methods.
  *
@@ -38,42 +36,49 @@ export class Color {
    * Validates and normalizes a color string.
    *
    * Accepts hex (#RGB, #RRGGBB) and RGB (rgb(r,g,b)) formats, normalizing to uppercase #RRGGBB.
-   * Uses the normalizeColor utility for format conversion, then validates and uppercases the result.
+   * Handles RGB value clamping and hex format validation.
    *
    * @param color - The color string to validate and normalize
    * @returns The normalized hex color string (uppercase #RRGGBB)
    * @throws {Error} When the color format is invalid
-   *
-   * @example
-   * ```typescript
-   * Color.validateAndNormalize("#abc");           // "#AABBCC"
-   * Color.validateAndNormalize("#123456");        // "#123456"
-   * Color.validateAndNormalize("rgb(255,0,0)");   // "#FF0000"
-   * ```
    */
   static validateAndNormalize(color: string): string {
-    // Check if the input is recognizable as a color format
-    const isValidFormat =
-      color &&
-      (/^#?[0-9a-fA-F]{3,6}$/.test(color.trim()) ||
-        /^rgb\s*\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)$/i.test(color.trim()));
-
-    if (!isValidFormat) {
+    if (!color) {
       throw new Error(`Invalid color format: ${color}`);
     }
 
-    const normalized = normalizeColor(color);
+    color = color.trim();
 
-    // Convert to uppercase and expand 3-digit hex if needed
-    const hexMatch = normalized.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
-    if (!hexMatch) {
-      throw new Error(`Invalid color format: ${color}`);
+    // Handle RGB format
+    const rgbMatch = color.match(
+      /rgb\s*\(\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*(-?\d+)\s*\)/i,
+    );
+    if (rgbMatch) {
+      const r = Math.max(0, Math.min(255, Number(rgbMatch[1])));
+      const g = Math.max(0, Math.min(255, Number(rgbMatch[2])));
+      const b = Math.max(0, Math.min(255, Number(rgbMatch[3])));
+      const hex =
+        "#" + [r, g, b].map((n) => n.toString(16).padStart(2, "0")).join("");
+      return hex.length === 7
+        ? hex.toUpperCase()
+        : `#${hex
+            .slice(1)
+            .split("")
+            .map((c) => c + c)
+            .join("")}`.toUpperCase();
     }
 
-    const hex = hexMatch[1];
-    return hex.length === 3
-      ? `#${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`.toUpperCase()
-      : `#${hex}`.toUpperCase();
+    // Handle hex format
+    const hexMatch = color.match(/^#?[0-9a-f]{3,6}$/i);
+    if (hexMatch) {
+      const normalizedHex = color.startsWith("#") ? color : `#${color}`;
+      const hex = normalizedHex.slice(1);
+      return hex.length === 3
+        ? `#${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`.toUpperCase()
+        : `#${hex}`.toUpperCase();
+    }
+
+    throw new Error(`Invalid color format: ${color}`);
   }
 
   /**

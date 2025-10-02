@@ -36,7 +36,7 @@ import Gio from "gi://Gio";
 import GObject from "gi://GObject";
 
 import { Fuzziness } from "../core/clock_formatter.js";
-import SettingsKey from "../domain/models/settings_keys.js";
+import SettingsKey from "../models/settings_keys.js";
 import { logErr, logWarn } from "../utils/error_utils.js";
 import { fuzzinessFromEnumIndex } from "../utils/parse_utils.js";
 

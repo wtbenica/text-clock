@@ -4,7 +4,7 @@
  */
 
 import type { Color } from "./color.js";
-import type { GettextFunctions } from "../../utils/gettext/gettext_utils.js";
+import type { GettextFunctions } from "../utils/gettext/gettext_utils.js";
 
 /**
  * Type definitions for preference configuration system.

@@ -2,43 +2,27 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import {
-  escapeMarkup,
-  normalizeColor,
-} from "../../../utils/color/color_utils.js";
+import { Color } from "../../../models/color.js";
 
-describe("normalizeColor", () => {
-  it("returns #ffffff for empty input", () => {
-    expect(normalizeColor("")).toBe("#ffffff");
+describe("Color class normalization", () => {
+  it("handles RGB format", () => {
+    expect(new Color("rgb(255, 0, 128)").toString()).toBe("#FF0080");
+    expect(new Color("rgb(0, 0, 0)").toString()).toBe("#000000");
+    expect(new Color("rgb(300, -10, 20)").toString()).toBe("#FF0014"); // clamps values
   });
 
-  it("normalizes rgb() format", () => {
-    expect(normalizeColor("rgb(255, 0, 128)")).toBe("#ff0080");
-    expect(normalizeColor("rgb(0, 0, 0)")).toBe("#000000");
-    expect(normalizeColor("rgb(300, -10, 20)")).toBe("#ff0014"); // clamps values
+  it("handles hex format with #", () => {
+    expect(new Color("#abc").toString()).toBe("#AABBCC");
+    expect(new Color("#123456").toString()).toBe("#123456");
   });
 
-  it("normalizes hex format with #", () => {
-    expect(normalizeColor("#abc")).toBe("#abc");
-    expect(normalizeColor("#123456")).toBe("#123456");
+  it("handles hex format without #", () => {
+    expect(new Color("abc").toString()).toBe("#AABBCC");
+    expect(new Color("123456").toString()).toBe("#123456");
   });
 
-  it("normalizes hex format without #", () => {
-    expect(normalizeColor("abc")).toBe("#abc");
-    expect(normalizeColor("123456")).toBe("#123456");
-  });
-
-  it("returns #ffffff for invalid color", () => {
-    expect(normalizeColor("notacolor")).toBe("#ffffff");
-  });
-});
-
-describe("escapeMarkup", () => {
-  it("escapes &, <, >", () => {
-    expect(escapeMarkup("a & b <c>")).toBe("a &amp; b &lt;c&gt;");
-  });
-
-  it("returns unchanged string if no markup", () => {
-    expect(escapeMarkup("plain text")).toBe("plain text");
+  it("throws for invalid colors", () => {
+    expect(() => new Color("")).toThrow();
+    expect(() => new Color("notacolor")).toThrow();
   });
 });

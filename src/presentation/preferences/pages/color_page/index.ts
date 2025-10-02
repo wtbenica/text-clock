@@ -7,7 +7,7 @@ import Gio from "gi://Gio";
 import Gtk from "gi://Gtk";
 
 import { PAGE_ICONS } from "../../../../constants/preferences.js";
-import SettingsKey from "../../../../domain/models/settings_keys.js";
+import SettingsKey from "../../../../models/settings_keys.js";
 import { StyleService } from "../../../../services/style_service.js";
 import { logErr, logWarn } from "../../../../utils/error_utils.js";
 import { prefsGettext } from "../../../../utils/gettext/gettext_utils_prefs.js";

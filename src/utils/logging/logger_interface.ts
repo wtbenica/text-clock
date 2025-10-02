@@ -4,7 +4,7 @@
  */
 
 /**
- * Logger interface for dependency injection
+ * Logger interface for dependency injection across different environments.
  */
 export interface Logger {
   log(...args: unknown[]): void;

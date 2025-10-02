@@ -5,7 +5,7 @@
 
 import Gio from "gi://Gio";
 
-import SettingsKey from "../domain/models/settings_keys.js";
+import SettingsKey from "../models/settings_keys.js";
 import { logWarn, logErr } from "../utils/error_utils.js";
 
 /**
@@ -19,7 +19,7 @@ import { logWarn, logErr } from "../utils/error_utils.js";
  * extension settings so the rest of the extension (which reads the
  * extension schema) continues to work with minimal changes.
  */
-export class SystemClockSync {
+export class SystemSettingsMonitor {
   #systemSettings: Gio.Settings | null = null;
   #extensionSettings: Gio.Settings;
   #connDate: number | null = null;
@@ -27,7 +27,7 @@ export class SystemClockSync {
   #stopped = true;
 
   /**
-   * Create a SystemClockSync instance.
+   * Create a SystemSettingsMonitor instance.
    *
    * @param extensionSettings - The extension's Gio.Settings instance to update
    */
@@ -125,4 +125,4 @@ export class SystemClockSync {
   }
 }
 
-export default SystemClockSync;
+export default SystemSettingsMonitor;

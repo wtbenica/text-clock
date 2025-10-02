@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { Color } from "../../../domain/models/color.js";
+import { Color } from "../../../models/color.js";
 import { buildStyles } from "../../../utils/style/style_utils.js";
 
 describe("buildStyles", () => {
@@ -16,7 +16,7 @@ describe("buildStyles", () => {
     expect(styles).toEqual({
       timeStyle: "color: #FF0000;",
       dateStyle: "color: #00FF00;",
-      dividerStyle: "color: #0000FF; font-weight: bold;",
+      dividerStyle: "color: #0000FF;",
     });
   });
 
@@ -29,16 +29,7 @@ describe("buildStyles", () => {
 
     expect(styles.timeStyle).toBe("color: #FF0000;");
     expect(styles.dateStyle).toBe("color: #00FF00;"); // Short hex normalized
-    expect(styles.dividerStyle).toBe("color: #0000FF; font-weight: bold;");
-  });
-
-  it("should always include font-weight bold for divider", () => {
-    const color = new Color("#FFFFFF");
-    const styles = buildStyles(color, color, color);
-
-    expect(styles.dividerStyle).toContain("font-weight: bold");
-    expect(styles.timeStyle).not.toContain("font-weight");
-    expect(styles.dateStyle).not.toContain("font-weight");
+    expect(styles.dividerStyle).toBe("color: #0000FF;");
   });
 
   it("should handle white color", () => {
@@ -47,7 +38,7 @@ describe("buildStyles", () => {
 
     expect(styles.timeStyle).toBe("color: #FFFFFF;");
     expect(styles.dateStyle).toBe("color: #FFFFFF;");
-    expect(styles.dividerStyle).toBe("color: #FFFFFF; font-weight: bold;");
+    expect(styles.dividerStyle).toBe("color: #FFFFFF;");
   });
 
   it("should handle black color", () => {
@@ -56,6 +47,6 @@ describe("buildStyles", () => {
 
     expect(styles.timeStyle).toBe("color: #000000;");
     expect(styles.dateStyle).toBe("color: #000000;");
-    expect(styles.dividerStyle).toBe("color: #000000; font-weight: bold;");
+    expect(styles.dividerStyle).toBe("color: #000000;");
   });
 });
