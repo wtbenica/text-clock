@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import { TimeFormat } from "../core/clock_formatter.js";
-import { WordPack } from "../word_pack.js";
+import { LocalizedStrings } from "../models/localized_strings.js";
 
 describe("WordPack", () => {
-  let wordPack: WordPack;
+  let wordPack: LocalizedStrings;
 
   const mockData = {
     timesFormatOne: ["exactly", "five past", "ten past", "quarter past"],
@@ -25,7 +25,7 @@ describe("WordPack", () => {
   };
 
   beforeEach(() => {
-    wordPack = new WordPack(mockData);
+    wordPack = new LocalizedStrings(mockData);
   });
 
   describe("constructor", () => {
@@ -75,7 +75,7 @@ describe("WordPack", () => {
         daysOfMonth: ["1st"],
       };
 
-      expect(() => new WordPack(minimalData)).not.toThrow();
+      expect(() => new LocalizedStrings(minimalData)).not.toThrow();
     });
   });
 });

@@ -3,7 +3,7 @@
     "entryPoints": [
         "../src/extension.ts",
         "../src/prefs.ts",
-        "../src/word_pack.ts",
+        "../src/models/word_pack.ts",
         "../src/presentation/widgets/clock_widget.ts",
         "../src/services/settings_manager.ts",
         "../src/services/style_service.ts",

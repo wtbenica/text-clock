@@ -14,7 +14,7 @@ import {
 import { Color } from "../../models/color.js";
 import { parseFuzziness } from "../../utils/parse_utils.js";
 import { buildStyles } from "../../utils/style/style_utils.js";
-import { WordPack } from "../../word_pack.js";
+import { LocalizedStrings } from "../../models/localized_strings.js";
 
 /**
  * Property names used for the clock widget's GObject properties.
@@ -86,7 +86,7 @@ export const TextClockLabel = GObject.registerClass(
   {
     GTypeName: "TextClockLabelV2",
     Properties: {
-      "translate-pack": GObject.ParamSpec.jsobject<WordPack>(
+      "translate-pack": GObject.ParamSpec.jsobject<LocalizedStrings>(
         CLOCK_LABEL_PROPERTIES.TRANSLATE_PACK,
         "Translate Pack",
         "The translation pack",
@@ -139,7 +139,7 @@ export const TextClockLabel = GObject.registerClass(
   class ClockLabel extends St.BoxLayout {
     #formatter: ClockFormatter;
     #showDate: boolean;
-    #translatePack: WordPack;
+    #translatePack: LocalizedStrings;
     #fuzzyMinutes: Fuzziness;
     #showWeekday: boolean;
     #timeFormat: TimeFormat;
@@ -243,7 +243,7 @@ export const TextClockLabel = GObject.registerClass(
      *
      * @param value - WordPack instance with localized text strings
      */
-    set translatePack(value: WordPack) {
+    set translatePack(value: LocalizedStrings) {
       this.#translatePack = value;
       this.#formatter.wordPack = this.#translatePack;
       this.updateClock();

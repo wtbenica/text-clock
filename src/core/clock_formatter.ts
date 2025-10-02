@@ -4,7 +4,7 @@
  */
 
 import { validateDate } from "../utils/error_utils.js";
-import { WordPack } from "../word_pack.js";
+import { LocalizedStrings } from "../models/localized_strings.js";
 
 /**
  * Time format styles available for clock text display.
@@ -94,7 +94,7 @@ export interface ClockPresentation {
  */
 export class ClockFormatter {
   /** Localized text strings for time and date formatting */
-  wordPack: WordPack;
+  wordPack: LocalizedStrings;
 
   /** Text separator between time and date components */
   divider: string;
@@ -105,7 +105,7 @@ export class ClockFormatter {
    * @param wordPack - Container of localized text strings
    * @param divider - Text separator between time and date (defaults to " | ")
    */
-  constructor(wordPack: WordPack, divider: string = " | ") {
+  constructor(wordPack: LocalizedStrings, divider: string = " | ") {
     this.wordPack = wordPack;
     this.divider = divider;
   }
@@ -279,7 +279,7 @@ export class ClockFormatter {
   }
 
   static #computeHourName(
-    wordPack: WordPack,
+    wordPack: LocalizedStrings,
     hour: number,
     minuteBucket: number,
     timeFormat: TimeFormat,
@@ -299,7 +299,7 @@ export class ClockFormatter {
   }
 
   static #getSpecialHourName(
-    wordPack: WordPack,
+    wordPack: LocalizedStrings,
     timeFormat: TimeFormat,
     type: "midnight" | "noon",
   ): string {
@@ -333,7 +333,10 @@ export class ClockFormatter {
     return times[minuteBucket].format(hourName);
   }
 
-  static #isExactHourName(wordPack: WordPack, hourName: string): boolean {
+  static #isExactHourName(
+    wordPack: LocalizedStrings,
+    hourName: string,
+  ): boolean {
     return (
       hourName === wordPack.midnight ||
       hourName === wordPack.noon ||
@@ -381,7 +384,7 @@ export class ClockFormatter {
     return adjustedDate;
   }
 
-  static #getDateString(wordPack: WordPack, n: number): string {
+  static #getDateString(wordPack: LocalizedStrings, n: number): string {
     return wordPack.daysOfMonth[n - 1];
   }
 }

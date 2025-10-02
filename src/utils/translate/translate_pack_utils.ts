@@ -8,7 +8,7 @@
 
 import { createDateConstants } from "../../constants/dates/core.js";
 import { createTimeConstants } from "../../constants/times/core.js";
-import { WordPack } from "../../word_pack.js";
+import { LocalizedStrings } from "../../models/localized_strings.js";
 import { GettextFunctions } from "../gettext/gettext_utils.js";
 
 /**
@@ -18,10 +18,12 @@ import { GettextFunctions } from "../gettext/gettext_utils.js";
  * @returns WordPack with all text translated using the provided functions
  */
 
-export function createTranslatePack(gettextFns: GettextFunctions): WordPack {
+export function createTranslatePack(
+  gettextFns: GettextFunctions,
+): LocalizedStrings {
   const timeConstants = createTimeConstants(gettextFns);
   const dateConstants = createDateConstants(gettextFns);
-  return new WordPack({
+  return new LocalizedStrings({
     timesFormatOne: timeConstants.timesFormatOne(),
     midnightFormatOne: timeConstants.midnightFormatOne(),
     noonFormatOne: timeConstants.noonFormatOne(),
@@ -46,6 +48,6 @@ export function createTranslatePack(gettextFns: GettextFunctions): WordPack {
  */
 export function createTranslatePackGetter(
   gettextFns: GettextFunctions,
-): () => WordPack {
+): () => LocalizedStrings {
   return () => createTranslatePack(gettextFns);
 }

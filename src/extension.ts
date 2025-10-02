@@ -37,7 +37,7 @@ import {
 } from "./utils/gettext/gettext_utils_ext.js";
 import { fuzzinessFromEnumIndex } from "./utils/parse_utils.js";
 import { createTranslatePackGetter } from "./utils/translate/translate_pack_utils.js";
-import { WordPack } from "./word_pack.js";
+import { LocalizedStrings } from "./models/localized_strings.js";
 
 const CLOCK_STYLE_CLASS_NAME = "clock";
 
@@ -53,7 +53,8 @@ initExtensionGettext(_, ngettext, pgettext);
  *
  * @returns Function that creates a WordPack with current locale translations
  */
-export const TRANSLATE_PACK = createTranslatePackGetter(extensionGettext);
+export const createLocalizedStrings =
+  createTranslatePackGetter(extensionGettext);
 
 /**
  * Main Text Clock extension class for GNOME Shell.
@@ -99,7 +100,7 @@ export default class TextClock extends Extension {
   #topBox?: St.BoxLayout;
   #clockLabel?: InstanceType<typeof TextClockLabel>;
   #clockBinding?: any;
-  #translatePack?: WordPack;
+  #translatePack?: LocalizedStrings;
 
   /**
    * Enable the extension - called by GNOME Shell when extension activates.
@@ -240,7 +241,7 @@ export default class TextClock extends Extension {
 
   // Place the clock label in the top box
   #placeClockLabel() {
-    this.#translatePack = TRANSLATE_PACK();
+    this.#translatePack = createLocalizedStrings();
 
     // Create the top box
     this.#topBox = new St.BoxLayout({

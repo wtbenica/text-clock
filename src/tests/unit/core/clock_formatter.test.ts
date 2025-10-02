@@ -7,10 +7,10 @@ import {
   Fuzziness,
   TimeFormat,
 } from "../../../core/clock_formatter.js";
-import { WordPack } from "../../../word_pack.js";
+import { LocalizedStrings } from "../../../models/localized_strings.js";
 
 // Mock translation strings for testing
-const createMockWordPack = (): WordPack => {
+const createMockWordPack = (): LocalizedStrings => {
   // Create a full 61-entry array for minutes 0-60
   const timesFormatOne = Array.from({ length: 61 }, (_, minute) => {
     if (minute === 0 || minute === 60) return "%s exactly";
@@ -44,7 +44,7 @@ const createMockWordPack = (): WordPack => {
     return `%s ${minute}`; // fallback for other minutes
   });
 
-  return new WordPack({
+  return new LocalizedStrings({
     timesFormatOne,
     midnightFormatOne: "midnight",
     noonFormatOne: "noon",
@@ -117,7 +117,7 @@ function getOrdinalSuffix(num: number): string {
 
 describe("ClockFormatter", () => {
   let formatter: ClockFormatter;
-  let wordPack: WordPack;
+  let wordPack: LocalizedStrings;
 
   beforeEach(() => {
     wordPack = createMockWordPack();
