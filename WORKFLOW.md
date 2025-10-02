@@ -106,7 +106,7 @@ make release-gh-auto  # Create GitHub release (auto-accept)
 - Creates git tag `v{version}`
 - GitHub Actions generate release notes
 - Builds and attaches extension ZIP file (`text-clock@benica.dev.zip`)
-- Calculates checksums and signatures
+- Generates SHA256 checksums for integrity verification
 
 #### AUR Package Update
 

@@ -68,23 +68,11 @@ When you release a new version:
    git push
    ```
 
-   ### Optional: GPG-signed releases
+   ### SHA256 Checksum Verification
 
-   If you sign your release ZIP with GPG and upload a detached signature (e.g. `text-clock@benica.dev.zip.sig` or `.asc`) alongside the ZIP, the AUR update script can verify it before updating `PKGBUILD`.
-
-   - Add your public key fingerprint to `validpgpkeys` in `PKGBUILD`, for example:
-
-   ```bash
-   validpgpkeys=('0x0123456789ABCDEF0123456789ABCDEF01234567')
-   ```
-
-   - Or export your public key and set the environment variable `GPG_PUBKEY` when running `aur/update-aur.sh`:
-
-   ```bash
-   GPG_PUBKEY="$(gpg --armor --export 0x01234567)" ./update-aur.sh 1.0.7
-   ```
-
-   If a signature is present and a key/fingerprint is provided, the script will attempt to `gpg --verify` the downloaded signature and abort on failure.
+   The AUR update script automatically downloads the release ZIP and calculates its SHA256 checksum for the PKGBUILD. 
+   
+   If a published checksum file (`.sha256`) is available alongside the release, the script will verify the download against it for additional integrity checking.
 
 ## Automation Integration
 

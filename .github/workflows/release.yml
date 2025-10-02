@@ -11,8 +11,6 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
-    env:
-      GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
 
     steps:
       - name: Checkout repository
@@ -26,7 +24,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y glib2.0-dev gettext gnupg
+          sudo apt-get install -y glib2.0-dev gettext
 
       - name: Install Yarn v4
         run: |
@@ -45,37 +43,18 @@ jobs:
         run: |
           make pack
 
-      - name: Import GPG private key (optional)
-        if: ${{ env.GPG_PRIVATE_KEY != '' }}
+      - name: Generate SHA256 checksum
         run: |
           set -euo pipefail
-          # Try importing the secret directly. If that fails, attempt to
-          # base64-decode the secret and import the decoded content. This
-          # allows storing the key either as a raw ASCII-armored key (with
-          # newlines) or as a base64-encoded string in the repo secret.
-          echo "Attempting direct GPG import..."
-          if echo "$GPG_PRIVATE_KEY" | gpg --batch --import 2>/dev/null; then
-            echo "GPG key imported (direct)."
-          else
-            echo "Direct import failed; trying base64 decode..."
-            echo "$GPG_PRIVATE_KEY" | base64 --decode | gpg --batch --import
-            echo "GPG key imported (base64 decoded)."
-          fi
-
-      - name: Sign release ZIP (optional)
-        if: ${{ env.GPG_PRIVATE_KEY != '' }}
-        run: |
-          set -euo pipefail
-          # Sign the unversioned ZIP that will be uploaded to the release
           ZIP="text-clock@benica.dev.zip"
           if [ ! -f "$ZIP" ]; then
-            echo "No release ZIP found to sign; skipping signature step.";
-            exit 0;
+            echo "No release ZIP found; skipping checksum generation."
+            exit 1
           fi
-          sigfile="$ZIP.sig"
-          echo "Signing $ZIP -> $sigfile"
-          # Create detached signature (binary)
-          gpg --batch --yes --output "$sigfile" --detach-sign "$ZIP"
+          echo "Generating SHA256 checksum for $ZIP"
+          sha256sum "$ZIP" > "$ZIP.sha256"
+          echo "Checksum file contents:"
+          cat "$ZIP.sha256"
 
       - name: Extract version from tag
         id: version
@@ -112,8 +91,7 @@ jobs:
           body_path: release_notes.md
           files: |
             text-clock@benica.dev.zip
-            text-clock@benica.dev.zip.sig
-            ci-pub.asc
+            text-clock@benica.dev.zip.sha256
           draft: false
           prerelease: false
         env:

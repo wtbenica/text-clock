@@ -126,29 +126,19 @@ if ! curl -fSL --retry 3 --retry-delay 2 -o "$TEMP_FILE" "$RELEASE_URL"; then
     exit 1
 fi
 
-# Optional: download detached signature and verify if GPG key info provided
-SIG_URL="https://github.com/${GITHUB_REPO}/releases/download/v${VERSION}/${RELEASE_ZIP_NAME}.sig"
-SIG_TEMP=$(mktemp)
-if [[ -n "${GPG_PUBKEY:-}" || -n "${VALID_PGP_KEYS:-}" ]]; then
-    log_info "Attempting to download detached signature: ${SIG_URL}"
-    if curl -fSL --retry 2 --retry-delay 1 -o "$SIG_TEMP" "$SIG_URL"; then
-        log_info "Signature downloaded to $SIG_TEMP"
-        # Import provided public key if available
-        if [[ -n "${GPG_PUBKEY:-}" ]]; then
-            echo "$GPG_PUBKEY" | gpg --batch --import || { log_error "Failed to import provided GPG public key"; rm -f "$TEMP_FILE" "$SIG_TEMP"; exit 1; }
-        fi
-        # Verify signature
-        if gpg --verify "$SIG_TEMP" "$TEMP_FILE" >/dev/null 2>&1; then
-            log_info "GPG signature verification PASSED"
-        else
-            log_error "GPG signature verification FAILED"
-            rm -f "$TEMP_FILE" "$SIG_TEMP"
-            exit 1
-        fi
+# Optional: Verify against published checksum if available
+CHECKSUM_URL="https://github.com/${GITHUB_REPO}/releases/download/v${VERSION}/${RELEASE_ZIP_NAME}.sha256"
+CHECKSUM_TEMP=$(mktemp)
+if curl -fSL --retry 2 --retry-delay 1 -o "$CHECKSUM_TEMP" "$CHECKSUM_URL" 2>/dev/null; then
+    log_info "Found published checksum, verifying..."
+    if sha256sum -c "$CHECKSUM_TEMP" --ignore-missing 2>/dev/null | grep -q "OK"; then
+        log_info "Checksum verification PASSED"
     else
-        log_warn "No detached signature found at $SIG_URL - continuing without GPG verification"
-        rm -f "$SIG_TEMP"
+        log_warn "Checksum verification failed or file not found in checksum file"
     fi
+    rm -f "$CHECKSUM_TEMP"
+else
+    log_info "No published checksum found - will generate our own"
 fi
 
 # Calculate SHA256

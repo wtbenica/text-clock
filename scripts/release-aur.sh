@@ -160,11 +160,7 @@ if [[ "$DRY_RUN" == "true" ]]; then
 else
     cd "$AUR_REPO_PATH"
     if [[ -f "../update-aur.sh" ]]; then
-        if [[ -n "${GPG_PUBKEY:-}" ]]; then
-            GPG_PUBKEY="$GPG_PUBKEY" ../update-aur.sh "$VERSION"
-        else
-            ../update-aur.sh "$VERSION"
-        fi
+        ../update-aur.sh "$VERSION"
     else
         log_error "update-aur.sh not found. Please copy it to the AUR repo directory."
         exit 1

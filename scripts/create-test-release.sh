@@ -58,7 +58,7 @@ if [[ "$DRY_RUN" == true ]]; then
     log_warn "DRY RUN MODE - No release will be created"
     echo "Would run: make validate"
     echo "Would run: make pack"
-    echo "Would sign ZIP if GPG_PRIVATE_KEY available"
+    echo "Would generate SHA256 checksum"
     echo "Would create draft GitHub release with prerelease flag"
     exit 0
 fi
@@ -94,18 +94,10 @@ else
     fi
 fi
 
-# Sign if GPG key available (simulate CI signing)
-if [[ -n "${GPG_PRIVATE_KEY:-}" ]]; then
-    log_step "Signing release ZIP..."
-    echo "$GPG_PRIVATE_KEY" | gpg --batch --import
-    set -euo pipefail
-    sigfile="$ZIP_FILE_UNVERSIONED.sig"
-    gpg --batch --yes --output "$sigfile" --detach-sign "$ZIP_FILE_UNVERSIONED"
-    FILES_ARG="$ZIP_FILE_UNVERSIONED $sigfile"
-else
-    log_warn "No GPG_PRIVATE_KEY provided - release will be unsigned"
-    FILES_ARG="$ZIP_FILE_UNVERSIONED"
-fi
+# Generate checksum for integrity verification
+log_step "Generating SHA256 checksum..."
+sha256sum "$ZIP_FILE_UNVERSIONED" > "$ZIP_FILE_UNVERSIONED.sha256"
+FILES_ARG="$ZIP_FILE_UNVERSIONED $ZIP_FILE_UNVERSIONED.sha256"
 
 
 # Generate release notes: use RELEASE_NOTES.md if present, else fallback to commit list

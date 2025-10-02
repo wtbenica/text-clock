@@ -14,7 +14,7 @@ makedepends=('unzip' 'curl')
 source=(
     "text-clock@benica.dev.zip::https://github.com/wtbenica/text-clock/releases/download/v${pkgver}/text-clock@benica.dev.zip"
 )
-sha256sums=('0de4f76628145270e49c054ee1263f68be78659d0acc0c146b34b40eb8ec3261')
+sha256sums=('SKIP')  # Updated during release process
 noextract=("text-clock@benica.dev.zip")
 
 prepare() {

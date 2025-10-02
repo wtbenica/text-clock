@@ -88,35 +88,22 @@ You can download the latest release of the extension as a ZIP file:
 
 ##### Verifying the Download
 
-For added security, you can verify the integrity and authenticity of the downloaded ZIP file using GPG signatures. This ensures the release was signed by the developer and hasn't been tampered with.
+For added security, you can verify the integrity of the downloaded ZIP file using checksums. This ensures the file wasn't corrupted during download and matches the official release.
 
-1. **Install GPG** (if not already installed):
-
-2. **Download and import the public key**:
+1. **Download the checksum file**:
 
    ```bash
-   # Download from the v1.1.0 release
-   wget https://github.com/wtbenica/text-clock/releases/download/v1.1.0/ci-pub.asc
-
-   # Import into your GPG keyring
-   gpg --import ci-pub.asc
+   wget https://github.com/wtbenica/text-clock/releases/download/v1.1.0/text-clock@benica.dev.zip.sha256
    ```
 
-3. **Verify the ZIP file** (replace `X.Y.Z` with the version number):
+2. **Verify the ZIP file**:
 
    ```bash
-   # If you downloaded the release asset from GitHub it will be named
-   # 'text-clock@benica.dev.zip' (unversioned). If you saved it locally with
-   # the version appended, replace X.Y.Z accordingly.
-   gpg --verify text-clock@benica.dev.zip.sig text-clock@benica.dev.zip
-   # or, if you renamed it to include the version:
-   # gpg --verify text-clock@benica.dev-X.Y.Z.zip.sig text-clock@benica.dev-X.Y.Z.zip
+   sha256sum -c text-clock@benica.dev.zip.sha256
    ```
 
-   - **Success**: You'll see "gpg: Good signature from [key details]".
-   - **Failure**: Indicates a potential issue—re-download or check the key fingerprint.
-
-The public key fingerprint is `50483D39B066B9CAC0B0189A433660C4BA3A31AC`. You can download the full public key from the v1.1.0 release's [`ci-pub.asc`](https://github.com/wtbenica/text-clock/releases/download/v1.1.0/ci-pub.asc) file to import it.
+   - **Success**: You'll see "text-clock@benica.dev.zip: OK"
+   - **Failure**: Indicates the file was corrupted or modified—re-download the ZIP file
 
 #### From Source
 
