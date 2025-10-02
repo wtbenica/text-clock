@@ -4,6 +4,7 @@
  */
 
 import { Color } from "../domain/models/color.js";
+import { Fuzziness, TimeFormat } from "../core/clock_formatter.js";
 import type {
   ValuePreferenceConfig,
   CustomPreferenceConfig,
@@ -22,31 +23,32 @@ import type {
  * Configuration for fuzziness time intervals.
  *
  * Maps schema enum values to actual minute intervals used for time rounding.
+ * Values reference the Fuzziness enum to ensure consistency.
  */
 export const FUZZINESS_CONFIGS: readonly ValuePreferenceConfig<number>[] = [
   {
     schemaValue: "1 minute",
     displayName: ({ _ }) => _("one minute"),
     description: ({ _ }) => _("Most precise time display"),
-    value: 1,
+    value: Fuzziness.ONE_MINUTE,
   },
   {
     schemaValue: "5 minutes",
     displayName: ({ _ }) => _("five minutes"),
     description: ({ _ }) => _("Slightly fuzzy time display"),
-    value: 5,
+    value: Fuzziness.FIVE_MINUTES,
   },
   {
     schemaValue: "10 minutes",
     displayName: ({ _ }) => _("ten minutes"),
     description: ({ _ }) => _("Moderately fuzzy time display"),
-    value: 10,
+    value: Fuzziness.TEN_MINUTES,
   },
   {
     schemaValue: "15 minutes",
     displayName: ({ _ }) => _("fifteen minutes"),
     description: ({ _ }) => _("Most fuzzy time display"),
-    value: 15,
+    value: Fuzziness.FIFTEEN_MINUTES,
   },
 ] as const;
 
@@ -97,19 +99,20 @@ export const DIVIDER_PRESET_CONFIGS: readonly (
  *
  * Maps schema enum values to format identifiers. Display names are generated
  * dynamically by the preference service when needed.
+ * Values reference the TimeFormat enum to ensure consistency.
  */
 export const TIME_FORMAT_CONFIGS: readonly ValuePreferenceConfig<string>[] = [
   {
     schemaValue: "format-one",
     displayName: ({ _ }) => _("Format One"),
     description: ({ _ }) => _("Standard time format"),
-    value: "format-one",
+    value: TimeFormat.FORMAT_ONE,
   },
   {
     schemaValue: "format-two",
     displayName: ({ _ }) => _("Format Two"),
     description: ({ _ }) => _("Alternative time format"),
-    value: "format-two",
+    value: TimeFormat.FORMAT_TWO,
   },
 ] as const;
 

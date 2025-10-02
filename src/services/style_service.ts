@@ -42,7 +42,7 @@ import SettingsKey from "../domain/models/settings_keys.js";
 import { accentNameToHex } from "../utils/color/accent_color_utils.js";
 import { normalizeColor } from "../utils/color/color_utils.js";
 import { logWarn } from "../utils/error_utils.js";
-import { applyAccentStyle } from "./preference_configs.js";
+import { applyAccentStyle } from "./preference_service.js";
 
 /**
  * Configuration object for styling UI elements.
