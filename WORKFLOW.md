@@ -62,7 +62,6 @@ make create-pr        # Create PR from current branch to main
 make create-pr-draft  # Create draft PR (for testing CI first)
 ```
 
-
 `gh pr create --base main --head BRANCH_NAME --title "Release vX.Y.Z"`
 
 - Uses `gh pr create` to open the pull request from your development branch to main
@@ -168,15 +167,17 @@ make update-version-files-only-force TYPE=minor
 ```
 
 **What gets updated:**
+
 - `package.json` - main version field
 - `metadata.json` - version-name and version number
-- `README.md` - all version references and download links  
+- `README.md` - all version references and download links
 - `aur/PKGBUILD` - package version
 - `RELEASE_NOTES.md` - header version
 - `po/*.po` files - project version strings
 - Script examples in documentation
 
 **Script Options:**
+
 - **Default**: Update files and commit with git
 - **`--rename-branch`**: Also rename current branch to match new version
 - **`--no-git`**: Update files only, no git operations (no commit, no branch rename)
@@ -184,12 +185,14 @@ make update-version-files-only-force TYPE=minor
 - **`--force`**: Skip confirmation prompts
 
 **Files-only mode** is perfect when:
+
 - You have uncommitted changes you don't want to lose
 - You want to review version updates before committing
 - You're updating version numbers as part of a larger set of changes
 - You want to handle git operations manually
 
 **When to use each mode:**
+
 - `update-version` - Standard case: clean working directory, ready to commit
 - `update-version-rename` - When you also need to rename the branch
 - `update-version-files-only` - When you have uncommitted work or want manual git control

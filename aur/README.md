@@ -62,6 +62,7 @@ When you release a new version:
    ```
 
 3. **Commit and push**:
+
    ```bash
    git add -A
    git commit -m "Update to v1.0.7"
@@ -70,8 +71,8 @@ When you release a new version:
 
    ### SHA256 Checksum Verification
 
-   The AUR update script automatically downloads the release ZIP and calculates its SHA256 checksum for the PKGBUILD. 
-   
+   The AUR update script automatically downloads the release ZIP and calculates its SHA256 checksum for the PKGBUILD.
+
    If a published checksum file (`.sha256`) is available alongside the release, the script will verify the download against it for additional integrity checking.
 
 ## Automation Integration
