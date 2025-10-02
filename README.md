@@ -95,8 +95,8 @@ For added security, you can verify the integrity and authenticity of the downloa
 2. **Download and import the public key**:
 
    ```bash
-   # Download from the repository
-   wget https://raw.githubusercontent.com/wtbenica/text-clock/main/ci-pub.asc
+   # Download from the v1.1.0 release
+   wget https://github.com/wtbenica/text-clock/releases/download/v1.1.0/ci-pub.asc
 
    # Import into your GPG keyring
    gpg --import ci-pub.asc
@@ -116,7 +116,7 @@ For added security, you can verify the integrity and authenticity of the downloa
    - **Success**: You'll see "gpg: Good signature from [key details]".
    - **Failure**: Indicates a potential issue—re-download or check the key fingerprint.
 
-The public key fingerprint is `50483D39B066B9CAC0B0189A433660C4BA3A31AC`. You can download the full public key from the repository's [`ci-pub.asc`](https://raw.githubusercontent.com/wtbenica/text-clock/main/ci-pub.asc) file to import it.
+The public key fingerprint is `50483D39B066B9CAC0B0189A433660C4BA3A31AC`. You can download the full public key from the v1.1.0 release's [`ci-pub.asc`](https://github.com/wtbenica/text-clock/releases/download/v1.1.0/ci-pub.asc) file to import it.
 
 #### From Source
 
