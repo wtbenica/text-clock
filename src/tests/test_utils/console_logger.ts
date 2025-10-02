@@ -3,6 +3,10 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+/**
+ * Logger implementation for Node.js/Jest test environment.
+ */
+
 import type { Logger } from "../../utils/logging/logger_interface.js";
 
 export const consoleLogger: Logger = {
