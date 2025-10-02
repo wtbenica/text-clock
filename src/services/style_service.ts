@@ -40,7 +40,6 @@ import { getDividerText } from "./preference_service.js";
 import { Color } from "../models/color.js";
 import SettingsKey from "../models/settings_keys.js";
 import { accentNameToHex } from "../utils/color/accent_color_utils.js";
-import { normalizeColor } from "../utils/color/color_utils.js";
 import { logWarn } from "../utils/error_utils.js";
 import { applyAccentStyle } from "./preference_service.js";
 
@@ -269,32 +268,6 @@ export class StyleService {
    */
   getCurrentStyles(): StyleConfig {
     return this.#getCurrentStyleConfig();
-  }
-
-  /**
-   * Validate and normalize a color value with fallback support.
-   *
-   * Ensures a color string is valid and normalized to a consistent format.
-   * If the color is invalid, logs a warning and returns the fallback value.
-   *
-   * @param color - The color string to validate (hex, rgb, named colors)
-   * @param fallback - Color to return if validation fails (default: white)
-   * @returns Normalized color string that is guaranteed to be valid
-   *
-   * @example
-   * ```typescript
-   * const validColor = styleService.validateColor('#3584E4'); // '#3584E4'
-   * const fallbackColor = styleService.validateColor('invalid', '#FF0000'); // '#FF0000'
-   * const defaultFallback = styleService.validateColor('bad-color'); // '#FFFFFF'
-   * ```
-   */
-  validateColor(color: string, fallback: string = "#FFFFFF"): string {
-    try {
-      return normalizeColor(color);
-    } catch (err) {
-      logWarn(`Invalid color "${color}", using fallback "${fallback}": ${err}`);
-      return fallback;
-    }
   }
 
   /**

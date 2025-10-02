@@ -11,7 +11,6 @@
         "../src/models/color.ts",
         "../src/models/settings_keys.ts",
         "../src/types/ui.ts",
-        "../src/utils/color/color_utils.ts",
         "../src/utils/color/accent_color_utils.ts",
         "../src/utils/parse_utils.ts",
         "../src/utils/style/style_utils.ts",
