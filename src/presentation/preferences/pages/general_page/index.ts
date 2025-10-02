@@ -6,7 +6,7 @@ import Adw from "gi://Adw";
 import Gio from "gi://Gio";
 
 import { PAGE_ICONS } from "../../../../constants/preferences.js";
-import SettingsKey from "../../../../domain/models/settings_keys.js";
+import SettingsKey from "../../../../models/settings_keys.js";
 import {
   DIVIDER_PRESET_CONFIGS,
   FUZZINESS_CONFIGS,

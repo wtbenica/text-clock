@@ -8,7 +8,7 @@
  * rather than testing property existence (which TypeScript already guarantees).
  */
 
-import { Color } from "../../domain/models/color.js";
+import { Color } from "../../models/color.js";
 import {
   ACCENT_STYLE_CONFIGS,
   applyAccentStyle,

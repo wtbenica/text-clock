@@ -7,7 +7,7 @@
  * Tests for accent style configuration system.
  */
 
-import { Color } from "../../../domain/models/color.js";
+import { Color } from "../../../models/color.js";
 import {
   ACCENT_STYLE_CONFIGS,
   applyAccentStyle,

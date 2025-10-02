@@ -11,11 +11,37 @@ import {
   Fuzziness,
   TimeFormat,
 } from "../../core/clock_formatter.js";
-import { Color } from "../../domain/models/color.js";
-import { CLOCK_LABEL_PROPERTIES, ITextClock } from "../../domain/types/ui.js";
+import { Color } from "../../models/color.js";
 import { parseFuzziness } from "../../utils/parse_utils.js";
 import { buildStyles } from "../../utils/style/style_utils.js";
 import { WordPack } from "../../word_pack.js";
+
+/**
+ * Property names used for the clock widget's GObject properties.
+ *
+ * These constants define the string keys used for GObject property binding
+ * and signal emission in the clock widget. They ensure consistency across
+ * the codebase and provide a single source of truth for property names.
+ */
+export const CLOCK_LABEL_PROPERTIES = {
+  /** Property name for show-date boolean setting */
+  SHOW_DATE: "show-date",
+
+  /** Property name for clock update signals */
+  CLOCK_UPDATE: "clock-update",
+
+  /** Property name for translation pack updates */
+  TRANSLATE_PACK: "translate-pack",
+
+  /** Property name for fuzziness/rounding setting */
+  FUZZINESS: "fuzzy-minutes",
+
+  /** Property name for show-weekday boolean setting */
+  SHOW_WEEKDAY: "show-weekday",
+
+  /** Property name for time format enum setting */
+  TIME_FORMAT: "time-format",
+};
 
 /**
  * A customizable text-based clock widget for GNOME Shell's top bar.
@@ -110,7 +136,7 @@ export const TextClockLabel = GObject.registerClass(
       ),
     },
   },
-  class ClockLabel extends St.BoxLayout implements ITextClock {
+  class ClockLabel extends St.BoxLayout {
     #formatter: ClockFormatter;
     #showDate: boolean;
     #translatePack: WordPack;

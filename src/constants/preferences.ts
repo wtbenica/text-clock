@@ -1,13 +1,13 @@
 // SPDX-FileCopyrightText: 2024-2025 Wesley Benica <wesley@benica.dev>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { Color } from "../domain/models/color.js";
+import { Color } from "../models/color.js";
 import { Fuzziness, TimeFormat } from "../core/clock_formatter.js";
 import type {
   ValuePreferenceConfig,
   CustomPreferenceConfig,
   AccentStyleConfig,
-} from "../domain/models/preference_types.js";
+} from "../models/preference_types.js";
 
 export const WINDOW_TITLE = "Text Clock Prefs";
 

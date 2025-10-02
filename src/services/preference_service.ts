@@ -8,7 +8,7 @@ import {
   Fuzziness,
   TimeFormat,
 } from "../core/clock_formatter.js";
-import { Color } from "../domain/models/color.js";
+import { Color } from "../models/color.js";
 import { logWarn } from "../utils/error_utils.js";
 import type { GettextFunctions } from "../utils/gettext/gettext_utils.js";
 import { createTranslatePack } from "../utils/translate/translate_pack_utils.js";
@@ -22,7 +22,7 @@ import type {
   ValuePreferenceConfig,
   CustomPreferenceConfig,
   AccentStyleConfig,
-} from "../domain/models/preference_types.js";
+} from "../models/preference_types.js";
 
 /**
  * Preference service providing clean access to preference configurations.

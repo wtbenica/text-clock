@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { Color } from "../../../../domain/models/color.js";
+import { Color } from "../../../../models/color.js";
 
 describe("Color", () => {
   describe("constructor and toString", () => {

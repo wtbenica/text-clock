@@ -37,8 +37,8 @@
 import Gio from "gi://Gio";
 
 import { getDividerText } from "./preference_service.js";
-import { Color } from "../domain/models/color.js";
-import SettingsKey from "../domain/models/settings_keys.js";
+import { Color } from "../models/color.js";
+import SettingsKey from "../models/settings_keys.js";
 import { accentNameToHex } from "../utils/color/accent_color_utils.js";
 import { normalizeColor } from "../utils/color/color_utils.js";
 import { logWarn } from "../utils/error_utils.js";

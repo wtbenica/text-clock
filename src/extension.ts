@@ -17,17 +17,19 @@ import {
 import { DateMenuButton } from "resource:///org/gnome/shell/ui/dateMenu.js";
 import { panel } from "resource:///org/gnome/shell/ui/main.js";
 
-import SettingsKey from "./domain/models/settings_keys.js";
+import SettingsKey from "./models/settings_keys.js";
 import { NotificationService } from "./services/notification_service.js";
 import { SettingsManager } from "./services/settings_manager.js";
 import { StyleService } from "./services/style_service.js";
-import SystemClockSync from "./services/system_clock_sync.js";
+import SystemSettingsMonitor from "./services/system_settings_monitor.js";
 import {
   getNotificationTitle,
   generateUpdateMessage,
 } from "./constants/release_messages.js";
-import { CLOCK_LABEL_PROPERTIES, ITextClock } from "./domain/types/ui.js";
-import { TextClockLabel } from "./presentation/widgets/clock_widget.js";
+import {
+  TextClockLabel,
+  CLOCK_LABEL_PROPERTIES,
+} from "./presentation/widgets/clock_widget.js";
 import { logErr, logWarn } from "./utils/error_utils.js";
 import {
   extensionGettext,
@@ -90,12 +92,12 @@ export default class TextClock extends Extension {
   #settingsManager?: SettingsManager;
   #styleService?: StyleService;
   #notificationService?: NotificationService;
-  #systemClockSync?: SystemClockSync;
+  #systemSettingsMonitor?: SystemSettingsMonitor;
   #dateMenu?: IDateMenuButton;
   #clock?: GnomeDesktop.WallClock;
   #clockDisplay?: St.Label;
   #topBox?: St.BoxLayout;
-  #clockLabel?: ITextClock;
+  #clockLabel?: InstanceType<typeof TextClockLabel>;
   #clockBinding?: any;
   #translatePack?: WordPack;
 
@@ -116,9 +118,9 @@ export default class TextClock extends Extension {
   enable() {
     this.#initServices();
     try {
-      this.#systemClockSync?.start();
+      this.#systemSettingsMonitor?.start();
     } catch (e) {
-      logWarn(`Failed to start SystemClockSync: ${e}`);
+      logWarn(`Failed to start SystemSettingsMonitor: ${e}`);
     }
     this.#maybeShowUpdateNotification();
     this.#retrieveDateMenu();
@@ -160,7 +162,7 @@ export default class TextClock extends Extension {
     this.#settingsManager = new SettingsManager(this.#settings!);
     this.#styleService = new StyleService(this.#settings!);
     this.#notificationService = new NotificationService("Text Clock");
-    this.#systemClockSync = new SystemClockSync(this.#settings!);
+    this.#systemSettingsMonitor = new SystemSettingsMonitor(this.#settings!);
   }
 
   // Show notification if last seen version is different from current
@@ -333,7 +335,7 @@ export default class TextClock extends Extension {
     if (this.#styleService) this.#styleService.destroy();
     if (this.#settingsManager) this.#settingsManager.destroy();
     if (this.#notificationService) this.#notificationService.destroy();
-    if (this.#systemClockSync) this.#systemClockSync.stop();
+    if (this.#systemSettingsMonitor) this.#systemSettingsMonitor.stop();
 
     // Destroy UI components
     if (this.#clockBinding) {
