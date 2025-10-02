@@ -2,10 +2,21 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+/**
+ * Utilities for creating translated word packs using gettext functions.
+ */
+
 import { createDateConstants } from "../../constants/dates/core.js";
 import { createTimeConstants } from "../../constants/times/core.js";
 import { WordPack } from "../../word_pack.js";
 import { GettextFunctions } from "../gettext/gettext_utils.js";
+
+/**
+ * Create a translated WordPack using the provided gettext functions.
+ *
+ * @param gettextFns - Gettext functions for translation
+ * @returns WordPack with all text translated using the provided functions
+ */
 
 export function createTranslatePack(gettextFns: GettextFunctions): WordPack {
   const timeConstants = createTimeConstants(gettextFns);
@@ -27,6 +38,12 @@ export function createTranslatePack(gettextFns: GettextFunctions): WordPack {
   });
 }
 
+/**
+ * Create a function that returns a translated WordPack.
+ *
+ * @param gettextFns - Gettext functions for translation
+ * @returns Function that creates and returns a translated WordPack
+ */
 export function createTranslatePackGetter(
   gettextFns: GettextFunctions,
 ): () => WordPack {
