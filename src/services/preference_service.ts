@@ -17,7 +17,7 @@ import {
   DIVIDER_PRESET_CONFIGS,
   TIME_FORMAT_CONFIGS,
   ACCENT_STYLE_CONFIGS,
-} from "../constants/preference_data.js";
+} from "../constants/preferences.js";
 import type {
   ValuePreferenceConfig,
   CustomPreferenceConfig,
