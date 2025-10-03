@@ -46,7 +46,7 @@ start-dev-branch: check-deps
 	node scripts/start-dev-branch.cjs $(TYPE) >/dev/null 2>&1 || { echo "ERROR: Version bump script failed" >&2; exit 1; }; \
 	git add version.json package.json metadata.json README.md >/dev/null 2>&1 || { echo "ERROR: Failed to stage files" >&2; exit 1; }; \
 	git commit -m "Bump version to $$new_version" >/dev/null 2>&1 || { echo "ERROR: Failed to commit changes" >&2; exit 1; }; \
-	@echo "Development branch $$branch_name created successfully."
+	echo "Development branch $$branch_name created successfully."
 
 ## === Version Updates ===
 
