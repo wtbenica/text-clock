@@ -28,26 +28,42 @@ SYNC_AUR_ARGS ?=
 ## 
 ## sync-aur            Copy `aur/` files to local AUR clone and optionally commit/push
 ##                       - Usage: make sync-aur [AUR_REPO=/path/to/aur/clone] [SYNC_AUR_ARGS="<FLAGS>"]
+##                       - Example: make sync-aur SYNC_AUR_ARGS="--commit --push"
 sync-aur:
-	@echo "Syncing AUR files..."
-	@./scripts/sync-to-aur.sh --aur-repo "$(AUR_REPO)" $(SYNC_AUR_ARGS) >/dev/null 2>&1 || { echo "ERROR: AUR sync failed" >&2; exit 1; }
-	@echo "AUR sync completed successfully."
+	@echo "Starting AUR sync process..."
+	@if echo "$(SYNC_AUR_ARGS)" | grep -q -- "--dry-run"; then \
+		echo "→ Running sync with dry-run mode"; \
+		./scripts/sync-to-aur.sh --aur-repo "$(AUR_REPO)" $(SYNC_AUR_ARGS) || { echo "✗ AUR sync failed" >&2; exit 1; }; \
+		echo "✓ Dry-run completed - no changes made"; \
+	elif echo "$(SYNC_AUR_ARGS)" | grep -q -- "--update"; then \
+		echo "→ Running sync with update mode (downloading and calculating checksums)"; \
+		./scripts/sync-to-aur.sh --aur-repo "$(AUR_REPO)" $(SYNC_AUR_ARGS) || { echo "✗ AUR sync failed" >&2; exit 1; }; \
+		echo "✓ AUR sync with updates completed successfully"; \
+	else \
+		echo "→ Running sync with live mode"; \
+		./scripts/sync-to-aur.sh --aur-repo "$(AUR_REPO)" $(SYNC_AUR_ARGS) || { echo "✗ AUR sync failed" >&2; exit 1; }; \
+		echo "✓ AUR sync completed successfully"; \
+	fi
 
 ## sync-aur-init       Initialize an AUR clone directory and perform initial sync (--init) (AUR_REPO, SYNC_AUR_ARGS)
 ##                       - Usage: make sync-aur-init [AUR_REPO=/path/to/aur/clone] [SYNC_AUR_ARGS="<FLAGS>"]
 sync-aur-init:
-	@echo "Initializing AUR clone..."
-	@./scripts/sync-to-aur.sh --init --aur-repo "$(AUR_REPO)" $(SYNC_AUR_ARGS) >/dev/null 2>&1 || { echo "ERROR: AUR initialization failed" >&2; exit 1; }
-	@echo "AUR clone initialized successfully."
+	@echo "Starting AUR clone initialization..."
+	@echo "→ Creating initial sync to empty AUR directory"
+	@./scripts/sync-to-aur.sh --init --aur-repo "$(AUR_REPO)" $(SYNC_AUR_ARGS) >/dev/null 2>&1 || { echo "✗ AUR initialization failed" >&2; exit 1; }
+	@echo "✓ AUR clone initialized successfully"
 
 ## update-aur-local    Update PKGBUILD and .SRCINFO in local aur/ directory (no staging repo)
 ##                       - Downloads ZIP from GitHub release and updates checksums locally
 update-aur-local:
-	@echo "Updating local AUR files for version $(CURRENT_VERSION)..."
+	@echo "Starting local AUR file update..."
+	@echo "→ Updating PKGBUILD and .SRCINFO for version $(CURRENT_VERSION)"
 	@cd aur && ./update-aur.sh "$(CURRENT_VERSION)"
-	@echo "Local AUR files updated successfully."
+	@echo "✓ Local AUR files updated successfully"
 
 ## update-aur-local-dry Dry run of local AUR update (shows what would change)
 update-aur-local-dry:
-	@echo "Dry run: updating local AUR files for version $(CURRENT_VERSION)..."
+	@echo "Starting local AUR file update (dry-run)..."
+	@echo "→ Previewing changes for version $(CURRENT_VERSION)"
 	@cd aur && ./update-aur.sh --dry-run "$(CURRENT_VERSION)"
+	@echo "✓ Dry-run completed - no changes made"

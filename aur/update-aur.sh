@@ -119,7 +119,7 @@ RELEASE_URL="https://github.com/${GITHUB_REPO}/releases/download/v${VERSION}/${R
 TEMP_FILE=$(mktemp)
 
 log_info "Attempting to download release archive: $RELEASE_URL"
-if ! curl -fSL --retry 3 --retry-delay 2 -o "$TEMP_FILE" "$RELEASE_URL"; then
+if ! curl -fsSL --retry 3 --retry-delay 2 -o "$TEMP_FILE" "$RELEASE_URL"; then
     log_error "Failed to download release archive from: $RELEASE_URL"
     log_error "Check that the GitHub release 'v${VERSION}' exists for ${GITHUB_REPO} and that the asset '${RELEASE_ZIP_NAME}' is present and public."
     rm -f "$TEMP_FILE"

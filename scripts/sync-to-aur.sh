@@ -114,7 +114,16 @@ fi
 # Remove any pre-existing package artifacts that could cause makepkg to abort
 rm -f *.pkg.* 2>/dev/null || true
 
-if ! makepkg $MAKEPKG_FLAGS; then
+# Suppress makepkg output unless it's a dry run or there's an error
+if [[ "$DRY_RUN" == true ]]; then
+  echo "Verifying package build with makepkg (MAKEPKG_INSTALL=${MAKEPKG_INSTALL})..."
+  MAKEPKG_CMD="makepkg $MAKEPKG_FLAGS"
+else
+  echo "→ Building package to verify PKGBUILD..."
+  MAKEPKG_CMD="makepkg $MAKEPKG_FLAGS >/dev/null 2>&1"
+fi
+
+if ! eval $MAKEPKG_CMD; then
   echo "Error: makepkg failed in temporary build dir ($TMP_BUILD_DIR). Fix PKGBUILD/build issues before syncing." >&2
   popd >/dev/null || true
   rm -rf "$TMP_BUILD_DIR"
@@ -139,7 +148,16 @@ if ! command -v namcap >/dev/null 2>&1; then
   exit 1
 fi
 
-if ! namcap "$PKGFILE"; then
+# Suppress namcap warnings unless it's a dry run or there are errors
+if [[ "$DRY_RUN" == true ]]; then
+  echo "Running namcap on built package: $PKGFILE"
+  NAMCAP_CMD="namcap \"$PKGFILE\""
+else
+  echo "→ Validating package with namcap..."
+  NAMCAP_CMD="namcap \"$PKGFILE\" 2>/dev/null || namcap \"$PKGFILE\""
+fi
+
+if ! eval $NAMCAP_CMD; then
   echo "Error: namcap found issues in built package ($PKGFILE). Fix them before syncing to AUR." >&2
   popd >/dev/null || true
   rm -rf "$TMP_BUILD_DIR"
@@ -208,22 +226,40 @@ if [[ "$DRY_RUN" == true ]]; then
 fi
 
 # For actual runs, do safety check first
-echo "Performing safety check for potential deletions..."
-DRY_OUTPUT=$(rsync -av --delete --dry-run --itemize-changes --exclude='pkg/' --exclude='*.zip' --exclude='.git/' "$PROJECT_ROOT/aur/" "$AUR_REPO/" 2>&1)
-echo "$DRY_OUTPUT"
+echo "→ Checking for changes to sync..."
+DRY_OUTPUT=$(rsync -a --delete --dry-run --itemize-changes --exclude='pkg/' --exclude='*.zip' --exclude='.git/' "$PROJECT_ROOT/aur/" "$AUR_REPO/" 2>&1)
 
-if echo "$DRY_OUTPUT" | grep -q "^\*deleting"; then
-  echo "Detected deletions in safety check." >&2
-  if [[ "$ASSUME_YES" != true && "$COMMIT" != true ]]; then
-    echo "Aborting: run again with --yes to allow deletions, or run --dry-run to inspect changes." >&2
-    exit 2
-  else
-    echo "Proceeding despite deletions because --yes or --commit was provided."
+# Check if there are any changes at all
+if echo "$DRY_OUTPUT" | grep -q "^[.>]"; then
+  echo "Changes detected:"
+  echo "$DRY_OUTPUT" | grep "^[.>]" | head -10  # Show max 10 lines of changes
+  if [ $(echo "$DRY_OUTPUT" | grep -c "^[.>]") -gt 10 ]; then
+    echo "... and $(( $(echo "$DRY_OUTPUT" | grep -c "^[.>]") - 10 )) more files"
   fi
+  echo ""
+  
+  # Special handling for deletions
+  if echo "$DRY_OUTPUT" | grep -q "^\*deleting"; then
+    echo "⚠️  Warning: Deletions detected!" >&2
+  fi
+  
+  # Ask for confirmation unless --yes or --commit was provided
+  if [[ "$ASSUME_YES" != true && "$COMMIT" != true ]]; then
+    echo -n "Proceed with these changes? [y/N] "
+    read -r response
+    if [[ "$response" != "y" && "$response" != "Y" ]]; then
+      echo "Aborted by user."
+      exit 2
+    fi
+  else
+    echo "Proceeding automatically because --yes or --commit was provided."
+  fi
+else
+  echo "✓ No changes detected - files are already in sync"
 fi
 
 # Perform the actual copy (exclude build artifacts and zips)
-rsync -av --delete --exclude='pkg/' --exclude='*.zip' --exclude='.git/' "$PROJECT_ROOT/aur/" "$AUR_REPO/"
+rsync -a --delete --exclude='pkg/' --exclude='*.zip' --exclude='.git/' "$PROJECT_ROOT/aur/" "$AUR_REPO/"
 
 # Read package version once
 if ! command -v node >/dev/null 2>&1; then
@@ -271,6 +307,9 @@ if [[ "$COMMIT" == true ]]; then
 else
   cat <<EOF
 Files synchronized to AUR repo. To commit changes:
-  cd $AUR_REPO && git add -A && git commit -m 'Update AUR package files to $VERSION'
+  make sync-aur SYNC_AUR_ARGS="--commit"
+
+Or to commit and push:
+  make sync-aur SYNC_AUR_ARGS="--commit --push"
 EOF
 fi
