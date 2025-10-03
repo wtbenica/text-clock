@@ -1,6 +1,6 @@
 {
   "name": "text-clock",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "private": true,
   "description": "A simple text clock for the GNOME Shell",
   "homepage": "https://github.com/wtbenica/text-clock#readme",
