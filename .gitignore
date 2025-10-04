@@ -41,6 +41,7 @@ constants_*_test.generated.ts
 .env
 .prettierrc
 *_old.*
+copilot-instructions.md
 
 ### Keep ESLint config in repo
 # ESLint config moved to config/eslint.config.js; no need to force-include a root file
