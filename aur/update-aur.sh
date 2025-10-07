@@ -161,6 +161,8 @@ if [[ "$DRY_RUN" == true ]]; then
 fi
 
 log_info "Updating PKGBUILD..."
+sed -i "s/^pkgver=.*/pkgver=${VERSION}/" "$AUR_DIR/PKGBUILD"
+sed -i "s/^pkgrel=.*/pkgrel=1/" "$AUR_DIR/PKGBUILD"
 sed -i "s/^sha256sums=.*/sha256sums=('${SHA256}')/" "$AUR_DIR/PKGBUILD"
 
 # Generate .SRCINFO

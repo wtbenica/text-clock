@@ -1,7 +1,7 @@
 # Maintainer: Wesley Benica <wesley at benica dot dev>
 
 pkgname=gnome-shell-extension-text-clock
-pkgver=1.1.0
+pkgver=1.0.5
 pkgrel=1
 pkgdesc="A simple text clock for the GNOME Shell top panel"
 arch=('any')
@@ -14,7 +14,7 @@ makedepends=('unzip' 'curl')
 source=(
     "text-clock@benica.dev.zip::https://github.com/wtbenica/text-clock/releases/download/v${pkgver}/text-clock@benica.dev.zip"
 )
-sha256sums=('SKIP')  # Updated during release process
+sha256sums=('c3f951d83c7e9b73cdc9d04fc0df3ce5b789bb32644e48b367cfc10eaa895ce8')
 noextract=("text-clock@benica.dev.zip")
 
 prepare() {
