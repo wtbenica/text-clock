@@ -5,6 +5,10 @@
 
 /**
  * Shared date constants (core) - do not import runtime gettext here.
+ *
+ * This file is imported by both extension.ts and prefs.ts, which each
+ * provide their own gettext implementations to ensure proper localization
+ * in their respective contexts.
  */
 
 import { GettextFunctions } from "../../utils/gettext/gettext_utils.js";
