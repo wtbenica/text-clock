@@ -20,6 +20,10 @@ post_install() {
     if [ "$found" = true ]; then
         echo "After removal, restart GNOME Shell (Alt+F2, r) or log out/in."
     fi
+
+    # Notify users to restart GNOME Shell
+    echo "==> To enable the Text Clock extension restart GNOME Shell."
+    echo "==> Wayland: Log out and back in | X11: Press Alt+F2, 'r', then Enter."
 }
 
 post_upgrade() {

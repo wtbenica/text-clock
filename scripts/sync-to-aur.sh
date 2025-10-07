@@ -64,6 +64,11 @@ PROJECT_ROOT=$(cd "$(dirname "$0")/.." && pwd)
 # Basic sanity checks
 command -v rsync >/dev/null 2>&1 || { echo "Error: rsync is required" >&2; exit 1; }
 
+# Check if this is a dry run early for better messaging
+if [[ "$DRY_RUN" == true ]]; then
+  echo "→ DRY-RUN MODE: Performing validation checks but will not sync files"
+fi
+
 # REUSE compliance check for aur/ directory
 echo "Checking REUSE compliance for aur/ directory..."
 if ! command -v reuse >/dev/null 2>&1; then
@@ -219,9 +224,13 @@ fi
 
 # Check if this is a dry run - if so, just preview and exit
 if [[ "$DRY_RUN" == true ]]; then
-  echo "Performing dry-run to preview changes..."
+  echo ""
+  echo "=== DRY-RUN SUMMARY ==="
+  echo "✓ All validation checks completed successfully"
+  echo "→ Previewing file sync changes (no actual sync will occur):"
   rsync -av --delete --dry-run --itemize-changes --exclude='pkg/' --exclude='*.zip' --exclude='.git/' "$PROJECT_ROOT/aur/" "$AUR_REPO/"
-  echo "Dry run: files would be copied to $AUR_REPO but no actual changes made"
+  echo ""
+  echo "✓ Dry-run completed - validation passed, no files were synced"
   exit 0
 fi
 
@@ -313,3 +322,15 @@ Or to commit and push:
   make sync-aur SYNC_AUR_ARGS="--commit --push"
 EOF
 fi
+
+# Cleanup temporary files
+cleanup() {
+    echo "→ Cleaning up temporary files..."
+    find "$PROJECT_ROOT/aur/" -name '*.pkg.tar.zst' -delete
+    find "$PROJECT_ROOT/aur/" -name '*.log' -delete
+    rm -f "$PROJECT_ROOT/aur/text-clock@benica.dev.zip"
+    echo "✓ Cleanup completed."
+}
+
+# Call cleanup at the end of the script
+cleanup
