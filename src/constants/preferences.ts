@@ -9,13 +9,6 @@ import type {
   AccentStyleConfig,
 } from "../models/preference_types.js";
 
-export const WINDOW_TITLE = "Text Clock Prefs";
-
-export const PAGE_ICONS = {
-  GENERAL: "tc-settings-symbolic",
-  COLORS: "tc-color-symbolic",
-};
-
 /**
  * Static preference configuration data.
  *
@@ -23,6 +16,14 @@ export const PAGE_ICONS = {
  * the extension. These are implementation details that should not be exported
  * directly - access them through the preference service instead.
  */
+
+/**
+ * Icons for preference pages.
+ */
+export const PAGE_ICONS = {
+  GENERAL: "tc-settings-symbolic",
+  COLORS: "tc-color-symbolic",
+};
 
 /**
  * Configuration for fuzziness time intervals.
