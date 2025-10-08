@@ -1,7 +1,11 @@
-<div align="center" max-width="600px" style="margin-bottom: 1em;">
-<img width="250" src="media/icon.png" alt="Text Clock Logo"/>
-<h2>A simple text clock for the GNOME Shell</h2>
-<img src="media/screenshots.png" alt="Screenshot of Text Clock Extension"/>
+<div style="display:table; width:100%; max-width:500px; margin-bottom:1em;">
+    <div style="display:table-cell; vertical-align:middle;">
+        <img src="media/icon.png" alt="Text Clock Logo" style="height:6.5em; display:block;" />
+    </div>
+      <div style="display:table-cell; vertical-align:middle;">
+         <h2 style="margin:0; line-height:1;">Text Clock v1.1.0</h2>
+         <div style="color:var(--secondary-text-color,#666);">A simple text clock for the GNOME Shell</div>
+      </div>
 </div>
 
 ###
@@ -12,6 +16,8 @@
 [![Issues](https://img.shields.io/github/issues/wtbenica/text-clock)](https://github.com/wtbenica/text-clock/issues)
 ![Dependabot alerts](https://img.shields.io/github/issues-raw/wtbenica/text-clock/dependabot)
 ![CI](https://github.com/wtbenica/text-clock/actions/workflows/validate.yml/badge.svg)
+
+<img src="media/screenshots.png" alt="Screenshot of Text Clock Extension"/>
 
 ### New in v1.1.0
 
