@@ -248,6 +248,9 @@ else
     --include='PKGBUILD'
     --include='.SRCINFO'
     --include='.gitignore'
+    --include='LICENSES/'
+    --include='LICENSES/**'
+    --include='REUSE.toml'
     --exclude='*'
   )
   RSYNC_SOURCE="$PROJECT_ROOT/aur/"
@@ -325,18 +328,18 @@ cd "$AUR_REPO"
 
 # Update PKGBUILD/.SRCINFO using the project's helper if available
 if [[ "$UPDATE" == true ]]; then
-  if [[ -x "$PROJECT_ROOT/aur/update-aur.sh" ]]; then
-    echo "Running update-aur.sh to refresh PKGBUILD/.SRCINFO (version: $VERSION)"
-    if ! "$PROJECT_ROOT/aur/update-aur.sh" "$VERSION"; then
-      echo "Error: update-aur.sh failed. Aborting sync; no commit/push will be performed." >&2
+  if [[ -x "$PROJECT_ROOT/scripts/update-pkgbuild.sh" ]]; then
+    echo "Running update-pkgbuild.sh to refresh PKGBUILD/.SRCINFO (version: $VERSION)"
+    if ! "$PROJECT_ROOT/scripts/update-pkgbuild.sh" "$VERSION"; then
+      echo "Error: update-pkgbuild.sh failed. Aborting sync; no commit/push will be performed." >&2
       exit 1
     fi
   else
-    echo "Error: aur/update-aur.sh not executable or not present; cannot update .SRCINFO" >&2
+    echo "Error: scripts/update-pkgbuild.sh not executable or not present; cannot update .SRCINFO" >&2
     exit 1
   fi
 else
-  echo "Skipping update-aur.sh (.SRCINFO) because --update not provided"
+  echo "Skipping update-pkgbuild.sh (.SRCINFO) because --update not provided"
 fi
 
 if [[ "$COMMIT" == true ]]; then
@@ -350,6 +353,12 @@ if [[ "$COMMIT" == true ]]; then
   fi
   if [[ -f ".gitignore" ]]; then
     WOULD_STAGE+=(.gitignore)
+  fi
+  if [[ -d "LICENSES" ]]; then
+    WOULD_STAGE+=(LICENSES/)
+  fi
+  if [[ -f "REUSE.toml" ]]; then
+    WOULD_STAGE+=(REUSE.toml)
   fi
   if [[ "$FULL_SYNC" == true ]]; then
     WOULD_STAGE+=("(all files --full-sync)")
@@ -365,6 +374,8 @@ if [[ "$COMMIT" == true ]]; then
     ( [[ -f "PKGBUILD" ]] && git add PKGBUILD ) || true
     ( [[ -f ".SRCINFO" ]] && git add .SRCINFO ) || true
     ( [[ -f ".gitignore" ]] && git add .gitignore ) || true
+    ( [[ -d "LICENSES" ]] && git add LICENSES/ ) || true
+    ( [[ -f "REUSE.toml" ]] && git add REUSE.toml ) || true
 
     # If user explicitly asked for a full sync, stage all changes
     if [[ "$FULL_SYNC" == true ]]; then

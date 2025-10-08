@@ -64,12 +64,12 @@ sync-aur-init:
 update-aur-local:
 	@echo "Starting local AUR file update..."
 	@echo "→ Updating PKGBUILD and .SRCINFO for version $(CURRENT_VERSION)"
-	@cd aur && ./update-aur.sh "$(CURRENT_VERSION)"
+	@./scripts/update-pkgbuild.sh "$(CURRENT_VERSION)"
 	@echo "✓ Local AUR files updated successfully"
 
 ## update-aur-local-dry Dry run of local AUR update (shows what would change)
 update-aur-local-dry:
 	@echo "Starting local AUR file update (dry-run)..."
 	@echo "→ Previewing changes for version $(CURRENT_VERSION)"
-	@cd aur && ./update-aur.sh --dry-run "$(CURRENT_VERSION)"
+	@./scripts/update-pkgbuild.sh --dry-run "$(CURRENT_VERSION)"
 	@echo "✓ Dry-run completed - no changes made"

@@ -1,29 +1,13 @@
 # SPDX-FileCopyrightText: 2024-2025 Wesley Benica <wesley@benica.dev>
 #
-# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-License-Identifier: 0BSD
 
-# Build artifacts
-*.tar.gz
-*.tar.xz
-*.zip
-*.zip.*
-*.sig
-*.sig.*
-*.pkg.tar.zst
-pkg/
-src/
+# Ignore everything at the repo root
+/*
 
-# makepkg temporary files
-*.log
-
-# Project scripts (not part of AUR package)
-update-aur.sh
-
-# Editor files
-*~
-*.swp
-*.swo
-
-# OS files
-.DS_Store
-Thumbs.db
+# But do not ignore these (keep .gitignore tracked, and these package files)
+!.gitignore
+!/PKGBUILD
+!/.SRCINFO
+!/LICENSES/0BSD.txt
+!/REUSE.toml

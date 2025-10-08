@@ -1,6 +1,6 @@
 version = 1
 
 [[annotations]]
-path = ["PKGBUILD", "README.md", ".SRCINFO", "*.install", "LICENSES/0BSD.txt"]
+path = ["PKGBUILD", ".SRCINFO"]
 SPDX-FileCopyrightText = "Wesley Benica <wesley@benica.dev>"
 SPDX-License-Identifier = "0BSD"
