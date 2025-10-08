@@ -1,14 +1,8 @@
-<div style="display:table; width:100%; max-width:500px; margin-bottom:1em;">
-    <div style="display:table-cell; vertical-align:middle;">
-        <img src="media/icon.png" alt="Text Clock Logo" style="height:4.5em; display:block;" />
-    </div>
-      <div style="display:table-cell; vertical-align:middle;">
-         <h2 style="margin:0; line-height:1;">Text Clock v1.1.0</h2>
-         <div style="color:var(--secondary-text-color,#666);">A simple text clock for the GNOME Shell</div>
-      </div>
+<div align="center" max-width="600px">
+<img width="250" src="media/icon.png" alt="Text Clock Logo"/>
+<h2>A simple text clock for the GNOME Shell</h2>
+<img src="media/screenshots.png" alt="Screenshot of Text Clock Extension"/>
 </div>
-
-![Screenshot of Text Clock](media/screenshots.png "Screenshot of Text Clock Extension")
 
 [![Release](https://img.shields.io/github/v/release/wtbenica/text-clock?label=release)](https://github.com/wtbenica/text-clock/releases)
 [![License](https://img.shields.io/badge/license-gpl%203.0+-green)](https://github.com/wtbenica/text-clock/main/LICENSES/GPL-3.0-or-later.txt)
