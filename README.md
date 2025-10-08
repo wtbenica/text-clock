@@ -4,6 +4,8 @@
 <img src="media/screenshots.png" alt="Screenshot of Text Clock Extension"/>
 </div>
 
+###
+
 [![Release](https://img.shields.io/github/v/release/wtbenica/text-clock?label=release)](https://github.com/wtbenica/text-clock/releases)
 [![License](https://img.shields.io/badge/license-gpl%203.0+-green)](https://github.com/wtbenica/text-clock/main/LICENSES/GPL-3.0-or-later.txt)
 [![Contributors](https://img.shields.io/github/contributors/wtbenica/text-clock)](https://github.com/wtbenica/text-clock/graphs/contributors)
