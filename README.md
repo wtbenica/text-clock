@@ -1,4 +1,4 @@
-<div align="center" max-width="600px">
+<div align="center" max-width="600px" style="margin-bottom: 1em;">
 <img width="250" src="media/icon.png" alt="Text Clock Logo"/>
 <h2>A simple text clock for the GNOME Shell</h2>
 <img src="media/screenshots.png" alt="Screenshot of Text Clock Extension"/>
