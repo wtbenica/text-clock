@@ -1,5 +1,8 @@
 # Maintainer: Wesley Benica <wesley at benica dot dev>
 
+# SPDX-FileCopyrightText: 2024-2025 Wesley Benica <wesley@benica.dev>
+# SPDX-License-Identifier: 0BSD
+
 pkgname=gnome-shell-extension-text-clock
 pkgver=1.0.5
 pkgrel=1
