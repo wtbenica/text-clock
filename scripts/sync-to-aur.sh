@@ -17,8 +17,10 @@ set -euo pipefail
 # --init             Allow initial sync to an empty AUR clone directory (no PKGBUILD). Fails if PKGBUILD already exists.
 #                       if the directory basename matches the expected AUR package name
 # --aur-repo <path>  Path to local AUR clone repository (default: ~/Development/gnome-shell-extension-text-clock)
+# --reuse             Check REUSE compliance (optional)
+# --full-sync         Copy all files in aur/ to AUR repo (default: only PKGBUILD, .SRCINFO, .gitignore)
 #
-# Usage: scripts/sync-to-aur.sh [--dry-run] [--commit] [--push] [--update] [--version X.Y.Z] [--yes] [--init] [--aur-repo <path>]
+# Usage: scripts/sync-to-aur.sh [--dry-run] [--commit] [--push] [--update] [--version X.Y.Z] [--yes] [--init] [--aur-repo <path>] [--reuse] [--full-sync]
 
 DRY_RUN=false
 COMMIT=false
@@ -27,6 +29,8 @@ ASSUME_YES=false
 INIT=false
 UPDATE=false
 VERSION_OVERRIDE=""
+RUN_REUSE=false
+FULL_SYNC=false
 # Allow overriding the expected basename when needed via env
 EXPECTED_BASENAME="${EXPECTED_BASENAME:-gnome-shell-extension-text-clock}"
 AUR_REPO="${AUR_REPO:-$HOME/Development/gnome-shell-extension-text-clock}"
@@ -51,8 +55,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --yes) ASSUME_YES=true; shift ;;
     --init) INIT=true; shift ;;
+    --reuse) RUN_REUSE=true; shift ;;
+    --full-sync) FULL_SYNC=true; shift ;;
     -h|--help)
-      echo "Usage: $0 [--dry-run] [--commit] [--push] [--update] [--version X.Y.Z] [--yes] [--init] [--aur-repo <path>]"
+      echo "Usage: $0 [--dry-run] [--commit] [--push] [--update] [--version X.Y.Z] [--yes] [--init] [--aur-repo <path>] [--reuse] [--full-sync]"
       exit 0
       ;;
     *) echo "Unknown arg: $1" >&2; exit 1 ;;
@@ -69,20 +75,25 @@ if [[ "$DRY_RUN" == true ]]; then
   echo "→ DRY-RUN MODE: Performing validation checks but will not sync files"
 fi
 
-# REUSE compliance check for aur/ directory
-echo "Checking REUSE compliance for aur/ directory..."
-if ! command -v reuse >/dev/null 2>&1; then
-  echo "Error: reuse tool is required for AUR sync compliance checking" >&2
-  echo "Install with: pip install reuse" >&2
-  exit 1
+# REUSE compliance check for aur/ directory (optional: only run if --reuse)
+if [[ "$RUN_REUSE" == true ]]; then
+  echo "Checking REUSE compliance for aur/ directory..."
+  if ! command -v reuse >/dev/null 2>&1; then
+    echo "Error: reuse tool is required for AUR sync compliance checking" >&2
+    echo "Install with: pip install reuse" >&2
+    exit 1
+  fi
+
+  if ! (cd "$PROJECT_ROOT/aur" && reuse lint --quiet); then
+    echo "Error: REUSE compliance check failed for aur/ directory" >&2
+    echo "Run 'reuse lint' in the aur/ directory to see specific issues" >&2
+    exit 1
+  fi
+  echo "✓ REUSE compliance check passed"
+else
+  echo "Skipping REUSE compliance check (use --reuse to enable)"
 fi
 
-if ! (cd "$PROJECT_ROOT/aur" && reuse lint --quiet); then
-  echo "Error: REUSE compliance check failed for aur/ directory" >&2
-  echo "Run 'reuse lint' in the aur/ directory to see specific issues" >&2
-  exit 1
-fi
-echo "✓ REUSE compliance check passed"
 # Namcap check: lint the AUR PKGBUILD
 echo "Running namcap on aur/PKGBUILD..."
 if ! command -v namcap >/dev/null 2>&1; then
@@ -222,13 +233,33 @@ else
   exit 1
 fi
 
+# Determine rsync include/exclude behavior. By default, only sync PKGBUILD, .SRCINFO, .gitignore
+if [[ "$FULL_SYNC" == true ]]; then
+  RSYNC_FILTER=(--delete --exclude='pkg/' --exclude='*.zip' --exclude='.git/')
+  RSYNC_SOURCE="$PROJECT_ROOT/aur/"
+else
+  # Use include rules to only copy the top-level files we want. Do NOT include '*/' so rsync
+  # won't traverse into subdirectories like pkg/ and create directory entries there.
+  RSYNC_FILTER=(
+    --delete
+    --exclude='pkg/'
+    --exclude='*.zip'
+    --exclude='.git/'
+    --include='PKGBUILD'
+    --include='.SRCINFO'
+    --include='.gitignore'
+    --exclude='*'
+  )
+  RSYNC_SOURCE="$PROJECT_ROOT/aur/"
+fi
+
 # Check if this is a dry run - if so, just preview and exit
-if [[ "$DRY_RUN" == true ]]; then
+if [[ "$DRY_RUN" == true && "$COMMIT" != true ]]; then
   echo ""
   echo "=== DRY-RUN SUMMARY ==="
   echo "✓ All validation checks completed successfully"
   echo "→ Previewing file sync changes (no actual sync will occur):"
-  rsync -av --delete --dry-run --itemize-changes --exclude='pkg/' --exclude='*.zip' --exclude='.git/' "$PROJECT_ROOT/aur/" "$AUR_REPO/"
+  rsync -av "${RSYNC_FILTER[@]}" --dry-run --itemize-changes "$RSYNC_SOURCE" "$AUR_REPO/"
   echo ""
   echo "✓ Dry-run completed - validation passed, no files were synced"
   exit 0
@@ -236,7 +267,7 @@ fi
 
 # For actual runs, do safety check first
 echo "→ Checking for changes to sync..."
-DRY_OUTPUT=$(rsync -a --delete --dry-run --itemize-changes --exclude='pkg/' --exclude='*.zip' --exclude='.git/' "$PROJECT_ROOT/aur/" "$AUR_REPO/" 2>&1)
+DRY_OUTPUT=$(rsync -a "${RSYNC_FILTER[@]}" --dry-run --itemize-changes "$RSYNC_SOURCE" "$AUR_REPO/" 2>&1)
 
 # Check if there are any changes at all
 if echo "$DRY_OUTPUT" | grep -q "^[.>]"; then
@@ -268,20 +299,25 @@ else
 fi
 
 # Perform the actual copy (exclude build artifacts and zips)
-rsync -a --delete --exclude='pkg/' --exclude='*.zip' --exclude='.git/' "$PROJECT_ROOT/aur/" "$AUR_REPO/"
+rsync -a "${RSYNC_FILTER[@]}" "$RSYNC_SOURCE" "$AUR_REPO/"
 
 # Read package version once
-if ! command -v node >/dev/null 2>&1; then
-  echo "Error: Node.js is required to read package.json" >&2
-  exit 1
-fi
 if [[ -n "$VERSION_OVERRIDE" ]]; then
   VERSION="$VERSION_OVERRIDE"
 else
-  VERSION=$(cd "$PROJECT_ROOT" && node -pe "require('./package.json').version" 2>/dev/null || true)
+  # Prefer PKGBUILD pkgver if present
+  if [[ -f "$PROJECT_ROOT/aur/PKGBUILD" ]]; then
+    VERSION=$(grep -E '^pkgver=' "$PROJECT_ROOT/aur/PKGBUILD" | head -n1 | cut -d'=' -f2- | tr -d '"' | tr -d "'" | xargs)
+  fi
+  # Fall back to package.json if PKGBUILD didn't provide a version
+  if [[ -z "${VERSION:-}" ]]; then
+    if command -v node >/dev/null 2>&1; then
+      VERSION=$(cd "$PROJECT_ROOT" && node -pe "require('./package.json').version" 2>/dev/null || true)
+    fi
+  fi
 fi
-if [[ -z "$VERSION" ]]; then
-  echo "Error: Could not read version from package.json" >&2
+if [[ -z "${VERSION:-}" ]]; then
+  echo "Error: Could not determine version (PKGBUILD or package.json)" >&2
   exit 1
 fi
 
@@ -304,13 +340,44 @@ else
 fi
 
 if [[ "$COMMIT" == true ]]; then
-  git add PKGBUILD .SRCINFO
-  if git diff --cached --quiet; then
-    echo "No changes to commit"
+  # Determine files that would be staged
+  WOULD_STAGE=()
+  if [[ -f "PKGBUILD" ]]; then
+    WOULD_STAGE+=(PKGBUILD)
+  fi
+  if [[ -f ".SRCINFO" ]]; then
+    WOULD_STAGE+=(.SRCINFO)
+  fi
+  if [[ -f ".gitignore" ]]; then
+    WOULD_STAGE+=(.gitignore)
+  fi
+  if [[ "$FULL_SYNC" == true ]]; then
+    WOULD_STAGE+=("(all files --full-sync)")
+  fi
+
+  if [[ "$DRY_RUN" == true ]]; then
+    echo "\n=== DRY-RUN (commit preview) ==="
+    echo "Would stage files: ${WOULD_STAGE[*]:-<none>}"
+    echo "Would commit with message: Update AUR package files to $VERSION"
+    echo "=== End commit preview ===\n"
   else
-    git commit -m "Update AUR package files to $VERSION"
-    if [[ "$PUSH" == true ]]; then
-      git push
+    # Stage only the minimal AUR files by default
+    ( [[ -f "PKGBUILD" ]] && git add PKGBUILD ) || true
+    ( [[ -f ".SRCINFO" ]] && git add .SRCINFO ) || true
+    ( [[ -f ".gitignore" ]] && git add .gitignore ) || true
+
+    # If user explicitly asked for a full sync, stage all changes
+    if [[ "$FULL_SYNC" == true ]]; then
+      git add --all || true
+    fi
+
+    if git diff --cached --quiet; then
+      echo "No changes to commit"
+    else
+      git commit -m "Update AUR package files to $VERSION"
+      if [[ "$PUSH" == true ]]; then
+        git push
+      fi
     fi
   fi
 else

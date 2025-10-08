@@ -3,7 +3,6 @@ pkgbase = gnome-shell-extension-text-clock
 	pkgver = 1.0.5
 	pkgrel = 1
 	url = https://github.com/wtbenica/text-clock
-	install = gnome-shell-extension-text-clock.install
 	arch = any
 	license = GPL-3.0-or-later
 	makedepends = unzip

@@ -24,7 +24,13 @@ SYNC_AUR_ARGS ?=
 ##    --version X.Y.Z    Specify version to use when updating .SRCINFO (overrides reading from package.json)
 ##    --yes              Assume yes to all prompts
 ##    --init             Allow initial sync to an empty AUR clone directory (no PKGBUILD). Fails if PKGBUILD already exists.
-##                       if the directory basename matches the expected AUR package name
+##                       When used, `--init` performs a full sync (copies all files from `aur/` to the AUR clone)
+##                       and stages all files for commit in the destination. Use it when syncing into a fresh AUR clone.
+##    --reuse            Run REUSE lint on the `aur/` directory before syncing. Disabled by default to keep
+##                       the staging sync minimal; enable when you want REUSE checks for AUR files.
+##    --full-sync        Copy the entire `aur/` directory rather than the default minimal set (PKGBUILD, .SRCINFO,
+##                       .gitignore). Useful when you intentionally include helper scripts or additional metadata in the
+##                       AUR clone.
 ## 
 ## sync-aur            Copy `aur/` files to local AUR clone and optionally commit/push
 ##                       - Usage: make sync-aur [AUR_REPO=/path/to/aur/clone] [SYNC_AUR_ARGS="<FLAGS>"]
