@@ -92,8 +92,19 @@ You can download the latest release of the extension as a ZIP file from GitHub:
 
 1. Download this [ZIP file (v1.1.1)](https://github.com/wtbenica/text-clock/releases/download/v1.1.1/text-clock@benica.dev.zip) from Github.
 2. Create the extension directory: `mkdir -p ~/.local/share/gnome-shell/extensions/text-clock@benica.dev`
-3. Extract the ZIP file to the extension directory: `unzip text-clock@benica.dev.zip -d ~/.local/share/gnome-shell/extensions/text-clock@benica.dev`
-4. Restart GNOME Shell for the changes to take effect. On Wayland, log out and back in. On X11, press Alt+F2, type `r`, and then press Enter.
+3. Extract the ZIP file to the extension directory:
+
+   ```bash
+   unzip text-clock@benica.dev.zip -d ~/.local/share/gnome-shell/extensions/text-clock@benica.dev
+   ```
+
+4. Compile the GSettings schemas:
+
+   ```bash
+   glib-compile-schemas "$HOME/.local/share/gnome-shell/extensions/text-clock@benica.dev/schemas"
+   ```
+
+5. Restart GNOME Shell for the changes to take effect. On Wayland, log out and back in. On X11, press Alt+F2, type `r`, and then press Enter.
 
 ##### Verifying the Download
 

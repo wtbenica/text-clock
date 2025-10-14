@@ -239,7 +239,6 @@ update_file() {
         return
     fi
     
-    # Use perl for more reliable regex replacement
     perl -i -pe "$pattern" "$file"
 }
 
