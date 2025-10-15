@@ -95,6 +95,7 @@ export class NotificationService {
 
   private extensionName: string;
   private notificationSource?: MessageTray.Source;
+  private activeSourceIds: Set<number> = new Set();
 
   /**
    * Create a new notification service for the specified extension.
@@ -242,13 +243,21 @@ export class NotificationService {
   scheduleNotification(config: NotificationConfig, delaySeconds: number): void {
     try {
       // Wait for shell UI to be ready, then add additional delay
-      GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
-        GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, delaySeconds, () => {
-          this.showNotification(config);
-          return GLib.SOURCE_REMOVE;
-        });
+      const idleId = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+        const timeoutId = GLib.timeout_add_seconds(
+          GLib.PRIORITY_DEFAULT,
+          delaySeconds,
+          () => {
+            this.showNotification(config);
+            this.activeSourceIds.delete(timeoutId);
+            return GLib.SOURCE_REMOVE;
+          },
+        );
+        this.activeSourceIds.add(timeoutId);
+        this.activeSourceIds.delete(idleId);
         return GLib.SOURCE_REMOVE;
       });
+      this.activeSourceIds.add(idleId);
     } catch (error) {
       logWarn(`Failed to schedule notification: ${String(error)}`);
     }
@@ -263,18 +272,10 @@ export class NotificationService {
    *
    * Should be called when the extension is disabled or the service is
    * no longer needed.
-   *
-   * @example
-   * ```typescript
-   * class TextClockExtension extends Extension {
-   *   disable() {
-   *     this.notificationService.destroy();
-   *   }
-   * }
-   * ```
    */
   destroy(): void {
     this.notificationSource = undefined;
+    this.clearActiveSources();
   }
 
   /**
@@ -329,6 +330,21 @@ export class NotificationService {
   }
 
   // Private Methods
+
+  /**
+   * Ensures all active scheduled notifications are cleared.
+   *
+   * Prevents any delayed notifications from appearing after the service
+   * is destroyed.
+   *
+   * @returns void
+   */
+  private clearActiveSources(): void {
+    this.activeSourceIds.forEach((id) => {
+      GLib.source_remove(id);
+    });
+    this.activeSourceIds.clear();
+  }
 
   /**
    * Gets or creates the notification source for this extension
