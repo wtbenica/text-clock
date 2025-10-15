@@ -13,7 +13,6 @@ import * as Config from "resource:///org/gnome/Shell/Extensions/js/misc/config.j
 
 import { logErr, logWarn } from "../../utils/error_utils.js";
 import { prefsGettext } from "../../utils/gettext/gettext_utils_prefs.js";
-import { createTranslatePackGetter } from "../../utils/translate/translate_pack_utils.js";
 
 /**
  * Bind a Gio.Settings key to a property on an ActionRow-like widget.
@@ -38,8 +37,6 @@ export function bindSettingsToProperty(
     );
   }
 }
-
-export const TRANSLATE_PACK = createTranslatePackGetter(prefsGettext);
 
 export function getShellVersion(): number {
   const shellVersion = parseFloat(Config.PACKAGE_VERSION);
