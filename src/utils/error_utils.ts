@@ -62,20 +62,6 @@ export function setLogger(logger: Logger): void {
   currentLogger = logger;
 }
 
-// Conditionally import gettext - use a fallback for test environment
-let _: (msgid: string) => string;
-/**
- * Attempts to use GNOME Shell's gettext if available.
- * Falls back to identity function in test or non-GNOME environments.
- */
-if (typeof imports !== "undefined" && imports.gettext) {
-  ({ gettext: _ } = imports.gettext);
-} else {
-  // Fallback for test environment or when GNOME Shell imports aren't available
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _ = (msgid: string) => msgid;
-}
-
 /**
  * Internal function for logging messages with consistent formatting.
  *
