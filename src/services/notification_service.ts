@@ -91,7 +91,7 @@ export interface NotificationAction {
 export class NotificationService {
   private static readonly DEFAULT_ICON =
     "preferences-desktop-notification-symbolic";
-  private static readonly UPDATE_DELAY_SECONDS = 4;
+  private static readonly UPDATE_DELAY_SECONDS = 3;
 
   private extensionName: string;
   private notificationSource?: MessageTray.Source;

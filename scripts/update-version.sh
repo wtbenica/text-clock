@@ -280,7 +280,7 @@ fi
 # Update README.md
 log_step "Updating README.md..."
 update_file "README.md" \
-    "s/Text Clock GNOME Extension v[0-9]+\.[0-9]+\.[0-9]+/Text Clock GNOME Extension v$NEW_VERSION/g" \
+    "s/Text Clock v[0-9]+\.[0-9]+\.[0-9]+/Text Clock v$NEW_VERSION/g" \
     "header version"
 
 update_file "README.md" \
