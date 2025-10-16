@@ -25,6 +25,7 @@ import SystemSettingsMonitor from "./services/system_settings_monitor.js";
 import {
   getNotificationTitle,
   generateUpdateMessage,
+  RELEASE_MESSAGES,
 } from "./constants/release_messages.js";
 import {
   TextClockLabel,
@@ -152,6 +153,32 @@ export default class TextClock extends Extension {
     this.#systemSettingsMonitor = new SystemSettingsMonitor(this.#settings!);
   }
 
+  /**
+   * Determines the latest release version that has notes and hasn't been seen by the user.
+   * This allows showing update messages for skipped intermediate versions (e.g., 1.0.5 → 1.1.1 shows 1.1.0 notes).
+   */
+  #findLatestUnseenRelease(
+    currentVersion: string,
+    lastSeen: string,
+  ): string | null {
+    // Get all versions with release info, sorted descending
+    const availableVersions = Object.keys(RELEASE_MESSAGES).sort((a, b) => {
+      const [aMajor, aMinor, aPatch] = a.split(".").map(Number);
+      const [bMajor, bMinor, bPatch] = b.split(".").map(Number);
+      if (aMajor !== bMajor) return bMajor - aMajor;
+      if (aMinor !== bMinor) return bMinor - aMinor;
+      return bPatch - aPatch;
+    });
+
+    // Find the highest version ≤ currentVersion that has release info and > lastSeen
+    for (const version of availableVersions) {
+      if (version <= currentVersion && (!lastSeen || version > lastSeen)) {
+        return version;
+      }
+    }
+    return null; // No unseen release with notes
+  }
+
   // Show notification if last seen version is different from current
   #maybeShowUpdateNotification() {
     if (!this.#settingsManager || !this.#notificationService) return;
@@ -169,33 +196,41 @@ export default class TextClock extends Extension {
       SettingsKey.LAST_SEEN_VERSION,
     );
 
-    if (lastSeen !== currentVersionName) {
-      // Detect if this is a first install (no previous version seen)
-      const isFirstInstall = !lastSeen || lastSeen === "";
-
-      // Generate notification content using release messages
-      const title = getNotificationTitle(
-        currentVersionName,
-        extensionGettext,
-        isFirstInstall,
-      );
-      const body = generateUpdateMessage(
-        currentVersionName,
-        extensionGettext,
-        isFirstInstall,
-      );
-
-      // Show update notification using the service
-      this.#notificationService.showUpdateNotification(title, body, () =>
-        (this as any).openPreferences(),
-      );
-
-      // Persist the current version
-      this.#settingsManager.setString(
-        SettingsKey.LAST_SEEN_VERSION,
-        currentVersionName,
-      );
+    // Find the appropriate release to notify about
+    const notifyVersion = this.#findLatestUnseenRelease(
+      currentVersionName,
+      lastSeen,
+    );
+    if (!notifyVersion) {
+      // No unseen release with notes; skip notification
+      return;
     }
+
+    // Detect if this is effectively a first install (no previous meaningful version seen)
+    const isFirstInstall = !lastSeen || lastSeen === "";
+
+    // Generate notification content using the found release version
+    const title = getNotificationTitle(
+      currentVersionName,
+      extensionGettext,
+      isFirstInstall,
+    );
+    const body = generateUpdateMessage(
+      notifyVersion,
+      extensionGettext,
+      isFirstInstall,
+    );
+
+    // Show notification
+    this.#notificationService.showUpdateNotification(title, body, () =>
+      (this as any).openPreferences(),
+    );
+
+    // Persist the current version (not the notified version, to avoid re-showing)
+    this.#settingsManager.setString(
+      SettingsKey.LAST_SEEN_VERSION,
+      currentVersionName,
+    );
   }
 
   // Initialize class properties to undefined
