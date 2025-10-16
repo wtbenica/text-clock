@@ -785,9 +785,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@girs/gnome-shell@npm:49.0.2":
-  version: 49.0.2
-  resolution: "@girs/gnome-shell@npm:49.0.2"
+"@girs/gnome-shell@npm:49.0.3":
+  version: 49.0.3
+  resolution: "@girs/gnome-shell@npm:49.0.3"
   dependencies:
     "@girs/accountsservice-1.0": "npm:1.0.0-4.0.0-beta.38"
     "@girs/adw-1": "npm:^1.9.0-4.0.0-beta.38"
@@ -813,7 +813,7 @@ __metadata:
     "@girs/shew-0": "npm:^0.0.0-4.0.0-beta.38"
     "@girs/st-17": "npm:^17.0.0-4.0.0-beta.38"
     "@girs/upowerglib-1.0": "npm:^0.99.1-4.0.0-beta.38"
-  checksum: 10c0/004a6b3de3bc651a9dfe133b03cc2a20a8250c59dee58fa7549609fc76b21156002d65d5d44121006d27f6d4327dc9169abc41f4270b3d3fbff25918890a5851
+  checksum: 10c0/b872089a5a6fd0cba8eadc159c22d31529432e08f0e725f51dacef70b662607006613ec3bdb758c1c5beb0ce4832064919a17389d6bfda5fd3fe8514c65e25f7
   languageName: node
   linkType: hard
 
@@ -5178,7 +5178,7 @@ __metadata:
   resolution: "text-clock@workspace:."
   dependencies:
     "@girs/gjs": "npm:^4.0.0-beta.38"
-    "@girs/gnome-shell": "npm:49.0.2"
+    "@girs/gnome-shell": "npm:49.0.3"
     "@types/jest": "npm:30.0.0"
     "@types/node": "npm:24.7.2"
     "@typescript-eslint/eslint-plugin": "npm:8.46.1"
