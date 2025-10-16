@@ -23,11 +23,6 @@ import { SettingsManager } from "./services/settings_manager.js";
 import { StyleService } from "./services/style_service.js";
 import SystemSettingsMonitor from "./services/system_settings_monitor.js";
 import {
-  getNotificationTitle,
-  generateUpdateMessage,
-  RELEASE_MESSAGES,
-} from "./constants/release_messages.js";
-import {
   TextClockLabel,
   CLOCK_LABEL_PROPERTIES,
 } from "./presentation/widgets/clock_widget.js";
@@ -39,14 +34,15 @@ import {
 import { fuzzinessFromEnumIndex } from "./utils/parse_utils.js";
 import { LocalizedStrings } from "./models/localized_strings.js";
 import { createTranslatePack } from "./utils/translate/translate_pack_utils.js";
+import { maybeShowUpdateNotification } from "./utils/update_notification_utils.js";
 
 const CLOCK_STYLE_CLASS_NAME = "clock";
 
 /**
  * Main Text Clock extension class for GNOME Shell.
  *
- * This extension replaces GNOME Shell's default digital clock with a textual
- * representation of the time, displaying phrases like "five past noon" instead
+ * This extension replaces GNOME Shell's default clock with a textual
+ * view of the time, using phrases like "five past noon" instead
  * of "12:05". It integrates seamlessly with the GNOME Shell top bar and
  * provides comprehensive customization options.
  *
@@ -62,17 +58,6 @@ const CLOCK_STYLE_CLASS_NAME = "clock";
  * - SettingsManager: Reactive settings handling with type safety
  * - StyleService: Color and appearance management with live updates
  * - NotificationService: User notifications for updates and errors
- *
- * Architecture follows GNOME Shell extension patterns with proper resource
- * management, signal handling, and cleanup to prevent memory leaks.
- *
- * @example
- * ```typescript
- * // Extension lifecycle is managed by GNOME Shell
- * const extension = new TextClock(metadata);
- * extension.enable();  // Called by GNOME Shell when extension activates
- * extension.disable(); // Called by GNOME Shell when extension deactivates
- * ```
  */
 export default class TextClock extends Extension {
   #settings?: Gio.Settings;
@@ -104,13 +89,23 @@ export default class TextClock extends Extension {
    */
   enable() {
     this.#initServices();
+
     initExtensionGettext(_, ngettext, pgettext);
+
     try {
       this.#systemSettingsMonitor?.start();
     } catch (e) {
       logWarn(`Failed to start SystemSettingsMonitor: ${e}`);
     }
-    this.#maybeShowUpdateNotification();
+
+    maybeShowUpdateNotification({
+      settingsManager: this.#settingsManager,
+      notificationService: this.#notificationService,
+      metadata: this.metadata,
+      openPreferences: () => (this as any).openPreferences(),
+    });
+
+    this.#resetProperties();
     this.#retrieveDateMenu();
     this.#placeClockLabel();
     this.#bindSettingsToClockLabel();
@@ -151,86 +146,6 @@ export default class TextClock extends Extension {
     this.#styleService = new StyleService(this.#settings!);
     this.#notificationService = new NotificationService("Text Clock");
     this.#systemSettingsMonitor = new SystemSettingsMonitor(this.#settings!);
-  }
-
-  /**
-   * Determines the latest release version that has notes and hasn't been seen by the user.
-   * This allows showing update messages for skipped intermediate versions (e.g., 1.0.5 → 1.1.1 shows 1.1.0 notes).
-   */
-  #findLatestUnseenRelease(
-    currentVersion: string,
-    lastSeen: string,
-  ): string | null {
-    // Get all versions with release info, sorted descending
-    const availableVersions = Object.keys(RELEASE_MESSAGES).sort((a, b) => {
-      const [aMajor, aMinor, aPatch] = a.split(".").map(Number);
-      const [bMajor, bMinor, bPatch] = b.split(".").map(Number);
-      if (aMajor !== bMajor) return bMajor - aMajor;
-      if (aMinor !== bMinor) return bMinor - aMinor;
-      return bPatch - aPatch;
-    });
-
-    // Find the highest version ≤ currentVersion that has release info and > lastSeen
-    for (const version of availableVersions) {
-      if (version <= currentVersion && (!lastSeen || version > lastSeen)) {
-        return version;
-      }
-    }
-    return null; // No unseen release with notes
-  }
-
-  // Show notification if last seen version is different from current
-  #maybeShowUpdateNotification() {
-    if (!this.#settingsManager || !this.#notificationService) return;
-
-    const meta = this.metadata || {};
-    const currentVersionName: string =
-      meta["version-name"] || String(meta.version || "");
-
-    if (!currentVersionName) {
-      logWarn("No version-name found in metadata, skipping notification");
-      return;
-    }
-
-    const lastSeen = this.#settingsManager.getString(
-      SettingsKey.LAST_SEEN_VERSION,
-    );
-
-    // Find the appropriate release to notify about
-    const notifyVersion = this.#findLatestUnseenRelease(
-      currentVersionName,
-      lastSeen,
-    );
-    if (!notifyVersion) {
-      // No unseen release with notes; skip notification
-      return;
-    }
-
-    // Detect if this is effectively a first install (no previous meaningful version seen)
-    const isFirstInstall = !lastSeen || lastSeen === "";
-
-    // Generate notification content using the found release version
-    const title = getNotificationTitle(
-      currentVersionName,
-      extensionGettext,
-      isFirstInstall,
-    );
-    const body = generateUpdateMessage(
-      notifyVersion,
-      extensionGettext,
-      isFirstInstall,
-    );
-
-    // Show notification
-    this.#notificationService.showUpdateNotification(title, body, () =>
-      (this as any).openPreferences(),
-    );
-
-    // Persist the current version (not the notified version, to avoid re-showing)
-    this.#settingsManager.setString(
-      SettingsKey.LAST_SEEN_VERSION,
-      currentVersionName,
-    );
   }
 
   // Initialize class properties to undefined
