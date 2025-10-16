@@ -28,7 +28,7 @@ See the full release notes: [RELEASE_NOTES.md](RELEASE_NOTES.md)
 
 #### Version Availability
 
-- **v1.1.0**: Currently available on GitHub only (awaiting EGO approval)
+- **v1.1.1**: Currently available on GitHub only (awaiting EGO approval)
 - **v1.0.5**: Available on GNOME Extensions, AUR, and other platforms
 
 ### Overview
@@ -87,7 +87,7 @@ This extension is available on [extensions.gnome.org](https://extensions.gnome.o
 
 #### From a ZIP File
 
-You can download the latest release of the extension as a ZIP file from GitHub (v1.1.0):
+You can download the latest release of the extension as a ZIP file from GitHub (v1.1.1):
 
 1. Download this [ZIP file (v1.1.1)](https://github.com/wtbenica/text-clock/releases/download/v1.1.1/text-clock.dev.zip) from Github.
 2. Create the extension directory: `mkdir -p ~/.local/share/gnome-shell/extensions/text-clock@benica.dev`
