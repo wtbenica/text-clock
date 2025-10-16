@@ -134,7 +134,7 @@ Then submit the ZIP file to https://extensions.gnome.org/upload/
 
 ```bash
 # Start development for next version
-make start-dev-branch TYPE=patch   # 1.1.0 → 1.1.1
+make start-dev-branch TYPE=patch   # 1.1.1 → 1.1.2
 ```
 
 This creates a new development branch with incremented version numbers.

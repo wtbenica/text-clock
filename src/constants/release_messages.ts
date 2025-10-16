@@ -60,7 +60,6 @@ export const RELEASE_MESSAGES: Record<string, ReleaseInfo> = {
       secondary: [
         ({ _ }) => _("Modern preferences interface"),
         ({ _ }) => _("Flexible divider customization"),
-        ({ _ }) => _("Comprehensive translations"),
       ],
     },
   },

@@ -39,15 +39,3 @@ export function createTranslatePack(
     daysOfMonth: dateConstants.daysOfMonth(),
   });
 }
-
-/**
- * Create a function that returns a translated WordPack.
- *
- * @param gettextFns - Gettext functions for translation
- * @returns Function that creates and returns a translated WordPack
- */
-export function createTranslatePackGetter(
-  gettextFns: GettextFunctions,
-): () => LocalizedStrings {
-  return () => createTranslatePack(gettextFns);
-}

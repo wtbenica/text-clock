@@ -23,10 +23,6 @@ import { SettingsManager } from "./services/settings_manager.js";
 import { StyleService } from "./services/style_service.js";
 import SystemSettingsMonitor from "./services/system_settings_monitor.js";
 import {
-  getNotificationTitle,
-  generateUpdateMessage,
-} from "./constants/release_messages.js";
-import {
   TextClockLabel,
   CLOCK_LABEL_PROPERTIES,
 } from "./presentation/widgets/clock_widget.js";
@@ -36,31 +32,17 @@ import {
   initExtensionGettext,
 } from "./utils/gettext/gettext_utils_ext.js";
 import { fuzzinessFromEnumIndex } from "./utils/parse_utils.js";
-import { createTranslatePackGetter } from "./utils/translate/translate_pack_utils.js";
 import { LocalizedStrings } from "./models/localized_strings.js";
+import { createTranslatePack } from "./utils/translate/translate_pack_utils.js";
+import { maybeShowUpdateNotification } from "./utils/update_notification_utils.js";
 
 const CLOCK_STYLE_CLASS_NAME = "clock";
-
-// Initialize gettext functions with the real GNOME Shell functions
-initExtensionGettext(_, ngettext, pgettext);
-
-/**
- * Translation pack provider for the extension runtime environment.
- *
- * Creates a WordPack with localized strings for time and date formatting
- * using the extension's gettext context. This provides access to translated
- * text throughout the extension's runtime code.
- *
- * @returns Function that creates a WordPack with current locale translations
- */
-export const createLocalizedStrings =
-  createTranslatePackGetter(extensionGettext);
 
 /**
  * Main Text Clock extension class for GNOME Shell.
  *
- * This extension replaces GNOME Shell's default digital clock with a textual
- * representation of the time, displaying phrases like "five past noon" instead
+ * This extension replaces GNOME Shell's default clock with a textual
+ * view of the time, using phrases like "five past noon" instead
  * of "12:05". It integrates seamlessly with the GNOME Shell top bar and
  * provides comprehensive customization options.
  *
@@ -76,17 +58,6 @@ export const createLocalizedStrings =
  * - SettingsManager: Reactive settings handling with type safety
  * - StyleService: Color and appearance management with live updates
  * - NotificationService: User notifications for updates and errors
- *
- * Architecture follows GNOME Shell extension patterns with proper resource
- * management, signal handling, and cleanup to prevent memory leaks.
- *
- * @example
- * ```typescript
- * // Extension lifecycle is managed by GNOME Shell
- * const extension = new TextClock(metadata);
- * extension.enable();  // Called by GNOME Shell when extension activates
- * extension.disable(); // Called by GNOME Shell when extension deactivates
- * ```
  */
 export default class TextClock extends Extension {
   #settings?: Gio.Settings;
@@ -112,18 +83,22 @@ export default class TextClock extends Extension {
    * Initialization sequence:
    * 1. Initialize core services (settings, styling, notifications)
    * 2. Show update notifications if needed
-   * 3. Integrate with GNOME Shell's date menu button
+   * 3. Get references to GNOME Shell's date menu components
    * 4. Create and place the text clock widget
-   * 5. Bind settings for reactive updates
+   * 5. Bind settings
    */
   enable() {
+    initExtensionGettext(_, ngettext, pgettext);
+
     this.#initServices();
-    try {
-      this.#systemSettingsMonitor?.start();
-    } catch (e) {
-      logWarn(`Failed to start SystemSettingsMonitor: ${e}`);
-    }
-    this.#maybeShowUpdateNotification();
+
+    maybeShowUpdateNotification({
+      settingsManager: this.#settingsManager,
+      notificationService: this.#notificationService,
+      metadata: this.metadata,
+      openPreferences: () => (this as any).openPreferences(),
+    });
+
     this.#retrieveDateMenu();
     this.#placeClockLabel();
     this.#bindSettingsToClockLabel();
@@ -153,66 +128,29 @@ export default class TextClock extends Extension {
    * and notification handling. Services are initialized in dependency order
    * to ensure proper functionality.
    *
+   * Starts system settings monitor for changes in system accent color, and
+   * show date/time format if applicable.
+   *
    * @private
    */
   #initServices() {
-    // Initialize settings first
     this.#settings = (this as any).getSettings();
 
-    // Initialize services directly
     this.#settingsManager = new SettingsManager(this.#settings!);
     this.#styleService = new StyleService(this.#settings!);
     this.#notificationService = new NotificationService("Text Clock");
     this.#systemSettingsMonitor = new SystemSettingsMonitor(this.#settings!);
-  }
 
-  // Show notification if last seen version is different from current
-  #maybeShowUpdateNotification() {
-    if (!this.#settingsManager || !this.#notificationService) return;
-
-    const meta = this.metadata || {};
-    const currentVersionName: string =
-      meta["version-name"] || String(meta.version || "");
-
-    if (!currentVersionName) {
-      logWarn("No version-name found in metadata, skipping notification");
-      return;
-    }
-
-    const lastSeen = this.#settingsManager.getString(
-      SettingsKey.LAST_SEEN_VERSION,
-    );
-
-    if (lastSeen !== currentVersionName) {
-      // Detect if this is a first install (no previous version seen)
-      const isFirstInstall = !lastSeen || lastSeen === "";
-
-      // Generate notification content using release messages
-      const title = getNotificationTitle(
-        currentVersionName,
-        extensionGettext,
-        isFirstInstall,
-      );
-      const body = generateUpdateMessage(
-        currentVersionName,
-        extensionGettext,
-        isFirstInstall,
-      );
-
-      // Show update notification using the service
-      this.#notificationService.showUpdateNotification(title, body, () =>
-        (this as any).openPreferences(),
-      );
-
-      // Persist the current version
-      this.#settingsManager.setString(
-        SettingsKey.LAST_SEEN_VERSION,
-        currentVersionName,
-      );
+    try {
+      this.#systemSettingsMonitor?.start();
+    } catch (e) {
+      logWarn(`Failed to start SystemSettingsMonitor: ${e}`);
     }
   }
 
-  // Initialize class properties to undefined
+  /**
+   * Initialize class properties to undefined
+   */
   #resetProperties() {
     this.#settings = undefined;
     this.#settingsManager = undefined;
@@ -241,7 +179,7 @@ export default class TextClock extends Extension {
 
   // Place the clock label in the top box
   #placeClockLabel() {
-    this.#translatePack = createLocalizedStrings();
+    this.#translatePack = createTranslatePack(extensionGettext);
 
     // Create the top box
     this.#topBox = new St.BoxLayout({

@@ -19,9 +19,9 @@ usage() {
     echo "Usage: $0 [options] <bump-type>"
     echo ""
     echo "Bump types:"
-    echo "  patch    Increment patch version (1.0.5 → 1.0.6)"
-    echo "  minor    Increment minor version (1.0.5 → 1.1.0)"
-    echo "  major    Increment major version (1.0.5 → 2.0.0)"
+    echo "  patch    Increment patch version (1.1.1 → 1.1.2)"
+    echo "  minor    Increment minor version (1.1.1 → 1.2.0)"
+    echo "  major    Increment major version (1.1.1 → 2.0.0)"
     echo ""
     echo "Options:"
     echo "  -h, --help          Show this help message"
@@ -280,7 +280,7 @@ fi
 # Update README.md
 log_step "Updating README.md..."
 update_file "README.md" \
-    "s/Text Clock GNOME Extension v[0-9]+\.[0-9]+\.[0-9]+/Text Clock GNOME Extension v$NEW_VERSION/g" \
+    "s/Text Clock v[0-9]+\.[0-9]+\.[0-9]+/Text Clock v$NEW_VERSION/g" \
     "header version"
 
 update_file "README.md" \

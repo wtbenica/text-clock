@@ -8,26 +8,11 @@
 
 import Adw from "gi://Adw";
 import Gio from "gi://Gio";
-import GLib from "gi://GLib";
+// @ts-ignore
+import * as Config from "resource:///org/gnome/Shell/Extensions/js/misc/config.js";
 
 import { logErr, logWarn } from "../../utils/error_utils.js";
 import { prefsGettext } from "../../utils/gettext/gettext_utils_prefs.js";
-import { createTranslatePackGetter } from "../../utils/translate/translate_pack_utils.js";
-
-/**
- * Extract major version number from GNOME Shell version string.
- */
-function parseGnomeShellVersionString(
-  input: string | null | undefined,
-): number {
-  if (!input) return NaN;
-  const s = String(input).trim();
-  const re = /(?:GNOME Shell\s*)?(\d+)(?:\.|\b)/i;
-  const m = s.match(re);
-  if (!m) return NaN;
-  const major = parseInt(m[1], 10);
-  return Number.isNaN(major) ? NaN : major;
-}
 
 /**
  * Bind a Gio.Settings key to a property on an ActionRow-like widget.
@@ -53,55 +38,10 @@ export function bindSettingsToProperty(
   }
 }
 
-export const TRANSLATE_PACK = createTranslatePackGetter(prefsGettext);
-
-declare const imports: any;
-
 export function getShellVersion(): number {
-  try {
-    const versionString = GLib.getenv("GNOME_SHELL_VERSION");
-    const parsed = parseGnomeShellVersionString(versionString as any);
-    if (!Number.isNaN(parsed)) return parsed;
-  } catch (e) {
-    logWarn(`Error reading GNOME_SHELL_VERSION env: ${e}`);
-  }
+  const shellVersion = parseFloat(Config.PACKAGE_VERSION);
 
-  try {
-    const [ok, out] = GLib.spawn_command_line_sync("gnome-shell --version");
-    if (ok && out) {
-      let outStr: string | null = null;
-      try {
-        const Decoder = (globalThis as any).TextDecoder;
-        outStr = new Decoder("utf-8").decode(out as Uint8Array);
-      } catch (e) {
-        logWarn(
-          `Failed to decode gnome-shell version output with TextDecoder: ${e}`,
-        );
-      }
-
-      if (outStr) {
-        const parsed = parseGnomeShellVersionString(outStr);
-        if (!Number.isNaN(parsed)) return parsed;
-      }
-    }
-  } catch (e) {
-    logWarn(`Could not run 'gnome-shell --version': ${e}`);
-  }
-
-  try {
-    if (typeof imports !== "undefined" && imports.misc && imports.misc.config) {
-      const Config = imports.misc.config;
-      const apiVersion = Config.LIBMUTTER_API_VERSION;
-      if (typeof apiVersion === "number") {
-        const shellVersion = apiVersion + 35;
-        return shellVersion;
-      }
-    }
-  } catch (error) {
-    logWarn(
-      `Failed to detect GNOME Shell version from imports.misc.config: ${error}`,
-    );
-  }
+  if (!Number.isNaN(shellVersion)) return Math.floor(shellVersion);
 
   logWarn("Could not detect GNOME Shell version, assuming 45");
   return 45;

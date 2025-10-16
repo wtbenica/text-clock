@@ -4,15 +4,11 @@
  */
 
 import Adw from "gi://Adw";
-// @ts-ignore: imported for runtime only (GJS)
 import Gdk from "gi://Gdk";
-// @ts-ignore: imported for runtime only (GJS)
 import Gio from "gi://Gio";
-// @ts-ignore: imported for runtime only (GJS)
 import GLib from "gi://GLib";
-// @ts-ignore: imported for runtime only (GJS)
 import Gtk from "gi://Gtk";
-// @ts-ignore: runtime resource provided by GNOME Shell
+
 import {
   ExtensionPreferences,
   gettext as _,
