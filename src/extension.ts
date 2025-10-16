@@ -26,7 +26,7 @@ import {
   TextClockLabel,
   CLOCK_LABEL_PROPERTIES,
 } from "./presentation/widgets/clock_widget.js";
-import { logErr, logInfo, logWarn } from "./utils/error_utils.js";
+import { logErr, logWarn } from "./utils/error_utils.js";
 import {
   extensionGettext,
   initExtensionGettext,
@@ -134,18 +134,13 @@ export default class TextClock extends Extension {
    * @private
    */
   #initServices() {
-    // Initialize settings first
     this.#settings = (this as any).getSettings();
 
-    // Initialize services directly
     this.#settingsManager = new SettingsManager(this.#settings!);
-    logInfo("initializing StyleService");
     this.#styleService = new StyleService(this.#settings!);
-    logInfo("StyleService initialized? " + (this.#styleService ? "yes" : "no"));
     this.#notificationService = new NotificationService("Text Clock");
     this.#systemSettingsMonitor = new SystemSettingsMonitor(this.#settings!);
 
-    // Start monitoring system settings
     try {
       this.#systemSettingsMonitor?.start();
     } catch (e) {
@@ -190,7 +185,7 @@ export default class TextClock extends Extension {
     this.#topBox = new St.BoxLayout({
       style_class: CLOCK_STYLE_CLASS_NAME,
     });
-    logInfo("Style service? " + (this.#styleService ? "yes" : "no"));
+
     // Create the clock label with current settings
     const currentStyles = this.#styleService!.getCurrentStyles();
     this.#clockLabel = new TextClockLabel({
