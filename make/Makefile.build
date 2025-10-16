@@ -25,6 +25,10 @@ build: $(DIST_DIR)/extension.js schemas/org.gnome.shell.extensions.text-clock.gs
 
 ## pack                Create the distribution shell-extension bundle
 pack: build $(NAME)@${DOMAIN}.shell-extension.zip
+	@# Rename to EGO/GitHub-friendly name if needed
+	@if [ -f $(NAME)@${DOMAIN}.shell-extension.zip ]; then \
+	  mv $(NAME)@${DOMAIN}.shell-extension.zip $(NAME)@${DOMAIN}.zip; \
+	fi
 
 ## docs                Generate API documentation using TypeDoc
 docs: node_modules/
@@ -62,8 +66,8 @@ clean:
 ## install             Install for the current user only (~/.local/share/gnome-shell/extensions)
 install: create_ext_dir build i18n-compile pack
 	@echo "Installing extension bundle with gnome-extensions..."
-	@gnome-extensions install --force $(NAME)@$(DOMAIN).shell-extension.zip || { echo "ERROR: gnome-extensions install failed" >&2; exit 1; }
-	@rm -f $(NAME)@$(DOMAIN).shell-extension.zip
+	@gnome-extensions install --force $(NAME)@$(DOMAIN).zip || { echo "ERROR: gnome-extensions install failed" >&2; exit 1; }
+	@rm -f $(NAME)@$(DOMAIN).zip
 	@echo "Extension installed successfully."
 
 ## uninstall           Uninstall from the current user (~/.local/share/gnome-shell/extensions)
