@@ -26,7 +26,7 @@ import {
   TextClockLabel,
   CLOCK_LABEL_PROPERTIES,
 } from "./presentation/widgets/clock_widget.js";
-import { logErr, logWarn } from "./utils/error_utils.js";
+import { logErr, logInfo, logWarn } from "./utils/error_utils.js";
 import {
   extensionGettext,
   initExtensionGettext,
@@ -83,20 +83,14 @@ export default class TextClock extends Extension {
    * Initialization sequence:
    * 1. Initialize core services (settings, styling, notifications)
    * 2. Show update notifications if needed
-   * 3. Integrate with GNOME Shell's date menu button
+   * 3. Get references to GNOME Shell's date menu components
    * 4. Create and place the text clock widget
-   * 5. Bind settings for reactive updates
+   * 5. Bind settings
    */
   enable() {
-    this.#initServices();
-
     initExtensionGettext(_, ngettext, pgettext);
 
-    try {
-      this.#systemSettingsMonitor?.start();
-    } catch (e) {
-      logWarn(`Failed to start SystemSettingsMonitor: ${e}`);
-    }
+    this.#initServices();
 
     maybeShowUpdateNotification({
       settingsManager: this.#settingsManager,
@@ -105,7 +99,6 @@ export default class TextClock extends Extension {
       openPreferences: () => (this as any).openPreferences(),
     });
 
-    this.#resetProperties();
     this.#retrieveDateMenu();
     this.#placeClockLabel();
     this.#bindSettingsToClockLabel();
@@ -135,6 +128,9 @@ export default class TextClock extends Extension {
    * and notification handling. Services are initialized in dependency order
    * to ensure proper functionality.
    *
+   * Starts system settings monitor for changes in system accent color, and
+   * show date/time format if applicable.
+   *
    * @private
    */
   #initServices() {
@@ -143,12 +139,23 @@ export default class TextClock extends Extension {
 
     // Initialize services directly
     this.#settingsManager = new SettingsManager(this.#settings!);
+    logInfo("initializing StyleService");
     this.#styleService = new StyleService(this.#settings!);
+    logInfo("StyleService initialized? " + (this.#styleService ? "yes" : "no"));
     this.#notificationService = new NotificationService("Text Clock");
     this.#systemSettingsMonitor = new SystemSettingsMonitor(this.#settings!);
+
+    // Start monitoring system settings
+    try {
+      this.#systemSettingsMonitor?.start();
+    } catch (e) {
+      logWarn(`Failed to start SystemSettingsMonitor: ${e}`);
+    }
   }
 
-  // Initialize class properties to undefined
+  /**
+   * Initialize class properties to undefined
+   */
   #resetProperties() {
     this.#settings = undefined;
     this.#settingsManager = undefined;
@@ -183,7 +190,7 @@ export default class TextClock extends Extension {
     this.#topBox = new St.BoxLayout({
       style_class: CLOCK_STYLE_CLASS_NAME,
     });
-
+    logInfo("Style service? " + (this.#styleService ? "yes" : "no"));
     // Create the clock label with current settings
     const currentStyles = this.#styleService!.getCurrentStyles();
     this.#clockLabel = new TextClockLabel({

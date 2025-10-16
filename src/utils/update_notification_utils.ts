@@ -3,6 +3,7 @@ import {
   getNotificationTitle,
   generateUpdateMessage,
 } from "../constants/release_messages.js";
+import SettingsKey from "../models/settings_keys.js";
 import { extensionGettext } from "../utils/gettext/gettext_utils_ext.js";
 
 function findLatestUnseenRelease(
@@ -43,7 +44,7 @@ export function maybeShowUpdateNotification({
     return;
   }
 
-  const lastSeen = settingsManager.getString("LAST_SEEN_VERSION");
+  const lastSeen = settingsManager.getString(SettingsKey.LAST_SEEN_VERSION);
   const notifyVersion = findLatestUnseenRelease(currentVersionName, lastSeen);
 
   if (!notifyVersion) {
@@ -65,5 +66,5 @@ export function maybeShowUpdateNotification({
 
   notificationService.showUpdateNotification(title, body, openPreferences);
 
-  settingsManager.setString("LAST_SEEN_VERSION", currentVersionName);
+  settingsManager.setString(SettingsKey.LAST_SEEN_VERSION, currentVersionName);
 }
