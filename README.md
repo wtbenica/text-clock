@@ -26,11 +26,6 @@
 
 See the full release notes: [RELEASE_NOTES.md](RELEASE_NOTES.md)
 
-#### Version Availability
-
-- **v1.1.1**: Currently available on GitHub only (awaiting EGO approval)
-- **v1.0.5**: Available on GNOME Extensions, AUR, and other platforms
-
 ### Overview
 
 **Text Clock** modifies the GNOME Shell top bar clock to show the time as text.
@@ -58,7 +53,7 @@ The simplest way to install the extension is using [_Extensions Manager_](https:
 
 #### From AUR (Arch Linux)
 
-Arch Linux users can install the extension from the AUR (currently v1.0.5):
+Arch Linux users can install the extension from the AUR:
 
 ```bash
 # Using an AUR helper (recommended)
@@ -74,7 +69,7 @@ This installs the extension system-wide and is managed by the package manager.
 
 #### From extensions.gnome.org
 
-This extension is available on [extensions.gnome.org](https://extensions.gnome.org/extension/7186/text-clock/) (currently v1.0.5). To use the site, you'll need to install a couple of components:
+This extension is available on [extensions.gnome.org](https://extensions.gnome.org/extension/7186/text-clock/). To use the site, you'll need to install a couple of components:
 
 - The browser extension
   - _Chrome-based browsers:_ [Chrome Web Store](https://chrome.google.com/webstore/detail/gnome-shell-integration/gphhapmejobijbbhgpjhcjognlahblep).
@@ -87,7 +82,7 @@ This extension is available on [extensions.gnome.org](https://extensions.gnome.o
 
 #### From a ZIP File
 
-You can download the latest release of the extension as a ZIP file from GitHub (v1.1.1):
+You can download the latest release of the extension as a ZIP file from GitHub:
 
 1. Download this [ZIP file (v1.1.1)](https://github.com/wtbenica/text-clock/releases/download/v1.1.1/text-clock@benica.dev.zip) from Github.
 2. Create the extension directory: `mkdir -p ~/.local/share/gnome-shell/extensions/text-clock@benica.dev`

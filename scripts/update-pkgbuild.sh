@@ -24,11 +24,16 @@ set -euo pipefail
 # Configuration
 PKGNAME="gnome-shell-extension-text-clock"
 GITHUB_REPO="wtbenica/text-clock"
-AUR_DIR="$(dirname "$0")"
+
+# Determine AUR directory
 if [[ -f "./PKGBUILD" ]]; then
     AUR_DIR="$(pwd)"
+elif [[ -f "./aur/PKGBUILD" ]]; then
+    AUR_DIR="$(pwd)/aur"
 else
-    AUR_DIR="$(dirname "$0")"
+    # Fallback to script directory's parent/aur
+    SCRIPT_DIR="$(dirname "$0")"
+    AUR_DIR="$(dirname "$SCRIPT_DIR")/aur"
 fi
 
 # Initialize variables
