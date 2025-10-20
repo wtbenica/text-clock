@@ -17,7 +17,7 @@ install='gnome-shell-extension-text-clock.install'
 source=(
     "text-clock@benica.dev.zip::https://github.com/wtbenica/text-clock/releases/download/v${pkgver}/text-clock@benica.dev.zip"
 )
-sha256sums=('e87b5f4a3077b417c31f1de61616cfb9a30daf5a4f8f985ce3214ee165d38ee5')
+sha256sums=('5f5e3abc0ced48fefe8f3171ac8304258db6dc5ea66155301b5079474dc29243')
 noextract=("text-clock@benica.dev.zip")
 
 prepare() {
