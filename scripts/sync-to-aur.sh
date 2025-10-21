@@ -248,6 +248,7 @@ else
     --include='PKGBUILD'
     --include='.SRCINFO'
     --include='.gitignore'
+    --include='*.install'
     --include='LICENSES/'
     --include='LICENSES/**'
     --include='REUSE.toml'
