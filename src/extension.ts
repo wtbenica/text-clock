@@ -181,6 +181,20 @@ export default class TextClock extends Extension {
   #placeClockLabel() {
     this.#translatePack = createTranslatePack(extensionGettext);
 
+    const clockDisplayBox = this.#findClockDisplayBox();
+
+    // Remove any existing TextClock top box to avoid duplicates
+    const existingClockBox = clockDisplayBox
+      .get_children()
+      .find(
+        (child: Clutter.Actor) =>
+          child instanceof St.BoxLayout &&
+          child.has_style_class_name(CLOCK_STYLE_CLASS_NAME),
+      );
+    if (existingClockBox) {
+      existingClockBox.destroy();
+    }
+
     // Create the top box
     this.#topBox = new St.BoxLayout({
       style_class: CLOCK_STYLE_CLASS_NAME,
@@ -202,7 +216,6 @@ export default class TextClock extends Extension {
 
     this.#applyStyles();
 
-    const clockDisplayBox = this.#findClockDisplayBox();
     clockDisplayBox.add_child(this.#topBox);
 
     this.#clockDisplay!.remove_style_class_name(CLOCK_STYLE_CLASS_NAME);
