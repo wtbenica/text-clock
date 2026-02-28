@@ -112,7 +112,7 @@ For added security, you can verify the integrity of the downloaded ZIP file usin
 1. **Download the checksum file**:
 
    ```bash
-   wget https://github.com/wtbenica/text-clock/releases/download/v1.1.1/text-clock.dev.zip.sha256
+   wget https://github.com/wtbenica/text-clock/releases/download/v1.1.2/text-clock@benica.dev.zip.sha256
    ```
 
 2. **Verify the ZIP file**:
