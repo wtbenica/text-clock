@@ -116,7 +116,12 @@ export class ClockFormatter {
       timeFormat,
     );
     const roundedHour = (shouldRoundUp ? hours + 1 : hours) % 24;
-    const hourName = this.#getHourName(roundedHour, minuteBucket, timeFormat);
+    const hourName = ClockFormatter.#computeHourName(
+      this.wordPack,
+      roundedHour,
+      minuteBucket,
+      timeFormat,
+    );
     const time = this.#getTimeString(hourName, minuteBucket, timeFormat);
     // Support showing weekday alone (when showDate is false but showWeekday is true).
     const wantsWeekdayOnly = !showDate && showWeekday;
@@ -132,19 +137,6 @@ export class ClockFormatter {
     }
 
     return { time, divider, date: dateStr };
-  }
-
-  #getHourName(
-    hour: number,
-    minuteBucket: number,
-    timeFormat: TimeFormat,
-  ): string {
-    return ClockFormatter.#computeHourName(
-      this.wordPack,
-      hour,
-      minuteBucket,
-      timeFormat,
-    );
   }
 
   static #computeHourName(
