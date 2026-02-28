@@ -18,9 +18,6 @@ import SettingsKey from "../models/settings_keys.js";
 import { logErr, logWarn } from "../utils/error_utils.js";
 import { fuzzinessFromEnumIndex } from "../utils/parse_utils.js";
 
-/** Default to 5-minute fuzziness */
-const DEFAULT_FUZZINESS_INDEX = 1;
-
 /** Callback invoked when a setting changes. */
 export type SettingsChangeCallback = (
   newValue: any,
@@ -59,102 +56,53 @@ export class SettingsManager {
 
   /**
    * Get a boolean setting value.
-   *
-   * @returns Boolean value or defaultValue on error
    */
-  getBoolean(
-    key: SettingsKey | string,
-    defaultValue: boolean = false,
-  ): boolean {
-    try {
-      return this.#settings.get_boolean(key);
-    } catch (error) {
-      logWarn(`Failed to get boolean setting "${key}": ${error}`);
-      return defaultValue;
-    }
+  getBoolean(key: SettingsKey | string): boolean {
+    return this.#settings.get_boolean(key);
   }
 
   /**
    * Set a boolean setting value.
-   *
-   * @returns true on success, false on error
    */
   setBoolean(key: SettingsKey | string, value: boolean): boolean {
-    try {
-      return this.#settings.set_boolean(key, value);
-    } catch (error) {
-      logErr(`Failed to set boolean setting "${key}" to ${value}: ${error}`);
-      return false;
-    }
+    return this.#settings.set_boolean(key, value);
   }
 
   /**
    * Get a string setting value.
-   *
-   * @returns String value or defaultValue on error
    */
-  getString(key: SettingsKey | string, defaultValue: string = ""): string {
-    try {
-      return this.#settings.get_string(key);
-    } catch (error) {
-      logWarn(`Failed to get string setting "${key}": ${error}`);
-      return defaultValue;
-    }
+  getString(key: SettingsKey | string): string {
+    return this.#settings.get_string(key);
   }
 
   /**
    * Set a string setting value.
-   *
-   * @returns true on success, false on error
    */
   setString(key: SettingsKey | string, value: string): boolean {
-    try {
-      return this.#settings.set_string(key, value);
-    } catch (error) {
-      logErr(`Failed to set string setting "${key}" to "${value}": ${error}`);
-      return false;
-    }
+    return this.#settings.set_string(key, value);
   }
 
   /**
    * Get an enum setting value (integer index).
-   *
-   * @returns Enum index or defaultValue on error
    */
-  getEnum(key: SettingsKey | string, defaultValue: number = 0): number {
-    try {
-      return this.#settings.get_enum(key);
-    } catch (error) {
-      logWarn(`Failed to get enum setting "${key}": ${error}`);
-      return defaultValue;
-    }
+  getEnum(key: SettingsKey | string): number {
+    return this.#settings.get_enum(key);
   }
 
   /**
    * Set an enum setting value.
    *
    * @param value - Enum index (must match schema values)
-   * @returns true on success, false on error
    */
   setEnum(key: SettingsKey | string, value: number): boolean {
-    try {
-      return this.#settings.set_enum(key, value);
-    } catch (error) {
-      logErr(`Failed to set enum setting "${key}" to ${value}: ${error}`);
-      return false;
-    }
+    return this.#settings.set_enum(key, value);
   }
 
   /**
    * Get fuzziness as a typed Fuzziness enum.
-   *
-   * @returns Current fuzziness (defaults to FIVE_MINUTES)
    */
   getFuzziness(): Fuzziness {
-    const fuzzIndex = this.getEnum(
-      SettingsKey.FUZZINESS,
-      DEFAULT_FUZZINESS_INDEX,
-    ); // Default to 5 minutes
+    const fuzzIndex = this.getEnum(SettingsKey.FUZZINESS);
     return fuzzinessFromEnumIndex(fuzzIndex);
   }
 

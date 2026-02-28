@@ -76,7 +76,7 @@ export function maybeShowUpdateNotification({
     return;
   }
 
-  const isFirstInstall = !lastSeen || lastSeen === "";
+  const isFirstInstall = !lastSeen;
 
   const title = getNotificationTitle(
     currentVersionName,

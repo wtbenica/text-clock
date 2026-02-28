@@ -73,7 +73,13 @@ export default class TextClock extends Extension {
       settingsManager: this.#settingsManager,
       notificationService: this.#notificationService,
       metadata: this.metadata,
-      openPreferences: () => (this as any).openPreferences(),
+      openPreferences: () => {
+        try {
+          (this as any).openPreferences();
+        } catch (error) {
+          logWarn(`Failed to open extension preferences: ${error}`);
+        }
+      },
     });
 
     this.#retrieveDateMenu();
@@ -210,10 +216,7 @@ export default class TextClock extends Extension {
 
     // Subscribe to fuzziness changes
     this.#settingsManager.subscribe(SettingsKey.FUZZINESS, () => {
-      const enumIndex = this.#settingsManager!.getEnum(
-        SettingsKey.FUZZINESS,
-        1,
-      );
+      const enumIndex = this.#settingsManager!.getEnum(SettingsKey.FUZZINESS);
       const fuzzValue = fuzzinessFromEnumIndex(enumIndex);
       this.#clockLabel!.fuzzyMinutes = fuzzValue;
     });

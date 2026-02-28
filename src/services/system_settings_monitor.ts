@@ -72,17 +72,13 @@ export class SystemSettingsMonitor {
 
     if (!this.#systemSettings) return;
 
-    try {
-      if (this.#connDate !== null) {
-        this.#systemSettings.disconnect(this.#connDate);
-        this.#connDate = null;
-      }
-      if (this.#connWeekday !== null) {
-        this.#systemSettings.disconnect(this.#connWeekday);
-        this.#connWeekday = null;
-      }
-    } catch (e) {
-      logWarn(`Error disconnecting system settings signals: ${e}`);
+    if (this.#connDate !== null) {
+      this.#systemSettings.disconnect(this.#connDate);
+      this.#connDate = null;
+    }
+    if (this.#connWeekday !== null) {
+      this.#systemSettings.disconnect(this.#connWeekday);
+      this.#connWeekday = null;
     }
   }
 

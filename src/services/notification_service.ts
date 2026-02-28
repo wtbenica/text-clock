@@ -121,11 +121,7 @@ export class NotificationService {
         {
           label: _("Open Preferences"),
           callback: () => {
-            try {
-              onOpenPreferences();
-            } catch (error) {
-              logWarn(`Failed to open preferences: ${String(error)}`);
-            }
+            onOpenPreferences();
           },
         },
       ],

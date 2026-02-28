@@ -144,52 +144,41 @@ export class StyleService {
    * @returns System accent color or white fallback
    */
   getAccentColor(): Color {
-    // Try to read the selected accent color from the system settings.
     try {
-      // Prefer using the cached ifaceSettings if available (created in
-      // #connectToInterfaceSettings). Fall back to creating a temporary
-      // Gio.Settings if necessary.
       const ifaceSettings =
         this.#ifaceSettings ??
         new Gio.Settings({
           schema: "org.gnome.desktop.interface",
         });
 
-      if (ifaceSettings && ifaceSettings.get_string) {
-        const accent = ifaceSettings.get_string("accent-color");
-        if (accent) {
-          if (accent === this.#accentColorName && this.#accentColor) {
-            return this.#accentColor;
-          }
-          this.#accentColorName = accent;
-
-          // If the accent is a named token (e.g. "yellow"), map it to a hex value.
-          const mapped = accentNameToHex(accent);
-          if (mapped) {
-            try {
-              this.#accentColor = new Color(mapped);
-              return this.#accentColor;
-            } catch (e) {
-              logWarn(`Mapped accent color invalid: ${e}`);
-            }
-          }
-
-          // Otherwise try constructing Color directly (may throw if not concrete)
-          try {
-            this.#accentColor = new Color(accent);
-            return this.#accentColor;
-          } catch (e) {
-            logWarn(
-              `org.gnome.desktop.interface.accent-color present but invalid: ${e}`,
-            );
-          }
-        }
+      const accent = ifaceSettings.get_string("accent-color");
+      if (!accent) {
+        return this.#getFallbackColor();
       }
-    } catch (e) {
-      logWarn(`Could not read org.gnome.desktop.interface.accent-color: ${e}`);
-    }
 
-    // No concrete accent color available; cache and return white fallback
+      // Return cached color if unchanged
+      if (accent === this.#accentColorName && this.#accentColor) {
+        return this.#accentColor;
+      }
+
+      this.#accentColorName = accent;
+
+      // Map named colors (e.g., "blue") to hex, or use accent value directly
+      const colorValue = accentNameToHex(accent) ?? accent;
+      this.#accentColor = new Color(colorValue);
+      return this.#accentColor;
+    } catch (e) {
+      logWarn(`Could not read accent color: ${e}`);
+      return this.#getFallbackColor();
+    }
+  }
+
+  /**
+   * Get the fallback accent color (white).
+   *
+   * @returns Cached white color
+   */
+  #getFallbackColor(): Color {
     if (this.#accentColorName !== "fallback" || !this.#accentColor) {
       this.#accentColorName = "fallback";
       this.#accentColor = new Color("#FFFFFF");
@@ -228,11 +217,7 @@ export class StyleService {
 
     // Disconnect interface settings signal (if any)
     if (this.#ifaceSettings !== null && this.#ifaceSignalConnection !== null) {
-      try {
-        this.#ifaceSettings.disconnect(this.#ifaceSignalConnection);
-      } catch (e) {
-        logWarn(`Failed to disconnect ifaceSettings signal: ${e}`);
-      }
+      this.#ifaceSettings.disconnect(this.#ifaceSignalConnection);
       this.#ifaceSignalConnection = null;
     }
     this.#ifaceSettings = null;
