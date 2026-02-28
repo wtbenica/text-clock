@@ -4,33 +4,10 @@
  */
 
 /**
- * Centralized error handling utilities for the Text Clock extension.
+ * Centralized error handling and logging for the extension.
  *
- * This module provides a unified logging system that works across different
- * environments (GNOME Shell runtime, test environment, preferences UI).
- * It handles logger injection for testing, provides consistent message
- * formatting, and includes validation utilities.
- *
- * The logging functions automatically prefix messages with '[TextClock]'
- * for easy identification in GNOME Shell logs and support different log
- * levels (error, warn, info, debug) with appropriate formatting.
- *
- * @example
- * ```typescript
- * import { logErr, logWarn, logInfo, validateDate } from './error_utils.js';
- *
- * // Simple error logging
- * logErr('Failed to load settings');
- *
- * // Error with context
- * logWarn(error, 'Settings validation');
- *
- * // Different log levels
- * logInfo('Extension initialized');
- *
- * // Validation with automatic error throwing
- * validateDate(new Date('invalid'), 'Clock update');
- * ```
+ * Provides unified logging across GNOME Shell runtime, tests, and prefs UI.
+ * All messages are prefixed with '[TextClock]' for easy identification.
  */
 
 import type { Logger } from "./logging/logger_interface.js";
@@ -39,42 +16,12 @@ import { gjsLogger } from "./logging/logger_gjs.js";
 // Current logger instance (can be overridden for tests)
 let currentLogger: Logger = gjsLogger;
 
-/**
- * Set the logger instance for testing or alternative environments.
- *
- * Allows injection of custom loggers for unit testing or different
- * runtime environments. The default logger works with GNOME Shell's
- * logging system.
- *
- * @param logger - Logger implementation to use for all logging functions
- *
- * @example
- * ```typescript
- * // In tests
- * const mockLogger = { log: jest.fn(), logError: jest.fn() };
- * setLogger(mockLogger);
- *
- * logErr('test error');
- * expect(mockLogger.logError).toHaveBeenCalled();
- * ```
- */
+/** Set the logger instance (useful for testing). */
 export function setLogger(logger: Logger): void {
   currentLogger = logger;
 }
 
-/**
- * Internal function for logging messages with consistent formatting.
- *
- * Handles message formatting, level-specific output, and error object
- * processing. Automatically prefixes all messages with '[TextClock]'
- * for easy identification in logs.
- *
- * @param message - Error object, string, or other value to log
- * @param context - Optional context description for better debugging
- * @param level - Log level determining output format and destination
- *
- * @internal This function is used internally by the public logging functions
- */
+/** Internal function for formatted logging with level support. */
 function logMessage(
   message: Error | string | unknown,
   context?: string,

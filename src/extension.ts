@@ -39,25 +39,11 @@ import { maybeShowUpdateNotification } from "./utils/update_notification_utils.j
 const CLOCK_STYLE_CLASS_NAME = "clock";
 
 /**
- * Main Text Clock extension class for GNOME Shell.
+ * Replaces the GNOME Shell clock with text-based time display.
  *
- * This extension replaces GNOME Shell's default clock with a textual
- * view of the time, using phrases like "five past noon" instead
- * of "12:05". It integrates seamlessly with the GNOME Shell top bar and
- * provides comprehensive customization options.
- *
- * Key features:
- * - Textual time display with multiple formats and fuzziness levels
- * - Optional date and weekday display
- * - Comprehensive color customization with accent color integration
- * - Live system accent color monitoring
- * - Automatic preference migration and update notifications
- * - Clean integration with GNOME Shell's UI and theming
- *
- * The extension manages multiple services:
- * - SettingsManager: Reactive settings handling with type safety
- * - StyleService: Color and appearance management with live updates
- * - NotificationService: User notifications for updates and errors
+ * Shows time as phrases like "five past noon" instead of "12:05".
+ * Supports multiple formats, fuzziness levels, optional date/weekday,
+ * and custom colors including accent color integration.
  */
 export default class TextClock extends Extension {
   #settings?: Gio.Settings;
@@ -74,18 +60,9 @@ export default class TextClock extends Extension {
   #translatePack?: LocalizedStrings;
 
   /**
-   * Enable the extension - called by GNOME Shell when extension activates.
+   * Called by GNOME Shell when the extension activates.
    *
-   * Performs complete extension initialization including service setup,
-   * UI integration, and settings binding. This method must complete successfully
-   * for the extension to function properly.
-   *
-   * Initialization sequence:
-   * 1. Initialize core services (settings, styling, notifications)
-   * 2. Show update notifications if needed
-   * 3. Get references to GNOME Shell's date menu components
-   * 4. Create and place the text clock widget
-   * 5. Bind settings
+   * Sets up services, creates the clock widget, and binds settings.
    */
   enable() {
     initExtensionGettext(_, ngettext, pgettext);
@@ -105,34 +82,16 @@ export default class TextClock extends Extension {
   }
 
   /**
-   * Disable the extension - called by GNOME Shell when extension deactivates.
+   * Called by GNOME Shell when the extension deactivates.
    *
-   * Performs complete cleanup to restore GNOME Shell's original state and
-   * prevent memory leaks. Essential for proper extension lifecycle management
-   * in the GNOME Shell environment.
-   *
-   * Cleanup sequence:
-   * 1. Restore original clock display in the top bar
-   * 2. Clean up all services and disconnect signal handlers
-   * 3. Clear references to prevent memory leaks
+   * Restores the original clock and cleans up resources.
    */
   disable() {
     this.#restoreClockDisplay();
     this.#cleanup();
   }
 
-  /**
-   * Initialize all core services required by the extension.
-   *
-   * Sets up the service layer including settings management, styling system,
-   * and notification handling. Services are initialized in dependency order
-   * to ensure proper functionality.
-   *
-   * Starts system settings monitor for changes in system accent color, and
-   * show date/time format if applicable.
-   *
-   * @private
-   */
+  /** Initialize services: settings, styling, notifications, and system monitors. */
   #initServices() {
     this.#settings = (this as any).getSettings();
 
@@ -148,9 +107,7 @@ export default class TextClock extends Extension {
     }
   }
 
-  /**
-   * Initialize class properties to undefined
-   */
+  /** Reset all class properties to undefined. */
   #resetProperties() {
     this.#settings = undefined;
     this.#settingsManager = undefined;
@@ -165,7 +122,6 @@ export default class TextClock extends Extension {
     this.#translatePack = undefined;
   }
 
-  // Retrieve the date menu from the status area
   #retrieveDateMenu() {
     this.#dateMenu = panel.statusArea.dateMenu as IDateMenuButton;
     if (!this.#dateMenu) {
@@ -177,7 +133,6 @@ export default class TextClock extends Extension {
     this.#clockDisplay = _clockDisplay;
   }
 
-  // Place the clock label in the top box
   #placeClockLabel() {
     this.#translatePack = createTranslatePack(extensionGettext);
 
@@ -195,12 +150,10 @@ export default class TextClock extends Extension {
       existingClockBox.destroy();
     }
 
-    // Create the top box
     this.#topBox = new St.BoxLayout({
       style_class: CLOCK_STYLE_CLASS_NAME,
     });
 
-    // Create the clock label with current settings
     const currentStyles = this.#styleService!.getCurrentStyles();
     this.#clockLabel = new TextClockLabel({
       translatePack: this.#translatePack,
@@ -223,7 +176,6 @@ export default class TextClock extends Extension {
     (this.#clockDisplay as any).hide();
   }
 
-  // Bind settings to their clock label properties
   #bindSettingsToClockLabel() {
     if (!this.#settingsManager || !this.#clockLabel) {
       logErr("Required services or clock label not available for binding");
@@ -275,13 +227,11 @@ export default class TextClock extends Extension {
     this.#styleService!.registerTarget(this.#clockLabel!);
   }
 
-  // Apply styles to the clock label
   #applyStyles() {
     if (!this.#clockLabel || !this.#styleService) return;
     this.#styleService.applyStyles(this.#clockLabel);
   }
 
-  // Destroys created objects and sets properties to undefined
   #cleanup() {
     // Destroy services
     if (this.#styleService) this.#styleService.destroy();
@@ -301,7 +251,6 @@ export default class TextClock extends Extension {
     this.#resetProperties();
   }
 
-  // Restore the clock display to its original appearance
   #restoreClockDisplay() {
     if (!this.#clockDisplay) {
       return;
@@ -312,7 +261,6 @@ export default class TextClock extends Extension {
     this.#clockDisplay.show();
   }
 
-  // Finds the St.BoxLayout child with style class 'clock-display-box'
   #findClockDisplayBox() {
     const children = (this.#dateMenu as any)?.get_children
       ? (this.#dateMenu as any).get_children()
@@ -332,9 +280,7 @@ export default class TextClock extends Extension {
   }
 }
 
-/**
- * Interface to provide type safety for the date menu button
- */
+/** Type-safe interface for GNOME Shell's date menu button. */
 interface IDateMenuButton extends DateMenuButton {
   _clock: GnomeDesktop.WallClock;
   _clockDisplay: St.Label;

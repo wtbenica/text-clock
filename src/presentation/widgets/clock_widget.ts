@@ -16,13 +16,7 @@ import { parseFuzziness } from "../../utils/parse_utils.js";
 import { buildStyles } from "../../utils/style/style_utils.js";
 import { LocalizedStrings } from "../../models/localized_strings.js";
 
-/**
- * Property names used for the clock widget's GObject properties.
- *
- * These constants define the string keys used for GObject property binding
- * and signal emission in the clock widget. They ensure consistency across
- * the codebase and provide a single source of truth for property names.
- */
+/** Property names for the clock widget's GObject properties. */
 export const CLOCK_LABEL_PROPERTIES = {
   /** Property name for show-date boolean setting */
   SHOW_DATE: "show-date",
@@ -44,43 +38,11 @@ export const CLOCK_LABEL_PROPERTIES = {
 };
 
 /**
- * A customizable text-based clock widget for GNOME Shell's top bar.
+ * A text-based clock widget for GNOME Shell's top bar.
  *
- * TextClockLabel displays time and date information as human-readable text
- * instead of traditional digital format. It supports multiple time formats,
- * configurable fuzziness levels, optional date display, and comprehensive
- * color customization.
- *
- * Features:
- * - Text-based time display (e.g., "five past noon" instead of "12:05")
- * - Optional date and weekday display with customizable divider
- * - Multiple time formats and fuzziness levels for approximate time
- * - Individual color control for time, date, and divider elements
- * - Reactive updates when settings change
- * - Integration with GNOME Shell's theme system
- *
- * The widget is composed of three separate St.Label elements:
- * - timeLabel: Displays the text-based time
- * - dividerLabel: Shows separator between time and date
- * - dateLabel: Shows the formatted date/weekday information
- *
- * @example
- * ```typescript
- * const clockLabel = new TextClockLabel({
- *   translatePack: wordPack,
- *   showDate: true,
- *   showWeekday: true,
- *   timeFormat: TimeFormat.FORMAT_ONE,
- *   dividerText: " | "
- * });
- *
- * // Set colors
- * clockLabel.setClockColor(new Color("#FF0000"));
- * clockLabel.setDateColor(new Color("#0000FF"));
- *
- * // Update fuzziness
- * clockLabel.fuzzyMinutes = Fuzziness.QUARTER_HOUR;
- * ```
+ * Displays time as human-readable text ("five past noon" vs "12:05").
+ * Supports multiple formats, fuzziness levels, optional date/weekday,
+ * and individual color control for each element.
  */
 export const TextClockLabel = GObject.registerClass(
   {
@@ -164,7 +126,6 @@ export const TextClockLabel = GObject.registerClass(
       this.#timeFormat = props.timeFormat;
       this.dividerText = props.dividerText || " | ";
 
-      // Create the three labels
       this.timeLabel = new St.Label();
       this.dividerLabel = new St.Label();
       this.dateLabel = new St.Label();
@@ -273,7 +234,7 @@ export const TextClockLabel = GObject.registerClass(
      */
     updateClock() {
       const date = new Date();
-      const parts = this.#formatter.getPresentation(
+      const parts = this.#formatter.getClockParts(
         date,
         this.#showDate,
         this.#showWeekday,

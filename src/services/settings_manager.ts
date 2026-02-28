@@ -4,32 +4,10 @@
  */
 
 /**
- * Service responsible for managing extension settings.
+ * Manages extension settings with type safety and error handling.
  *
- * This service centralizes all GSettings operations and provides a clean, type-safe
- * interface for accessing and monitoring settings changes. It handles all the
- * complexities of GSettings interaction including error handling, type conversion,
- * subscriptions, and cleanup.
- *
- * The SettingsManager provides both synchronous access to current values and
- * reactive subscription patterns for responding to settings changes.
- *
- * @example
- * ```typescript
- * const settingsManager = new SettingsManager(settings);
- *
- * // Get current values
- * const showDate = settingsManager.getBoolean(SettingsKey.SHOW_DATE);
- * const clockColor = settingsManager.getString(SettingsKey.CLOCK_COLOR);
- *
- * // Subscribe to changes
- * const unsubscribe = settingsManager.subscribe(SettingsKey.SHOW_DATE, (newValue) => {
- *   console.log('Show date changed to:', newValue);
- * });
- *
- * // Cleanup
- * settingsManager.destroy();
- * ```
+ * Provides a clean interface for GSettings operations including getters,
+ * setters, reactive subscriptions, and automatic cleanup.
  */
 
 import Gio from "gi://Gio";
@@ -40,10 +18,10 @@ import SettingsKey from "../models/settings_keys.js";
 import { logErr, logWarn } from "../utils/error_utils.js";
 import { fuzzinessFromEnumIndex } from "../utils/parse_utils.js";
 
-/** Default enum index for 5 minutes fuzziness */
+/** Default to 5-minute fuzziness */
 const DEFAULT_FUZZINESS_INDEX = 1;
 
-/** Mapping from setting keys to their types */
+/** Mapping from keys to types for validation */
 const SETTING_TYPES = {
   [SettingsKey.SHOW_DATE]: "boolean",
   [SettingsKey.SHOW_WEEKDAY]: "boolean",
@@ -62,26 +40,13 @@ const SETTING_TYPES = {
   [SettingsKey.LAST_SEEN_VERSION]: "string",
 } as const;
 
-/**
- * Callback function for settings changes.
- *
- * Called whenever a subscribed setting value changes. The callback receives
- * the new value and the setting key that changed.
- *
- * @param newValue - The new value of the setting (type depends on setting)
- * @param key - The settings key that changed
- */
+/** Callback invoked when a setting changes. */
 export type SettingsChangeCallback = (
   newValue: any,
   key: SettingsKey | string,
 ) => void;
 
-/**
- * Internal representation of a settings change subscription.
- *
- * Tracks the connection ID, callback function, and key for each active
- * subscription. Used internally for cleanup and management.
- */
+/** Internal subscription tracking. */
 interface SettingsSubscription {
   /** The settings key being monitored */
   key: SettingsKey | string;
@@ -94,39 +59,9 @@ interface SettingsSubscription {
 }
 
 /**
- * Service for managing extension settings with type safety and error handling.
+ * Manages extension settings with type safety and reactive updates.
  *
- * Provides a comprehensive interface for GSettings operations including:
- * - Type-safe getters and setters for common setting types
- * - Reactive subscriptions to setting changes
- * - Property binding for GObject integration
- * - Automatic cleanup and resource management
- * - Graceful error handling with logging
- *
- * The service maintains internal subscriptions and provides cleanup methods
- * to prevent memory leaks in GNOME Shell extensions.
- *
- * @example
- * ```typescript
- * // Basic usage
- * const manager = new SettingsManager(extension.getSettings());
- *
- * // Get settings
- * const showDate = manager.getBoolean(SettingsKey.SHOW_DATE, false);
- * const timeFormat = manager.getEnum(SettingsKey.TIME_FORMAT, 0);
- *
- * // Set settings
- * manager.setBoolean(SettingsKey.SHOW_WEEKDAY, true);
- * manager.setString(SettingsKey.DIVIDER_PRESET, '|');
- *
- * // Subscribe to changes
- * const cleanup = manager.subscribe(SettingsKey.COLOR_MODE, (newMode) => {
- *   updateClockColors(newMode);
- * });
- *
- * // Always cleanup
- * manager.destroy();
- * ```
+ * Provides getters/setters, subscriptions, property binding, and cleanup.
  */
 export class SettingsManager {
   #settings: Gio.Settings;
@@ -142,17 +77,9 @@ export class SettingsManager {
   }
 
   /**
-   * Get a boolean setting value with error handling.
+   * Get a boolean setting value.
    *
-   * @param key - The settings key to retrieve
-   * @param defaultValue - Value to return if retrieval fails or key doesn't exist
-   * @returns The boolean value from settings, or defaultValue if operation fails
-   *
-   * @example
-   * ```typescript
-   * const showDate = manager.getBoolean(SettingsKey.SHOW_DATE, false);
-   * const showWeekday = manager.getBoolean('show-weekday', true);
-   * ```
+   * @returns Boolean value or defaultValue on error
    */
   getBoolean(
     key: SettingsKey | string,
@@ -167,17 +94,9 @@ export class SettingsManager {
   }
 
   /**
-   * Set a boolean setting value with error handling.
+   * Set a boolean setting value.
    *
-   * @param key - The settings key to modify
-   * @param value - The new boolean value to set
-   * @returns true if the operation succeeded, false if it failed
-   *
-   * @example
-   * ```typescript
-   * const success = manager.setBoolean(SettingsKey.SHOW_DATE, true);
-   * if (!success) console.log('Failed to update show-date setting');
-   * ```
+   * @returns true on success, false on error
    */
   setBoolean(key: SettingsKey | string, value: boolean): boolean {
     try {
@@ -189,17 +108,9 @@ export class SettingsManager {
   }
 
   /**
-   * Get a string setting value with error handling.
+   * Get a string setting value.
    *
-   * @param key - The settings key to retrieve
-   * @param defaultValue - Value to return if retrieval fails or key doesn't exist
-   * @returns The string value from settings, or defaultValue if operation fails
-   *
-   * @example
-   * ```typescript
-   * const clockColor = manager.getString(SettingsKey.CLOCK_COLOR, '#FFFFFF');
-   * const divider = manager.getString('divider-preset', '|');
-   * ```
+   * @returns String value or defaultValue on error
    */
   getString(key: SettingsKey | string, defaultValue: string = ""): string {
     try {
@@ -211,17 +122,9 @@ export class SettingsManager {
   }
 
   /**
-   * Set a string setting value with error handling.
+   * Set a string setting value.
    *
-   * @param key - The settings key to modify
-   * @param value - The new string value to set
-   * @returns true if the operation succeeded, false if it failed
-   *
-   * @example
-   * ```typescript
-   * const success = manager.setString(SettingsKey.CLOCK_COLOR, '#3584E4');
-   * manager.setString('custom-divider-text', ' → ');
-   * ```
+   * @returns true on success, false on error
    */
   setString(key: SettingsKey | string, value: string): boolean {
     try {
@@ -233,19 +136,9 @@ export class SettingsManager {
   }
 
   /**
-   * Get an enum setting value with error handling.
+   * Get an enum setting value (integer index).
    *
-   * Returns the integer index of the selected enum value from the GSettings schema.
-   *
-   * @param key - The settings key to retrieve
-   * @param defaultValue - Index value to return if retrieval fails or key doesn't exist
-   * @returns The enum index from settings, or defaultValue if operation fails
-   *
-   * @example
-   * ```typescript
-   * const timeFormat = manager.getEnum(SettingsKey.TIME_FORMAT, 0); // 0 = Format One
-   * const colorMode = manager.getEnum('color-mode', 1); // 1 = Custom
-   * ```
+   * @returns Enum index or defaultValue on error
    */
   getEnum(key: SettingsKey | string, defaultValue: number = 0): number {
     try {
@@ -257,17 +150,10 @@ export class SettingsManager {
   }
 
   /**
-   * Set an enum setting value with error handling.
+   * Set an enum setting value.
    *
-   * @param key - The settings key to modify
-   * @param value - The new enum index to set (must match schema enum values)
-   * @returns true if the operation succeeded, false if it failed
-   *
-   * @example
-   * ```typescript
-   * const success = manager.setEnum(SettingsKey.TIME_FORMAT, 1); // Format Two
-   * manager.setEnum('fuzziness', 2); // 10 minutes
-   * ```
+   * @param value - Enum index (must match schema values)
+   * @returns true on success, false on error
    */
   setEnum(key: SettingsKey | string, value: number): boolean {
     try {
@@ -279,22 +165,9 @@ export class SettingsManager {
   }
 
   /**
-   * Get the fuzziness setting as a strongly-typed Fuzziness enum value.
+   * Get fuzziness as a typed Fuzziness enum.
    *
-   * Converts the raw GSettings enum index to the corresponding Fuzziness value
-   * for type safety and easier use throughout the codebase.
-   *
-   * @returns The current fuzziness setting, defaults to FIVE_MINUTES if retrieval fails
-   *
-   * @example
-   * ```typescript
-   * const fuzziness = manager.getFuzziness();
-   * // Returns: Fuzziness.ONE_MINUTE, FIVE_MINUTES, TEN_MINUTES, or FIFTEEN_MINUTES
-   *
-   * if (fuzziness === Fuzziness.FIFTEEN_MINUTES) {
-   *   // Handle 15-minute rounding
-   * }
-   * ```
+   * @returns Current fuzziness (defaults to FIVE_MINUTES)
    */
   getFuzziness(): Fuzziness {
     const fuzzIndex = this.getEnum(
@@ -305,29 +178,9 @@ export class SettingsManager {
   }
 
   /**
-   * Bind a GObject property to a settings key for automatic synchronization.
+   * Bind a GObject property to a settings key for automatic sync.
    *
-   * Creates a two-way binding between a GSettings key and a GObject property.
-   * When the setting changes, the property is updated automatically, and vice versa.
-   * This is the standard pattern for connecting GTK widgets to settings.
-   *
-   * @param settingsKey - The GSettings key to bind
-   * @param object - The GObject instance containing the property
-   * @param propertyName - The name of the property to bind
-   * @param flags - Binding behavior flags (default: bidirectional sync)
-   *
-   * @example
-   * ```typescript
-   * // Bind a switch widget to the show-date setting
-   * manager.bindProperty(
-   *   SettingsKey.SHOW_DATE,
-   *   showDateSwitch,
-   *   'active',
-   *   Gio.SettingsBindFlags.DEFAULT
-   * );
-   *
-   * // Changes to the switch will update the setting and vice versa
-   * ```
+   * Creates two-way binding: setting changes update the property and vice versa.
    */
   bindProperty(
     settingsKey: SettingsKey | string,
@@ -345,29 +198,9 @@ export class SettingsManager {
   }
 
   /**
-   * Subscribe to changes for a specific setting with automatic cleanup support.
+   * Subscribe to changes for a specific setting.
    *
-   * Registers a callback to be called whenever the specified setting changes.
-   * The subscription is automatically managed and can be cleaned up using the
-   * returned unsubscribe function or by calling destroy() on the manager.
-   *
-   * @param key - The settings key to monitor for changes
-   * @param callback - Function to call when the setting changes
-   * @returns Function to call to unsubscribe from changes
-   *
-   * @example
-   * ```typescript
-   * const unsubscribe = manager.subscribe(SettingsKey.COLOR_MODE, (newMode) => {
-   *   console.log('Color mode changed to:', newMode);
-   *   updateUIColors();
-   * });
-   *
-   * // Later, stop listening for changes
-   * unsubscribe();
-   *
-   * // Or let destroy() clean up all subscriptions
-   * manager.destroy();
-   * ```
+   * @returns Unsubscribe function to stop listening
    */
   subscribe(
     key: SettingsKey | string,
@@ -470,7 +303,6 @@ export class SettingsManager {
       unsubscribeFunctions.push(unsubscribe);
     }
 
-    // Return function that unsubscribes from all
     return () => {
       unsubscribeFunctions.forEach((fn) => fn());
     };
