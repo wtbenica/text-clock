@@ -189,11 +189,15 @@ export default class TextClock extends Extension {
       SettingsKey.SHOW_WEEKDAY,
     );
 
-    this.#settingsManager.subscribe(SettingsKey.SHOW_DATE, (newVal) => {
-      (this.#clockLabel as any).showDate = Boolean(newVal);
+    this.#settingsManager.subscribe(SettingsKey.SHOW_DATE, () => {
+      (this.#clockLabel as any).showDate = this.#settingsManager!.getBoolean(
+        SettingsKey.SHOW_DATE,
+      );
     });
-    this.#settingsManager.subscribe(SettingsKey.SHOW_WEEKDAY, (newVal) => {
-      (this.#clockLabel as any).showWeekday = Boolean(newVal);
+    this.#settingsManager.subscribe(SettingsKey.SHOW_WEEKDAY, () => {
+      (this.#clockLabel as any).showWeekday = this.#settingsManager!.getBoolean(
+        SettingsKey.SHOW_WEEKDAY,
+      );
     });
 
     // Bind wall clock to clock label - store the binding for cleanup
@@ -215,14 +219,14 @@ export default class TextClock extends Extension {
     });
 
     // Subscribe to time format changes
-    this.#settingsManager.subscribe(
-      SettingsKey.TIME_FORMAT,
-      (newValue: any) => {
-        if (newValue) {
-          this.#clockLabel!.timeFormat = newValue;
-        }
-      },
-    );
+    this.#settingsManager.subscribe(SettingsKey.TIME_FORMAT, () => {
+      const timeFormat = this.#settingsManager!.getString(
+        SettingsKey.TIME_FORMAT,
+      ) as any;
+      if (timeFormat) {
+        this.#clockLabel!.timeFormat = timeFormat;
+      }
+    });
 
     this.#styleService!.registerTarget(this.#clockLabel!);
   }

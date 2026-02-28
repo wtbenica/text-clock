@@ -23,8 +23,9 @@
  * settings.set_string(SettingsKey.CLOCK_COLOR, '#3584E4');
  *
  * // Settings manager integration
- * settingsManager.subscribe(SettingsKey.COLOR_MODE, (newMode) => {
- *   updateColorScheme(newMode);
+ * settingsManager.subscribe(SettingsKey.COLOR_MODE, () => {
+ *   const colorMode = settingsManager.getEnum(SettingsKey.COLOR_MODE);
+ *   updateColorScheme(colorMode);
  * });
  *
  * // Property binding
