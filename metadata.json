@@ -10,8 +10,8 @@
     "49"
   ],
   "url": "https://github.com/wtbenica/text-clock",
-  "version-name": "1.1.1",
-  "version": 7,
+  "version-name": "1.1.2",
+  "version": 8,
   "settings-schema": "org.gnome.shell.extensions.text-clock",
   "gettext-domain": "text-clock@benica.dev",
   "donations": {
