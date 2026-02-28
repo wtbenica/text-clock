@@ -10,7 +10,28 @@ import {
 import SettingsKey from "../models/settings_keys.js";
 import { extensionGettext } from "../utils/gettext/gettext_utils_ext.js";
 
-function findLatestUnseenRelease(
+/**
+ * Finds the latest release message that hasn't been seen yet.
+ *
+ * This function sorts available release versions in descending order and
+ * returns the latest version that:
+ * - Is at or below the current version (no future versions)
+ * - Is newer than the last seen version
+ *
+ * @param currentVersion - The current extension version
+ * @param lastSeen - The last version for which the user saw a notification
+ * @returns The version to show a notification for, or null if none found
+ *
+ * @example
+ * ```typescript
+ * // User is on v1.1.0, last saw v1.0.5
+ * findLatestUnseenRelease("1.1.0", "1.0.5"); // Returns "1.1.0"
+ *
+ * // User is on v1.1.0, already saw v1.1.0
+ * findLatestUnseenRelease("1.1.0", "1.1.0"); // Returns null
+ * ```
+ */
+export function findLatestUnseenRelease(
   currentVersion: string,
   lastSeen: string,
 ): string | null {
