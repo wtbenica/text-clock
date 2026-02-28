@@ -3,7 +3,7 @@
         <img src="media/icon.png" alt="Text Clock Logo" style="height:6.5em; display:block;" />
     </div>
       <div style="display:table-cell; vertical-align:middle;">
-         <h2 style="margin:0; line-height:1;">Text Clock v1.1.0</h2>
+         <h2 style="margin:0; line-height:1;">Text Clock v1.1.2</h2>
          <div style="color:var(--secondary-text-color,#666);">A simple text clock for the GNOME Shell</div>
       </div>
 </div>
