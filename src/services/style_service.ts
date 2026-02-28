@@ -86,7 +86,7 @@ export class StyleService {
    */
   registerTarget(target: StyleTarget): void {
     this.#targets.add(target);
-    this.#applyCurrentStyles(target);
+    this.applyStyles(target);
   }
 
   /**
@@ -107,7 +107,7 @@ export class StyleService {
    * @param config - Optional style configuration; uses current settings if not provided
    */
   applyStyles(target: StyleTarget, config?: StyleConfig): void {
-    const effectiveConfig = config || this.#getCurrentStyleConfig();
+    const effectiveConfig = config || this.getCurrentStyles();
 
     if (effectiveConfig.clockColor) {
       target.setClockColor(effectiveConfig.clockColor);
@@ -129,19 +129,10 @@ export class StyleService {
    * Called automatically when settings change.
    */
   applyToAllTargets(): void {
-    const config = this.#getCurrentStyleConfig();
+    const config = this.getCurrentStyles();
     for (const target of this.#targets) {
       this.applyStyles(target, config);
     }
-  }
-
-  /**
-   * Get the current style configuration.
-   *
-   * @returns StyleConfig with colors and divider text from current settings
-   */
-  getCurrentStyles(): StyleConfig {
-    return this.#getCurrentStyleConfig();
   }
 
   /**
@@ -331,17 +322,14 @@ export class StyleService {
   }
 
   /**
-   * Build the complete style configuration from current settings.
+   * Get the current style configuration.
    *
-   * Reads all relevant settings and applies the complex color mode logic
-   * to determine the final colors for each UI element. Handles:
-   * - Default mode: white for all elements
-   * - Accent mode: applies selected accent style variation
-   * - Custom mode: individual colors with optional per-element accent overrides
+   * Reads all relevant settings and applies color mode logic to determine
+   * final colors for each UI element.
    *
-   * @returns Complete StyleConfig with resolved colors and divider text
+   * @returns StyleConfig with colors and divider text from current settings
    */
-  #getCurrentStyleConfig(): StyleConfig {
+  getCurrentStyles(): StyleConfig {
     const dividerPreset = this.#settings.get_enum(SettingsKey.DIVIDER_PRESET);
     const customDividerText = this.#settings.get_string(
       SettingsKey.CUSTOM_DIVIDER_TEXT,
@@ -428,17 +416,5 @@ export class StyleService {
       dividerColor,
       dividerText: getDividerText(dividerPreset, customDividerText),
     };
-  }
-
-  /**
-   * Apply current settings-based styles to a specific target.
-   *
-   * Convenience method that reads current style configuration and
-   * applies it to the specified target.
-   *
-   * @param target - The StyleTarget to receive current styles
-   */
-  #applyCurrentStyles(target: StyleTarget): void {
-    this.applyStyles(target);
   }
 }
