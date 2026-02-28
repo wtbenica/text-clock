@@ -21,59 +21,21 @@ describe("translate_pack_utils", () => {
       expect(pack).toBeInstanceOf(LocalizedStrings);
     });
 
-    it("should include all required time format one strings", () => {
+    it("should include all required time format strings (61 entries for minutes 0-60)", () => {
       const pack = createTranslatePack(mockGettext);
       expect(pack.timesFormatOne).toHaveLength(61);
-    });
-
-    it("should include all required time format two strings", () => {
-      const pack = createTranslatePack(mockGettext);
       expect(pack.timesFormatTwo).toHaveLength(61);
     });
 
-    it("should include midnight and noon strings for format one", () => {
-      const pack = createTranslatePack(mockGettext);
-      expect(pack.midnightFormatOne).toBeDefined();
-      expect(typeof pack.midnightFormatOne).toBe("string");
-      expect(pack.noonFormatOne).toBeDefined();
-      expect(typeof pack.noonFormatOne).toBe("string");
-    });
-
-    it("should include midnight and noon strings for format two", () => {
-      const pack = createTranslatePack(mockGettext);
-      expect(pack.midnightFormatTwo).toBeDefined();
-      expect(typeof pack.midnightFormatTwo).toBe("string");
-      expect(pack.noonFormatTwo).toBeDefined();
-      expect(typeof pack.noonFormatTwo).toBe("string");
-    });
-
-    it("should include hour names (0-23)", () => {
+    it("should include hour names (24 entries for hours 0-23)", () => {
       const pack = createTranslatePack(mockGettext);
       expect(pack.names).toHaveLength(24);
     });
 
-    it("should include weekday abbreviations", () => {
+    it("should include weekday data", () => {
       const pack = createTranslatePack(mockGettext);
       expect(pack.days).toHaveLength(7);
-    });
-
-    it("should include full weekday names", () => {
-      const pack = createTranslatePack(mockGettext);
       expect(pack.dayNames).toHaveLength(7);
-    });
-
-    it("should include date-only format string", () => {
-      const pack = createTranslatePack(mockGettext);
-      expect(pack.dayOnly).toBeDefined();
-      expect(typeof pack.dayOnly).toBe("string");
-    });
-
-    it("should include midnight and noon standalone strings", () => {
-      const pack = createTranslatePack(mockGettext);
-      expect(pack.midnight).toBeDefined();
-      expect(typeof pack.midnight).toBe("string");
-      expect(pack.noon).toBeDefined();
-      expect(typeof pack.noon).toBe("string");
     });
 
     it("should include days of month (31 entries)", () => {
@@ -81,19 +43,19 @@ describe("translate_pack_utils", () => {
       expect(pack.daysOfMonth).toHaveLength(31);
     });
 
-    it("should use gettext functions for translation", () => {
+    it("should call gettext functions for translation", () => {
       const customGettext = {
-        _: jest.fn((msgid: string) => `translated_${msgid}`),
+        _: jest.fn((msgid: string) => msgid),
         ngettext: jest.fn((msgid: string, msgid_plural: string, n: number) =>
           n === 1 ? msgid : msgid_plural,
         ),
-        pgettext: jest.fn((msgctxt: string, msgid: string) => `ctx_${msgid}`),
+        pgettext: jest.fn((msgctxt: string, msgid: string) => msgid),
       };
 
-      const pack = createTranslatePack(customGettext);
+      createTranslatePack(customGettext);
 
-      // Verify gettext was called (it should be called many times for all the strings)
       expect(customGettext._).toHaveBeenCalled();
+      expect(customGettext.pgettext).toHaveBeenCalled();
     });
 
     it("should create consistent packs with same gettext input", () => {

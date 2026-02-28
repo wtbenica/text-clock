@@ -58,12 +58,18 @@ describe("update_notification_utils", () => {
       expect(result).toBe("1.1.0");
     });
 
-    it("should skip versions newer than current", () => {
+    it("should not return versions newer than current", () => {
+      // Current is 1.1.0, but 1.1.1 and 1.2.0 exist in RELEASE_MESSAGES
       const result = findLatestUnseenRelease("1.1.0", "1.0.0");
       expect(result).toBe("1.1.0");
+      // Verify newer versions are not returned
+      expect(result).not.toBe("1.1.1");
+      expect(result).not.toBe("1.2.0");
     });
 
-    it("should return intermediate version not yet seen", () => {
+    it("should return latest when multiple unseen versions exist", () => {
+      // Current v1.2.0, haven't seen anything since 1.0.0
+      // Both 1.1.0 and 1.1.1 are unseen, should return the current (latest)
       const result = findLatestUnseenRelease("1.2.0", "1.0.0");
       expect(result).toBe("1.2.0");
     });
@@ -77,6 +83,16 @@ describe("update_notification_utils", () => {
     it("should handle patch version increments", () => {
       const result = findLatestUnseenRelease("1.1.1", "1.1.0");
       expect(result).toBe("1.1.1");
+    });
+
+    it("should return null when all versions have been seen", () => {
+      const result = findLatestUnseenRelease("1.1.0", "1.1.0");
+      expect(result).toBeNull();
+    });
+
+    it("should handle minor version increments correctly", () => {
+      const result = findLatestUnseenRelease("1.2.0", "1.1.1");
+      expect(result).toBe("1.2.0");
     });
   });
 
@@ -115,6 +131,13 @@ describe("update_notification_utils", () => {
       });
 
       expect(mockNotificationService.showUpdateNotification).toHaveBeenCalled();
+      expect(
+        mockNotificationService.showUpdateNotification,
+      ).toHaveBeenCalledWith(
+        "Welcome to 1.1.0", // First install uses Welcome
+        "Welcome message",
+        mockOpenPreferences,
+      );
       expect(mockSettingsManager.setString).toHaveBeenCalledWith(
         SettingsKey.LAST_SEEN_VERSION,
         "1.1.0",
@@ -131,7 +154,13 @@ describe("update_notification_utils", () => {
         openPreferences: mockOpenPreferences,
       });
 
-      expect(mockNotificationService.showUpdateNotification).toHaveBeenCalled();
+      expect(
+        mockNotificationService.showUpdateNotification,
+      ).toHaveBeenCalledWith(
+        "Updated to 1.1.0", // Update uses "Updated to"
+        "New features in 1.1.0",
+        mockOpenPreferences,
+      );
     });
 
     it("should not show notification when already seen", () => {
@@ -195,6 +224,35 @@ describe("update_notification_utils", () => {
         SettingsKey.LAST_SEEN_VERSION,
         "1.1.0",
       );
+    });
+
+    it("should pass openPreferences callback correctly", () => {
+      mockSettingsManager.getString.mockReturnValue("");
+
+      maybeShowUpdateNotification({
+        settingsManager: mockSettingsManager,
+        notificationService: mockNotificationService,
+        metadata: mockMetadata,
+        openPreferences: mockOpenPreferences,
+      });
+
+      // Get the callback that was passed
+      const callArgs =
+        mockNotificationService.showUpdateNotification.mock.calls[0];
+      expect(callArgs[2]).toBe(mockOpenPreferences);
+    });
+
+    it("should not update last seen if notification is not shown", () => {
+      mockSettingsManager.getString.mockReturnValue("1.1.0");
+
+      maybeShowUpdateNotification({
+        settingsManager: mockSettingsManager,
+        notificationService: mockNotificationService,
+        metadata: mockMetadata,
+        openPreferences: mockOpenPreferences,
+      });
+
+      expect(mockSettingsManager.setString).not.toHaveBeenCalled();
     });
   });
 });
