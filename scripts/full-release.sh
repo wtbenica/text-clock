@@ -128,8 +128,8 @@ if [[ "$DRY_RUN" == "true" ]]; then
     NEW_VERSION="X.Y.Z"  # Can't determine without actually running
 else
     make start-dev-branch TYPE="$BUMP_TYPE"
-    # Get the new version
-    NEW_VERSION=$(node -p "JSON.parse(require('fs').readFileSync('version.json', 'utf8')).major + '.' + JSON.parse(require('fs').readFileSync('version.json', 'utf8')).minor + '.' + JSON.parse(require('fs').readFileSync('version.json', 'utf8')).patch")
+    # Get the new version from package.json
+    NEW_VERSION=$(node -p "require('./package.json').version")
     log_info "✓ Version bumped to $NEW_VERSION"
 fi
 
