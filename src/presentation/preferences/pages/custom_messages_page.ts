@@ -225,5 +225,3 @@ export function createCustomMessagesPage(window: Adw.PreferencesWindow, settings
 
   return page;
 }
-
-export default { createCustomMessagesPage };
