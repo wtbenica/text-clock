@@ -5,6 +5,7 @@
 
 import { validateDate } from "../utils/error_utils.js";
 import { LocalizedStrings } from "../models/localized_strings.js";
+import { CustomMessage } from "../models/custom_message.js";
 
 /**
  * Time format styles for clock text display.
@@ -137,6 +138,51 @@ export class ClockFormatter {
     }
 
     return { time, divider, date: dateStr };
+  }
+
+  /**
+   * Check if a custom message should be displayed for the given date.
+   */
+  private getCustomMessage(
+    date: Date,
+    messages: CustomMessage[],
+  ): string | null {
+    const today = date.toISOString().split("T")[0];
+
+    for (const message of messages) {
+      if (message.date === today) {
+        return message.message;
+      }
+
+      if (
+        message.recurrence === "yearly" &&
+        message.date?.endsWith(today.slice(5))
+      ) {
+        return message.message;
+      }
+
+      if (
+        message.recurrence === "monthly" &&
+        message.date?.endsWith(today.slice(8))
+      ) {
+        return message.message;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Format the clock display, including custom messages.
+   */
+  formatClockDisplay(date: Date, messages: CustomMessage[]): string {
+    const customMessage = this.getCustomMessage(date, messages);
+    if (customMessage) {
+      return customMessage;
+    }
+
+    // ...existing time formatting logic...
+    return this.#getTimeString(/* existing parameters */);
   }
 
   static #computeHourName(
