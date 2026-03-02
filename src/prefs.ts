@@ -20,6 +20,7 @@ import {
 import { getShellVersion } from "./presentation/preferences/helpers.js";
 import { createColorsPage } from "./presentation/preferences/pages/color_page/index.js";
 import { createGeneralPage } from "./presentation/preferences/pages/general_page/index.js";
+import { createCustomMessagesPage } from "./presentation/preferences/pages/custom_messages_page.js";
 import {
   initPrefsGettext,
   prefsGettext,
@@ -90,6 +91,8 @@ export default class TextClockPrefs extends ExtensionPreferences {
     // within the page implementation.
     createGeneralPage(window, settings);
     createColorsPage(window, settings, supportsAccentColor);
+
+    createCustomMessagesPage(window, settings);
 
     return Promise.resolve();
   }

@@ -33,6 +33,7 @@ import {
 } from "./utils/gettext/gettext_utils_ext.js";
 import { fuzzinessFromEnumIndex } from "./utils/parse_utils.js";
 import { LocalizedStrings } from "./models/localized_strings.js";
+import { CustomMessage } from "./models/custom_message.js";
 import { createTranslatePack } from "./utils/translate/translate_pack_utils.js";
 import { maybeShowUpdateNotification } from "./utils/update_notification_utils.js";
 
@@ -232,6 +233,45 @@ export default class TextClock extends Extension {
     });
 
     this.#styleService!.registerTarget(this.#clockLabel!);
+
+    // Initialize custom messages in the clock label and subscribe for changes
+    try {
+      const raw = this.#settings!.get_strv(SettingsKey.CUSTOM_DATE_MESSAGES);
+      const messages = raw
+        .map((s: string) => {
+          try {
+            return new CustomMessage(JSON.parse(s));
+          } catch (e) {
+            return null;
+          }
+        })
+        .filter(Boolean) as CustomMessage[];
+      if (messages.length && this.#clockLabel) this.#clockLabel.setCustomMessages(messages);
+    } catch (e) {
+      // ignore
+    }
+
+    try {
+      this.#settingsManager.subscribe(SettingsKey.CUSTOM_DATE_MESSAGES, () => {
+        try {
+          const raw = this.#settings!.get_strv(SettingsKey.CUSTOM_DATE_MESSAGES);
+          const messages = raw
+            .map((s: string) => {
+              try {
+                return new CustomMessage(JSON.parse(s));
+              } catch (e) {
+                return null;
+              }
+            })
+            .filter(Boolean) as CustomMessage[];
+          if (this.#clockLabel) this.#clockLabel.setCustomMessages(messages);
+        } catch (e) {
+          logWarn(`Failed to update custom messages: ${e}`);
+        }
+      });
+    } catch (e) {
+      // ignore subscribe errors
+    }
   }
 
   #applyStyles() {
