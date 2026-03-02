@@ -2,7 +2,27 @@ import { ClockFormatter } from "../core/clock_formatter.js";
 import { CustomMessage } from "../models/custom_message.js";
 
 describe("ClockFormatter - Custom Messages", () => {
-  const formatter = new ClockFormatter();
+  const mockWordPack = {
+    getTimes: jest.fn(() => {
+      return Array(60)
+        .fill(null)
+        .map((_, i) => `Time ${i}`);
+    }),
+    timesFormatOne: [],
+    midnightFormatOne: "midnight",
+    noonFormatOne: "noon",
+    timesFormatTwo: [],
+    midnightFormatTwo: "midnight",
+    noonFormatTwo: "noon",
+    names: [],
+    days: [],
+    dayNames: [],
+    dayOnly: "",
+    midnight: "midnight",
+    noon: "noon",
+    daysOfMonth: [],
+  };
+  const formatter = new ClockFormatter(mockWordPack);
 
   it("should display a one-time custom message", () => {
     const messages: CustomMessage[] = [

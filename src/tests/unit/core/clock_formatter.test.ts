@@ -10,7 +10,7 @@ import {
 import { LocalizedStrings } from "../../../models/localized_strings.js";
 
 // Mock translation strings for testing
-const createMockWordPack = (): LocalizedStrings => {
+export const createMockWordPack = (): LocalizedStrings => {
   // Create a full 61-entry array for minutes 0-60
   const timesFormatOne = Array.from({ length: 61 }, (_, minute) => {
     if (minute === 0 || minute === 60) return "%s exactly";
@@ -140,7 +140,7 @@ describe("ClockFormatter", () => {
         TimeFormat.FORMAT_ONE,
         5,
       );
-      expect(result).toBe("midnight");
+      expect(result).toBe("midnight exactly");
     });
 
     it("should format noon correctly", () => {
@@ -152,7 +152,7 @@ describe("ClockFormatter", () => {
         TimeFormat.FORMAT_ONE,
         5,
       );
-      expect(result).toBe("noon");
+      expect(result).toBe("noon exactly");
     });
 
     it("should format quarter past times correctly", () => {
