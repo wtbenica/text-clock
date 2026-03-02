@@ -162,5 +162,12 @@
             update notification when the extension upgrades.
       </description>
     </key>
+    <key name="custom-date-messages" type="as">
+      <summary>Custom date messages</summary>
+      <description>
+        A list of custom messages to display on specific dates. Each message is a string.
+      </description>
+      <default>[]</default>
+    </key>
   </schema>
 </schemalist>

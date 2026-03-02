@@ -1,15 +1,34 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+export enum Recurrence {
+  None = "none",
+  Yearly = "yearly",
+  Monthly = "monthly",
+}
+
 /**
  * Represents a custom message for specific days.
  */
-export interface CustomMessage {
-  /** The specific date for one-time messages (ISO format). */
+export class CustomMessage {
   date?: string;
+  recurrence: Recurrence = Recurrence.None;
+  message: string = "";
 
-  /** Recurrence pattern (e.g., 'yearly', 'monthly', or 'none'). */
-  recurrence?: "yearly" | "monthly" | "none";
+  constructor(data: Partial<CustomMessage>) {
+    this.date = data.date;
+    this.recurrence = data.recurrence ?? Recurrence.None;
+    this.message = data.message ?? "";
+  }
 
-  /** The custom text to display. */
-  message: string;
+  update(updatedData: Partial<CustomMessage>): void {
+    if (updatedData.date !== undefined) this.date = updatedData.date;
+    if (updatedData.recurrence !== undefined) this.recurrence = updatedData.recurrence;
+    if (updatedData.message !== undefined) this.message = updatedData.message;
+  }
+
+  delete(): void {
+    this.date = undefined;
+    this.recurrence = Recurrence.None;
+    this.message = "";
+  }
 }

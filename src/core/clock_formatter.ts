@@ -250,7 +250,7 @@ export class ClockFormatter {
     hourName: string,
   ): string {
     if (minuteBucket < 0 || minuteBucket >= times.length) {
-      console.error(
+      logError(
         `Invalid minuteBucket: ${minuteBucket}, times length: ${times.length}`,
       );
       return ""; // Return a fallback value if out of bounds

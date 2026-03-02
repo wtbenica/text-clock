@@ -11,6 +11,7 @@ import {
   Fuzziness,
   TimeFormat,
 } from "../../core/clock_formatter.js";
+import { CustomMessage } from "../../models/custom_message.js";
 import { Color } from "../../models/color.js";
 import { parseFuzziness } from "../../utils/parse_utils.js";
 import { buildStyles } from "../../utils/style/style_utils.js";
@@ -100,6 +101,7 @@ export const TextClockLabel = GObject.registerClass(
   },
   class ClockLabel extends St.BoxLayout {
     #formatter: ClockFormatter;
+      #customMessages: CustomMessage[] = [];
     #showDate: boolean;
     #translatePack: LocalizedStrings;
     #fuzzyMinutes: Fuzziness;
@@ -243,7 +245,20 @@ export const TextClockLabel = GObject.registerClass(
       );
       this.timeText = parts.time;
       this.dividerText = parts.divider;
-      this.dateText = parts.date;
+      // If custom messages are loaded, prefer them for the date portion.
+      if (this.#customMessages && this.#customMessages.length > 0) {
+        const todayIso = date.toISOString().split("T")[0];
+        const matching = this.#customMessages.find((message) => {
+          if (!message.date) return false;
+          if (message.date === todayIso) return true;
+          if (message.recurrence === "yearly" && message.date.endsWith(todayIso.slice(5))) return true;
+          if (message.recurrence === "monthly" && message.date.endsWith(todayIso.slice(8))) return true;
+          return false;
+        });
+        this.dateText = matching ? matching.message : parts.date;
+      } else {
+        this.dateText = parts.date;
+      }
       this.applyStyling();
     }
 
@@ -321,6 +336,14 @@ export const TextClockLabel = GObject.registerClass(
     setDividerText(text: string) {
       this.dividerText = text;
       this.#formatter.divider = text;
+      this.updateClock();
+    }
+
+    /**
+     * Replace the current set of custom messages used to override the date.
+     */
+    setCustomMessages(messages: CustomMessage[]) {
+      this.#customMessages = messages || [];
       this.updateClock();
     }
   },

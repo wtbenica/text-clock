@@ -72,6 +72,9 @@ export const enum SettingsKey {
   // Internal State
   /** Last seen extension version for update notifications (string) */
   LAST_SEEN_VERSION = "last-seen-version",
+
+  /** Key for storing custom date messages (array of objects) */
+  CUSTOM_DATE_MESSAGES = "custom-date-messages",
 }
 
 export default SettingsKey;
