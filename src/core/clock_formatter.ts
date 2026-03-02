@@ -123,7 +123,11 @@ export class ClockFormatter {
       minuteBucket,
       timeFormat,
     );
-    const time = this.#getTimeString(hourName, minuteBucket, timeFormat);
+    const time = this.#getTimeString(
+      this.wordPack.getTimes(timeFormat),
+      minuteBucket,
+      hourName,
+    );
     // Support showing weekday alone (when showDate is false but showWeekday is true).
     const wantsWeekdayOnly = !showDate && showWeekday;
     const divider = showDate || wantsWeekdayOnly ? this.divider : "";
@@ -175,14 +179,30 @@ export class ClockFormatter {
   /**
    * Format the clock display, including custom messages.
    */
-  formatClockDisplay(date: Date, messages: CustomMessage[]): string {
+  formatClockDisplay(
+    date: Date,
+    messages: CustomMessage[],
+    timeFormat: TimeFormat = TimeFormat.FORMAT_ONE,
+  ): string {
     const customMessage = this.getCustomMessage(date, messages);
     if (customMessage) {
       return customMessage;
     }
 
-    // ...existing time formatting logic...
-    return this.#getTimeString(/* existing parameters */);
+    const minuteBucket = this.calculateMinuteBucket();
+    const hourName = this.getHourName();
+
+    return this.#getTimeString(
+      this.wordPack.getTimes(timeFormat),
+      minuteBucket,
+      hourName,
+    );
+  }
+
+  calculateMinuteBucket() {
+    const currentMinute = new Date().getMinutes();
+    const bucketSize = 5; // Example bucket size
+    return Math.floor(currentMinute / bucketSize);
   }
 
   static #computeHourName(
@@ -225,31 +245,17 @@ export class ClockFormatter {
   }
 
   #getTimeString(
-    hourName: string,
+    times: { format: (hourName: string) => string }[],
     minuteBucket: number,
-    timeFormat: TimeFormat,
-  ): string {
-    if (
-      ClockFormatter.#isTopOfTheHour(minuteBucket) &&
-      ClockFormatter.#isExactHourName(this.wordPack, hourName)
-    ) {
-      return hourName;
-    }
-
-    const times: string[] = this.wordPack.getTimes(timeFormat);
-    return times[minuteBucket].format(hourName);
-  }
-
-  static #isExactHourName(
-    wordPack: LocalizedStrings,
     hourName: string,
-  ): boolean {
-    return (
-      hourName === wordPack.midnight ||
-      hourName === wordPack.noon ||
-      hourName === wordPack.names[0] ||
-      hourName === wordPack.names[12]
-    );
+  ): string {
+    if (minuteBucket < 0 || minuteBucket >= times.length) {
+      console.error(
+        `Invalid minuteBucket: ${minuteBucket}, times length: ${times.length}`,
+      );
+      return ""; // Return a fallback value if out of bounds
+    }
+    return times[minuteBucket].format(hourName);
   }
 
   static #shouldRoundUp(minuteBucket: number, timeFormat: TimeFormat): boolean {
@@ -293,5 +299,10 @@ export class ClockFormatter {
 
   static #getDateString(wordPack: LocalizedStrings, n: number): string {
     return wordPack.daysOfMonth[n - 1];
+  }
+
+  getHourName() {
+    const currentHour = new Date().getHours();
+    return `hour-${currentHour}`; // Example logic for generating hour name
   }
 }
