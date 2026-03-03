@@ -69,15 +69,13 @@ export class NotificationService {
     body: string,
     onOpenPreferences: () => void,
   ): void {
-    const { _ } = extensionGettext;
-
     const config: NotificationConfig = {
       title,
       body,
       isResident: true,
       actions: [
         {
-          label: _("Open Preferences"),
+          label: extensionGettext._("Open Preferences"),
           callback: () => {
             onOpenPreferences();
           },

@@ -66,6 +66,7 @@ export function maybeShowUpdateNotification({
     extensionGettext,
     isFirstInstall,
   );
+  
   const body = generateUpdateMessage(
     notifyVersion,
     extensionGettext,
