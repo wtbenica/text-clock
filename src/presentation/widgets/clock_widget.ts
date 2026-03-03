@@ -247,7 +247,9 @@ export const TextClockLabel = GObject.registerClass(
       this.dividerText = parts.divider;
       // If custom messages are loaded, prefer them for the date portion.
       if (this.#customMessages && this.#customMessages.length > 0) {
-        const todayIso = date.toISOString().split("T")[0];
+        const todayIso = `${date.getFullYear()}-${String(
+          date.getMonth() + 1,
+        ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
         const matching = this.#customMessages.find((message) => {
           if (!message.date) return false;
           if (message.date === todayIso) return true;

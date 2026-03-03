@@ -241,13 +241,13 @@ export default class TextClock extends Extension {
         .map((s: string) => {
           try {
             return new CustomMessage(JSON.parse(s));
-          } catch (e) {
+          } catch {
             return null;
           }
         })
         .filter(Boolean) as CustomMessage[];
       if (messages.length && this.#clockLabel) this.#clockLabel.setCustomMessages(messages);
-    } catch (e) {
+      } catch {
       // ignore
     }
 
@@ -259,7 +259,7 @@ export default class TextClock extends Extension {
             .map((s: string) => {
               try {
                 return new CustomMessage(JSON.parse(s));
-              } catch (e) {
+              } catch {
                 return null;
               }
             })
@@ -269,7 +269,7 @@ export default class TextClock extends Extension {
           logWarn(`Failed to update custom messages: ${e}`);
         }
       });
-    } catch (e) {
+    } catch {
       // ignore subscribe errors
     }
   }

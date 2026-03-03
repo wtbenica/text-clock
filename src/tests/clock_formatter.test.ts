@@ -29,7 +29,7 @@ describe("ClockFormatter - Custom Messages", () => {
       new CustomMessage({ date: "2026-03-01", message: "Happy Birthday!" }),
     ];
     const result = formatter.formatClockDisplay(
-      new Date("2026-03-01"),
+      new Date(2026, 2, 1),
       messages,
     );
     expect(result).toBe("Happy Birthday!");
@@ -40,7 +40,7 @@ describe("ClockFormatter - Custom Messages", () => {
       new CustomMessage({ date: "2020-03-01", recurrence: Recurrence.Yearly, message: "Anniversary!" }),
     ];
     const result = formatter.formatClockDisplay(
-      new Date("2026-03-01"),
+      new Date(2026, 2, 1),
       messages,
     );
     expect(result).toBe("Anniversary!");
@@ -51,7 +51,7 @@ describe("ClockFormatter - Custom Messages", () => {
       new CustomMessage({ date: "2026-03-15", recurrence: Recurrence.Monthly, message: "Payday!" }),
     ];
     const result = formatter.formatClockDisplay(
-      new Date("2026-03-15"),
+      new Date(2026, 2, 15),
       messages,
     );
     expect(result).toBe("Payday!");
@@ -62,7 +62,7 @@ describe("ClockFormatter - Custom Messages", () => {
       new CustomMessage({ date: "2026-03-02", message: "Event!" }),
     ];
     const result = formatter.formatClockDisplay(
-      new Date("2026-03-01"),
+      new Date(2026, 2, 1),
       messages,
     );
     expect(result).not.toBe("Event!");
