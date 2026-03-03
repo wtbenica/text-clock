@@ -151,20 +151,21 @@ export class ClockFormatter {
     date: Date,
     messages: CustomMessage[],
   ): string | null {
-    const today = date.toISOString().split("T")[0];
+    const today = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+      2,
+      "0",
+    )}-${String(date.getDate()).padStart(2, "0")}`;
 
     for (const message of messages) {
       if (message.date === today) {
         return message.message;
       }
-
       if (
         message.recurrence === "yearly" &&
         message.date?.endsWith(today.slice(5))
       ) {
         return message.message;
       }
-
       if (
         message.recurrence === "monthly" &&
         message.date?.endsWith(today.slice(8))
@@ -189,8 +190,8 @@ export class ClockFormatter {
       return customMessage;
     }
 
-    const minuteBucket = this.calculateMinuteBucket();
-    const hourName = this.getHourName();
+    const minuteBucket = this.calculateMinuteBucket(date);
+    const hourName = this.getHourName(date);
 
     return this.#getTimeString(
       this.wordPack.getTimes(timeFormat),
@@ -199,8 +200,9 @@ export class ClockFormatter {
     );
   }
 
-  calculateMinuteBucket() {
-    const currentMinute = new Date().getMinutes();
+  calculateMinuteBucket(date?: Date) {
+    const d = date ?? new Date();
+    const currentMinute = d.getMinutes();
     const bucketSize = 5; // Example bucket size
     return Math.floor(currentMinute / bucketSize);
   }
@@ -301,8 +303,9 @@ export class ClockFormatter {
     return wordPack.daysOfMonth[n - 1];
   }
 
-  getHourName() {
-    const currentHour = new Date().getHours();
+  getHourName(date?: Date) {
+    const d = date ?? new Date();
+    const currentHour = d.getHours();
     return `hour-${currentHour}`; // Example logic for generating hour name
   }
 }
