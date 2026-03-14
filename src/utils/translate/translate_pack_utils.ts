@@ -9,7 +9,7 @@
 import { createDateConstants } from "../../constants/dates/core.js";
 import { createTimeConstants } from "../../constants/times/core.js";
 import { LocalizedStrings } from "../../models/localized_strings.js";
-import { GettextFunctions } from "../gettext/gettext_utils.js";
+import type { GettextFunctions } from "../gettext/gettext_utils.js";
 
 /**
  * Create a translated WordPack using the provided gettext functions.

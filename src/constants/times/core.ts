@@ -10,7 +10,7 @@
  * in their respective contexts.
  */
 
-import { GettextFunctions } from "../../utils/gettext/gettext_utils.js";
+import type { GettextFunctions } from "../../utils/gettext/gettext_utils.js";
 
 export function createTimeConstants(fns: GettextFunctions) {
   const { pgettext } = fns;

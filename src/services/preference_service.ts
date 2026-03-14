@@ -8,7 +8,7 @@ import {
   Fuzziness,
   TimeFormat,
 } from "../core/clock_formatter.js";
-import { Color } from "../models/color.js";
+import type { Color } from "../models/color.js";
 import { logWarn } from "../utils/error_utils.js";
 import type { GettextFunctions } from "../utils/gettext/gettext_utils.js";
 import { createTranslatePack } from "../utils/translate/translate_pack_utils.js";

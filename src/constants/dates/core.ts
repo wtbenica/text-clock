@@ -11,7 +11,7 @@
  * in their respective contexts.
  */
 
-import { GettextFunctions } from "../../utils/gettext/gettext_utils.js";
+import type { GettextFunctions } from "../../utils/gettext/gettext_utils.js";
 
 export function createDateConstants(fns: GettextFunctions) {
   const { _, pgettext } = fns;
