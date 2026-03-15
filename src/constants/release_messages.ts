@@ -81,14 +81,12 @@ export function getReleaseInfo(version: string): ReleaseInfo | undefined {
  * @param version - Version string
  * @param gettext - Gettext functions for translation
  * @param isFirstInstall - Whether this is a first install (affects messaging style)
- * @param formatAsList - Whether to format secondary features as a bullet list (default: true)
  * @returns Formatted notification body text
  */
 export function generateUpdateMessage(
   version: string,
   gettext: GettextFunctions,
   isFirstInstall: boolean = false,
-  formatAsList: boolean = true,
 ): string {
   const releaseInfo = getReleaseInfo(version);
 
@@ -100,8 +98,6 @@ export function generateUpdateMessage(
     return gettext._("Check Preferences for new features.");
   }
 
-  const { _ } = gettext;
-
   // Choose appropriate feature set based on install type
   const featureSet =
     isFirstInstall && releaseInfo.welcomeFeatures
@@ -112,26 +108,8 @@ export function generateUpdateMessage(
 
   if (featureSet.secondary && featureSet.secondary.length > 0) {
     const secondaryFeatures = featureSet.secondary.map((fn) => fn(gettext));
-
-    if (formatAsList) {
-      // Format as bullet list with primary feature as intro
-      const bulletList = secondaryFeatures
-        .map((item) => `• ${item}`)
-        .join("\n");
-      return `${primaryFeature}\n${bulletList}`;
-    } else {
-      // Legacy comma-separated format
-      const secondaryText = secondaryFeatures.join(", ");
-      if (isFirstInstall) {
-        return _("Features: %s Additional capabilities: %s")
-          .replace("%s", primaryFeature)
-          .replace("%s", secondaryText);
-      } else {
-        return _("New: %s Additional improvements: %s")
-          .replace("%s", primaryFeature)
-          .replace("%s", secondaryText);
-      }
-    }
+    const bulletList = secondaryFeatures.map((item) => `• ${item}`).join("\n");
+    return `${primaryFeature}\n${bulletList}`;
   }
 
   return primaryFeature;

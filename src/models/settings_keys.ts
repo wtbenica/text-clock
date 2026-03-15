@@ -3,47 +3,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-/**
- * Centralized, type-safe constants for extension settings keys.
- *
- * This enum provides strongly-typed constants for all GSettings keys used
- * throughout the text-clock extension. Using these constants instead of
- * string literals improves code maintainability, enables IDE autocompletion,
- * and helps prevent typos in settings key names.
- *
- * The keys correspond directly to those defined in the extension's GSettings
- * schema (org.gnome.shell.extensions.text-clock.gschema.xml).
- *
- * @example
- * ```typescript
- * import SettingsKey from './models/settings_keys.js';
- *
- * // Type-safe settings access
- * const showDate = settings.get_boolean(SettingsKey.SHOW_DATE);
- * settings.set_string(SettingsKey.CLOCK_COLOR, '#3584E4');
- *
- * // Settings manager integration
- * settingsManager.subscribe(SettingsKey.COLOR_MODE, () => {
- *   const colorMode = settingsManager.getEnum(SettingsKey.COLOR_MODE);
- *   updateColorScheme(colorMode);
- * });
- *
- * // Property binding
- * settingsManager.bindProperty(
- *   SettingsKey.SHOW_WEEKDAY,
- *   checkboxWidget,
- *   'active'
- * );
- * ```
- */
-
-/**
- * Enumeration of all settings keys used by the text-clock extension.
- *
- * Each value corresponds to a key defined in the GSettings schema.
- * The keys are organized into logical groups: display options,
- * time formatting, color configuration, and internal state.
- */
+/** Type-safe constants for GSettings keys in org.gnome.shell.extensions.text-clock schema. */
 export const enum SettingsKey {
   // Display Options
   /** Controls whether to display date alongside time (boolean) */

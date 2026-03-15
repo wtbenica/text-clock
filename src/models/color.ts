@@ -3,30 +3,17 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-/**
- * Color with validation and utility methods.
- *
- * Supports hex (#RGB, #RRGGBB) and RGB (rgb(r,g,b)) formats.
- * Normalized to uppercase hex (#RRGGBB).
- */
+/** Color validation and manipulation. Supports hex and rgb() formats, normalized to #RRGGBB. */
 export class Color {
   /** Normalized hex color (uppercase #RRGGBB) */
   private readonly hex: string;
 
-  /**
-   * Create a Color from a color string.
-   *
-   * @param color - Hex (#RGB/#RRGGBB) or rgb(r,g,b) format
-   */
+  /** @param color - Hex (#RGB/#RRGGBB) or rgb(r,g,b) format */
   constructor(color: string) {
     this.hex = Color.validateAndNormalize(color);
   }
 
-  /**
-   * Validate and normalize a color string to uppercase #RRGGBB.
-   *
-   * Clamps RGB values to 0-255.
-   */
+  /** Validate and normalize color to uppercase #RRGGBB. Throws on invalid format. */
   static validateAndNormalize(color: string): string {
     if (!color) {
       throw new Error(`Invalid color format: ${color}`);
@@ -72,12 +59,8 @@ export class Color {
   }
 
   /**
-   * Create a lighter version by blending with white.
-   *
-   * Uses mathematical RGB blending: newValue = original + (255 - original) * amount
-   *
-   * @param amount - Lightening amount (0-1, where 0 = no change, 1 = white). Defaults to 0.3
-   * @returns Lighter color
+   * Lighten by blending with white: newValue = original + (255 - original) * amount
+   * @param amount - 0 (no change) to 1 (white). Default: 0.3
    */
   lighten(amount = 0.3): Color {
     const r = parseInt(this.hex.slice(1, 3), 16);
@@ -96,12 +79,8 @@ export class Color {
   }
 
   /**
-   * Create a darker version by reducing each RGB channel.
-   *
-   * Uses mathematical RGB blending: newValue = original * (1 - amount)
-   *
-   * @param amount - Darkening amount (0-1, where 0 = no change, 1 = black). Defaults to 0.2
-   * @returns Darker color
+   * Darken by reducing RGB channels: newValue = original * (1 - amount)
+   * @param amount - 0 (no change) to 1 (black). Default: 0.2
    */
   darken(amount = 0.2): Color {
     const r = parseInt(this.hex.slice(1, 3), 16);

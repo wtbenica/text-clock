@@ -131,12 +131,8 @@ export function addAccentStyleRow(
 }
 
 /**
- * Add the color mode selection row and related color rows to a group.
- *
- * The color mode row controls whether the extension uses the system default
- * colors, the system accent color, or custom colors. This function also
- * creates the color rows (time/date/divider) and wires visibility and
- * accent-color change listeners.
+ * Add color mode row and wire up color control visibility.
+ * Mode: Default (system colors), Accent (system accent), or Custom.
  */
 const COLOR_MODE_DEFAULT = 0;
 const COLOR_MODE_ACCENT = 1;
@@ -222,8 +218,7 @@ export function addColorModeRow(
 
       // Date and divider color controls should be visible when the user
       // is showing either the date or the weekday (weekday may be shown
-      // independently of the full date). Previously these controls only
-      // appeared when the full date was enabled.
+      // independently of the full date).
       dividerColorRow.visible = isCustom && showDateOrWeekday;
       dateColorRow.visible = isCustom && showDateOrWeekday;
     } catch (e) {

@@ -4,10 +4,10 @@
  */
 
 /**
- * Centralized error handling and logging for the extension.
+ * Centralized logging for extension, tests, and prefs.
  *
- * Provides unified logging across GNOME Shell runtime, tests, and prefs UI.
- * All messages are prefixed with '[TextClock]' for easy identification.
+ * Uses gjsLogger by default; call setLogger(consoleLogger) for tests.
+ * All messages prefixed with '[TextClock]'.
  */
 
 import type { Logger } from "./logging/logger_interface.js";

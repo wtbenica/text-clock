@@ -5,9 +5,7 @@
 
 import { TimeFormat } from "../core/clock_formatter.js";
 
-/**
- * Container for localized text strings used in the text-clock extension.
- */
+/** Localized text strings container for text-clock extension. */
 export class LocalizedStrings {
   /** Time expressions for format one */
   timesFormatOne: string[];
@@ -36,9 +34,7 @@ export class LocalizedStrings {
   /** Ordinal day names */
   daysOfMonth: string[];
 
-  /**
-   * Creates a new WordPack with localized text strings.
-   */
+  /** Constructor accepts all localized string arrays. */
   constructor({
     timesFormatOne,
     midnightFormatOne,

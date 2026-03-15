@@ -4,10 +4,9 @@
  */
 
 /**
- * Manages extension settings with type safety and error handling.
+ * Type-safe wrapper for extension GSettings.
  *
- * Provides a clean interface for GSettings operations including getters,
- * setters, reactive subscriptions, and automatic cleanup.
+ * Handles subscriptions and cleanup automatically.
  */
 
 import Gio from "gi://Gio";
@@ -36,19 +35,13 @@ interface SettingsSubscription {
   callback: SettingsChangeCallback;
 }
 
-/**
- * Manages extension settings with type safety and reactive updates.
- *
- * Provides getters/setters, subscriptions, property binding, and cleanup.
- */
+/** Type-safe GSettings wrapper with subscriptions and cleanup. */
 export class SettingsManager {
   #settings: Gio.Settings;
   #subscriptions: SettingsSubscription[] = [];
 
   /**
-   * Create a new settings manager instance.
-   *
-   * @param settings - The GSettings instance to manage (typically from Extension.getSettings())
+   * @param settings - GSettings instance from Extension.getSettings()
    */
   constructor(settings: Gio.Settings) {
     this.#settings = settings;
@@ -106,11 +99,7 @@ export class SettingsManager {
     return fuzzinessFromEnumIndex(fuzzIndex);
   }
 
-  /**
-   * Bind a GObject property to a settings key for automatic sync.
-   *
-   * Creates two-way binding: setting changes update the property and vice versa.
-   */
+  /** Bind GObject property to setting for two-way automatic sync. */
   bindProperty(
     settingsKey: SettingsKey | string,
     object: GObject.Object,
@@ -127,9 +116,8 @@ export class SettingsManager {
   }
 
   /**
-   * Subscribe to changes for a specific setting.
-   *
-   * @returns Unsubscribe function to stop listening
+   * Subscribe to setting changes.
+   * @returns Unsubscribe function
    */
   subscribe(
     key: SettingsKey | string,
@@ -156,28 +144,7 @@ export class SettingsManager {
     }
   }
 
-  /**
-   * Clean up all subscriptions and resources to prevent memory leaks.
-   *
-   * Disconnects all active setting change subscriptions and clears internal
-   * state. This method should always be called when the SettingsManager is
-   * no longer needed, particularly important in GNOME Shell extensions to
-   * prevent memory leaks and orphaned signal handlers.
-   *
-   * After calling destroy(), the SettingsManager instance should not be used.
-   *
-   * @example
-   * ```typescript
-   * class ExtensionManager {
-   *   private settingsManager: SettingsManager;
-   *
-   *   disable() {
-   *     // Always cleanup settings manager
-   *     this.settingsManager.destroy();
-   *   }
-   * }
-   * ```
-   */
+  /** Disconnect all subscriptions to prevent memory leaks. Call when extension is disabled. */
   destroy(): void {
     // Disconnect all subscriptions
     for (const subscription of this.#subscriptions) {
@@ -195,14 +162,7 @@ export class SettingsManager {
 
   // Private methods
 
-  /**
-   * Unsubscribe from a specific subscription and remove it from tracking.
-   *
-   * Disconnects the GObject signal handler and removes the subscription from
-   * the internal tracking list. Called automatically by subscription cleanup functions.
-   *
-   * @param subscription - The subscription object to clean up
-   */
+  /** Unsubscribe from specific subscription (called by subscription cleanup functions). */
   #unsubscribe(subscription: SettingsSubscription): void {
     try {
       this.#settings.disconnect(subscription.connectionId);

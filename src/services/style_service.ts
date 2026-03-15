@@ -4,10 +4,10 @@
  */
 
 /**
- * Manages extension styles and colors with reactive updates.
+ * Reactive style management for clock colors and divider text.
  *
- * Handles color modes (default/accent/custom), system accent color integration,
- * divider text, and automatic updates to registered UI targets.
+ * Handles color modes (default/accent/custom) and system accent color integration.
+ * Registered targets update automatically when settings change.
  */
 
 import Gio from "gi://Gio";
@@ -49,12 +49,7 @@ export interface StyleTarget {
   setDividerText(text: string): void;
 }
 
-/**
- * Manages styles and colors with reactive updates.
- *
- * Automatically applies colors based on current mode and settings.
- * Registered UI components update automatically when settings change.
- */
+/** Reactive style manager - registered targets update automatically on settings changes. */
 export class StyleService {
   #settings: Gio.Settings;
   #targets: Set<StyleTarget> = new Set();
@@ -62,46 +57,25 @@ export class StyleService {
   #ifaceSettings: Gio.Settings | null = null;
   #ifaceSignalConnection: number | null = null;
 
-  /**
-   * Create a new StyleService instance.
-   *
-   * @param settings - The extension's GSettings instance for monitoring style changes
-   */
+  /** @param settings - Extension GSettings for monitoring style changes */
   constructor(settings: Gio.Settings) {
     this.#settings = settings;
     this.#connectToSettings();
     this.#connectToInterfaceSettings();
   }
 
-  /**
-   * Register a target to receive automatic style updates.
-   *
-   * Current styles are applied immediately upon registration.
-   *
-   * @param target - UI component implementing the StyleTarget interface
-   */
+  /** Register a target for automatic updates. Applies current styles immediately. */
   registerTarget(target: StyleTarget): void {
     this.#targets.add(target);
     this.applyStyles(target);
   }
 
-  /**
-   * Unregister a target from receiving automatic style updates.
-   *
-   * Called when UI components are destroyed to prevent memory leaks.
-   *
-   * @param target - The previously registered StyleTarget to remove
-   */
+  /** Unregister a target to prevent memory leaks when UI components are destroyed. */
   unregisterTarget(target: StyleTarget): void {
     this.#targets.delete(target);
   }
 
-  /**
-   * Apply styles to a specific target.
-   *
-   * @param target - The StyleTarget to update
-   * @param config - Optional style configuration; uses current settings if not provided
-   */
+  /** Apply styles to a specific target. */
   applyStyles(target: StyleTarget, config?: StyleConfig): void {
     const effectiveConfig = config || this.getCurrentStyles();
 
@@ -119,11 +93,7 @@ export class StyleService {
     }
   }
 
-  /**
-   * Apply current styles to all registered targets.
-   *
-   * Called automatically when settings change.
-   */
+  /** Apply current styles to all registered targets (called automatically on settings changes). */
   applyToAllTargets(): void {
     const config = this.getCurrentStyles();
     for (const target of this.#targets) {
@@ -132,12 +102,8 @@ export class StyleService {
   }
 
   /**
-   * Get the system's current accent color.
-   *
-   * Reads from GNOME desktop interface settings. Maps named colors (e.g., 'blue')
-   * to hex values. Falls back to white if unavailable.
-   *
-   * @returns System accent color or white fallback
+   * Get system accent color from GNOME desktop settings.
+   * Maps named colors like 'blue' to hex. Fallback: white.
    */
   getAccentColor(): Color {
     try {
@@ -161,24 +127,7 @@ export class StyleService {
     }
   }
 
-  /**
-   * Cleanup all resources when the extension is disabled, to prevent memory leaks
-   * and orphaned signal handlers in the GNOME Shell environment.
-   *
-   * After calling destroy(), the StyleService instance should not be used.
-   *
-   * @example
-   * ```typescript
-   * class TextClockExtension extends Extension {
-   *   private styleService: StyleService;
-   *
-   *   disable() {
-   *     // Always cleanup StyleService to prevent leaks
-   *     this.styleService.destroy();
-   *   }
-   * }
-   * ```
-   */
+  /** Disconnect all signals and clear resources. Call when extension is disabled. */
   destroy(): void {
     // Disconnect all settings signals
     for (const connectionId of this.#signalConnections) {
@@ -199,14 +148,7 @@ export class StyleService {
 
   // Private methods
 
-  /**
-   * Connect to all style-related settings changes for automatic updates.
-   *
-   * Establishes signal handlers for all settings that affect styling:
-   * color mode, accent style, individual colors, divider settings, and
-   * per-element accent overrides. When any of these settings change,
-   * all registered targets are automatically updated.
-   */
+  /** Connect to style-related settings for automatic target updates. */
   #connectToSettings(): void {
     const colorSettings = [
       SettingsKey.COLOR_MODE,
@@ -231,14 +173,8 @@ export class StyleService {
   }
 
   /**
-   * Connect to GNOME's desktop interface settings for live accent color updates.
-   *
-   * Establishes a connection to org.gnome.desktop.interface to monitor
-   * accent-color changes. This allows the extension to update immediately
-   * when users change their system accent color, without requiring a logout
-   * or extension restart.
-   *
-   * Gracefully handles cases where the interface settings are not available.
+   * Connect to org.gnome.desktop.interface for live accent color updates.
+   * Extension updates immediately when system accent color changes.
    */
   #connectToInterfaceSettings(): void {
     // Avoid reconnecting if already connected

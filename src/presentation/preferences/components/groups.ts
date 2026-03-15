@@ -4,14 +4,7 @@
 
 import Adw from "gi://Adw";
 
-/**
- * Create and add a PreferencesPage to the window.
- *
- * @param window - Adw.PreferencesWindow instance
- * @param title - Already translated title string
- * @param icon_name - Icon name for the page
- * @returns Adw.PreferencesPage the created page
- */
+/** Create and add PreferencesPage to window. */
 export function createAndAddPageToWindow(
   window: Adw.PreferencesWindow,
   title: string,
@@ -24,14 +17,7 @@ export function createAndAddPageToWindow(
   return page;
 }
 
-/**
- * Create and add an Adw.PreferencesGroup to a page.
- *
- * @param page - the preferences page
- * @param title - Already translated title string
- * @param description - Already translated description string
- * @returns Adw.PreferencesGroup the created group
- */
+/** Create and add PreferencesGroup to page. */
 export function createAndAddGroupToPage(
   page: Adw.PreferencesPage,
   title: string,
