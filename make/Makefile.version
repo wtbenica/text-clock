@@ -36,7 +36,8 @@ start-dev-branch: check-deps
 		exit 1; \
 	fi
 	@command -v gh >/dev/null 2>&1 || { echo "ERROR: GitHub CLI (gh) is not installed or not on PATH" >&2; exit 1; }
-	@new_version=$$(node scripts/start-dev-branch.cjs $(TYPE) --dry-run | grep "New version:" | cut -d' ' -f3 2>/dev/null || echo ""); \
+	@new_version=$$(node scripts/start-dev-branch.cjs $(TYPE) --dry-run --json 2>/dev/null \
+		| node -e "try{let s=require('fs').readFileSync(0,'utf8'); let j=JSON.parse(s||'{}'); process.stdout.write((j&&j.new&&j.new.version)||'');}catch(e){}" 2>/dev/null || echo ""); \
 	if [ -z "$$new_version" ]; then \
 		echo "ERROR: Failed to calculate new version" >&2; \
 		exit 1; \
