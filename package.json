@@ -15,7 +15,7 @@
   "author": "Wesley Benica <wesley@benica.dev>",
   "sideEffects": false,
   "type": "module",
-  "packageManager": "yarn@4.9.4",
+  "packageManager": "yarn@4.13.0",
   "scripts": {
     "build": "tsc -p config/tsconfig.json",
     "build:dist": "tsc -p config/tsconfig.json && mkdir -p dist && cp -r media metadata.json schemas locale dist/ && cp -r ui dist/ || true",
