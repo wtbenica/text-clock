@@ -6,7 +6,7 @@
  * Style utilities for generating CSS styles for text clock elements.
  */
 
-import { Color } from "../../models/color.js";
+import type { Color } from "../../models/color.js";
 
 /**
  * CSS style strings for text clock display elements.

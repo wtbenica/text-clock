@@ -239,7 +239,6 @@ update_file() {
         return
     fi
     
-    # Use perl for more reliable regex replacement
     perl -i -pe "$pattern" "$file"
 }
 
@@ -284,12 +283,16 @@ update_file "README.md" \
     "header version"
 
 update_file "README.md" \
-    "s|download/v[0-9]+\.[0-9]+\.[0-9]+/text-clock\@benica\.dev\.zip|download/v$NEW_VERSION/text-clock@benica.dev.zip|g" \
+    "s|download/v[0-9]+\.[0-9]+\.[0-9]+/text-clock\@benica\.dev\.zip|download/v$NEW_VERSION/text-clock\@benica.dev.zip|g" \
     "download link"
 
 update_file "README.md" \
     "s/ZIP file \\(v[0-9]+\\.[0-9]+\\.[0-9]+\\)/ZIP file (v$NEW_VERSION)/g" \
     "ZIP file reference"
+
+update_file "README.md" \
+    "s|download/v[0-9]+\.[0-9]+\.[0-9]+/text-clock\@benica\.dev\.zip\.sha256|download/v$NEW_VERSION/text-clock\@benica.dev.zip.sha256|g" \
+    "checksum file link"
 
 # Update PKGBUILD (if exists)
 if [[ -f "aur/PKGBUILD" ]]; then

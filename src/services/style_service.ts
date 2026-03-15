@@ -4,34 +4,10 @@
  */
 
 /**
- * Service responsible for managing extension styles and colors.
+ * Reactive style management for clock colors and divider text.
  *
- * This service centralizes all color and style-related operations, providing
- * a reactive system for applying styles to UI elements. It manages the complex
- * interactions between different color modes (default, accent, custom) and
- * automatically updates registered UI targets when settings change.
- *
- * The StyleService handles:
- * - Color mode switching (default, accent with variations, custom colors)
- * - System accent color integration with live updates
- * - Per-element accent color overrides in custom mode
- * - Divider text management with presets and custom text
- * - Automatic target registration and cleanup
- *
- * @example
- * ```typescript
- * const styleService = new StyleService(settings);
- *
- * // Register a UI component to receive style updates
- * styleService.registerTarget(clockLabel);
- *
- * // Get current colors
- * const colors = styleService.getCurrentStyles();
- * console.log('Clock color:', colors.clockColor?.toString());
- *
- * // Clean up
- * styleService.destroy();
- * ```
+ * Handles color modes (default/accent/custom) and system accent color integration.
+ * Registered targets update automatically when settings change.
  */
 
 import Gio from "gi://Gio";
@@ -43,12 +19,7 @@ import { accentNameToHex } from "../utils/color/accent_color_utils.js";
 import { logWarn } from "../utils/error_utils.js";
 import { applyAccentStyle } from "./preference_service.js";
 
-/**
- * Configuration object for styling UI elements.
- *
- * Represents a complete set of style properties that can be applied
- * to UI targets. All properties are optional to allow partial updates.
- */
+/** Style properties that can be applied to UI elements. */
 export interface StyleConfig {
   /** Color for the main time display */
   clockColor?: Color;
@@ -63,13 +34,7 @@ export interface StyleConfig {
   dividerText?: string;
 }
 
-/**
- * Interface for objects that can receive style updates from the StyleService.
- *
- * UI components implement this interface to be automatically updated when
- * style settings change. The StyleService will call these methods to apply
- * new colors and text content.
- */
+/** Objects that can receive style updates from StyleService. */
 export interface StyleTarget {
   /** Apply the specified color to clock text elements */
   setClockColor(color: Color): void;
@@ -84,42 +49,7 @@ export interface StyleTarget {
   setDividerText(text: string): void;
 }
 
-/**
- * Service for managing styles and colors throughout the extension with reactive updates.
- *
- * The StyleService provides a centralized, reactive system for managing all visual
- * styling in the text-clock extension. It automatically applies the correct colors
- * based on the current color mode and settings, and updates all registered UI
- * components when settings change.
- *
- * Key features:
- * - Automatic target registration and style application
- * - Reactive updates when settings change (no manual refresh needed)
- * - Support for multiple color modes: default, accent (with variations), custom
- * - System accent color integration with live monitoring
- * - Per-element accent overrides in custom mode
- * - Divider text management with presets and custom options
- * - Graceful error handling and fallbacks
- *
- * @example
- * ```typescript
- * const styleService = new StyleService(extension.getSettings());
- *
- * // Register UI components for automatic updates
- * styleService.registerTarget(clockWidget);
- * styleService.registerTarget(dateWidget);
- *
- * // Get current style state
- * const styles = styleService.getCurrentStyles();
- * console.log(`Using colors: ${styles.clockColor}, ${styles.dateColor}`);
- *
- * // Colors will update automatically when user changes settings
- * // No manual intervention needed
- *
- * // Cleanup when extension is disabled
- * styleService.destroy();
- * ```
- */
+/** Reactive style manager - registered targets update automatically on settings changes. */
 export class StyleService {
   #settings: Gio.Settings;
   #targets: Set<StyleTarget> = new Set();
@@ -127,89 +57,27 @@ export class StyleService {
   #ifaceSettings: Gio.Settings | null = null;
   #ifaceSignalConnection: number | null = null;
 
-  // Cache for the last known accent color to avoid redundant reads
-  #accentColorName: string | null = null;
-  #accentColor: Color | null = null;
-
-  /**
-   * Create a new StyleService instance.
-   *
-   * @param settings - The extension's GSettings instance for monitoring style changes
-   */
+  /** @param settings - Extension GSettings for monitoring style changes */
   constructor(settings: Gio.Settings) {
     this.#settings = settings;
     this.#connectToSettings();
     this.#connectToInterfaceSettings();
   }
 
-  /**
-   * Register a target to receive automatic style updates.
-   *
-   * Once registered, the target will automatically receive style updates
-   * whenever relevant settings change. The current styles are applied
-   * immediately upon registration.
-   *
-   * @param target - UI component implementing the StyleTarget interface
-   *
-   * @example
-   * ```typescript
-   * // Clock widget will automatically update when color settings change
-   * styleService.registerTarget(clockWidget);
-   *
-   * // Multiple targets can be registered
-   * styleService.registerTarget(dateWidget);
-   * styleService.registerTarget(dividerWidget);
-   * ```
-   */
+  /** Register a target for automatic updates. Applies current styles immediately. */
   registerTarget(target: StyleTarget): void {
     this.#targets.add(target);
-    this.#applyCurrentStyles(target);
+    this.applyStyles(target);
   }
 
-  /**
-   * Unregister a target from receiving automatic style updates.
-   *
-   * The target will no longer receive style updates when settings change.
-   * This should be called when UI components are destroyed to prevent
-   * memory leaks and avoid errors from updating destroyed components.
-   *
-   * @param target - The previously registered StyleTarget to remove
-   *
-   * @example
-   * ```typescript
-   * // Stop updating this widget when it's destroyed
-   * styleService.unregisterTarget(clockWidget);
-   * ```
-   */
+  /** Unregister a target to prevent memory leaks when UI components are destroyed. */
   unregisterTarget(target: StyleTarget): void {
     this.#targets.delete(target);
   }
 
-  /**
-   * Apply styles to a specific target using custom or current configuration.
-   *
-   * Applies the specified style configuration to a single target. If no
-   * configuration is provided, uses the current settings-based configuration.
-   *
-   * @param target - The StyleTarget to update
-   * @param config - Optional style configuration; uses current settings if not provided
-   *
-   * @example
-   * ```typescript
-   * // Apply current settings-based styles
-   * styleService.applyStyles(clockWidget);
-   *
-   * // Apply custom style configuration
-   * const customStyles: StyleConfig = {
-   *   clockColor: new Color('#FF0000'),
-   *   dateColor: new Color('#00FF00'),
-   *   dividerText: ' ↔ '
-   * };
-   * styleService.applyStyles(clockWidget, customStyles);
-   * ```
-   */
+  /** Apply styles to a specific target. */
   applyStyles(target: StyleTarget, config?: StyleConfig): void {
-    const effectiveConfig = config || this.#getCurrentStyleConfig();
+    const effectiveConfig = config || this.getCurrentStyles();
 
     if (effectiveConfig.clockColor) {
       target.setClockColor(effectiveConfig.clockColor);
@@ -225,150 +93,41 @@ export class StyleService {
     }
   }
 
-  /**
-   * Apply current styles to all registered targets.
-   *
-   * Reads the current style configuration from settings and applies it to
-   * every registered target. This is called automatically when settings
-   * change, but can also be called manually to force a style refresh.
-   *
-   * @example
-   * ```typescript
-   * // Force all targets to refresh their styles
-   * styleService.applyToAllTargets();
-   * ```
-   */
+  /** Apply current styles to all registered targets (called automatically on settings changes). */
   applyToAllTargets(): void {
-    const config = this.#getCurrentStyleConfig();
+    const config = this.getCurrentStyles();
     for (const target of this.#targets) {
       this.applyStyles(target, config);
     }
   }
 
   /**
-   * Get the current style configuration derived from extension settings.
-   *
-   * Returns the complete style configuration based on current settings,
-   * including the resolved colors for the active color mode and the
-   * appropriate divider text.
-   *
-   * @returns StyleConfig object with current colors and divider text
-   *
-   * @example
-   * ```typescript
-   * const styles = styleService.getCurrentStyles();
-   * console.log('Current clock color:', styles.clockColor?.toString());
-   * console.log('Divider text:', styles.dividerText);
-   *
-   * // Use for manual styling or debugging
-   * if (styles.clockColor?.isLight()) {
-   *   console.log('Using light clock color');
-   * }
-   * ```
-   */
-  getCurrentStyles(): StyleConfig {
-    return this.#getCurrentStyleConfig();
-  }
-
-  /**
-   * Get the system's current accent color with comprehensive fallback handling.
-   *
-   * Attempts to read the user's selected accent color from GNOME's desktop
-   * interface settings. Handles both named accent colors (e.g., 'blue', 'red')
-   * and direct color values. Falls back gracefully to white if the accent
-   * color cannot be determined.
-   *
-   * This method is called automatically when accent color mode is active and
-   * when the system accent color changes.
-   *
-   * @returns Color object representing the system accent color or white fallback
-   *
-   * @example
-   * ```typescript
-   * const accent = styleService.getAccentColor();
-   * console.log('System accent color:', accent.toString()); // '#3584E4' (GNOME Blue)
-   *
-   * // Use in custom styling logic
-   * const lighterAccent = accent.lighten(0.2);
-   * const contrastColor = accent.isLight() ? '#000000' : '#FFFFFF';
-   * ```
+   * Get system accent color from GNOME desktop settings.
+   * Maps named colors like 'blue' to hex. Fallback: white.
    */
   getAccentColor(): Color {
-    // Try to read the selected accent color from the system settings.
     try {
-      // Prefer using the cached ifaceSettings if available (created in
-      // #connectToInterfaceSettings). Fall back to creating a temporary
-      // Gio.Settings if necessary.
       const ifaceSettings =
         this.#ifaceSettings ??
         new Gio.Settings({
           schema: "org.gnome.desktop.interface",
         });
 
-      if (ifaceSettings && ifaceSettings.get_string) {
-        const accent = ifaceSettings.get_string("accent-color");
-        if (accent) {
-          if (accent === this.#accentColorName && this.#accentColor) {
-            return this.#accentColor;
-          }
-          this.#accentColorName = accent;
-
-          // If the accent is a named token (e.g. "yellow"), map it to a hex value.
-          const mapped = accentNameToHex(accent);
-          if (mapped) {
-            try {
-              this.#accentColor = new Color(mapped);
-              return this.#accentColor;
-            } catch (e) {
-              logWarn(`Mapped accent color invalid: ${e}`);
-            }
-          }
-
-          // Otherwise try constructing Color directly (may throw if not concrete)
-          try {
-            this.#accentColor = new Color(accent);
-            return this.#accentColor;
-          } catch (e) {
-            logWarn(
-              `org.gnome.desktop.interface.accent-color present but invalid: ${e}`,
-            );
-          }
-        }
+      const accent = ifaceSettings.get_string("accent-color");
+      if (!accent) {
+        return new Color("#FFFFFF");
       }
-    } catch (e) {
-      logWarn(`Could not read org.gnome.desktop.interface.accent-color: ${e}`);
-    }
 
-    // No concrete accent color available; cache and return white fallback
-    if (this.#accentColorName !== "fallback" || !this.#accentColor) {
-      this.#accentColorName = "fallback";
-      this.#accentColor = new Color("#FFFFFF");
+      // Map named colors (e.g., "blue") to hex, or use accent value directly
+      const colorValue = accentNameToHex(accent) ?? accent;
+      return new Color(colorValue);
+    } catch (e) {
+      logWarn(`Could not read accent color: ${e}`);
+      return new Color("#FFFFFF");
     }
-    return this.#accentColor;
   }
 
-  /**
-   * Clean up resources and prevent memory leaks.
-   *
-   * Disconnects all settings signal handlers and clears registered targets.
-   * This method must be called when the StyleService is no longer needed,
-   * particularly when the extension is disabled, to prevent memory leaks
-   * and orphaned signal handlers in the GNOME Shell environment.
-   *
-   * After calling destroy(), the StyleService instance should not be used.
-   *
-   * @example
-   * ```typescript
-   * class TextClockExtension extends Extension {
-   *   private styleService: StyleService;
-   *
-   *   disable() {
-   *     // Always cleanup StyleService to prevent leaks
-   *     this.styleService.destroy();
-   *   }
-   * }
-   * ```
-   */
+  /** Disconnect all signals and clear resources. Call when extension is disabled. */
   destroy(): void {
     // Disconnect all settings signals
     for (const connectionId of this.#signalConnections) {
@@ -378,18 +137,10 @@ export class StyleService {
 
     // Disconnect interface settings signal (if any)
     if (this.#ifaceSettings !== null && this.#ifaceSignalConnection !== null) {
-      try {
-        this.#ifaceSettings.disconnect(this.#ifaceSignalConnection);
-      } catch (e) {
-        logWarn(`Failed to disconnect ifaceSettings signal: ${e}`);
-      }
+      this.#ifaceSettings.disconnect(this.#ifaceSignalConnection);
       this.#ifaceSignalConnection = null;
     }
     this.#ifaceSettings = null;
-
-    // Clear accent color cache
-    this.#accentColorName = null;
-    this.#accentColor = null;
 
     // Clear all targets
     this.#targets.clear();
@@ -397,14 +148,7 @@ export class StyleService {
 
   // Private methods
 
-  /**
-   * Connect to all style-related settings changes for automatic updates.
-   *
-   * Establishes signal handlers for all settings that affect styling:
-   * color mode, accent style, individual colors, divider settings, and
-   * per-element accent overrides. When any of these settings change,
-   * all registered targets are automatically updated.
-   */
+  /** Connect to style-related settings for automatic target updates. */
   #connectToSettings(): void {
     const colorSettings = [
       SettingsKey.COLOR_MODE,
@@ -429,14 +173,8 @@ export class StyleService {
   }
 
   /**
-   * Connect to GNOME's desktop interface settings for live accent color updates.
-   *
-   * Establishes a connection to org.gnome.desktop.interface to monitor
-   * accent-color changes. This allows the extension to update immediately
-   * when users change their system accent color, without requiring a logout
-   * or extension restart.
-   *
-   * Gracefully handles cases where the interface settings are not available.
+   * Connect to org.gnome.desktop.interface for live accent color updates.
+   * Extension updates immediately when system accent color changes.
    */
   #connectToInterfaceSettings(): void {
     // Avoid reconnecting if already connected
@@ -453,10 +191,6 @@ export class StyleService {
       this.#ifaceSignalConnection = this.#ifaceSettings.connect(
         "changed::accent-color",
         () => {
-          // Invalidate accent color cache when system accent changes
-          this.#accentColorName = null;
-          this.#accentColor = null;
-
           // Only update if we're actually using accent color mode; applyToAllTargets
           // will read the current color mode and act accordingly.
           this.applyToAllTargets();
@@ -472,17 +206,14 @@ export class StyleService {
   }
 
   /**
-   * Build the complete style configuration from current settings.
+   * Get the current style configuration.
    *
-   * Reads all relevant settings and applies the complex color mode logic
-   * to determine the final colors for each UI element. Handles:
-   * - Default mode: white for all elements
-   * - Accent mode: applies selected accent style variation
-   * - Custom mode: individual colors with optional per-element accent overrides
+   * Reads all relevant settings and applies color mode logic to determine
+   * final colors for each UI element.
    *
-   * @returns Complete StyleConfig with resolved colors and divider text
+   * @returns StyleConfig with colors and divider text from current settings
    */
-  #getCurrentStyleConfig(): StyleConfig {
+  getCurrentStyles(): StyleConfig {
     const dividerPreset = this.#settings.get_enum(SettingsKey.DIVIDER_PRESET);
     const customDividerText = this.#settings.get_string(
       SettingsKey.CUSTOM_DIVIDER_TEXT,
@@ -569,17 +300,5 @@ export class StyleService {
       dividerColor,
       dividerText: getDividerText(dividerPreset, customDividerText),
     };
-  }
-
-  /**
-   * Apply current settings-based styles to a specific target.
-   *
-   * Convenience method that reads current style configuration and
-   * applies it to the specified target.
-   *
-   * @param target - The StyleTarget to receive current styles
-   */
-  #applyCurrentStyles(target: StyleTarget): void {
-    this.applyStyles(target);
   }
 }

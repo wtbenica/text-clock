@@ -9,15 +9,10 @@ import SettingsKey from "../models/settings_keys.js";
 import { logWarn, logErr } from "../utils/error_utils.js";
 
 /**
- * Service that mirrors selected GNOME desktop clock settings into the
- * extension's own settings. This keeps the extension in sync with
- * `org.gnome.desktop.interface` for the date/weekday display toggles.
+ * Mirrors GNOME desktop clock settings into extension settings.
  *
- * The service is read-first: it prefers values from the system settings
- * and writes those values into the provided extension settings instance.
- * It listens for changes on the system keys and applies them to the
- * extension settings so the rest of the extension (which reads the
- * extension schema) continues to work with minimal changes.
+ * Syncs date/weekday display toggles from `org.gnome.desktop.interface`
+ * to the extension, keeping them in sync with system preferences.
  */
 export class SystemSettingsMonitor {
   #systemSettings: Gio.Settings | null = null;
@@ -77,21 +72,17 @@ export class SystemSettingsMonitor {
 
     if (!this.#systemSettings) return;
 
-    try {
-      if (this.#connDate !== null) {
-        this.#systemSettings.disconnect(this.#connDate);
-        this.#connDate = null;
-      }
-      if (this.#connWeekday !== null) {
-        this.#systemSettings.disconnect(this.#connWeekday);
-        this.#connWeekday = null;
-      }
-    } catch (e) {
-      logWarn(`Error disconnecting system settings signals: ${e}`);
+    if (this.#connDate !== null) {
+      this.#systemSettings.disconnect(this.#connDate);
+      this.#connDate = null;
+    }
+    if (this.#connWeekday !== null) {
+      this.#systemSettings.disconnect(this.#connWeekday);
+      this.#connWeekday = null;
     }
   }
 
-  /** Apply current system values to the extension settings. */
+  /** Apply current system values to extension settings. */
   #applySystemValues() {
     if (!this.#systemSettings) return;
 

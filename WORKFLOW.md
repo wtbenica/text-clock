@@ -31,7 +31,9 @@ Before triggering any release, ensure the following housekeeping tasks are compl
 
 - [ ] RELEASE_NOTES.md updated with new features/fixes
 - [ ] README.md reflects current features and compatibility
-- [ ] Version compatibility verified (currently GNOME Shell 45+)
+- [ ] Version compatibility verified (currently GNOME Shell 45-50)
+- [ ] release_messages.ts updated with new version's in-app notification content
+- [ ] metadata.json shell-version array updated if adding GNOME Shell version support
 
 ### Translations
 

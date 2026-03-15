@@ -34,38 +34,6 @@ describe("AccentColorStyles", () => {
   });
 
   describe("getAccentStyleConfig", () => {
-    it("should return correct config for valid indices", () => {
-      for (let i = 0; i < ACCENT_STYLE_CONFIGS.length; i++) {
-        expect(getAccentStyleConfig(i)).toBe(ACCENT_STYLE_CONFIGS[i]);
-      }
-    });
-
-    it("should handle invalid indices gracefully", () => {
-      expect(getAccentStyleConfig(-1)).toBe(ACCENT_STYLE_CONFIGS[0]);
-      expect(getAccentStyleConfig(999)).toBe(ACCENT_STYLE_CONFIGS[0]);
-    });
-  });
-
-  describe("applyAccentStyle", () => {
-    it("should return styled colors for valid indices", () => {
-      for (let i = 0; i < ACCENT_STYLE_CONFIGS.length; i++) {
-        const result = applyAccentStyle(testColor, i);
-        expect(result.clockColor).toBeInstanceOf(Color);
-        expect(result.dateColor).toBeInstanceOf(Color);
-        expect(result.dividerColor).toBeInstanceOf(Color);
-      }
-    });
-
-    it("should handle invalid indices gracefully", () => {
-      const result = applyAccentStyle(testColor, -1);
-      expect(result.clockColor).toBeInstanceOf(Color);
-
-      const result2 = applyAccentStyle(testColor, 999);
-      expect(result2.clockColor).toBeInstanceOf(Color);
-    });
-  });
-
-  describe("getAccentStyleConfig", () => {
     it("should return valid config for valid indices", () => {
       for (let i = 0; i < ACCENT_STYLE_CONFIGS.length; i++) {
         const config = getAccentStyleConfig(i);

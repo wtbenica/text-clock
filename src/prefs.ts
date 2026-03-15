@@ -30,24 +30,17 @@ import { gjsLogger } from "./utils/logging/logger_gjs.js";
 initPrefsGettext(_, ngettext, pgettext);
 
 /**
- * Preferences UI entrypoint for the Text Clock extension.
+ * Preferences UI for the Text Clock extension.
  *
- * This file is the GNOME Extensions prefs entrypoint and must remain at the
- * project root (`src/prefs.ts`) so the Shell can discover and load the
- * preferences UI. It wires together small helper modules under
- * `src/prefs/` to build the preferences window without requiring GJS types in
- * this wrapper.
+ * This file must stay at the project root so GNOME Shell can load it.
+ * The actual UI is built using helpers from `presentation/preferences/`.
  */
 export default class TextClockPrefs extends ExtensionPreferences {
   /**
-   * Populate the provided preferences window with pages and groups.
+   * Build the preferences window with General and Colors pages.
    *
-   * The method retrieves the extension settings, detects the running GNOME
-   * Shell version (to decide whether accent colors are supported), then
-   * composes the preference UI by delegating to helper functions.
-   *
-   * @param window - Adw.PreferencesWindow instance provided by the Shell
-   * @returns Promise<void> resolves when the window is filled
+   * Loads extension resources (icons), detects GNOME Shell version for
+   * accent color support, and creates preference pages.
    */
   async fillPreferencesWindow(window: Adw.PreferencesWindow): Promise<void> {
     // ExtensionPreferences in the Shell provides getSettings at runtime; cast

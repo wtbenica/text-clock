@@ -152,7 +152,7 @@ export function createColorControlWidget(
   try {
     settings.bind(
       accentSettingsKey,
-      accentSwitch,
+      accentSwitch as any,
       "active",
       Gio.SettingsBindFlags.DEFAULT,
     );

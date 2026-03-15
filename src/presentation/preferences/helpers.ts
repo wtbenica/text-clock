@@ -29,7 +29,12 @@ export function bindSettingsToProperty(
   property: string,
 ) {
   try {
-    settings!.bind(settingKey, widget, property, Gio.SettingsBindFlags.DEFAULT);
+    settings!.bind(
+      settingKey,
+      widget as any,
+      property,
+      Gio.SettingsBindFlags.DEFAULT,
+    );
   } catch (error: any) {
     logErr(
       error,

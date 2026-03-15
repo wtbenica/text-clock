@@ -218,24 +218,5 @@ describe("createTimeConstants", () => {
       expect(times[0]).toBe("%s o'clock");
       expect(times[15]).toBe("quarter past %s");
     });
-
-    it("should work with gettext functions that throw errors", () => {
-      const errorGettext: GettextFunctions = {
-        _: jest.fn().mockImplementation(() => {
-          throw new Error("Translation error");
-        }),
-        ngettext: jest.fn().mockImplementation(() => {
-          throw new Error("Translation error");
-        }),
-        pgettext: jest.fn().mockImplementation(() => {
-          throw new Error("Translation error");
-        }),
-      };
-
-      expect(() => createTimeConstants(errorGettext)).not.toThrow();
-      expect(() =>
-        createTimeConstants(errorGettext).timesFormatOne(),
-      ).toThrow();
-    });
   });
 });

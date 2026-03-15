@@ -5,109 +5,22 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /**
- * Script to start a new development branch by incrementing the version number.
+ * Convenience wrapper around update-version.sh for starting development branches.
+ * 
+ * This script delegates to update-version.sh with --no-git --force flags,
+ * which updates version files without git operations or interactive prompts.
+ * 
  * Usage:
  *   node start-dev-branch.cjs <major|minor|patch> [--dry-run] [--json]
  * 
- * This script updates the following files:
- * - version.json
- * - package.json
- * - metadata.json
- * - README.md
- * 
- * It increments the specified version component (major, minor, or patch) and
- * always increments the build number. If --dry-run is provided, no files are
- * modified, but the new version is printed. If --json is provided, outputs
- * current and new version info in JSON format.
+ * Options:
+ *   --dry-run   Show what would be changed without modifying files
+ *   --json      Output current/new version info in JSON format (implies --dry-run)
  */
 
+const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
-
-function incrementVersion(versionData, type) {
-  const newVersion = { ...versionData };
-
-  switch (type) {
-    case 'major':
-      newVersion.major += 1;
-      newVersion.minor = 0;
-      newVersion.patch = 0;
-      break;
-    case 'minor':
-      newVersion.minor += 1;
-      newVersion.patch = 0;
-      break;
-    case 'patch':
-      newVersion.patch += 1;
-      break;
-    default:
-      throw new Error(`Invalid version type: ${type}. Must be major, minor, or patch.`);
-  }
-
-  // Always increment build number
-  newVersion.build += 1;
-
-  return newVersion;
-}
-
-function versionToString(versionData) {
-  return `${versionData.major}.${versionData.minor}.${versionData.patch}`;
-}
-
-function updateVersionJson(filePath, newVersionData) {
-  console.log(`Updating ${filePath}...`);
-  fs.writeFileSync(filePath, JSON.stringify(newVersionData, null, 2) + '\n');
-  const versionString = versionToString(newVersionData);
-  console.log(`✓ Updated version.json to ${versionString} (build ${newVersionData.build})`);
-}
-
-function updatePackageJson(filePath, versionString) {
-  console.log(`Updating ${filePath}...`);
-  const content = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-  content.version = versionString;
-  fs.writeFileSync(filePath, JSON.stringify(content, null, 2) + '\n');
-  console.log(`✓ Updated package.json version to ${versionString}`);
-}
-
-function updateMetadataJson(filePath, versionString, buildNumber) {
-  console.log(`Updating ${filePath}...`);
-  const content = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-
-  // Update version-name (semantic version)
-  content['version-name'] = versionString;
-
-  // Update version (build number - always increments)
-  content.version = buildNumber;
-
-  fs.writeFileSync(filePath, JSON.stringify(content, null, 2) + '\n');
-  console.log(`✓ Updated metadata.json version-name to ${versionString} and version to ${buildNumber}`);
-}
-
-function updateReadme(filePath, currentVersionString, newVersionString) {
-  console.log(`Updating ${filePath}...`);
-  let content = fs.readFileSync(filePath, 'utf8');
-
-  // Update header version
-  content = content.replace(
-    `## Text Clock GNOME Extension v${currentVersionString}`,
-    `## Text Clock GNOME Extension v${newVersionString}`
-  );
-
-  // Update download link text
-  content = content.replace(
-    `[ZIP file (v${currentVersionString})]`,
-    `[ZIP file (v${newVersionString})]`
-  );
-
-  // Update download URL
-  content = content.replace(
-    `/releases/download/v${currentVersionString}/`,
-    `/releases/download/v${newVersionString}/`
-  );
-
-  fs.writeFileSync(filePath, content);
-  console.log(`✓ Updated README.md version references from ${currentVersionString} to ${newVersionString}`);
-}
 
 function main() {
   const type = process.argv[2];
@@ -120,52 +33,80 @@ function main() {
   }
 
   const rootDir = path.resolve(__dirname, '..');
-  const versionJsonPath = path.join(rootDir, 'version.json');
-  const packageJsonPath = path.join(rootDir, 'package.json');
-  const metadataJsonPath = path.join(rootDir, 'metadata.json');
-  const readmePath = path.join(rootDir, 'README.md');
+  const updateVersionScript = path.join(__dirname, 'update-version.sh');
 
-  // Read current version from version.json
-  const currentVersionData = JSON.parse(fs.readFileSync(versionJsonPath, 'utf8'));
-  const currentVersionString = versionToString(currentVersionData);
+  if (!fs.existsSync(updateVersionScript)) {
+    console.error('Error: update-version.sh not found at:', updateVersionScript);
+    process.exit(1);
+  }
 
-  // Calculate new version
-  const newVersionData = incrementVersion(currentVersionData, type);
-  const newVersionString = versionToString(newVersionData);
-
+  // Handle --json output
   if (isJsonOutput) {
+    const packageJsonPath = path.join(rootDir, 'package.json');
+    const metadataJsonPath = path.join(rootDir, 'metadata.json');
+
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+    const metadataJson = JSON.parse(fs.readFileSync(metadataJsonPath, 'utf8'));
+
+    const currentVersion = packageJson.version;
+    const currentMetadataVersion = metadataJson.version || 0;
+
+    // Calculate new version
+    const parts = currentVersion.split('.').map(n => parseInt(n, 10));
+    switch (type) {
+      case 'major':
+        parts[0]++;
+        parts[1] = 0;
+        parts[2] = 0;
+        break;
+      case 'minor':
+        parts[1]++;
+        parts[2] = 0;
+        break;
+      case 'patch':
+        parts[2]++;
+        break;
+    }
+    const newVersion = parts.join('.');
+    const newMetadataVersion = currentMetadataVersion + 1;
+
     console.log(JSON.stringify({
       current: {
-        version: currentVersionString,
-        build: currentVersionData.build
+        version: currentVersion,
+        metadataVersion: currentMetadataVersion
       },
       new: {
-        version: newVersionString,
-        build: newVersionData.build
+        version: newVersion,
+        metadataVersion: newMetadataVersion
       },
       type: type
     }));
     return;
   }
 
-  console.log(`Current version: ${currentVersionString} (build ${currentVersionData.build})`);
-  console.log(`New version: ${newVersionString} (build ${newVersionData.build}) (${type} bump)`);
+  // Build command arguments
+  const args = [updateVersionScript];
 
   if (isDryRun) {
-    return; // Exit early for dry run
+    args.push('--dry-run');
+  } else {
+    // Use --force to skip interactive prompts and --no-git to skip git operations
+    args.push('--no-git', '--force');
   }
 
-  console.log('');
+  args.push(type);
 
-  // Update all files
-  updateVersionJson(versionJsonPath, newVersionData);
-  updatePackageJson(packageJsonPath, newVersionString);
-  updateMetadataJson(metadataJsonPath, newVersionString, newVersionData.build);
-  updateReadme(readmePath, currentVersionString, newVersionString);
-
-  console.log('');
-  console.log(`✅ Successfully bumped version from ${currentVersionString} to ${newVersionString}`);
-  console.log(`   Build number: ${currentVersionData.build} → ${newVersionData.build}`);
+  // Execute update-version.sh
+  try {
+    execSync(args.join(' '), {
+      cwd: rootDir,
+      stdio: 'inherit',
+      shell: '/bin/bash'
+    });
+  } catch (error) {
+    console.error('Error executing update-version.sh');
+    process.exit(error.status || 1);
+  }
 }
 
 if (require.main === module) {

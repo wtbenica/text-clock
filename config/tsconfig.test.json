@@ -6,7 +6,9 @@
         "types": [
             "jest",
             "@types/jest",
-            "node"
+            "node",
+            "@girs/gjs",
+            "@girs/gnome-shell/ambient"
         ],
         "skipLibCheck": true,
         "allowJs": true,
