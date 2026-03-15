@@ -97,9 +97,9 @@ describe("AccentStyleConfig", () => {
         expect(result.dateColor).toBeInstanceOf(Color);
         expect(result.dividerColor).toBeInstanceOf(Color);
 
-        expect(result.clockColor.toString()).toMatch(/^#[0-9a-fA-F]{6}$/);
-        expect(result.dateColor.toString()).toMatch(/^#[0-9a-fA-F]{6}$/);
-        expect(result.dividerColor.toString()).toMatch(/^#[0-9a-fA-F]{6}$/);
+        expect(result.clockColor.toString()).toMatch(/^#[0-9A-F]{6}$/);
+        expect(result.dateColor.toString()).toMatch(/^#[0-9A-F]{6}$/);
+        expect(result.dividerColor.toString()).toMatch(/^#[0-9A-F]{6}$/);
       });
     });
 
@@ -153,6 +153,19 @@ describe("AccentStyleConfig", () => {
   });
 
   describe("Color transformation consistency", () => {
+    it("should produce different results for different styles", () => {
+      // Test that different accent styles actually produce different results
+      const results = ACCENT_STYLE_CONFIGS.map((config) => ({
+        clock: config.clockColor(testColor),
+        date: config.dateColor(testColor),
+        divider: config.dividerColor(testColor),
+      }));
+
+      // At least some styles should be different
+      const uniqueResults = new Set(results.map((r) => JSON.stringify(r)));
+      expect(uniqueResults.size).toBeGreaterThan(1);
+    });
+
     it("should produce consistent results across different colors", () => {
       const colors = [
         new Color("#3584E4"), // Blue
@@ -182,6 +195,34 @@ describe("AccentStyleConfig", () => {
           );
         });
       });
+    });
+  });
+
+  describe("Color manipulation methods", () => {
+    it("should create lighter variants", () => {
+      const lighter = testColor.lighten(0.3);
+      expect(lighter.toString()).not.toBe(testColor.toString());
+      expect(lighter.toString()).toMatch(/^#[0-9A-F]{6}$/);
+    });
+
+    it("should create darker variants", () => {
+      const darker = testColor.darken(0.2);
+      expect(darker.toString()).not.toBe(testColor.toString());
+      expect(darker.toString()).toMatch(/^#[0-9A-F]{6}$/);
+    });
+
+    it("should handle different lightening amounts", () => {
+      const light1 = testColor.lighten(0.3);
+      const light2 = testColor.lighten(0.5);
+      expect(light1.toString()).not.toBe(light2.toString());
+    });
+
+    it("should maintain Color instance types", () => {
+      const lighter = testColor.lighten(0.3);
+      const darker = testColor.darken(0.2);
+
+      expect(lighter).toBeInstanceOf(Color);
+      expect(darker).toBeInstanceOf(Color);
     });
   });
 });

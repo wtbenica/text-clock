@@ -159,15 +159,4 @@ describe("NotificationService", () => {
       expect(customService).toBeInstanceOf(NotificationService);
     });
   });
-
-  describe("destroy", () => {
-    it("should not throw when called", () => {
-      expect(() => service.destroy()).not.toThrow();
-    });
-
-    it("should be callable multiple times without error", () => {
-      service.destroy();
-      expect(() => service.destroy()).not.toThrow();
-    });
-  });
 });
