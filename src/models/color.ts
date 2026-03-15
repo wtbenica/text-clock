@@ -39,18 +39,18 @@ export class Color {
       /rgb\s*\(\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*(-?\d+)\s*\)/i,
     );
     if (rgbMatch) {
-      const r = Math.max(0, Math.min(255, Number(rgbMatch[1])));
-      const g = Math.max(0, Math.min(255, Number(rgbMatch[2])));
-      const b = Math.max(0, Math.min(255, Number(rgbMatch[3])));
+      const r = Number(rgbMatch[1]);
+      const g = Number(rgbMatch[2]);
+      const b = Number(rgbMatch[3]);
+
+      // Validate RGB values are in range
+      if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
+        throw new Error(`RGB values must be 0-255, got rgb(${r}, ${g}, ${b})`);
+      }
+
       const hex =
         "#" + [r, g, b].map((n) => n.toString(16).padStart(2, "0")).join("");
-      return hex.length === 7
-        ? hex.toUpperCase()
-        : `#${hex
-            .slice(1)
-            .split("")
-            .map((c) => c + c)
-            .join("")}`.toUpperCase();
+      return hex.toUpperCase();
     }
 
     // Handle hex format

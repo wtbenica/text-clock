@@ -8,7 +8,6 @@ describe("Color class normalization", () => {
   it("handles RGB format", () => {
     expect(new Color("rgb(255, 0, 128)").toString()).toBe("#FF0080");
     expect(new Color("rgb(0, 0, 0)").toString()).toBe("#000000");
-    expect(new Color("rgb(300, -10, 20)").toString()).toBe("#FF0014"); // clamps values
   });
 
   it("handles hex format with #", () => {
@@ -24,5 +23,8 @@ describe("Color class normalization", () => {
   it("throws for invalid colors", () => {
     expect(() => new Color("")).toThrow();
     expect(() => new Color("notacolor")).toThrow();
+    expect(() => new Color("rgb(300, -10, 20)")).toThrow(
+      "RGB values must be 0-255",
+    );
   });
 });

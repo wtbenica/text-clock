@@ -62,10 +62,6 @@ export class StyleService {
   #ifaceSettings: Gio.Settings | null = null;
   #ifaceSignalConnection: number | null = null;
 
-  // Cache for the last known accent color to avoid redundant reads
-  #accentColorName: string | null = null;
-  #accentColor: Color | null = null;
-
   /**
    * Create a new StyleService instance.
    *
@@ -153,45 +149,20 @@ export class StyleService {
 
       const accent = ifaceSettings.get_string("accent-color");
       if (!accent) {
-        return this.#getFallbackColor();
+        return new Color("#FFFFFF");
       }
-
-      // Return cached color if unchanged
-      if (accent === this.#accentColorName && this.#accentColor) {
-        return this.#accentColor;
-      }
-
-      this.#accentColorName = accent;
 
       // Map named colors (e.g., "blue") to hex, or use accent value directly
       const colorValue = accentNameToHex(accent) ?? accent;
-      this.#accentColor = new Color(colorValue);
-      return this.#accentColor;
+      return new Color(colorValue);
     } catch (e) {
       logWarn(`Could not read accent color: ${e}`);
-      return this.#getFallbackColor();
+      return new Color("#FFFFFF");
     }
   }
 
   /**
-   * Get the fallback accent color (white).
-   *
-   * @returns Cached white color
-   */
-  #getFallbackColor(): Color {
-    if (this.#accentColorName !== "fallback" || !this.#accentColor) {
-      this.#accentColorName = "fallback";
-      this.#accentColor = new Color("#FFFFFF");
-    }
-    return this.#accentColor;
-  }
-
-  /**
-   * Clean up resources and prevent memory leaks.
-   *
-   * Disconnects all settings signal handlers and clears registered targets.
-   * This method must be called when the StyleService is no longer needed,
-   * particularly when the extension is disabled, to prevent memory leaks
+   * Cleanup all resources when the extension is disabled, to prevent memory leaks
    * and orphaned signal handlers in the GNOME Shell environment.
    *
    * After calling destroy(), the StyleService instance should not be used.
@@ -221,10 +192,6 @@ export class StyleService {
       this.#ifaceSignalConnection = null;
     }
     this.#ifaceSettings = null;
-
-    // Clear accent color cache
-    this.#accentColorName = null;
-    this.#accentColor = null;
 
     // Clear all targets
     this.#targets.clear();
@@ -288,10 +255,6 @@ export class StyleService {
       this.#ifaceSignalConnection = this.#ifaceSettings.connect(
         "changed::accent-color",
         () => {
-          // Invalidate accent color cache when system accent changes
-          this.#accentColorName = null;
-          this.#accentColor = null;
-
           // Only update if we're actually using accent color mode; applyToAllTargets
           // will read the current color mode and act accordingly.
           this.applyToAllTargets();
