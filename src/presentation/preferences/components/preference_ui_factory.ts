@@ -106,7 +106,7 @@ export function createBooleanSwitchRow(
   // Bind changes back to settings
   settings.bind(
     settingsKey,
-    switchRow,
+    switchRow as any,
     "active",
     Gio.SettingsBindFlags.DEFAULT,
   );
@@ -150,7 +150,7 @@ export function createPresetWithCustomRow<T extends BasePreferenceConfig>(
   // Bind custom entry to settings
   settings.bind(
     customSettingsKey,
-    entryRow,
+    entryRow as any,
     "text",
     Gio.SettingsBindFlags.DEFAULT,
   );
@@ -209,7 +209,7 @@ export function createDependentComboRow<T extends BasePreferenceConfig>(
   // Bind sensitivity to dependency setting
   settings.bind(
     dependencyKey,
-    comboRow,
+    comboRow as any,
     "sensitive",
     Gio.SettingsBindFlags.DEFAULT,
   );
@@ -244,7 +244,7 @@ export function createDependentSwitchRow(
   // Bind sensitivity to dependency setting
   settings.bind(
     dependencyKey,
-    switchRow,
+    switchRow as any,
     "sensitive",
     Gio.SettingsBindFlags.DEFAULT,
   );

@@ -194,7 +194,9 @@ export class NotificationService {
     // Check if source already exists in the message tray
     const existingSource = Main.messageTray
       .getSources()
-      .find((source) => source.title === this.extensionName);
+      .find(
+        (source: MessageTray.Source) => source.title === this.extensionName,
+      );
 
     if (existingSource) {
       return existingSource;

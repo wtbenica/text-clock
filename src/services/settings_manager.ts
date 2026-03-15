@@ -107,7 +107,7 @@ export class SettingsManager {
     flags: Gio.SettingsBindFlags = Gio.SettingsBindFlags.DEFAULT,
   ): void {
     try {
-      this.#settings.bind(settingsKey, object, propertyName, flags);
+      this.#settings.bind(settingsKey, object as any, propertyName, flags);
     } catch (error) {
       logErr(
         `Failed to bind setting "${settingsKey}" to property "${propertyName}": ${error}`,
