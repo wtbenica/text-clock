@@ -66,6 +66,9 @@ export function createGeneralPage(
     }
   })();
 
+  // Track signal connection IDs for cleanup
+  const connectionIds: number[] = [];
+
   if (systemSettings) {
     // Create the UI row backed by system settings
     createBooleanSwitchRow(
@@ -80,7 +83,7 @@ export function createGeneralPage(
     // Also keep the extension key in sync: when the system key changes, copy it
     // into extension settings so runtime reads the extension schema as usual.
     try {
-      systemSettings.connect("changed::clock-show-date", () => {
+      const connId = systemSettings.connect("changed::clock-show-date", () => {
         try {
           const val = systemSettings.get_boolean("clock-show-date");
           settings.set_boolean(SettingsKey.SHOW_DATE, val);
@@ -90,6 +93,7 @@ export function createGeneralPage(
           );
         }
       });
+      connectionIds.push(connId);
     } catch (e) {
       logWarn(
         `Failed to connect to org.gnome.desktop.interface changed::clock-show-date: ${e}`,
@@ -121,16 +125,20 @@ export function createGeneralPage(
       },
     );
     try {
-      systemSettings.connect("changed::clock-show-weekday", () => {
-        try {
-          const val = systemSettings.get_boolean("clock-show-weekday");
-          settings.set_boolean(SettingsKey.SHOW_WEEKDAY, val);
-        } catch (e) {
-          logWarn(
-            `Failed to apply org.gnome.desktop.interface.clock-show-weekday to extension setting: ${e}`,
-          );
-        }
-      });
+      const connId = systemSettings.connect(
+        "changed::clock-show-weekday",
+        () => {
+          try {
+            const val = systemSettings.get_boolean("clock-show-weekday");
+            settings.set_boolean(SettingsKey.SHOW_WEEKDAY, val);
+          } catch (e) {
+            logWarn(
+              `Failed to apply org.gnome.desktop.interface.clock-show-weekday to extension setting: ${e}`,
+            );
+          }
+        },
+      );
+      connectionIds.push(connId);
     } catch (e) {
       logWarn(
         `Failed to connect to org.gnome.desktop.interface changed::clock-show-weekday: ${e}`,
@@ -187,6 +195,13 @@ export function createGeneralPage(
       title: _("Custom Divider Text"),
     },
   );
+
+  // Disconnect signal handlers when window closes to prevent resource leak
+  if (systemSettings && connectionIds.length > 0) {
+    window.connect("close-request", () => {
+      connectionIds.forEach((id) => systemSettings.disconnect(id));
+    });
+  }
 
   return page;
 }

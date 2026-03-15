@@ -146,6 +146,7 @@ export function addColorModeRow(
   group: Adw.PreferencesGroup,
   settings: Gio.Settings,
   supportsAccentColor: boolean = true,
+  connectionIds?: number[],
 ): void {
   const modelStrings = [prefsGettext._("Default")];
   if (supportsAccentColor) modelStrings.push(prefsGettext._("Accent Color"));
@@ -240,8 +241,17 @@ export function addColorModeRow(
     updateColorRowsVisibility();
   });
 
-  settings.connect("changed::show-date", () => updateColorRowsVisibility());
-  settings.connect("changed::show-weekday", () => updateColorRowsVisibility());
+  const connId1 = settings.connect("changed::show-date", () =>
+    updateColorRowsVisibility(),
+  );
+  const connId2 = settings.connect("changed::show-weekday", () =>
+    updateColorRowsVisibility(),
+  );
+
+  // If connectionIds array provided, store IDs for cleanup
+  if (connectionIds) {
+    connectionIds.push(connId1, connId2);
+  }
 }
 
 export default {
@@ -274,7 +284,14 @@ export function createColorsPage(
   });
   page.add(colorGroup);
 
-  addColorModeRow(colorGroup, settings, supportsAccentColor);
+  // Track connection IDs for cleanup when window closes
+  const connectionIds: number[] = [];
+  addColorModeRow(colorGroup, settings, supportsAccentColor, connectionIds);
+
+  // Disconnect signal handlers when window closes to prevent resource leak
+  window.connect("close-request", () => {
+    connectionIds.forEach((id) => settings.disconnect(id));
+  });
 
   return page;
 }
