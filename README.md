@@ -19,16 +19,11 @@
 
 <img src="media/screenshots.png" alt="Screenshot of Text Clock Extension"/>
 
-### New in v1.1.0
+### New in v1.1.2
 
-- Accent color themes and custom color options
-- Enhanced preferences UI and dedicated color settings
-- Divider customization and improved Spanish translations
-
-### New in v1.1.1
-
-- Bug fixes and refinements for GNOME Shell extension review compliance
-- Improved error handling and logging consistency
+- Minor bug fixes and performance improvements
+- Updated dependencies for better compatibility
+- Enhanced logging for debugging purposes
 
 See the full release notes: [RELEASE_NOTES.md](RELEASE_NOTES.md)
 
@@ -42,6 +37,7 @@ See the full release notes: [RELEASE_NOTES.md](RELEASE_NOTES.md)
 - **Time Format Options:** Choose between relative minutes ("ten to three", "five past noon") or hours and minutes ("four thirty", "eleven oh seven").
 - **Optional Date Display:** Time-only or time and date display.
 - **Fuzziness:** Displays the exact time or fuzzy time, rounded to five, ten, or fifteen minute intervals.
+- **Custom Color Settings:** Personalize the clock's appearance with accent color themes and custom color options.
 
 #### Compatibility
 
@@ -51,13 +47,11 @@ See the full release notes: [RELEASE_NOTES.md](RELEASE_NOTES.md)
 
 #### Installation
 
-You can install the extension from the GNOME Extensions website or manually from the source code.
-
-#### With Extensions Manager
+##### With Extensions Manager
 
 The simplest way to install the extension is using [_Extensions Manager_](https://github.com/mjakeman/extension-manager). It can install, enable, disable, and configure extensions directly.
 
-#### From AUR (Arch Linux)
+##### From AUR (Arch Linux)
 
 Arch Linux users can install the extension from the AUR:
 
@@ -73,7 +67,7 @@ makepkg -si
 
 This installs the extension system-wide and is managed by the package manager.
 
-#### From extensions.gnome.org
+##### From extensions.gnome.org
 
 This extension is available on [extensions.gnome.org](https://extensions.gnome.org/extension/7186/text-clock/). To use the site, you'll need to install a couple of components:
 
@@ -86,7 +80,7 @@ This extension is available on [extensions.gnome.org](https://extensions.gnome.o
 
 - The [native host connector](https://gnome.pages.gitlab.gnome.org/gnome-browser-integration/pages/installation-guide.html) so the site can enable/disable extensions.
 
-#### From a ZIP File
+##### From a ZIP File
 
 You can download the latest release of the extension as a ZIP file from GitHub:
 
@@ -105,17 +99,17 @@ You can download the latest release of the extension as a ZIP file from GitHub:
 
 4. Restart GNOME Shell for the changes to take effect. On Wayland, log out and back in. On X11, press Alt+F2, type `r`, and then press Enter.
 
-##### Verifying the Download
+##### ***Verifying the Download***
 
 For added security, you can verify the integrity of the downloaded ZIP file using checksums. This ensures the file wasn't corrupted during download and matches the official release.
 
-1. **Download the checksum file**:
+1. Download the checksum file:
 
    ```bash
    wget https://github.com/wtbenica/text-clock/releases/download/v1.1.2/text-clock@benica.dev.zip.sha256
    ```
 
-2. **Verify the ZIP file**:
+2. Verify the ZIP file:
 
    ```bash
    sha256sum -c text-clock@benica.dev.zip.sha256
@@ -124,9 +118,9 @@ For added security, you can verify the integrity of the downloaded ZIP file usin
    - **Success**: You'll see "text-clock@benica.dev.zip: OK"
    - **Failure**: Indicates the file was corrupted or modified—re-download the ZIP file
 
-#### From Source
+##### From Source
 
-###### Required Dependencies
+##### ***Required Dependencies***
 
 To use the Makefile for installation, you will need the following dependencies:
 
@@ -138,13 +132,13 @@ To use the Makefile for installation, you will need the following dependencies:
 
 You can verify your system has the required tools by running `make check-deps`.
 
-###### Pre-Installation Notes:
+##### ***Pre-Installation Notes***
 
 - **Backup**: As a precaution, you may want to backup your existing GNOME Shell extensions before installation.
 
 - **Path Expansion**: The Makefile uses `$(HOME)` for path expansion. Please ensure that your system correctly expands `$(HOME)` to your home directory.
 
-###### Installation
+##### ***Installation***
 
 1. The source files are hosted on GitHub. You can download the source files as a [ZIP file](https://github.com/wtbenica/text-clock/archive/refs/heads/main.zip) or clone the repository using Git:
 
@@ -181,7 +175,7 @@ You can verify your system has the required tools by running `make check-deps`.
    make clean
    ```
 
-###### Uninstallation
+##### ***Uninstallation***
 
 To uninstall the extension:
 
@@ -190,13 +184,13 @@ make uninstall           # Remove from user directory
 sudo make uninstall-system  # Remove from system directory (if installed system-wide)
 ```
 
-#### Managing the Extension
+### Managing the Extension
 
-###### GUI Method
+#### GUI Method
 
 You can use a GUI tool like [_Extensions Manager_](https://github.com/mjakeman/extension-manager) or _GNOME Extensions_ to disable, enable, uninstall, and configure extensions.
 
-###### Command Line
+#### Command Line
 
 To disable the extension (but leave it installed), run:
 
