@@ -275,6 +275,68 @@ describe("ClockFormatter", () => {
       );
       expect(result).toContain("the 1st"); // Should show Feb 1st
     });
+
+    it("should show weekday only when showDate is false but showWeekday is true", () => {
+      const date = new Date("2024-01-01T15:00:00"); // Monday
+      const result = formatter.getClockText(
+        date,
+        false, // showDate = false
+        true, // showWeekday = true
+        TimeFormat.FORMAT_ONE,
+        5,
+      );
+      expect(result).toContain(" | ");
+      expect(result).toContain("Monday");
+      expect(result).not.toContain("the 1st"); // Should NOT have date
+    });
+
+    it("should handle weekday-only with date rollover", () => {
+      const date = new Date("2024-01-01T23:58:00"); // Monday night, rounds to Tuesday
+      const result = formatter.getClockText(
+        date,
+        false, // showDate = false
+        true, // showWeekday = true
+        TimeFormat.FORMAT_ONE,
+        5,
+      );
+      expect(result).toContain("Tuesday"); // Should show next day's weekday
+    });
+
+    it("should format noon with minutes in format one", () => {
+      const date = new Date("2024-01-01T12:15:00"); // 12:15 PM
+      const result = formatter.getClockText(
+        date,
+        false,
+        false,
+        TimeFormat.FORMAT_ONE,
+        5,
+      );
+      expect(result).toBe("quarter past noon"); // or whatever your translation says
+    });
+
+    it("should format noon with minutes in format two", () => {
+      const date = new Date("2024-01-01T12:15:00"); // 12:15 PM
+      const result = formatter.getClockText(
+        date,
+        false,
+        false,
+        TimeFormat.FORMAT_TWO,
+        5,
+      );
+      expect(result).toBe("twelve fifteen"); // or whatever your translation says
+    });
+
+    it("should format midnight with minutes", () => {
+      const date = new Date("2024-01-01T00:05:00"); // 12:05 AM
+      const result = formatter.getClockText(
+        date,
+        false,
+        false,
+        TimeFormat.FORMAT_ONE,
+        5,
+      );
+      expect(result).toBe("five past midnight"); // or whatever your translation says
+    });
   });
 
   describe("edge cases", () => {
