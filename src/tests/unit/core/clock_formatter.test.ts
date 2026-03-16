@@ -7,6 +7,7 @@ import {
   Fuzziness,
   TimeFormat,
 } from "../../../core/clock_formatter.js";
+import { Recurrence, CustomMessage } from "../../../models/custom_message.js";
 import { LocalizedStrings } from "../../../models/localized_strings.js";
 
 // Mock translation strings for testing
@@ -371,6 +372,103 @@ describe("ClockFormatter", () => {
       );
       // With 15-minute fuzziness, 15:17 should round to 15:15
       expect(result).toBe("quarter past three");
+    });
+  });
+
+  describe("Custom date messages", () => {
+    it("should return exact date match", () => {
+      const messages: CustomMessage[] = [
+        new CustomMessage({
+          date: "2024-01-15",
+          message: "Tax Day!",
+          recurrence: Recurrence.None,
+        }),
+      ];
+      const result = formatter.formatClockDisplay(
+        new Date("2024-01-15T10:00:00"),
+        messages,
+      );
+      expect(result).toBe("Tax Day!");
+    });
+
+    it("should return yearly recurrence match", () => {
+      const messages: CustomMessage[] = [
+        new CustomMessage({
+          date: "2023-12-25",
+          message: "🎄 Christmas!",
+          recurrence: Recurrence.Yearly,
+        }),
+      ];
+      const result = formatter.formatClockDisplay(
+        new Date("2024-12-25T10:00:00"), // Different year
+        messages,
+      );
+      expect(result).toBe("🎄 Christmas!");
+    });
+
+    it("should return normal time when no match", () => {
+      const messages: CustomMessage[] = [];
+      const result = formatter.formatClockDisplay(
+        new Date("2024-01-15T12:00:00"),
+        messages,
+      );
+      expect(result).toBe("noon exactly");
+    });
+
+    it("should handle monthly recurrence", () => {
+      const messages: CustomMessage[] = [
+        new CustomMessage({
+          date: "2024-01-15",
+          message: "📅 Monthly Event!",
+          recurrence: Recurrence.Monthly,
+        }),
+      ];
+      // Should match on the 15th of any month/year
+      const result = formatter.formatClockDisplay(
+        new Date("2025-03-15T10:00:00"),
+        messages,
+      );
+      expect(result).toBe("📅 Monthly Event!");
+    });
+  });
+
+  describe("calculateMinuteBucket", () => {
+    it("should calculate minute bucket with default fuzziness", () => {
+      const date = new Date("2024-01-01T12:17:00");
+      const result = formatter.calculateMinuteBucket(date);
+      expect(result).toBe(15); // 17 rounds to 15 with fuzziness=5
+    });
+
+    it("should calculate minute bucket with custom fuzziness", () => {
+      const date = new Date("2024-01-01T12:17:00");
+      const result = formatter.calculateMinuteBucket(date, 15);
+      expect(result).toBe(15); // 17 rounds to 15 with fuzziness=15
+    });
+
+    it("should use current date when date parameter is undefined", () => {
+      const result = formatter.calculateMinuteBucket();
+      expect(result).toBeGreaterThanOrEqual(0);
+      expect(result).toBeLessThan(60);
+    });
+  });
+
+  describe("getHourName", () => {
+    it("should get hour name with default parameters", () => {
+      const date = new Date("2024-01-01T12:00:00");
+      const result = formatter.getHourName(date);
+      expect(result).toBe("noon");
+    });
+
+    it("should get hour name with custom time format", () => {
+      const date = new Date("2024-01-01T15:00:00");
+      const result = formatter.getHourName(date, TimeFormat.FORMAT_ONE);
+      expect(result).toBe("three");
+    });
+
+    it("should use current date when date parameter is undefined", () => {
+      const result = formatter.getHourName();
+      expect(typeof result).toBe("string");
+      expect(result.length).toBeGreaterThan(0);
     });
   });
 });

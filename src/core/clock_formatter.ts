@@ -184,14 +184,28 @@ export class ClockFormatter {
     date: Date,
     messages: CustomMessage[],
     timeFormat: TimeFormat = TimeFormat.FORMAT_ONE,
+    fuzziness: Fuzziness = Fuzziness.FIVE_MINUTES,
   ): string {
     const customMessage = this.getCustomMessage(date, messages);
     if (customMessage) {
       return customMessage;
     }
 
-    const minuteBucket = this.calculateMinuteBucket(date);
-    const hourName = this.getHourName(date);
+    // Use the standard clock formatting logic
+    const minutes = date.getMinutes();
+    const hours = date.getHours();
+    const minuteBucket = Math.round(minutes / fuzziness) * fuzziness;
+    const shouldRoundUp = ClockFormatter.#shouldRoundUp(
+      minuteBucket,
+      timeFormat,
+    );
+    const roundedHour = (shouldRoundUp ? hours + 1 : hours) % 24;
+    const hourName = ClockFormatter.#computeHourName(
+      this.wordPack,
+      roundedHour,
+      minuteBucket,
+      timeFormat,
+    );
 
     return this.#getTimeString(
       this.wordPack.getTimes(timeFormat),
@@ -200,11 +214,10 @@ export class ClockFormatter {
     );
   }
 
-  calculateMinuteBucket(date?: Date) {
+  calculateMinuteBucket(date?: Date, fuzziness: number = 5) {
     const d = date ?? new Date();
     const currentMinute = d.getMinutes();
-    const bucketSize = 5; // Example bucket size
-    return Math.floor(currentMinute / bucketSize);
+    return Math.round(currentMinute / fuzziness) * fuzziness;
   }
 
   static #computeHourName(
@@ -254,6 +267,7 @@ export class ClockFormatter {
     if (minuteBucket < 0 || minuteBucket >= times.length) {
       logErr(
         `Invalid minuteBucket: ${minuteBucket}, times length: ${times.length}`,
+        "ClockFormatter.getTimeString",
       );
       return ""; // Return a fallback value if out of bounds
     }
@@ -303,9 +317,25 @@ export class ClockFormatter {
     return wordPack.daysOfMonth[n - 1];
   }
 
-  getHourName(date?: Date) {
+  getHourName(
+    date?: Date,
+    timeFormat: TimeFormat = TimeFormat.FORMAT_ONE,
+    fuzziness: number = 5,
+  ) {
     const d = date ?? new Date();
-    const currentHour = d.getHours();
-    return `hour-${currentHour}`; // Example logic for generating hour name
+    const minutes = d.getMinutes();
+    const hours = d.getHours();
+    const minuteBucket = Math.round(minutes / fuzziness) * fuzziness;
+    const shouldRoundUp = ClockFormatter.#shouldRoundUp(
+      minuteBucket,
+      timeFormat,
+    );
+    const roundedHour = (shouldRoundUp ? hours + 1 : hours) % 24;
+    return ClockFormatter.#computeHourName(
+      this.wordPack,
+      roundedHour,
+      minuteBucket,
+      timeFormat,
+    );
   }
 }
