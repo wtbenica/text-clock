@@ -25,7 +25,7 @@ import {
   initPrefsGettext,
   prefsGettext,
 } from "./utils/gettext/gettext_utils_prefs.js";
-import { gjsLogger } from "./utils/logging/logger_gjs.js";
+import { logErr, logWarn } from "./utils/error_utils.js";
 
 // Initialize gettext functions with the real GNOME Shell functions
 initPrefsGettext(_, ngettext, pgettext);
@@ -74,12 +74,11 @@ export default class TextClockPrefs extends ExtensionPreferences {
         }
       }
     } catch (e) {
-      // Not fatal — fall back to system symbolic icons. Use the project's
-      // GJS logger helper so logs are consistent with the rest of the codebase.
+      // Not fatal — fall back to system symbolic icons.
       if (e instanceof Error) {
-        gjsLogger.logError(e, "prefs: could not load compiled gresource");
+        logErr(e, "prefs: could not load compiled gresource");
       } else {
-        gjsLogger.log("prefs: could not load compiled gresource:", e);
+        logWarn(`prefs: could not load compiled gresource: ${e}`);
       }
     }
 
