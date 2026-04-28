@@ -10,7 +10,7 @@
  * All messages prefixed with '[TextClock]'.
  */
 
-import type { Logger } from "./logging/logger_interface.js";
+import type { Logger } from "./logging/logger_gjs.js";
 import { gjsLogger } from "./logging/logger_gjs.js";
 
 // Current logger instance (can be overridden for tests)

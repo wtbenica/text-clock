@@ -7,8 +7,6 @@
  * Logger implementation for GJS/GNOME Shell environment.
  */
 
-import type { Logger } from "./logger_interface.js";
-
 export const gjsLogger: Logger = {
   log(...args: unknown[]): void {
     if (typeof (globalThis as any).log === "function") {
@@ -21,3 +19,8 @@ export const gjsLogger: Logger = {
     }
   },
 };
+
+export interface Logger {
+  log(...args: unknown[]): void;
+  logError(error: Error, message?: string): void;
+}
