@@ -17,7 +17,7 @@ import {
 import { DateMenuButton } from "resource:///org/gnome/shell/ui/dateMenu.js";
 import { panel } from "resource:///org/gnome/shell/ui/main.js";
 
-import SettingsKey from "./models/settings_keys.js";
+import SettingsKey from "./models/settings_keys";
 import { NotificationService } from "./services/notification_service.js";
 import { SettingsManager } from "./services/settings_manager.js";
 import { StyleService } from "./services/style_service.js";

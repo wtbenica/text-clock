@@ -4,7 +4,7 @@
 
 import { createTimeConstants } from "../../../../constants/times/core.js";
 
-import type { GettextFunctions } from "../../../../utils/gettext/gettext_utils.js";
+import type { GettextFunctions } from "../../../../utils/gettext/gettext_utils";
 
 describe("createTimeConstants", () => {
   let mockGettextFunctions: GettextFunctions;

@@ -48,11 +48,11 @@ import Adw from "gi://Adw";
 import Gio from "gi://Gio";
 import Gtk from "gi://Gtk";
 
-import SettingsKey from "../../../models/settings_keys.js";
+import SettingsKey from "../../../models/settings_keys";
 import {
   BasePreferenceConfig,
   CustomPreferenceConfig,
-} from "../../../models/preference_types.js";
+} from "../../../models/preference_types";
 import { logWarn } from "../../../utils/error_utils.js";
 import { prefsGettext } from "../../../utils/gettext/gettext_utils_prefs.js";
 

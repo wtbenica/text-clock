@@ -13,27 +13,6 @@
  *
  * The keys correspond directly to those defined in the extension's GSettings
  * schema (org.gnome.shell.extensions.text-clock.gschema.xml).
- *
- * @example
- * ```typescript
- * import SettingsKey from './models/settings_keys.js';
- *
- * // Type-safe settings access
- * const showDate = settings.get_boolean(SettingsKey.SHOW_DATE);
- * settings.set_string(SettingsKey.CLOCK_COLOR, '#3584E4');
- *
- * // Settings manager integration
- * settingsManager.subscribe(SettingsKey.COLOR_MODE, (newMode) => {
- *   updateColorScheme(newMode);
- * });
- *
- * // Property binding
- * settingsManager.bindProperty(
- *   SettingsKey.SHOW_WEEKDAY,
- *   checkboxWidget,
- *   'active'
- * );
- * ```
  */
 
 /**

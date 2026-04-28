@@ -7,7 +7,7 @@ import type {
   ValuePreferenceConfig,
   CustomPreferenceConfig,
   AccentStyleConfig,
-} from "../models/preference_types.js";
+} from "../models/preference_types";
 
 export const WINDOW_TITLE = "Text Clock Prefs";
 

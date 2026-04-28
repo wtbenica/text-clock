@@ -5,7 +5,7 @@
 
 import Gio from "gi://Gio";
 
-import SettingsKey from "../models/settings_keys.js";
+import SettingsKey from "../models/settings_keys";
 import { logWarn, logErr } from "../utils/error_utils.js";
 
 /**

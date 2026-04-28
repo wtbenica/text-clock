@@ -7,7 +7,7 @@ import {
   getNotificationTitle,
   generateUpdateMessage,
 } from "../constants/release_messages.js";
-import SettingsKey from "../models/settings_keys.js";
+import SettingsKey from "../models/settings_keys";
 import { extensionGettext } from "../utils/gettext/gettext_utils_ext.js";
 
 function findLatestUnseenRelease(

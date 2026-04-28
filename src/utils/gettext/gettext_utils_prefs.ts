@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { GettextFunctions } from "../gettext/gettext_utils.js";
+import { GettextFunctions } from "../gettext/gettext_utils";
 
 /**
  * Preferences context gettext utilities.

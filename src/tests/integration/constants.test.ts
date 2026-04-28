@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import SettingsKey from "../../models/settings_keys.js";
+import SettingsKey from "../../models/settings_keys";
 
 describe("Constants and Configuration", () => {
   describe("Settings Keys", () => {
