@@ -7,7 +7,7 @@
  * Logger implementation for Node.js/Jest test environment.
  */
 
-import type { Logger } from "../../utils/logging/logger_interface.js";
+import type { Logger } from "../../utils/logging/logger_gjs.js";
 
 export const consoleLogger: Logger = {
   log(...args: unknown[]): void {

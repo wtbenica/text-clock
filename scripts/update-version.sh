@@ -261,20 +261,16 @@ fi
 # Update metadata.json
 log_step "Updating metadata.json..."
 if [[ "$DRY_RUN" == "false" ]]; then
-    # Get current version number (integer)
-    CURRENT_VERSION_NUM=$(node -p "require('./metadata.json').version")
-    NEW_VERSION_NUM=$((CURRENT_VERSION_NUM + 1))
-    
     node -e "
         const fs = require('fs');
         const meta = JSON.parse(fs.readFileSync('metadata.json', 'utf8'));
         meta['version-name'] = '$NEW_VERSION';
-        meta.version = $NEW_VERSION_NUM;
+        delete meta.version;
         fs.writeFileSync('metadata.json', JSON.stringify(meta, null, 2) + '\n');
     "
-    log_info "  ✓ Updated version-name to $NEW_VERSION and version number to $NEW_VERSION_NUM"
+    log_info "  ✓ Updated version-name to $NEW_VERSION"
 else
-    log_info "  Would update version-name to $NEW_VERSION and increment version number"
+    log_info "  Would update version-name to $NEW_VERSION"
 fi
 
 # Update README.md
@@ -374,7 +370,7 @@ if [[ "$DRY_RUN" == "false" ]] && [[ "$NO_GIT" == "false" ]]; then
         git commit -m "Update version to $NEW_VERSION
 
 - Updated package.json version field
-- Updated metadata.json version-name and version number  
+- Updated metadata.json version-name
 - Updated README.md version references and download links
 - Updated RELEASE_NOTES.md header
 - Updated translation files project version$(if [[ -f "aur/PKGBUILD" ]]; then echo $'\n- Updated AUR PKGBUILD version'; fi)$(if [[ "$RENAME_BRANCH" == "true" ]]; then echo $'\n- Renamed branch to '$NEW_BRANCH; fi)"

@@ -5,9 +5,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Text Clock 1.1.1\n"
+"Project-Id-Version: Text Clock 1.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-16 12:12-0700\n"
+"POT-Creation-Date: 2026-04-28 13:11-0700\n"
 "PO-Revision-Date: 2025-09-26 21:30-0700\n"
 "Last-Translator: Wesley Benica <wesley@benica.dev>\n"
 "Language-Team: Spanish\n"
@@ -17,9 +17,63 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.4.2\n"
 
-#: dist/extension.js:257
-msgid "Could not find clock display box"
-msgstr "No se pudo encontrar el cuadro de visualización del reloj"
+#: dist/services/notification_service.js:117
+msgid "Open Preferences"
+msgstr "Abrir Preferencias"
+
+#: dist/constants/release_messages.js:12 dist/constants/release_messages.js:20
+msgid "Complete color customization with accent-based and custom themes."
+msgstr ""
+"Personalización completa de colores con temas basados en el acento y temas "
+"personalizados."
+
+#: dist/constants/release_messages.js:14
+msgid "Enhanced preferences interface"
+msgstr "Interfaz de preferencias mejorada"
+
+#: dist/constants/release_messages.js:15
+msgid "Divider customization options"
+msgstr "Opciones de personalización del separador"
+
+#: dist/constants/release_messages.js:16
+msgid "Improved translations"
+msgstr "Traducciones mejoradas"
+
+#: dist/constants/release_messages.js:22
+msgid "Modern preferences interface"
+msgstr "Interfaz de preferencias moderna"
+
+#: dist/constants/release_messages.js:23
+msgid "Flexible divider customization"
+msgstr "Personalización flexible del separador"
+
+#: dist/constants/release_messages.js:51
+msgid "Check Preferences to explore features."
+msgstr "Revisa Preferencias para explorar las funciones."
+
+#: dist/constants/release_messages.js:53
+msgid "Check Preferences for new features."
+msgstr "Revisa Preferencias para las nuevas funciones."
+
+#: dist/constants/release_messages.js:74
+#, javascript-format
+msgid "Features: %s Additional capabilities: %s"
+msgstr "Funciones: %s Capacidades adicionales: %s"
+
+#: dist/constants/release_messages.js:79
+#, javascript-format
+msgid "New: %s Additional improvements: %s"
+msgstr "Nuevo: %s Mejoras adicionales: %s"
+
+#: dist/constants/release_messages.js:101
+#, javascript-format
+msgid "Text Clock %s"
+msgstr "Text Clock %s"
+
+#: dist/constants/release_messages.js:103
+#, javascript-format
+msgid "Text Clock updated to %s"
+msgstr "Text Clock actualizado a %s"
 
 #: dist/constants/preferences.js:26
 msgid "one minute"
@@ -158,59 +212,228 @@ msgstr "Contraste Invertido"
 msgid "Time normal, date white, divider normal"
 msgstr "Hora normal, fecha blanca, separador normal"
 
-#: dist/constants/release_messages.js:12 dist/constants/release_messages.js:20
-msgid "Complete color customization with accent-based and custom themes."
-msgstr ""
-"Personalización completa de colores con temas basados en el acento y temas "
-"personalizados."
-
-#: dist/constants/release_messages.js:14
-msgid "Enhanced preferences interface"
-msgstr "Interfaz de preferencias mejorada"
-
-#: dist/constants/release_messages.js:15
-msgid "Divider customization options"
-msgstr "Opciones de personalización del separador"
-
-#: dist/constants/release_messages.js:16
-msgid "Improved translations"
-msgstr "Traducciones mejoradas"
-
-#: dist/constants/release_messages.js:22
-msgid "Modern preferences interface"
-msgstr "Interfaz de preferencias moderna"
-
-#: dist/constants/release_messages.js:23
-msgid "Flexible divider customization"
-msgstr "Personalización flexible del separador"
-
-#: dist/constants/release_messages.js:51
-msgid "Check Preferences to explore features."
-msgstr "Revisa Preferencias para explorar las funciones."
-
-#: dist/constants/release_messages.js:53
-msgid "Check Preferences for new features."
-msgstr "Revisa Preferencias para las nuevas funciones."
-
-#: dist/constants/release_messages.js:74
+#: dist/constants/dates/core.js:7
 #, javascript-format
-msgid "Features: %s Additional capabilities: %s"
-msgstr "Funciones: %s Capacidades adicionales: %s"
+msgctxt ""
+"This is how someone would say the day of the month only. As in, \"My rent is "
+"due on the %s.\""
+msgid "the %s"
+msgstr "el %s"
 
-#: dist/constants/release_messages.js:79
+#: dist/constants/dates/core.js:9
 #, javascript-format
-msgid "New: %s Additional improvements: %s"
-msgstr "Nuevo: %s Mejoras adicionales: %s"
+msgctxt ""
+"The day of the week and the date. The date will be substituted in the %s. "
+"For example, \"Sunday the fifth\"."
+msgid "sunday the %s"
+msgstr "domingo %s"
 
-#: dist/constants/release_messages.js:101
+#: dist/constants/dates/core.js:10
 #, javascript-format
-msgid "Text Clock %s"
-msgstr "Text Clock %s"
+msgctxt ""
+"The day of the week and the date. The date will be substituted in the %s. "
+"For example, \"Monday the sixth\"."
+msgid "monday the %s"
+msgstr "lunes %s"
 
-#: dist/constants/release_messages.js:103
+#: dist/constants/dates/core.js:11
 #, javascript-format
-msgid "Text Clock updated to %s"
-msgstr "Text Clock actualizado a %s"
+msgctxt ""
+"The day of the week and the date. The date will be substituted in the %s. "
+"For example, \"Tuesday the seventh\"."
+msgid "tuesday the %s"
+msgstr "martes %s"
+
+#: dist/constants/dates/core.js:12
+#, javascript-format
+msgctxt ""
+"The day of the week and the date. The date will be substituted in the %s. "
+"For example, \"Wednesday the eighth\"."
+msgid "wednesday the %s"
+msgstr "miércoles %s"
+
+#: dist/constants/dates/core.js:13
+#, javascript-format
+msgctxt ""
+"The day of the week and the date. The date will be substituted in the %s. "
+"For example, \"Thursday the ninth\"."
+msgid "thursday the %s"
+msgstr "jueves %s"
+
+#: dist/constants/dates/core.js:14
+#, javascript-format
+msgctxt ""
+"The day of the week and the date. The date will be substituted in the %s. "
+"For example, \"Friday the tenth\"."
+msgid "friday the %s"
+msgstr "viernes %s"
+
+#: dist/constants/dates/core.js:15
+#, javascript-format
+msgctxt ""
+"The day of the week and the date. The date will be substituted in the %s. "
+"For example, \"Saturday the eleventh\"."
+msgid "saturday the %s"
+msgstr "sábado %s"
+
+#: dist/constants/dates/core.js:19
+msgctxt "Short standalone weekday name"
+msgid "sunday"
+msgstr "domingo"
+
+#: dist/constants/dates/core.js:20
+msgctxt "Short standalone weekday name"
+msgid "monday"
+msgstr "lunes"
+
+#: dist/constants/dates/core.js:21
+msgctxt "Short standalone weekday name"
+msgid "tuesday"
+msgstr "martes"
+
+#: dist/constants/dates/core.js:22
+msgctxt "Short standalone weekday name"
+msgid "wednesday"
+msgstr "miércoles"
+
+#: dist/constants/dates/core.js:23
+msgctxt "Short standalone weekday name"
+msgid "thursday"
+msgstr "jueves"
+
+#: dist/constants/dates/core.js:24
+msgctxt "Short standalone weekday name"
+msgid "friday"
+msgstr "viernes"
+
+#: dist/constants/dates/core.js:25
+msgctxt "Short standalone weekday name"
+msgid "saturday"
+msgstr "sábado"
+
+#: dist/constants/dates/core.js:28
+msgid "first"
+msgstr "primero"
+
+#: dist/constants/dates/core.js:29
+msgid "second"
+msgstr "dos"
+
+#: dist/constants/dates/core.js:30
+msgid "third"
+msgstr "tres"
+
+#: dist/constants/dates/core.js:31
+msgid "fourth"
+msgstr "cuatro"
+
+#: dist/constants/dates/core.js:32
+msgid "fifth"
+msgstr "cinco"
+
+#: dist/constants/dates/core.js:33
+msgid "sixth"
+msgstr "seis"
+
+#: dist/constants/dates/core.js:34
+msgid "seventh"
+msgstr "siete"
+
+#: dist/constants/dates/core.js:35
+msgid "eighth"
+msgstr "ocho"
+
+#: dist/constants/dates/core.js:36
+msgid "ninth"
+msgstr "nueve"
+
+#: dist/constants/dates/core.js:37
+msgid "tenth"
+msgstr "diez"
+
+#: dist/constants/dates/core.js:38
+msgid "eleventh"
+msgstr "once"
+
+#: dist/constants/dates/core.js:39
+msgid "twelfth"
+msgstr "doce"
+
+#: dist/constants/dates/core.js:40
+msgid "thirteenth"
+msgstr "trece"
+
+#: dist/constants/dates/core.js:41
+msgid "fourteenth"
+msgstr "catorce"
+
+#: dist/constants/dates/core.js:42
+msgid "fifteenth"
+msgstr "quince"
+
+#: dist/constants/dates/core.js:43
+msgid "sixteenth"
+msgstr "dieciséis"
+
+#: dist/constants/dates/core.js:44
+msgid "seventeenth"
+msgstr "diecisiete"
+
+#: dist/constants/dates/core.js:45
+msgid "eighteenth"
+msgstr "dieciocho"
+
+#: dist/constants/dates/core.js:46
+msgid "nineteenth"
+msgstr "diecinueve"
+
+#: dist/constants/dates/core.js:47
+msgid "twentieth"
+msgstr "veinte"
+
+#: dist/constants/dates/core.js:48
+msgid "twenty first"
+msgstr "veintiuno"
+
+#: dist/constants/dates/core.js:49
+msgid "twenty second"
+msgstr "veintidós"
+
+#: dist/constants/dates/core.js:50
+msgid "twenty third"
+msgstr "veintitrés"
+
+#: dist/constants/dates/core.js:51
+msgid "twenty fourth"
+msgstr "veinticuatro"
+
+#: dist/constants/dates/core.js:52
+msgid "twenty fifth"
+msgstr "veinticinco"
+
+#: dist/constants/dates/core.js:53
+msgid "twenty sixth"
+msgstr "veintiséis"
+
+#: dist/constants/dates/core.js:54
+msgid "twenty seventh"
+msgstr "veintisiete"
+
+#: dist/constants/dates/core.js:55
+msgid "twenty eighth"
+msgstr "veintiocho"
+
+#: dist/constants/dates/core.js:56
+msgid "twenty ninth"
+msgstr "veintinueve"
+
+#: dist/constants/dates/core.js:57
+msgid "thirtieth"
+msgstr "treinta"
+
+#: dist/constants/dates/core.js:58
+msgid "thirty first"
+msgstr "treinta y uno"
 
 #: dist/constants/times/core.js:7 dist/constants/times/core.js:67
 #, javascript-format
@@ -1077,240 +1300,69 @@ msgctxt "exactly noon"
 msgid "noon"
 msgstr "mediodía"
 
-#: dist/constants/dates/core.js:7
-#, javascript-format
-msgctxt ""
-"This is how someone would say the day of the month only. As in, \"My rent is "
-"due on the %s.\""
-msgid "the %s"
-msgstr "el %s"
-
-#: dist/constants/dates/core.js:9
-#, javascript-format
-msgctxt ""
-"The day of the week and the date. The date will be substituted in the %s. "
-"For example, \"Sunday the fifth\"."
-msgid "sunday the %s"
-msgstr "domingo %s"
-
-#: dist/constants/dates/core.js:10
-#, javascript-format
-msgctxt ""
-"The day of the week and the date. The date will be substituted in the %s. "
-"For example, \"Monday the sixth\"."
-msgid "monday the %s"
-msgstr "lunes %s"
-
-#: dist/constants/dates/core.js:11
-#, javascript-format
-msgctxt ""
-"The day of the week and the date. The date will be substituted in the %s. "
-"For example, \"Tuesday the seventh\"."
-msgid "tuesday the %s"
-msgstr "martes %s"
-
-#: dist/constants/dates/core.js:12
-#, javascript-format
-msgctxt ""
-"The day of the week and the date. The date will be substituted in the %s. "
-"For example, \"Wednesday the eighth\"."
-msgid "wednesday the %s"
-msgstr "miércoles %s"
-
-#: dist/constants/dates/core.js:13
-#, javascript-format
-msgctxt ""
-"The day of the week and the date. The date will be substituted in the %s. "
-"For example, \"Thursday the ninth\"."
-msgid "thursday the %s"
-msgstr "jueves %s"
-
-#: dist/constants/dates/core.js:14
-#, javascript-format
-msgctxt ""
-"The day of the week and the date. The date will be substituted in the %s. "
-"For example, \"Friday the tenth\"."
-msgid "friday the %s"
-msgstr "viernes %s"
-
-#: dist/constants/dates/core.js:15
-#, javascript-format
-msgctxt ""
-"The day of the week and the date. The date will be substituted in the %s. "
-"For example, \"Saturday the eleventh\"."
-msgid "saturday the %s"
-msgstr "sábado %s"
-
-#: dist/constants/dates/core.js:19
-msgctxt "Short standalone weekday name"
-msgid "sunday"
-msgstr "domingo"
-
-#: dist/constants/dates/core.js:20
-msgctxt "Short standalone weekday name"
-msgid "monday"
-msgstr "lunes"
-
-#: dist/constants/dates/core.js:21
-msgctxt "Short standalone weekday name"
-msgid "tuesday"
-msgstr "martes"
-
-#: dist/constants/dates/core.js:22
-msgctxt "Short standalone weekday name"
-msgid "wednesday"
-msgstr "miércoles"
-
-#: dist/constants/dates/core.js:23
-msgctxt "Short standalone weekday name"
-msgid "thursday"
-msgstr "jueves"
-
-#: dist/constants/dates/core.js:24
-msgctxt "Short standalone weekday name"
-msgid "friday"
-msgstr "viernes"
-
-#: dist/constants/dates/core.js:25
-msgctxt "Short standalone weekday name"
-msgid "saturday"
-msgstr "sábado"
-
-#: dist/constants/dates/core.js:28
-msgid "first"
-msgstr "primero"
-
-#: dist/constants/dates/core.js:29
-msgid "second"
-msgstr "dos"
-
-#: dist/constants/dates/core.js:30
-msgid "third"
-msgstr "tres"
-
-#: dist/constants/dates/core.js:31
-msgid "fourth"
-msgstr "cuatro"
-
-#: dist/constants/dates/core.js:32
-msgid "fifth"
-msgstr "cinco"
-
-#: dist/constants/dates/core.js:33
-msgid "sixth"
-msgstr "seis"
-
-#: dist/constants/dates/core.js:34
-msgid "seventh"
-msgstr "siete"
-
-#: dist/constants/dates/core.js:35
-msgid "eighth"
-msgstr "ocho"
-
-#: dist/constants/dates/core.js:36
-msgid "ninth"
-msgstr "nueve"
-
-#: dist/constants/dates/core.js:37
-msgid "tenth"
-msgstr "diez"
-
-#: dist/constants/dates/core.js:38
-msgid "eleventh"
-msgstr "once"
-
-#: dist/constants/dates/core.js:39
-msgid "twelfth"
-msgstr "doce"
-
-#: dist/constants/dates/core.js:40
-msgid "thirteenth"
-msgstr "trece"
-
-#: dist/constants/dates/core.js:41
-msgid "fourteenth"
-msgstr "catorce"
-
-#: dist/constants/dates/core.js:42
-msgid "fifteenth"
-msgstr "quince"
-
-#: dist/constants/dates/core.js:43
-msgid "sixteenth"
-msgstr "dieciséis"
-
-#: dist/constants/dates/core.js:44
-msgid "seventeenth"
-msgstr "diecisiete"
-
-#: dist/constants/dates/core.js:45
-msgid "eighteenth"
-msgstr "dieciocho"
-
-#: dist/constants/dates/core.js:46
-msgid "nineteenth"
-msgstr "diecinueve"
-
-#: dist/constants/dates/core.js:47
-msgid "twentieth"
-msgstr "veinte"
-
-#: dist/constants/dates/core.js:48
-msgid "twenty first"
-msgstr "veintiuno"
-
-#: dist/constants/dates/core.js:49
-msgid "twenty second"
-msgstr "veintidós"
-
-#: dist/constants/dates/core.js:50
-msgid "twenty third"
-msgstr "veintitrés"
-
-#: dist/constants/dates/core.js:51
-msgid "twenty fourth"
-msgstr "veinticuatro"
-
-#: dist/constants/dates/core.js:52
-msgid "twenty fifth"
-msgstr "veinticinco"
-
-#: dist/constants/dates/core.js:53
-msgid "twenty sixth"
-msgstr "veintiséis"
-
-#: dist/constants/dates/core.js:54
-msgid "twenty seventh"
-msgstr "veintisiete"
-
-#: dist/constants/dates/core.js:55
-msgid "twenty eighth"
-msgstr "veintiocho"
-
-#: dist/constants/dates/core.js:56
-msgid "twenty ninth"
-msgstr "veintinueve"
-
-#: dist/constants/dates/core.js:57
-msgid "thirtieth"
-msgstr "treinta"
-
-#: dist/constants/dates/core.js:58
-msgid "thirty first"
-msgstr "treinta y uno"
-
-#: dist/prefs.js:45
-msgid "Text Clock Prefs"
-msgstr "Preferencias de Text Clock"
-
-#: dist/presentation/preferences/components/preference_ui_factory.js:138
-msgid "Custom Text"
-msgstr "Texto Personalizado"
-
 #: dist/presentation/preferences/helpers.js:22
 msgid "Error binding settings for"
 msgstr "Error vinculando configuración para"
+
+#: dist/presentation/preferences/pages/color_page/color_controls.js:171
+msgid "Time Color"
+msgstr "Color de Hora"
+
+#: dist/presentation/preferences/pages/color_page/color_controls.js:174
+msgid "Date Color"
+msgstr "Color de Fecha"
+
+#: dist/presentation/preferences/pages/color_page/color_controls.js:177
+msgid "Divider Color"
+msgstr "Color de Separador"
+
+#: dist/presentation/preferences/pages/color_page/index.js:42
+msgid "Solid"
+msgstr "Sólido"
+
+#: dist/presentation/preferences/pages/color_page/index.js:50
+msgid "Contrasting"
+msgstr "Contrastante"
+
+#: dist/presentation/preferences/pages/color_page/index.js:64
+msgid "Accent Style"
+msgstr "Estilo de Acento"
+
+#: dist/presentation/preferences/pages/color_page/index.js:65
+msgid "Choose accent color variation"
+msgstr "Elegir variación de color de acento"
+
+#: dist/presentation/preferences/pages/color_page/index.js:99
+msgid "Default"
+msgstr "Predeterminado"
+
+#: dist/presentation/preferences/pages/color_page/index.js:101
+msgid "Accent Color"
+msgstr "Color de Acento"
+
+#: dist/presentation/preferences/pages/color_page/index.js:102
+msgid "Custom Colors"
+msgstr "Colores Personalizados"
+
+#: dist/presentation/preferences/pages/color_page/index.js:112
+msgid "Color mode"
+msgstr "Modo de color"
+
+#: dist/presentation/preferences/pages/color_page/index.js:113
+msgid "Choose which color source to use"
+msgstr "Elegir qué fuente de color usar"
+
+#: dist/presentation/preferences/pages/color_page/index.js:208
+msgid "Colors"
+msgstr "Colores"
+
+#: dist/presentation/preferences/pages/color_page/index.js:210
+msgid "Clock Colors"
+msgstr "Colores del Reloj"
+
+#: dist/presentation/preferences/pages/color_page/index.js:211
+msgid "Customize the colors of the clock and date text"
+msgstr "Personalizar los colores del reloj y texto de fecha"
 
 #: dist/presentation/preferences/pages/general_page/index.js:23
 msgid "General"
@@ -1372,69 +1424,17 @@ msgstr "Elegir un separador predefinido o seleccionar personalizado"
 msgid "Custom Divider Text"
 msgstr "Texto de Separador Personalizado"
 
-#: dist/presentation/preferences/pages/color_page/index.js:42
-msgid "Solid"
-msgstr "Sólido"
+#: dist/presentation/preferences/components/preference_ui_factory.js:138
+msgid "Custom Text"
+msgstr "Texto Personalizado"
 
-#: dist/presentation/preferences/pages/color_page/index.js:50
-msgid "Contrasting"
-msgstr "Contrastante"
+#: dist/prefs.js:45
+msgid "Text Clock Prefs"
+msgstr "Preferencias de Text Clock"
 
-#: dist/presentation/preferences/pages/color_page/index.js:64
-msgid "Accent Style"
-msgstr "Estilo de Acento"
-
-#: dist/presentation/preferences/pages/color_page/index.js:65
-msgid "Choose accent color variation"
-msgstr "Elegir variación de color de acento"
-
-#: dist/presentation/preferences/pages/color_page/index.js:99
-msgid "Default"
-msgstr "Predeterminado"
-
-#: dist/presentation/preferences/pages/color_page/index.js:101
-msgid "Accent Color"
-msgstr "Color de Acento"
-
-#: dist/presentation/preferences/pages/color_page/index.js:102
-msgid "Custom Colors"
-msgstr "Colores Personalizados"
-
-#: dist/presentation/preferences/pages/color_page/index.js:112
-msgid "Color mode"
-msgstr "Modo de color"
-
-#: dist/presentation/preferences/pages/color_page/index.js:113
-msgid "Choose which color source to use"
-msgstr "Elegir qué fuente de color usar"
-
-#: dist/presentation/preferences/pages/color_page/index.js:208
-msgid "Colors"
-msgstr "Colores"
-
-#: dist/presentation/preferences/pages/color_page/index.js:210
-msgid "Clock Colors"
-msgstr "Colores del Reloj"
-
-#: dist/presentation/preferences/pages/color_page/index.js:211
-msgid "Customize the colors of the clock and date text"
-msgstr "Personalizar los colores del reloj y texto de fecha"
-
-#: dist/presentation/preferences/pages/color_page/color_controls.js:171
-msgid "Time Color"
-msgstr "Color de Hora"
-
-#: dist/presentation/preferences/pages/color_page/color_controls.js:174
-msgid "Date Color"
-msgstr "Color de Fecha"
-
-#: dist/presentation/preferences/pages/color_page/color_controls.js:177
-msgid "Divider Color"
-msgstr "Color de Separador"
-
-#: dist/services/notification_service.js:117
-msgid "Open Preferences"
-msgstr "Abrir Preferencias"
+#: dist/extension.js:251
+msgid "Could not find clock display box"
+msgstr "No se pudo encontrar el cuadro de visualización del reloj"
 
 #~ msgid "Comprehensive translations"
 #~ msgstr "Traducciones completas"

@@ -14,27 +14,9 @@
  * The logging functions automatically prefix messages with '[TextClock]'
  * for easy identification in GNOME Shell logs and support different log
  * levels (error, warn, info, debug) with appropriate formatting.
- *
- * @example
- * ```typescript
- * import { logErr, logWarn, logInfo, validateDate } from './error_utils.js';
- *
- * // Simple error logging
- * logErr('Failed to load settings');
- *
- * // Error with context
- * logWarn(error, 'Settings validation');
- *
- * // Different log levels
- * logInfo('Extension initialized');
- *
- * // Validation with automatic error throwing
- * validateDate(new Date('invalid'), 'Clock update');
- * ```
  */
 
-import type { Logger } from "./logging/logger_interface.js";
-import { gjsLogger } from "./logging/logger_gjs.js";
+import { gjsLogger, type Logger } from "./logging/logger_gjs.js";
 
 // Current logger instance (can be overridden for tests)
 let currentLogger: Logger = gjsLogger;
