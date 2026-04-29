@@ -8,7 +8,7 @@ import {
   Fuzziness,
   TimeFormat,
 } from "../core/clock_formatter.js";
-import { Color } from "../models/color.js";
+import type { Color } from "../models/color.js";
 import { logWarn } from "../utils/error_utils.js";
 import type { GettextFunctions } from "../utils/gettext/gettext_utils";
 import { createTranslatePack } from "../utils/translate/translate_pack_utils.js";
@@ -24,24 +24,11 @@ import type {
   AccentStyleConfig,
 } from "../models/preference_types";
 
-/**
- * Preference service providing clean access to preference configurations.
- *
- * This service exposes only the necessary public API for accessing preference
- * data, hiding implementation details and providing type-safe access methods.
- */
+/** Preference configuration access and utilities. */
 
 /**
- * Generate a sample time string for display in preference UI.
- *
- * Creates a sample time display using a fixed demonstration time that clearly
- * shows the difference between formats. Uses 9:10 which displays as either
- * "ten past nine" or "nine ten", ensuring the formats look distinct.
- *
- * @param timeFormat - Time format to use for the sample
- * @param translateFn - Translation functions for localization
- * @param fallback - Fallback string to return if sample generation fails
- * @returns A sample time string in the specified format, or the fallback if generation fails
+ * Generate a sample time string for preference UI.
+ * Uses 9:05 to show format differences clearly ("five past nine" vs "nine oh five").
  */
 export function generateSampleTime(
   timeFormat: TimeFormat,

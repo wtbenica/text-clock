@@ -2,6 +2,42 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+
+// Coverage exclusion patterns
+const baseExclusions = [
+    '!**/*.d.ts',
+    '!**/node_modules/**',
+    '!**/src/tests/**',
+    '!**/dist/**',
+    '!**/config/**',
+];
+
+const entryPointExclusions = [
+    '!src/extension.ts',
+    '!src/prefs.ts',
+];
+
+const constantsExclusions = [
+    '!**/constants/**/index.ts',
+    '!**/constants/**/extension.ts',
+    '!**/constants/**/prefs.ts',
+    '!src/constants/preferences.ts',
+];
+
+const gnomeRuntimeExclusions = [
+    '!src/presentation/**',
+    '!src/services/notification_service.ts',
+    '!src/services/settings_manager.ts',
+    '!src/services/system_settings_monitor.ts',
+    '!src/services/style_service.ts',
+];
+
+const environmentDependentExclusions = [
+    '!src/utils/gettext/gettext_utils_prefs.ts',
+    '!src/utils/gettext/gettext_utils_ext.ts',
+    '!src/utils/logging/logger_gjs.ts',
+];
+
 module.exports = {
     preset: 'ts-jest/presets/default-esm',
     // Ensure <rootDir> points to the repository root (config/ is the config location)
@@ -22,30 +58,11 @@ module.exports = {
     moduleFileExtensions: ['ts', 'js', 'json'],
     collectCoverageFrom: [
         'src/**/*.ts',
-        '!**/*.d.ts',
-        '!**/node_modules/**',
-        '!**/src/tests/**',
-        '!**/dist/**',
-        '!**/config/**',
-        '!**/constants/**/index.ts',
-        '!**/constants/**/extension.ts',
-        '!**/constants/**/prefs.ts',
-        '!src/extension.ts',
-        '!src/prefs.ts',
-        // Exclude GNOME Shell runtime files that can't be tested without GTK/GJS
-        '!src/presentation/**',  // All UI components require GTK runtime
-        '!src/services/notification_service.ts',  // Requires GNOME Shell
-        '!src/services/settings_manager.ts',      // Requires Gio
-        '!src/services/style_service.ts',         // Requires Gio
-        // Exclude environment-dependent gettext utilities
-        '!src/utils/gettext/gettext_utils_prefs.ts',
-        '!src/utils/gettext/gettext_utils_ext.ts',
-        // Exclude GJS-specific logger
-        '!src/utils/logging/logger_gjs.ts',
-        // Exclude constants files that are just exports for different contexts
-        '!src/constants/**/extension.ts',
-        '!src/constants/**/prefs.ts',
-        '!src/constants/preferences.ts',
+        ...baseExclusions,
+        ...entryPointExclusions,
+        ...constantsExclusions,
+        ...gnomeRuntimeExclusions,
+        ...environmentDependentExclusions,
     ],
     coverageDirectory: '<rootDir>/coverage',
     coverageReporters: ['text', 'lcov', 'html'],

@@ -21,42 +21,12 @@ import { gjsLogger, type Logger } from "./logging/logger_gjs.js";
 // Current logger instance (can be overridden for tests)
 let currentLogger: Logger = gjsLogger;
 
-/**
- * Set the logger instance for testing or alternative environments.
- *
- * Allows injection of custom loggers for unit testing or different
- * runtime environments. The default logger works with GNOME Shell's
- * logging system.
- *
- * @param logger - Logger implementation to use for all logging functions
- *
- * @example
- * ```typescript
- * // In tests
- * const mockLogger = { log: jest.fn(), logError: jest.fn() };
- * setLogger(mockLogger);
- *
- * logErr('test error');
- * expect(mockLogger.logError).toHaveBeenCalled();
- * ```
- */
+/** Set the logger instance (useful for testing). */
 export function setLogger(logger: Logger): void {
   currentLogger = logger;
 }
 
-/**
- * Internal function for logging messages with consistent formatting.
- *
- * Handles message formatting, level-specific output, and error object
- * processing. Automatically prefixes all messages with '[TextClock]'
- * for easy identification in logs.
- *
- * @param message - Error object, string, or other value to log
- * @param context - Optional context description for better debugging
- * @param level - Log level determining output format and destination
- *
- * @internal This function is used internally by the public logging functions
- */
+/** Internal function for formatted logging with level support. */
 function logMessage(
   message: Error | string | unknown,
   context?: string,

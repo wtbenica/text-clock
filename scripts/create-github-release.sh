@@ -49,7 +49,7 @@ require_clean_worktree
 
 # Create and push tag
 log_step "Creating tag v$VERSION..."
-git tag "v$VERSION" || {
+git tag -a "v$VERSION" -m "Release version $VERSION" || {
     log_error "Failed to create tag v$VERSION"
     exit 1
 }

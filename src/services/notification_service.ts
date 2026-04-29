@@ -10,12 +10,7 @@ import * as MessageTray from "resource:///org/gnome/shell/ui/messageTray.js";
 import { logErr, logWarn } from "../utils/error_utils.js";
 import { extensionGettext } from "../utils/gettext/gettext_utils_ext.js";
 
-/**
- * Configuration object for creating and displaying notifications.
- *
- * Defines all the properties needed to create a notification, including
- * basic content, appearance, and interactive actions.
- */
+/** Configuration for creating notifications. */
 export interface NotificationConfig {
   /** The notification title shown prominently */
   title: string;
@@ -33,12 +28,7 @@ export interface NotificationConfig {
   actions?: NotificationAction[];
 }
 
-/**
- * Interactive action that can be added to a notification.
- *
- * Allows users to perform specific actions directly from the notification,
- * such as opening preferences or dismissing update notices.
- */
+/** Interactive action for notification buttons. */
 export interface NotificationAction {
   /** Text label shown on the action button */
   label: string;
@@ -47,47 +37,7 @@ export interface NotificationAction {
   callback: () => void;
 }
 
-/**
- * Service responsible for managing extension notifications in GNOME Shell.
- *
- * Provides a comprehensive interface for creating, displaying, and managing
- * notifications within the GNOME Shell environment. Handles the complexities
- * of GNOME's notification system including message sources, persistence,
- * actions, and proper cleanup.
- *
- * Key features:
- * - Simple text notifications for basic messages
- * - Rich notifications with actions and persistence
- * - Delayed notification scheduling for timing-sensitive messages
- * - Automatic message source management
- * - Graceful fallbacks when notification system is unavailable
- * - Proper resource cleanup to prevent memory leaks
- *
- * @example
- * ```typescript
- * const notificationService = new NotificationService('Text Clock');
- *
- * // Simple notification
- * notificationService.showSimpleNotification(
- *   'Settings Changed',
- *   'Clock colors have been updated'
- * );
- *
- * // Rich notification with action
- * notificationService.showNotification({
- *   title: 'Extension Updated',
- *   body: 'New features are available',
- *   isResident: true,
- *   actions: [{
- *     label: 'Open Preferences',
- *     callback: () => openPreferences()
- *   }]
- * });
- *
- * // Cleanup
- * notificationService.destroy();
- * ```
- */
+/** Handles GNOME Shell notifications with actions and persistence. */
 export class NotificationService {
   private static readonly DEFAULT_ICON =
     "preferences-desktop-notification-symbolic";
@@ -97,32 +47,12 @@ export class NotificationService {
   private notificationSource?: MessageTray.Source;
   private activeSourceIds: Set<number> = new Set();
 
-  /**
-   * Create a new notification service for the specified extension.
-   *
-   * @param extensionName - Name of the extension (shown as notification source)
-   */
+  /** @param extensionName - Shown as notification source name */
   constructor(extensionName: string) {
     this.extensionName = extensionName;
   }
 
-  /**
-   * Shows a simple notification with title and body text.
-   *
-   * Convenience method for displaying basic notifications without additional
-   * configuration. Uses default icon and behavior settings.
-   *
-   * @param title - The notification title shown prominently
-   * @param body - The notification body text with detailed information
-   *
-   * @example
-   * ```typescript
-   * notificationService.showSimpleNotification(
-   *   'Settings Saved',
-   *   'Your preferences have been updated successfully'
-   * );
-   * ```
-   */
+  /** Show a simple notification with title and body. */
   showSimpleNotification(title: string, body: string): void {
     this.showNotification({
       title,
@@ -131,25 +61,8 @@ export class NotificationService {
   }
 
   /**
-   * Shows a notification for extension updates with interactive preferences access.
-   *
-   * Displays a delayed, persistent notification informing users about extension
-   * updates and providing direct access to preferences. The notification includes
-   * version information and an action button for opening preferences.
-   *
-   * @param title - Custom notification title
-   * @param body - Custom notification body message
-   * @param onOpenPreferences - Callback function to open the extension preferences
-   *
-   * @example
-   * ```typescript
-   * // Using release message utilities:
-   * import { getUpdateNotificationTitle, generateUpdateMessage } from '../constants/release_messages.js';
-   *
-   * const title = getUpdateNotificationTitle('1.0.6', extensionGettext);
-   * const body = generateUpdateMessage('1.0.6', extensionGettext);
-   * notificationService.showUpdateNotification(title, body, () => extension.openPreferences());
-   * ```
+   * Show update notification with "Open Preferences" action button.
+   * Notification is persistent and delayed by 3 seconds.
    */
   showUpdateNotification(
     title: string,
@@ -166,11 +79,7 @@ export class NotificationService {
         {
           label: _("Open Preferences"),
           callback: () => {
-            try {
-              onOpenPreferences();
-            } catch (error) {
-              logWarn(`Failed to open preferences: ${String(error)}`);
-            }
+            onOpenPreferences();
           },
         },
       ],
@@ -179,35 +88,7 @@ export class NotificationService {
     this.scheduleNotification(config, NotificationService.UPDATE_DELAY_SECONDS);
   }
 
-  /**
-   * Shows a notification with full configuration options.
-   *
-   * Creates and displays a notification using the complete configuration
-   * object, allowing for custom icons, persistence, actions, and other
-   * advanced features. Includes error handling with fallback mechanisms.
-   *
-   * @param config - Complete notification configuration object
-   *
-   * @example
-   * ```typescript
-   * notificationService.showNotification({
-   *   title: 'Configuration Error',
-   *   body: 'Invalid color format detected',
-   *   iconName: 'dialog-warning-symbolic',
-   *   isResident: true,
-   *   actions: [
-   *     {
-   *       label: 'Reset to Default',
-   *       callback: () => resetColorSettings()
-   *     },
-   *     {
-   *       label: 'Open Help',
-   *       callback: () => showHelp()
-   *     }
-   *   ]
-   * });
-   * ```
-   */
+  /** Show notification with full configuration (actions, persistence, etc). */
   showNotification(config: NotificationConfig): void {
     try {
       const source = this.getOrCreateNotificationSource();
@@ -263,62 +144,23 @@ export class NotificationService {
     }
   }
 
-  /**
-   * Cleans up notification resources and prevents memory leaks.
-   *
-   * Clears internal references to notification sources. The GNOME Shell
-   * message tray automatically handles cleanup of actual notification
-   * sources, so this method primarily clears internal state.
-   *
-   * Should be called when the extension is disabled or the service is
-   * no longer needed.
-   */
+  /** Clean up notification resources (message tray auto-cleans actual sources). */
   destroy(): void {
     this.notificationSource = undefined;
     this.clearActiveSources();
   }
 
   /**
-   * Formats an array of items as a bulleted list for notification display.
-   *
-   * Creates readable bullet-point text using Unicode bullet characters
-   * and line breaks. Useful for feature lists, change logs, or any
-   * structured information in notifications.
-   *
-   * @param items - Array of text items to format as bullets
-   * @param bulletChar - Unicode bullet character to use (defaults to •)
-   * @returns Formatted string with bullets and line breaks
-   *
-   * @example
-   * ```typescript
-   * const features = ['Accent colors', 'Custom themes', 'New preferences'];
-   * const body = notificationService.formatBulletList(features);
-   * // Result: "• Accent colors\n• Custom themes\n• New preferences"
-   * ```
+   * Format items as bulleted list for notifications.
+   * @param bulletChar - Unicode bullet (default: •)
    */
   formatBulletList(items: string[], bulletChar: string = "•"): string {
     return items.map((item) => `${bulletChar} ${item}`).join("\n");
   }
 
   /**
-   * Creates formatted notification body with optional intro text and bullet list.
-   *
-   * Combines introductory text with a formatted bullet list, making it easy
-   * to create well-structured notification content.
-   *
-   * @param intro - Optional introductory text before the bullet list
-   * @param items - Array of items to format as bullets
-   * @param bulletChar - Unicode bullet character to use (defaults to •)
-   * @returns Formatted notification body text
-   *
-   * @example
-   * ```typescript
-   * const body = notificationService.formatNotificationWithList(
-   *   'New in v1.1.0:',
-   *   ['Accent color themes', 'Custom color options', 'Enhanced UI']
-   * );
-   * // Result: "New in v1.1.0:\n• Accent color themes\n• Custom color options\n• Enhanced UI"
-   * ```
+   * Format notification body with optional intro text and bullet list.
+   * If intro is null, returns only the bullet list.
    */
   formatNotificationWithList(
     intro: string | null,
@@ -331,14 +173,7 @@ export class NotificationService {
 
   // Private Methods
 
-  /**
-   * Ensures all active scheduled notifications are cleared.
-   *
-   * Prevents any delayed notifications from appearing after the service
-   * is destroyed.
-   *
-   * @returns void
-   */
+  /** Clear all scheduled notifications (called on destroy). */
   private clearActiveSources(): void {
     this.activeSourceIds.forEach((id) => {
       GLib.source_remove(id);
@@ -346,9 +181,7 @@ export class NotificationService {
     this.activeSourceIds.clear();
   }
 
-  /**
-   * Gets or creates the notification source for this extension
-   */
+  /** Get or create notification source for this extension. */
   private getOrCreateNotificationSource(): MessageTray.Source {
     if (!this.notificationSource) {
       this.notificationSource = this.createNotificationSource();
@@ -356,14 +189,14 @@ export class NotificationService {
     return this.notificationSource;
   }
 
-  /**
-   * Creates a new notification source
-   */
+  /** Create notification source if needed. */
   private createNotificationSource(): MessageTray.Source {
     // Check if source already exists in the message tray
     const existingSource = Main.messageTray
       .getSources()
-      .find((source) => source.title === this.extensionName);
+      .find(
+        (source: MessageTray.Source) => source.title === this.extensionName,
+      );
 
     if (existingSource) {
       return existingSource;
@@ -380,9 +213,7 @@ export class NotificationService {
     return source;
   }
 
-  /**
-   * Creates a notification from the configuration
-   */
+  /** Create notification object from config. */
   private createNotification(
     config: NotificationConfig,
   ): MessageTray.Notification {
@@ -393,7 +224,6 @@ export class NotificationService {
       iconName: config.iconName || NotificationService.DEFAULT_ICON,
     });
 
-    // Set persistence if requested
     if (config.isResident) {
       notification.resident = true;
     }

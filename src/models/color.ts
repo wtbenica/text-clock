@@ -3,45 +3,17 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-/**
- * Represents a color with validation and utility methods.
- *
- * Supports hex (#RGB, #RRGGBB) and RGB (rgb(r,g,b)) color formats.
- * All colors are normalized to uppercase hex format for consistency.
- *
- * @example
- * ```typescript
- * const blue = new Color("#3584E4");
- * const fromRgb = new Color("rgb(53, 132, 228)");
- * const lighter = blue.lighten(0.3);
- * const darker = blue.darken(0.2);
- * console.log(blue.toString()); // "#3584E4"
- * ```
- */
+/** Color validation and manipulation. Supports hex and rgb() formats, normalized to #RRGGBB. */
 export class Color {
-  /** The normalized hex color string (always uppercase #RRGGBB format) */
+  /** Normalized hex color (uppercase #RRGGBB) */
   private readonly hex: string;
 
-  /**
-   * Creates a new Color instance from a color string.
-   *
-   * @param color - The color string (hex #RGB/#RRGGBB or rgb(r,g,b) format)
-   * @throws {Error} When the color format is invalid
-   */
+  /** @param color - Hex (#RGB/#RRGGBB) or rgb(r,g,b) format */
   constructor(color: string) {
     this.hex = Color.validateAndNormalize(color);
   }
 
-  /**
-   * Validates and normalizes a color string.
-   *
-   * Accepts hex (#RGB, #RRGGBB) and RGB (rgb(r,g,b)) formats, normalizing to uppercase #RRGGBB.
-   * Handles RGB value clamping and hex format validation.
-   *
-   * @param color - The color string to validate and normalize
-   * @returns The normalized hex color string (uppercase #RRGGBB)
-   * @throws {Error} When the color format is invalid
-   */
+  /** Validate and normalize color to uppercase #RRGGBB. Throws on invalid format. */
   static validateAndNormalize(color: string): string {
     if (!color) {
       throw new Error(`Invalid color format: ${color}`);
@@ -54,18 +26,18 @@ export class Color {
       /rgb\s*\(\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*(-?\d+)\s*\)/i,
     );
     if (rgbMatch) {
-      const r = Math.max(0, Math.min(255, Number(rgbMatch[1])));
-      const g = Math.max(0, Math.min(255, Number(rgbMatch[2])));
-      const b = Math.max(0, Math.min(255, Number(rgbMatch[3])));
+      const r = Number(rgbMatch[1]);
+      const g = Number(rgbMatch[2]);
+      const b = Number(rgbMatch[3]);
+
+      // Validate RGB values are in range
+      if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
+        throw new Error(`RGB values must be 0-255, got rgb(${r}, ${g}, ${b})`);
+      }
+
       const hex =
         "#" + [r, g, b].map((n) => n.toString(16).padStart(2, "0")).join("");
-      return hex.length === 7
-        ? hex.toUpperCase()
-        : `#${hex
-            .slice(1)
-            .split("")
-            .map((c) => c + c)
-            .join("")}`.toUpperCase();
+      return hex.toUpperCase();
     }
 
     // Handle hex format
@@ -81,35 +53,14 @@ export class Color {
     throw new Error(`Invalid color format: ${color}`);
   }
 
-  /**
-   * Returns the normalized hex color string.
-   *
-   * @returns The color as an uppercase hex string (#RRGGBB format)
-   *
-   * @example
-   * ```typescript
-   * const color = new Color("#abc");
-   * console.log(color.toString()); // "#AABBCC"
-   * ```
-   */
+  /** Get the color as an uppercase hex string (#RRGGBB). */
   toString(): string {
     return this.hex;
   }
 
   /**
-   * Creates a lighter version of the color by blending with white.
-   *
-   * Uses mathematical RGB blending: newValue = original + (255 - original) * amount
-   *
-   * @param amount - The lightening amount (0-1, where 0 = no change, 1 = white). Defaults to 0.3
-   * @returns A new Color instance representing the lighter color
-   *
-   * @example
-   * ```typescript
-   * const blue = new Color("#0000FF");
-   * const lightBlue = blue.lighten(0.3); // 30% lighter
-   * const veryLight = blue.lighten(0.8); // 80% lighter
-   * ```
+   * Lighten by blending with white: newValue = original + (255 - original) * amount
+   * @param amount - 0 (no change) to 1 (white). Default: 0.3
    */
   lighten(amount = 0.3): Color {
     const r = parseInt(this.hex.slice(1, 3), 16);
@@ -128,19 +79,8 @@ export class Color {
   }
 
   /**
-   * Creates a darker version of the color by reducing each RGB channel.
-   *
-   * Uses mathematical RGB blending: newValue = original * (1 - amount)
-   *
-   * @param amount - The darkening amount (0-1, where 0 = no change, 1 = black). Defaults to 0.2
-   * @returns A new Color instance representing the darker color
-   *
-   * @example
-   * ```typescript
-   * const blue = new Color("#0000FF");
-   * const darkBlue = blue.darken(0.2); // 20% darker
-   * const veryDark = blue.darken(0.7); // 70% darker
-   * ```
+   * Darken by reducing RGB channels: newValue = original * (1 - amount)
+   * @param amount - 0 (no change) to 1 (black). Default: 0.2
    */
   darken(amount = 0.2): Color {
     const r = parseInt(this.hex.slice(1, 3), 16);

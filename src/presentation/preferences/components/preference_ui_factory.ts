@@ -4,44 +4,10 @@
  */
 
 /**
- * Automatic UI generation system for preferences.
+ * Automatic preference UI generation from configuration arrays.
  *
- * This module provides utilities to automatically create preference UI components
- * from the unified preference configurations. It eliminates boilerplate code and
- * ensures consistency across all preference controls.
- *
- * The system can generate:
- * - Combo rows for enum preferences with automatic binding
- * - Switch rows for boolean preferences
- * - Entry rows with visibility controls for custom options
- * - Complex multi-row configurations (e.g., preset + custom entry)
- *
- * @example
- * ```typescript
- * import { createEnumComboRow, createPresetWithCustomRow } from './preference_ui_factory.js';
- * import { FUZZINESS_CONFIGS, DIVIDER_PRESET_CONFIGS } from '../services/preference_configs.js';
- *
- * // Simple enum combo row
- * const fuzzinessRow = createEnumComboRow(
- *   group,
- *   settings,
- *   SettingsKey.FUZZINESS,
- *   FUZZINESS_CONFIGS,
- *   'Fuzziness',
- *   'Time precision level'
- * );
- *
- * // Preset with custom entry
- * createPresetWithCustomRow(
- *   group,
- *   settings,
- *   SettingsKey.DIVIDER_PRESET,
- *   SettingsKey.CUSTOM_DIVIDER_TEXT,
- *   DIVIDER_PRESET_CONFIGS,
- *   'Divider Preset',
- *   'Choose divider style'
- * );
- * ```
+ * Creates combo rows, switch rows, and preset+custom entry combinations
+ * with automatic GSettings binding.
  */
 
 import Adw from "gi://Adw";
@@ -71,21 +37,8 @@ export interface PreferenceRowConfig {
 }
 
 /**
- * Create a combo row for enum-based preferences with automatic binding.
- *
- * This function creates a combo row populated with options from a preference
- * configuration array. It automatically handles:
- * - Creating the string list model from display names with translation
- * - Setting the initial selection from settings
- * - Binding changes back to settings
- * - Internationalization of display text
- *
- * @param group - Preferences group to add the row to
- * @param settings - Gio.Settings instance for binding
- * @param settingsKey - The settings key to bind to
- * @param configs - Array of preference configurations
- * @param rowConfig - UI configuration for the row
- * @returns The created combo row
+ * Create enum combo row with automatic GSettings binding.
+ * Validates current setting and resets to 0 if out of bounds.
  */
 export function createEnumComboRow<T extends BasePreferenceConfig>(
   group: Adw.PreferencesGroup,
@@ -132,15 +85,7 @@ export function createEnumComboRow<T extends BasePreferenceConfig>(
   return comboRow;
 }
 
-/**
- * Create a switch row for boolean preferences with automatic binding.
- *
- * @param group - Preferences group to add the row to
- * @param settings - Gio.Settings instance for binding
- * @param settingsKey - The settings key to bind to
- * @param rowConfig - UI configuration for the row
- * @returns The created switch row
- */
+/** Create switch row for boolean preferences with automatic GSettings binding. */
 export function createBooleanSwitchRow(
   group: Adw.PreferencesGroup,
   settings: Gio.Settings,
@@ -161,7 +106,7 @@ export function createBooleanSwitchRow(
   // Bind changes back to settings
   settings.bind(
     settingsKey,
-    switchRow,
+    switchRow as any,
     "active",
     Gio.SettingsBindFlags.DEFAULT,
   );
@@ -170,20 +115,8 @@ export function createBooleanSwitchRow(
 }
 
 /**
- * Create a preset combo row with accompanying custom entry row.
- *
- * This is specifically designed for preferences that have both preset options
- * and a custom option. When the custom option is selected, an entry row becomes
- * visible for user input.
- *
- * @param group - Preferences group to add rows to
- * @param settings - Gio.Settings instance for binding
- * @param presetSettingsKey - Settings key for the preset selection
- * @param customSettingsKey - Settings key for the custom text
- * @param configs - Array of preference configurations (must include custom option)
- * @param rowConfig - UI configuration for the combo row
- * @param customRowConfig - UI configuration for the custom entry row
- * @returns Object containing both the combo row and entry row
+ * Create preset combo row with custom entry row.
+ * Entry row visibility toggles when "Custom" preset is selected.
  */
 export function createPresetWithCustomRow<T extends BasePreferenceConfig>(
   group: Adw.PreferencesGroup,
@@ -217,7 +150,7 @@ export function createPresetWithCustomRow<T extends BasePreferenceConfig>(
   // Bind custom entry to settings
   settings.bind(
     customSettingsKey,
-    entryRow,
+    entryRow as any,
     "text",
     Gio.SettingsBindFlags.DEFAULT,
   );
@@ -276,7 +209,7 @@ export function createDependentComboRow<T extends BasePreferenceConfig>(
   // Bind sensitivity to dependency setting
   settings.bind(
     dependencyKey,
-    comboRow,
+    comboRow as any,
     "sensitive",
     Gio.SettingsBindFlags.DEFAULT,
   );
@@ -311,7 +244,7 @@ export function createDependentSwitchRow(
   // Bind sensitivity to dependency setting
   settings.bind(
     dependencyKey,
-    switchRow,
+    switchRow as any,
     "sensitive",
     Gio.SettingsBindFlags.DEFAULT,
   );

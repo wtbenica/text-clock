@@ -10,7 +10,11 @@ import {
 import SettingsKey from "../models/settings_keys";
 import { extensionGettext } from "../utils/gettext/gettext_utils_ext.js";
 
-function findLatestUnseenRelease(
+/**
+ * Find latest unseen release version.
+ * Returns latest version where: version <= current AND version > lastSeen
+ */
+export function findLatestUnseenRelease(
   currentVersion: string,
   lastSeen: string,
 ): string | null {
@@ -55,7 +59,7 @@ export function maybeShowUpdateNotification({
     return;
   }
 
-  const isFirstInstall = !lastSeen || lastSeen === "";
+  const isFirstInstall = !lastSeen;
 
   const title = getNotificationTitle(
     currentVersionName,

@@ -6,7 +6,9 @@
         "types": [
             "jest",
             "@types/jest",
-            "node"
+            "node",
+            "@girs/gjs",
+            "@girs/gnome-shell/ambient"
         ],
         "skipLibCheck": true,
         "allowJs": true,
@@ -27,7 +29,7 @@
     "files": [
         "../src/constants/dates/core.ts",
         "../src/constants/times/core.ts",
-        "../src/utils/gettext/gettext_utils.ts",
+        "../src/utils/gettext/gettext_utils.d.ts",
         "../src/utils/gettext/gettext_utils_ext.ts",
         "../src/utils/gettext/gettext_utils_prefs.ts",
         "../src/utils/parse_utils.ts",

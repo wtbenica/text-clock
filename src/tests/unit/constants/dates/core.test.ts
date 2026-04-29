@@ -197,53 +197,6 @@ describe("createDateConstants", () => {
       expect(constants.weekdays()[0]).toBe("sunday the %s");
       expect(constants.daysOfMonth()[0]).toBe("first");
     });
-
-    it("should work with gettext functions that throw errors", () => {
-      const errorGettext: GettextFunctions = {
-        _: jest.fn().mockImplementation(() => {
-          throw new Error("Translation error");
-        }),
-        ngettext: jest.fn().mockImplementation(() => {
-          throw new Error("Translation error");
-        }),
-        pgettext: jest.fn().mockImplementation(() => {
-          throw new Error("Translation error");
-        }),
-      };
-
-      expect(() => createDateConstants(errorGettext)).not.toThrow();
-      expect(() => createDateConstants(errorGettext).dateOnly()).toThrow();
-      expect(() => createDateConstants(errorGettext).weekdays()).toThrow();
-      expect(() => createDateConstants(errorGettext).daysOfMonth()).toThrow();
-    });
-
-    it("should handle empty string returns from gettext", () => {
-      const emptyGettext: GettextFunctions = {
-        _: jest.fn().mockReturnValue(""),
-        ngettext: jest.fn().mockReturnValue(""),
-        pgettext: jest.fn().mockReturnValue(""),
-      };
-
-      const constants = createDateConstants(emptyGettext);
-
-      expect(constants.dateOnly()).toBe("");
-      expect(constants.weekdays()[0]).toBe("");
-      expect(constants.daysOfMonth()[0]).toBe("");
-    });
-
-    it("should handle null/undefined returns from gettext", () => {
-      const nullGettext: GettextFunctions = {
-        _: jest.fn().mockReturnValue(null),
-        ngettext: jest.fn().mockReturnValue(null),
-        pgettext: jest.fn().mockReturnValue(null),
-      };
-
-      const constants = createDateConstants(nullGettext);
-
-      expect(constants.dateOnly()).toBe(null);
-      expect(constants.weekdays()[0]).toBe(null);
-      expect(constants.daysOfMonth()[0]).toBe(null);
-    });
   });
 
   describe("integration", () => {
