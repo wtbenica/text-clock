@@ -1,4 +1,4 @@
-## Release Notes: Text Clock v1.1.2
+## Release Notes: Text Clock v1.1.3
 
 This is a patch release with bug fixes and refinements. All major features listed below were introduced in v1.1.0.
 
