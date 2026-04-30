@@ -131,24 +131,30 @@ if ! curl -fsSL --retry 3 --retry-delay 2 -o "$TEMP_FILE" "$RELEASE_URL"; then
     exit 1
 fi
 
+# Calculate SHA256 from downloaded file
+SHA256=$(sha256sum "$TEMP_FILE" | cut -d' ' -f1)
+rm -f "$TEMP_FILE"
+
 # Optional: Verify against published checksum if available
 CHECKSUM_URL="https://github.com/${GITHUB_REPO}/releases/download/v${VERSION}/${RELEASE_ZIP_NAME}.sha256"
 CHECKSUM_TEMP=$(mktemp)
 if curl -fSL --retry 2 --retry-delay 1 -o "$CHECKSUM_TEMP" "$CHECKSUM_URL" 2>/dev/null; then
     log_info "Found published checksum, verifying..."
-    if sha256sum -c "$CHECKSUM_TEMP" --ignore-missing 2>/dev/null | grep -q "OK"; then
-        log_info "Checksum verification PASSED"
-    else
-        log_warn "Checksum verification failed or file not found in checksum file"
-    fi
+    # Extract just the hash from the .sha256 file (first field)
+    PUBLISHED_SHA256=$(awk '{print $1}' "$CHECKSUM_TEMP")
     rm -f "$CHECKSUM_TEMP"
+    
+    if [ "$SHA256" = "$PUBLISHED_SHA256" ]; then
+        log_info "Checksum verification PASSED (matches published checksum)"
+    else
+        log_error "Checksum verification FAILED!"
+        log_error "  Calculated: $SHA256"
+        log_error "  Published:  $PUBLISHED_SHA256"
+        exit 1
+    fi
 else
-    log_info "No published checksum found - will generate our own"
+    log_info "No published checksum found - using calculated checksum"
 fi
-
-# Calculate SHA256
-SHA256=$(sha256sum "$TEMP_FILE" | cut -d' ' -f1)
-rm -f "$TEMP_FILE"
 
 log_info "SHA256: $SHA256"
 

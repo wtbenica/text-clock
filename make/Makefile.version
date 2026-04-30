@@ -45,7 +45,8 @@ start-dev-branch: check-deps
 	branch_name="v$$new_version"; \
 	git checkout -b "$$branch_name" >/dev/null 2>&1 || { echo "ERROR: Failed to create branch $$branch_name" >&2; exit 1; }; \
 	node scripts/start-dev-branch.cjs $(TYPE) >/dev/null 2>&1 || { echo "ERROR: Version bump script failed" >&2; exit 1; }; \
-	git add package.json metadata.json README.md >/dev/null 2>&1 || { echo "ERROR: Failed to stage files" >&2; exit 1; }; \
+	git add package.json metadata.json README.md RELEASE_NOTES.md po/*.po >/dev/null 2>&1 || { echo "ERROR: Failed to stage files" >&2; exit 1; }; \
+	if [ -f "aur/PKGBUILD" ]; then git add aur/PKGBUILD >/dev/null 2>&1; fi; \
 	git commit -m "Bump version to $$new_version" >/dev/null 2>&1 || { echo "ERROR: Failed to commit changes" >&2; exit 1; }; \
 	echo "Development branch $$branch_name created successfully."
 
