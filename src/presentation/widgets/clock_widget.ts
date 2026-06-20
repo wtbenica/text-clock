@@ -105,6 +105,7 @@ export const TextClockLabel = GObject.registerClass(
     #fuzzyMinutes: Fuzziness;
     #showWeekday: boolean;
     #timeFormat: TimeFormat;
+    #initialized: boolean = false;
     timeLabel: St.Label;
     dividerLabel: St.Label;
     dateLabel: St.Label;
@@ -116,15 +117,23 @@ export const TextClockLabel = GObject.registerClass(
     dateText: string = "";
 
     constructor(props: any) {
-      super(props);
-      this.#translatePack = props.translatePack;
-      this.#showDate = props.showDate;
-      this.#fuzzyMinutes = parseFuzziness(
+      const translatePack = props.translatePack;
+      const showDate = props.showDate;
+      const fuzzyMinutes = parseFuzziness(
         props.fuzzyMinutes || Fuzziness.FIVE_MINUTES,
       );
-      this.#showWeekday = props.showWeekday;
-      this.#timeFormat = props.timeFormat;
-      this.dividerText = props.dividerText || " | ";
+      const showWeekday = props.showWeekday;
+      const timeFormat = props.timeFormat;
+      const dividerText = props.dividerText || " | ";
+
+      super();
+
+      this.#translatePack = translatePack;
+      this.#showDate = showDate;
+      this.#fuzzyMinutes = fuzzyMinutes;
+      this.#showWeekday = showWeekday;
+      this.#timeFormat = timeFormat;
+      this.dividerText = dividerText;
 
       this.timeLabel = new St.Label();
       this.dividerLabel = new St.Label();
@@ -139,6 +148,7 @@ export const TextClockLabel = GObject.registerClass(
         this.dividerText,
       );
 
+      this.#initialized = true;
       this.updateClock();
     }
 
@@ -152,7 +162,9 @@ export const TextClockLabel = GObject.registerClass(
      */
     set showDate(value: boolean) {
       this.#showDate = value;
-      this.updateClock();
+      if (this.#initialized) {
+        this.updateClock();
+      }
     }
 
     /**
@@ -165,7 +177,9 @@ export const TextClockLabel = GObject.registerClass(
      */
     set showWeekday(value: boolean) {
       this.#showWeekday = value;
-      this.updateClock();
+      if (this.#initialized) {
+        this.updateClock();
+      }
     }
 
     /**
@@ -178,7 +192,9 @@ export const TextClockLabel = GObject.registerClass(
      * @param _ - Unused clock signal value
      */
     set clockUpdate(_: string) {
-      this.updateClock();
+      if (this.#initialized) {
+        this.updateClock();
+      }
     }
 
     /**
@@ -192,7 +208,9 @@ export const TextClockLabel = GObject.registerClass(
      */
     set timeFormat(value: TimeFormat) {
       this.#timeFormat = value;
-      this.updateClock();
+      if (this.#initialized) {
+        this.updateClock();
+      }
     }
 
     /**
@@ -206,8 +224,10 @@ export const TextClockLabel = GObject.registerClass(
      */
     set translatePack(value: LocalizedStrings) {
       this.#translatePack = value;
-      this.#formatter.wordPack = this.#translatePack;
-      this.updateClock();
+      if (this.#initialized) {
+        this.#formatter.wordPack = this.#translatePack;
+        this.updateClock();
+      }
     }
 
     /**
@@ -221,7 +241,9 @@ export const TextClockLabel = GObject.registerClass(
      */
     set fuzzyMinutes(value: Fuzziness | string) {
       this.#fuzzyMinutes = parseFuzziness(value);
-      this.updateClock();
+      if (this.#initialized) {
+        this.updateClock();
+      }
     }
 
     /**
@@ -229,7 +251,7 @@ export const TextClockLabel = GObject.registerClass(
      *
      * Retrieves the current system time, formats it using the ClockFormatter
      * with current settings (fuzziness, format, date/weekday display), and
-     * updates the individual label components. Called automatically when
+     * updates the individual label components. Should be called when
      * settings change or time updates.
      */
     updateClock() {
@@ -320,8 +342,10 @@ export const TextClockLabel = GObject.registerClass(
      */
     setDividerText(text: string) {
       this.dividerText = text;
-      this.#formatter.divider = text;
-      this.updateClock();
+      if (this.#initialized) {
+        this.#formatter.divider = text;
+        this.updateClock();
+      }
     }
   },
 );

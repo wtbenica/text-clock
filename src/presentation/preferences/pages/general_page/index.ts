@@ -26,10 +26,6 @@ import {
 
 /**
  * Create the General preferences page using the unified configuration system.
- *
- * This demonstrates how the new preference system dramatically simplifies
- * preference page creation by eliminating boilerplate and ensuring consistency.
- *
  * @param window - Adw.PreferencesWindow instance
  * @param settings - Gio.Settings instance
  * @returns Adw.PreferencesPage the created page
@@ -51,12 +47,6 @@ export function createGeneralPage(
     _("Customize the appearance and behavior of the clock"),
   );
 
-  // Simple boolean switch - automatically bound to settings
-  // Bind the Show Date switch to the system clock setting so the user's
-  // GNOME Settings choice is reflected here.
-  // Create a system settings instance for org.gnome.desktop.interface and
-  // bind the widget to its keys. Fall back to extension settings if system
-  // schema isn't available.
   const systemSettings = (() => {
     try {
       return new Gio.Settings({ schema: "org.gnome.desktop.interface" });
@@ -69,8 +59,8 @@ export function createGeneralPage(
   // Track signal connection IDs for cleanup
   const connectionIds: number[] = [];
 
+  // Connect Show Date to system clock setting if available. Otherwise, bind to extension setting as fallback.
   if (systemSettings) {
-    // Create the UI row backed by system settings
     createBooleanSwitchRow(
       clockSettingsGroup,
       systemSettings as Gio.Settings,
@@ -80,8 +70,7 @@ export function createGeneralPage(
         subtitle: _("Show the date in the clock"),
       },
     );
-    // Also keep the extension key in sync: when the system key changes, copy it
-    // into extension settings so runtime reads the extension schema as usual.
+
     try {
       const connId = systemSettings.connect("changed::clock-show-date", () => {
         try {
@@ -100,7 +89,6 @@ export function createGeneralPage(
       );
     }
   } else {
-    // Fall back to binding extension settings if system schema isn't present
     createBooleanSwitchRow(
       clockSettingsGroup,
       settings,
@@ -112,8 +100,7 @@ export function createGeneralPage(
     );
   }
 
-  // Bind Show Weekday to system clock setting as well. GNOME treats weekday
-  // independently of date, so we create an independent binding here.
+  // Bind Show Weekday to system clock setting if available. Otherwise, bind to extension setting as fallback.
   if (systemSettings) {
     createBooleanSwitchRow(
       clockSettingsGroup,
@@ -156,7 +143,6 @@ export function createGeneralPage(
     );
   }
 
-  // Simple enum combo - automatically populated from config with sample times
   createEnumComboRow(
     clockSettingsGroup,
     settings,
@@ -168,7 +154,6 @@ export function createGeneralPage(
     },
   );
 
-  // Simple enum combo with translations applied automatically
   createEnumComboRow(
     clockSettingsGroup,
     settings,
@@ -180,7 +165,6 @@ export function createGeneralPage(
     },
   );
 
-  // Preset with custom entry - automatically handles visibility and binding
   createPresetWithCustomRow(
     clockSettingsGroup,
     settings,
@@ -196,7 +180,7 @@ export function createGeneralPage(
     },
   );
 
-  // Disconnect signal handlers when window closes to prevent resource leak
+  // Disconnect signal handlers when window closes
   if (systemSettings && connectionIds.length > 0) {
     window.connect("close-request", () => {
       connectionIds.forEach((id) => systemSettings.disconnect(id));

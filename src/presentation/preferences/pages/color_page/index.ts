@@ -21,8 +21,6 @@ import {
 
 /**
  * Create a compact color control widget used in prefs.
- *
- * See original `color_controls.createColorControlWidget` for details.
  */
 export { createColorControlWidget, createColorRow } from "./color_controls.js";
 
@@ -50,9 +48,6 @@ export function addDividerColorRow(
   return _addDividerColorRow(group, settings, styleSvc);
 }
 
-/**
- * Add the accent color style selection row to a group.
- */
 export function addAccentStyleRow(
   group: Adw.PreferencesGroup,
   settings: Gio.Settings,
@@ -130,13 +125,11 @@ export function addAccentStyleRow(
   return comboRow;
 }
 
-/**
- * Add color mode row and wire up color control visibility.
- * Mode: Default (system colors), Accent (system accent), or Custom.
- */
-const COLOR_MODE_DEFAULT = 0;
-const COLOR_MODE_ACCENT = 1;
-const COLOR_MODE_CUSTOM = 2;
+enum COLOR_MODE {
+  DEFAULT = 0,
+  ACCENT = 1,
+  CUSTOM = 2,
+}
 
 export function addColorModeRow(
   group: Adw.PreferencesGroup,
@@ -149,11 +142,11 @@ export function addColorModeRow(
   modelStrings.push(prefsGettext._("Custom Colors"));
 
   let currentSelected = settings.get_enum(SettingsKey.COLOR_MODE);
-  if (!supportsAccentColor && currentSelected === COLOR_MODE_ACCENT) {
-    currentSelected = COLOR_MODE_DEFAULT;
-    settings.set_enum(SettingsKey.COLOR_MODE, COLOR_MODE_DEFAULT);
-  } else if (!supportsAccentColor && currentSelected === COLOR_MODE_CUSTOM) {
-    currentSelected = COLOR_MODE_ACCENT;
+  if (!supportsAccentColor && currentSelected === COLOR_MODE.ACCENT) {
+    currentSelected = COLOR_MODE.DEFAULT;
+    settings.set_enum(SettingsKey.COLOR_MODE, COLOR_MODE.DEFAULT);
+  } else if (!supportsAccentColor && currentSelected === COLOR_MODE.CUSTOM) {
+    currentSelected = COLOR_MODE.ACCENT;
   }
   const colorModeRow = new Adw.ComboRow({
     title: prefsGettext._("Color mode"),
@@ -198,10 +191,10 @@ export function addColorModeRow(
 
   const updateColorRowsVisibility = () => {
     const selectedMode = colorModeRow.selected;
-    const isAccent = supportsAccentColor && selectedMode === COLOR_MODE_ACCENT;
+    const isAccent = supportsAccentColor && selectedMode === COLOR_MODE.ACCENT;
     const isCustom = supportsAccentColor
-      ? selectedMode === COLOR_MODE_CUSTOM
-      : selectedMode === COLOR_MODE_ACCENT;
+      ? selectedMode === COLOR_MODE.CUSTOM
+      : selectedMode === COLOR_MODE.ACCENT;
 
     // Show accent style row only when accent color mode is selected
     accentStyleRow.visible = isAccent;
@@ -230,8 +223,8 @@ export function addColorModeRow(
 
   colorModeRow.connect("notify::selected", () => {
     let settingValue = colorModeRow.selected;
-    if (!supportsAccentColor && settingValue === COLOR_MODE_ACCENT)
-      settingValue = COLOR_MODE_CUSTOM;
+    if (!supportsAccentColor && settingValue === COLOR_MODE.ACCENT)
+      settingValue = COLOR_MODE.CUSTOM;
     settings.set_enum(SettingsKey.COLOR_MODE, settingValue);
     updateColorRowsVisibility();
   });
@@ -248,14 +241,6 @@ export function addColorModeRow(
     connectionIds.push(connId1, connId2);
   }
 }
-
-export default {
-  addColorModeRow,
-  addAccentStyleRow,
-  addClockColorRow,
-  addDateColorRow,
-  addDividerColorRow,
-};
 
 /**
  * Create the Colors preferences page and add it to the provided window.
@@ -290,3 +275,11 @@ export function createColorsPage(
 
   return page;
 }
+
+export default {
+  addColorModeRow,
+  addAccentStyleRow,
+  addClockColorRow,
+  addDateColorRow,
+  addDividerColorRow,
+};

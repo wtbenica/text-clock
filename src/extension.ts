@@ -4,8 +4,6 @@
  */
 
 import Clutter from "gi://Clutter";
-import Gio from "gi://Gio";
-import GnomeDesktop from "gi://GnomeDesktop";
 import GObject from "gi://GObject";
 import St from "gi://St";
 import {
@@ -14,7 +12,6 @@ import {
   ngettext,
   pgettext,
 } from "resource:///org/gnome/shell/extensions/extension.js";
-import { DateMenuButton } from "resource:///org/gnome/shell/ui/dateMenu.js";
 import { panel } from "resource:///org/gnome/shell/ui/main.js";
 
 import SettingsKey from "./models/settings_keys";
@@ -26,13 +23,12 @@ import {
   TextClockLabel,
   CLOCK_LABEL_PROPERTIES,
 } from "./presentation/widgets/clock_widget.js";
-import { logErr, logWarn } from "./utils/error_utils.js";
+import { logWarn } from "./utils/error_utils.js";
 import {
   extensionGettext,
   initExtensionGettext,
 } from "./utils/gettext/gettext_utils_ext.js";
 import { fuzzinessFromEnumIndex } from "./utils/parse_utils.js";
-import { LocalizedStrings } from "./models/localized_strings.js";
 import { createTranslatePack } from "./utils/translate/translate_pack_utils.js";
 import { maybeShowUpdateNotification } from "./utils/update_notification_utils.js";
 
@@ -46,249 +42,153 @@ const CLOCK_STYLE_CLASS_NAME = "clock";
  * and custom colors including accent color integration.
  */
 export default class TextClock extends Extension {
-  #settings?: Gio.Settings;
   #settingsManager?: SettingsManager;
   #styleService?: StyleService;
   #notificationService?: NotificationService;
   #systemSettingsMonitor?: SystemSettingsMonitor;
-  #dateMenu?: IDateMenuButton;
-  #clock?: GnomeDesktop.WallClock;
-  #clockDisplay?: St.Label;
+
   #topBox?: St.BoxLayout;
   #clockLabel?: InstanceType<typeof TextClockLabel>;
   #clockBinding?: any;
-  #translatePack?: LocalizedStrings;
 
-  /**
-   * Called by GNOME Shell when the extension activates.
-   *
-   * Sets up services, creates the clock widget, and binds settings.
-   */
   enable() {
     initExtensionGettext(_, ngettext, pgettext);
 
-    this.#initServices();
+    // Initialize Services
+    const settings = this.getSettings();
 
+    this.#settingsManager = new SettingsManager(settings);
+    this.#styleService = new StyleService(settings);
+    this.#notificationService = new NotificationService("Text Clock");
+    this.#systemSettingsMonitor = new SystemSettingsMonitor(settings);
+
+    try {
+      this.#systemSettingsMonitor.start();
+    } catch (e) {
+      logWarn(`Failed to start SystemSettingsMonitor: ${e}`);
+    }
+
+    // Run notifications check
     maybeShowUpdateNotification({
       settingsManager: this.#settingsManager,
       notificationService: this.#notificationService,
       metadata: this.metadata,
       openPreferences: () => {
         try {
-          (this as any).openPreferences();
-        } catch (error) {
-          logWarn(`Failed to open extension preferences: ${error}`);
+          this.openPreferences();
+        } catch (e) {
+          logWarn(`${e}`);
         }
       },
     });
 
-    this.#retrieveDateMenu();
-    this.#placeClockLabel();
-    this.#bindSettingsToClockLabel();
-  }
+    // Get Top Bar parts
+    const dateMenu = panel.statusArea.dateMenu as any;
+    if (!dateMenu) return;
 
-  /**
-   * Called by GNOME Shell when the extension deactivates.
-   *
-   * Restores the original clock and cleans up resources.
-   */
-  disable() {
-    this.#restoreClockDisplay();
-    this.#cleanup();
-  }
+    const { _clock, _clockDisplay } = dateMenu;
+    const clockDisplayBox = this.#findClockDisplayBox(dateMenu);
 
-  /** Initialize services: settings, styling, notifications, and system monitors. */
-  #initServices() {
-    this.#settings = (this as any).getSettings();
+    // Create clock and add to panel
+    this.#topBox = new St.BoxLayout({ style_class: CLOCK_STYLE_CLASS_NAME });
 
-    this.#settingsManager = new SettingsManager(this.#settings!);
-    this.#styleService = new StyleService(this.#settings!);
-    this.#notificationService = new NotificationService("Text Clock");
-    this.#systemSettingsMonitor = new SystemSettingsMonitor(this.#settings!);
+    const currentStyles = this.#styleService.getCurrentStyles();
 
-    try {
-      this.#systemSettingsMonitor?.start();
-    } catch (e) {
-      logWarn(`Failed to start SystemSettingsMonitor: ${e}`);
-    }
-  }
-
-  /** Reset all class properties to undefined. */
-  #resetProperties() {
-    this.#settings = undefined;
-    this.#settingsManager = undefined;
-    this.#styleService = undefined;
-    this.#notificationService = undefined;
-    this.#dateMenu = undefined;
-    this.#clock = undefined;
-    this.#clockDisplay = undefined;
-    this.#topBox = undefined;
-    this.#clockLabel = undefined;
-    this.#clockBinding = undefined;
-    this.#translatePack = undefined;
-  }
-
-  #retrieveDateMenu() {
-    this.#dateMenu = panel.statusArea.dateMenu as IDateMenuButton;
-    if (!this.#dateMenu) {
-      return;
-    }
-
-    const { _clock, _clockDisplay } = this.#dateMenu as any;
-    this.#clock = _clock;
-    this.#clockDisplay = _clockDisplay;
-  }
-
-  #placeClockLabel() {
-    this.#translatePack = createTranslatePack(extensionGettext);
-
-    const clockDisplayBox = this.#findClockDisplayBox();
-
-    // Remove any existing TextClock top box to avoid duplicates
-    const existingClockBox = clockDisplayBox
-      .get_children()
-      .find(
-        (child: Clutter.Actor) =>
-          child instanceof St.BoxLayout &&
-          child.has_style_class_name(CLOCK_STYLE_CLASS_NAME),
-      );
-    if (existingClockBox) {
-      existingClockBox.destroy();
-    }
-
-    this.#topBox = new St.BoxLayout({
-      style_class: CLOCK_STYLE_CLASS_NAME,
-    });
-
-    const currentStyles = this.#styleService!.getCurrentStyles();
     this.#clockLabel = new TextClockLabel({
-      translatePack: this.#translatePack,
-      showDate: this.#settingsManager!.getBoolean(SettingsKey.SHOW_DATE),
-      showWeekday: this.#settingsManager!.getBoolean(SettingsKey.SHOW_WEEKDAY),
-      timeFormat: this.#settingsManager!.getString(SettingsKey.TIME_FORMAT),
+      translatePack: createTranslatePack(extensionGettext),
+      showDate: this.#settingsManager.getBoolean(SettingsKey.SHOW_DATE),
+      showWeekday: this.#settingsManager.getBoolean(SettingsKey.SHOW_WEEKDAY),
+      timeFormat: this.#settingsManager.getString(SettingsKey.TIME_FORMAT),
       dividerText: currentStyles.dividerText || " | ",
     });
 
-    const fuzzValue = this.#settingsManager!.getFuzziness();
-    (this.#clockLabel as any).fuzzyMinutes = fuzzValue;
-    this.#topBox!.add_child(this.#clockLabel as any);
+    this.#clockLabel.fuzzyMinutes = this.#settingsManager.getFuzziness();
 
-    this.#applyStyles();
-
+    this.#topBox.add_child(this.#clockLabel as any);
     clockDisplayBox.add_child(this.#topBox);
 
-    this.#clockDisplay!.remove_style_class_name(CLOCK_STYLE_CLASS_NAME);
-    this.#clockDisplay!.set_width(0);
-    (this.#clockDisplay as any).hide();
+    // Apply styling and bindings
+    this.#styleService.applyStyles(this.#clockLabel);
+    this.#styleService.registerTarget(this.#clockLabel);
+    this.#bindSettings(_clock);
+
+    // Hide original clock
+    if (_clockDisplay) {
+      _clockDisplay.remove_style_class_name(CLOCK_STYLE_CLASS_NAME);
+      _clockDisplay.set_width(0);
+      _clockDisplay.hide();
+    }
   }
 
-  #bindSettingsToClockLabel() {
-    if (!this.#settingsManager || !this.#clockLabel) {
-      logErr("Required services or clock label not available for binding");
-      return;
-    }
-
-    (this.#clockLabel as any).showDate = this.#settingsManager.getBoolean(
-      SettingsKey.SHOW_DATE,
-    );
-    (this.#clockLabel as any).showWeekday = this.#settingsManager.getBoolean(
-      SettingsKey.SHOW_WEEKDAY,
-    );
-
-    this.#settingsManager.subscribe(SettingsKey.SHOW_DATE, () => {
-      (this.#clockLabel as any).showDate = this.#settingsManager!.getBoolean(
-        SettingsKey.SHOW_DATE,
-      );
-    });
-    this.#settingsManager.subscribe(SettingsKey.SHOW_WEEKDAY, () => {
-      (this.#clockLabel as any).showWeekday = this.#settingsManager!.getBoolean(
-        SettingsKey.SHOW_WEEKDAY,
-      );
-    });
-
-    // Bind wall clock to clock label - store the binding for cleanup
-    this.#clockBinding = (this.#clock as any).bind_property(
+  #bindSettings(clockBackend: any) {
+    this.#clockBinding = clockBackend.bind_property(
       "clock",
       this.#clockLabel as any,
       CLOCK_LABEL_PROPERTIES.CLOCK_UPDATE,
       GObject.BindingFlags.DEFAULT,
     );
 
-    // Subscribe to fuzziness changes
-    this.#settingsManager.subscribe(SettingsKey.FUZZINESS, () => {
-      const enumIndex = this.#settingsManager!.getEnum(SettingsKey.FUZZINESS);
-      const fuzzValue = fuzzinessFromEnumIndex(enumIndex);
-      this.#clockLabel!.fuzzyMinutes = fuzzValue;
+    this.#settingsManager!.subscribe(SettingsKey.SHOW_DATE, () => {
+      this.#clockLabel!.showDate = this.#settingsManager!.getBoolean(
+        SettingsKey.SHOW_DATE,
+      );
     });
-
-    // Subscribe to time format changes
-    this.#settingsManager.subscribe(SettingsKey.TIME_FORMAT, () => {
-      const timeFormat = this.#settingsManager!.getString(
+    this.#settingsManager!.subscribe(SettingsKey.SHOW_WEEKDAY, () => {
+      this.#clockLabel!.showWeekday = this.#settingsManager!.getBoolean(
+        SettingsKey.SHOW_WEEKDAY,
+      );
+    });
+    this.#settingsManager!.subscribe(SettingsKey.FUZZINESS, () => {
+      const enumIndex = this.#settingsManager!.getEnum(SettingsKey.FUZZINESS);
+      this.#clockLabel!.fuzzyMinutes = fuzzinessFromEnumIndex(enumIndex);
+    });
+    this.#settingsManager!.subscribe(SettingsKey.TIME_FORMAT, () => {
+      this.#clockLabel!.timeFormat = this.#settingsManager!.getString(
         SettingsKey.TIME_FORMAT,
       ) as any;
-      if (timeFormat) {
-        this.#clockLabel!.timeFormat = timeFormat;
-      }
     });
-
-    this.#styleService!.registerTarget(this.#clockLabel!);
   }
 
-  #applyStyles() {
-    if (!this.#clockLabel || !this.#styleService) return;
-    this.#styleService.applyStyles(this.#clockLabel);
-  }
+  disable() {
+    this.#styleService?.destroy();
+    this.#styleService = undefined;
 
-  #cleanup() {
-    // Destroy services
-    if (this.#styleService) this.#styleService.destroy();
-    if (this.#settingsManager) this.#settingsManager.destroy();
-    if (this.#notificationService) this.#notificationService.destroy();
-    if (this.#systemSettingsMonitor) this.#systemSettingsMonitor.stop();
+    this.#settingsManager?.destroy();
+    this.#settingsManager = undefined;
 
-    // Destroy UI components
-    if (this.#clockBinding) {
-      this.#clockBinding.unbind();
-      this.#clockBinding = undefined;
+    this.#notificationService?.destroy();
+    this.#notificationService = undefined;
+
+    this.#systemSettingsMonitor?.stop();
+    this.#systemSettingsMonitor = undefined;
+
+    this.#topBox?.destroy();
+    this.#topBox = undefined;
+
+    this.#clockLabel?.destroy();
+    this.#clockLabel = undefined;
+
+    this.#clockBinding?.unbind();
+    this.#clockBinding = undefined;
+
+    // Make clock display visible again
+    const dateMenu = panel.statusArea.dateMenu as any;
+    if (dateMenu && dateMenu._clockDisplay) {
+      dateMenu._clockDisplay.add_style_class_name(CLOCK_STYLE_CLASS_NAME);
+      dateMenu._clockDisplay.set_width(-1);
+      dateMenu._clockDisplay.show();
     }
-
-    if (this.#clockLabel) (this.#clockLabel as any).destroy();
-    if (this.#topBox) this.#topBox.destroy();
-
-    this.#resetProperties();
   }
 
-  #restoreClockDisplay() {
-    if (!this.#clockDisplay) {
-      return;
-    }
-
-    this.#clockDisplay.add_style_class_name(CLOCK_STYLE_CLASS_NAME);
-    this.#clockDisplay.set_width(-1);
-    this.#clockDisplay.show();
-  }
-
-  #findClockDisplayBox() {
-    const children = (this.#dateMenu as any)?.get_children
-      ? (this.#dateMenu as any).get_children()
-      : [];
-
-    const box: St.BoxLayout | undefined = children.find(
+  #findClockDisplayBox(dateMenu: any): St.BoxLayout {
+    const children = dateMenu?.get_children ? dateMenu.get_children() : [];
+    const box = children.find(
       (child: Clutter.Actor) =>
         child instanceof St.BoxLayout &&
         child.has_style_class_name("clock-display-box"),
-    ) as St.BoxLayout | undefined;
+    );
 
-    if (box) {
-      return box;
-    }
-
-    throw new Error(_("Could not find clock display box"));
+    if (!box) throw new Error(_("Could not find clock display box"));
+    return box as St.BoxLayout;
   }
-}
-
-/** Type-safe interface for GNOME Shell's date menu button. */
-interface IDateMenuButton extends DateMenuButton {
-  _clock: GnomeDesktop.WallClock;
-  _clockDisplay: St.Label;
 }
