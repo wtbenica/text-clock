@@ -40,7 +40,7 @@ log_info "Creating GitHub release for version $VERSION"
 if [[ "$DRY_RUN" == true ]]; then
     log_warn "DRY RUN MODE - No release will be created"
     echo "Would run: git tag \"v$VERSION\""
-    echo "Would run: git push origin \"v$VERSION\""
+    echo "Would run: git push origin \"refs/tags/v$VERSION\""
     exit 0
 fi
 
@@ -55,7 +55,7 @@ git tag -a "v$VERSION" -m "Release version $VERSION" || {
 }
 
 log_step "Pushing tag to origin..."
-git push origin "v$VERSION" || {
+git push origin "refs/tags/v$VERSION" || {
     log_error "Failed to push tag v$VERSION"
     exit 1
 }

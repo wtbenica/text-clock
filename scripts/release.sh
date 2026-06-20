@@ -81,7 +81,7 @@ if [[ "$DRY_RUN" = true ]]; then
   echo "(dry-run) Would run: git push origin \"v$VERSION\"";
 else
   git tag "v$VERSION" || { echo "ERROR: Failed to create tag v$VERSION"; exit 1; }
-  git push origin "v$VERSION" || { echo "ERROR: Failed to push tag v$VERSION"; exit 1; }
+  git push origin "refs/tags/v$VERSION" || { echo "ERROR: Failed to push tag v$VERSION"; exit 1; }
   echo "✅ Release tag v$VERSION pushed. GitHub Actions will create the release." 
   echo "Check the release at: https://github.com/wtbenica/text-clock/releases/tag/v$VERSION"
 fi
