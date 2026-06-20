@@ -117,7 +117,6 @@ export const TextClockLabel = GObject.registerClass(
     dateText: string = "";
 
     constructor(props: any) {
-      // Initialize private fields BEFORE calling super to avoid setter errors
       const translatePack = props.translatePack;
       const showDate = props.showDate;
       const fuzzyMinutes = parseFuzziness(
@@ -127,10 +126,8 @@ export const TextClockLabel = GObject.registerClass(
       const timeFormat = props.timeFormat;
       const dividerText = props.dividerText || " | ";
 
-      // Don't pass custom properties to super - only pass BoxLayout properties
-      super({});
+      super();
 
-      // Now initialize private fields directly
       this.#translatePack = translatePack;
       this.#showDate = showDate;
       this.#fuzzyMinutes = fuzzyMinutes;
@@ -254,7 +251,7 @@ export const TextClockLabel = GObject.registerClass(
      *
      * Retrieves the current system time, formats it using the ClockFormatter
      * with current settings (fuzziness, format, date/weekday display), and
-     * updates the individual label components. Called automatically when
+     * updates the individual label components. Should be called when
      * settings change or time updates.
      */
     updateClock() {

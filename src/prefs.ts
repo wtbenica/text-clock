@@ -31,9 +31,6 @@ initPrefsGettext(_, ngettext, pgettext);
 
 /**
  * Preferences UI for the Text Clock extension.
- *
- * This file must stay at the project root so GNOME Shell can load it.
- * The actual UI is built using helpers from `presentation/preferences/`.
  */
 export default class TextClockPrefs extends ExtensionPreferences {
   /**
@@ -43,19 +40,14 @@ export default class TextClockPrefs extends ExtensionPreferences {
    * accent color support, and creates preference pages.
    */
   async fillPreferencesWindow(window: Adw.PreferencesWindow): Promise<void> {
-    // ExtensionPreferences in the Shell provides getSettings at runtime; cast
-    // to any to satisfy the TypeScript declaration here.
     const settings = (this as any).getSettings();
-    // Window presentation: match the example extension UX
+
     window.search_enabled = true;
 
-    // Title (localized)
     window.title = prefsGettext._("Text Clock Prefs");
 
-    // If a compiled gresource binary is present in the extension's
-    // directory, register it so the preferences UI can use extension-provided
-    // icons. Failure to register is non-fatal and will fall back to system
-    // symbolic icons.
+    // Use extension-provided icons if a compiled gresource binary is present.
+    // Fall back to system symbolic icons otherwise.
     try {
       const resourcePath = GLib.build_filenamev([
         (this as any).path,
@@ -73,8 +65,6 @@ export default class TextClockPrefs extends ExtensionPreferences {
         }
       }
     } catch (e) {
-      // Not fatal — fall back to system symbolic icons. Use the project's
-      // GJS logger helper so logs are consistent with the rest of the codebase.
       if (e instanceof Error) {
         gjsLogger.logError(e, "prefs: could not load compiled gresource");
       } else {
