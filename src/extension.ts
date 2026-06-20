@@ -54,6 +54,8 @@ export default class TextClock extends Extension {
   #dateMenu?: IDateMenuButton;
   #clock?: GnomeDesktop.WallClock;
   #clockDisplay?: St.Label;
+  #clockDisplayParent?: Clutter.Actor;
+  #clockDisplayIndex?: number;
   #topBox?: St.BoxLayout;
   #clockLabel?: InstanceType<typeof TextClockLabel>;
   #clockBinding?: any;
@@ -122,6 +124,8 @@ export default class TextClock extends Extension {
     this.#dateMenu = undefined;
     this.#clock = undefined;
     this.#clockDisplay = undefined;
+    this.#clockDisplayParent = undefined;
+    this.#clockDisplayIndex = undefined;
     this.#topBox = undefined;
     this.#clockLabel = undefined;
     this.#clockBinding = undefined;
@@ -144,15 +148,24 @@ export default class TextClock extends Extension {
 
     const clockDisplayBox = this.#findClockDisplayBox();
 
+    // Store original parent and position for restoration
+    if (this.#clockDisplay) {
+      const parent = this.#clockDisplay.get_parent();
+      if (parent) {
+        this.#clockDisplayParent = parent;
+        const children = parent.get_children();
+        this.#clockDisplayIndex = children.indexOf(this.#clockDisplay);
+      }
+    }
+
     // Remove any existing TextClock top box to avoid duplicates
-    const existingClockBox = clockDisplayBox
-      .get_children()
-      .find(
-        (child: Clutter.Actor) =>
-          child instanceof St.BoxLayout &&
-          child.has_style_class_name(CLOCK_STYLE_CLASS_NAME),
-      );
-    if (existingClockBox) {
+    const existingClockBox = clockDisplayBox.get_children().find(
+      (child: Clutter.Actor) =>
+        child instanceof St.BoxLayout &&
+        child.has_style_class_name(CLOCK_STYLE_CLASS_NAME) &&
+        child !== this.#clockDisplay?.get_parent(), // Don't remove Weather O'Clock's box
+    );
+    if (existingClockBox && existingClockBox !== this.#topBox) {
       existingClockBox.destroy();
     }
 
@@ -177,9 +190,12 @@ export default class TextClock extends Extension {
 
     clockDisplayBox.add_child(this.#topBox);
 
-    this.#clockDisplay!.remove_style_class_name(CLOCK_STYLE_CLASS_NAME);
-    this.#clockDisplay!.set_width(0);
-    (this.#clockDisplay as any).hide();
+    // Hide the original clock display safely
+    if (this.#clockDisplay) {
+      this.#clockDisplay.remove_style_class_name(CLOCK_STYLE_CLASS_NAME);
+      this.#clockDisplay.set_width(0);
+      (this.#clockDisplay as any).hide();
+    }
   }
 
   #bindSettingsToClockLabel() {
@@ -263,9 +279,35 @@ export default class TextClock extends Extension {
       return;
     }
 
+    // Only restore if the clock is still where we left it
+    // (not moved by another extension)
+    const currentParent = this.#clockDisplay.get_parent();
+
+    // Restore original state
     this.#clockDisplay.add_style_class_name(CLOCK_STYLE_CLASS_NAME);
     this.#clockDisplay.set_width(-1);
     this.#clockDisplay.show();
+
+    // If another extension moved it, respect their structure
+    // Otherwise ensure it's in the original position
+    if (
+      currentParent === this.#clockDisplayParent &&
+      this.#clockDisplayParent &&
+      typeof this.#clockDisplayIndex === "number"
+    ) {
+      try {
+        const children = this.#clockDisplayParent.get_children();
+        const currentIndex = children.indexOf(this.#clockDisplay);
+        if (currentIndex !== this.#clockDisplayIndex) {
+          this.#clockDisplayParent.set_child_at_index(
+            this.#clockDisplay,
+            this.#clockDisplayIndex,
+          );
+        }
+      } catch (e) {
+        logWarn(`Could not restore clock display position: ${e}`);
+      }
+    }
   }
 
   #findClockDisplayBox() {
