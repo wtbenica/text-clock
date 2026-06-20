@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Text Clock 1.1.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-28 13:11-0700\n"
+"POT-Creation-Date: 2026-06-19 23:15-0700\n"
 "PO-Revision-Date: 2025-09-26 21:30-0700\n"
 "Last-Translator: Wesley Benica <wesley@benica.dev>\n"
 "Language-Team: Spanish\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.4.2\n"
 
-#: dist/services/notification_service.js:117
+#: dist/services/notification_service.js:40
 msgid "Open Preferences"
 msgstr "Abrir Preferencias"
 
@@ -47,168 +47,158 @@ msgstr "Interfaz de preferencias moderna"
 msgid "Flexible divider customization"
 msgstr "Personalización flexible del separador"
 
-#: dist/constants/release_messages.js:51
+#: dist/constants/release_messages.js:50
 msgid "Check Preferences to explore features."
 msgstr "Revisa Preferencias para explorar las funciones."
 
-#: dist/constants/release_messages.js:53
+#: dist/constants/release_messages.js:52
 msgid "Check Preferences for new features."
 msgstr "Revisa Preferencias para las nuevas funciones."
 
-#: dist/constants/release_messages.js:74
-#, javascript-format
-msgid "Features: %s Additional capabilities: %s"
-msgstr "Funciones: %s Capacidades adicionales: %s"
-
-#: dist/constants/release_messages.js:79
-#, javascript-format
-msgid "New: %s Additional improvements: %s"
-msgstr "Nuevo: %s Mejoras adicionales: %s"
-
-#: dist/constants/release_messages.js:101
+#: dist/constants/release_messages.js:80
 #, javascript-format
 msgid "Text Clock %s"
 msgstr "Text Clock %s"
 
-#: dist/constants/release_messages.js:103
+#: dist/constants/release_messages.js:82
 #, javascript-format
 msgid "Text Clock updated to %s"
 msgstr "Text Clock actualizado a %s"
 
-#: dist/constants/preferences.js:26
+#: dist/constants/preferences.js:28
 msgid "one minute"
 msgstr "un minuto"
 
-#: dist/constants/preferences.js:27
+#: dist/constants/preferences.js:29
 msgid "Most precise time display"
 msgstr "Mostrar la hora más precisa"
 
-#: dist/constants/preferences.js:32
+#: dist/constants/preferences.js:34
 msgid "five minutes"
 msgstr "cinco minutos"
 
-#: dist/constants/preferences.js:33
+#: dist/constants/preferences.js:35
 msgid "Slightly fuzzy time display"
 msgstr "Mostrar la hora ligeramente imprecisa"
 
-#: dist/constants/preferences.js:38
+#: dist/constants/preferences.js:40
 msgid "ten minutes"
 msgstr "diez minutos"
 
-#: dist/constants/preferences.js:39
+#: dist/constants/preferences.js:41
 msgid "Moderately fuzzy time display"
 msgstr "Mostrar la hora moderadamente imprecisa"
 
-#: dist/constants/preferences.js:44
+#: dist/constants/preferences.js:46
 msgid "fifteen minutes"
 msgstr "quince minutos"
 
-#: dist/constants/preferences.js:45
+#: dist/constants/preferences.js:47
 msgid "Most fuzzy time display"
 msgstr "Mostrar la hora más imprecisa"
 
-#: dist/constants/preferences.js:59
+#: dist/constants/preferences.js:61
 msgid "Vertical line divider"
 msgstr "Separador de línea vertical"
 
-#: dist/constants/preferences.js:65
+#: dist/constants/preferences.js:67
 msgid "Bullet point divider"
 msgstr "Separador de viñeta"
 
-#: dist/constants/preferences.js:71
+#: dist/constants/preferences.js:73
 msgid "Filled circle divider"
 msgstr "Separador de círculo relleno"
 
-#: dist/constants/preferences.js:77
+#: dist/constants/preferences.js:79
 msgid "Em dash divider"
 msgstr "Separador de guion largo"
 
-#: dist/constants/preferences.js:82
+#: dist/constants/preferences.js:84
 msgid "Custom"
 msgstr "Personalizado"
 
-#: dist/constants/preferences.js:83
+#: dist/constants/preferences.js:85
 msgid "Use custom divider text"
 msgstr "Usar texto de separador personalizado"
 
-#: dist/constants/preferences.js:97
+#: dist/constants/preferences.js:99
 msgid "Format One"
 msgstr "Formato Uno"
 
-#: dist/constants/preferences.js:98
+#: dist/constants/preferences.js:100
 msgid "Standard time format"
 msgstr "Formato de hora estándar"
 
-#: dist/constants/preferences.js:103
+#: dist/constants/preferences.js:105
 msgid "Format Two"
 msgstr "Formato Dos"
 
-#: dist/constants/preferences.js:104
+#: dist/constants/preferences.js:106
 msgid "Alternative time format"
 msgstr "Formato de hora alternativo"
 
-#: dist/constants/preferences.js:118
+#: dist/constants/preferences.js:120
 #: dist/presentation/preferences/pages/color_page/color_controls.js:20
 msgid "Accent"
 msgstr "Acento"
 
-#: dist/constants/preferences.js:119
+#: dist/constants/preferences.js:121
 msgid "Time and date same color"
 msgstr "Hora y fecha mismo color"
 
-#: dist/constants/preferences.js:126
+#: dist/constants/preferences.js:128
 msgid "Accent Light"
 msgstr "Acento Claro"
 
-#: dist/constants/preferences.js:127
+#: dist/constants/preferences.js:129
 msgid "All elements lighter"
 msgstr "Todos los elementos más claros"
 
-#: dist/constants/preferences.js:134
+#: dist/constants/preferences.js:136
 msgid "Accent Dark"
 msgstr "Acento Oscuro"
 
-#: dist/constants/preferences.js:135
+#: dist/constants/preferences.js:137
 msgid "All elements darker"
 msgstr "Todos los elementos más oscuros"
 
-#: dist/constants/preferences.js:143
+#: dist/constants/preferences.js:145
 msgid "Duotone"
 msgstr "Duotono"
 
-#: dist/constants/preferences.js:144
+#: dist/constants/preferences.js:146
 msgid "Time lighter, date normal"
 msgstr "Hora más clara, fecha normal"
 
-#: dist/constants/preferences.js:151
+#: dist/constants/preferences.js:153
 msgid "Racing Stripe"
 msgstr "Franja Racing"
 
-#: dist/constants/preferences.js:152
+#: dist/constants/preferences.js:154
 msgid "Time/date solid, divider white"
 msgstr "Hora/fecha sólidas, separador blanco"
 
-#: dist/constants/preferences.js:159
+#: dist/constants/preferences.js:161
 msgid "Racing Stripe Duotone"
 msgstr "Franja Racing Duotono"
 
-#: dist/constants/preferences.js:160
+#: dist/constants/preferences.js:162
 msgid "Time lighter, date normal, divider white"
 msgstr "Hora más clara, fecha normal, separador blanco"
 
-#: dist/constants/preferences.js:167
+#: dist/constants/preferences.js:169
 msgid "Contrast"
 msgstr "Contraste"
 
-#: dist/constants/preferences.js:168
+#: dist/constants/preferences.js:170
 msgid "Time white, date normal, divider white"
 msgstr "Hora blanca, fecha normal, separador blanco"
 
-#: dist/constants/preferences.js:175
+#: dist/constants/preferences.js:177
 msgid "Contrast Reverse"
 msgstr "Contraste Invertido"
 
-#: dist/constants/preferences.js:176
+#: dist/constants/preferences.js:178
 msgid "Time normal, date white, divider normal"
 msgstr "Hora normal, fecha blanca, separador normal"
 
@@ -1332,35 +1322,35 @@ msgstr "Estilo de Acento"
 msgid "Choose accent color variation"
 msgstr "Elegir variación de color de acento"
 
-#: dist/presentation/preferences/pages/color_page/index.js:99
+#: dist/presentation/preferences/pages/color_page/index.js:95
 msgid "Default"
 msgstr "Predeterminado"
 
-#: dist/presentation/preferences/pages/color_page/index.js:101
+#: dist/presentation/preferences/pages/color_page/index.js:97
 msgid "Accent Color"
 msgstr "Color de Acento"
 
-#: dist/presentation/preferences/pages/color_page/index.js:102
+#: dist/presentation/preferences/pages/color_page/index.js:98
 msgid "Custom Colors"
 msgstr "Colores Personalizados"
 
-#: dist/presentation/preferences/pages/color_page/index.js:112
+#: dist/presentation/preferences/pages/color_page/index.js:108
 msgid "Color mode"
 msgstr "Modo de color"
 
-#: dist/presentation/preferences/pages/color_page/index.js:113
+#: dist/presentation/preferences/pages/color_page/index.js:109
 msgid "Choose which color source to use"
 msgstr "Elegir qué fuente de color usar"
 
-#: dist/presentation/preferences/pages/color_page/index.js:208
+#: dist/presentation/preferences/pages/color_page/index.js:207
 msgid "Colors"
 msgstr "Colores"
 
-#: dist/presentation/preferences/pages/color_page/index.js:210
+#: dist/presentation/preferences/pages/color_page/index.js:209
 msgid "Clock Colors"
 msgstr "Colores del Reloj"
 
-#: dist/presentation/preferences/pages/color_page/index.js:211
+#: dist/presentation/preferences/pages/color_page/index.js:210
 msgid "Customize the colors of the clock and date text"
 msgstr "Personalizar los colores del reloj y texto de fecha"
 
@@ -1376,65 +1366,73 @@ msgstr "Configuración del Reloj"
 msgid "Customize the appearance and behavior of the clock"
 msgstr "Personalizar la apariencia y comportamiento del reloj"
 
-#: dist/presentation/preferences/pages/general_page/index.js:43
-#: dist/presentation/preferences/pages/general_page/index.js:66
+#: dist/presentation/preferences/pages/general_page/index.js:45
+#: dist/presentation/preferences/pages/general_page/index.js:69
 msgid "Show Date"
 msgstr "Mostrar Fecha"
 
-#: dist/presentation/preferences/pages/general_page/index.js:44
-#: dist/presentation/preferences/pages/general_page/index.js:67
+#: dist/presentation/preferences/pages/general_page/index.js:46
+#: dist/presentation/preferences/pages/general_page/index.js:70
 msgid "Show the date in the clock"
 msgstr "Mostrar la fecha en el reloj"
 
-#: dist/presentation/preferences/pages/general_page/index.js:74
-#: dist/presentation/preferences/pages/general_page/index.js:94
+#: dist/presentation/preferences/pages/general_page/index.js:77
+#: dist/presentation/preferences/pages/general_page/index.js:98
 msgid "Show Weekday"
 msgstr "Mostrar Día de la Semana"
 
-#: dist/presentation/preferences/pages/general_page/index.js:75
-#: dist/presentation/preferences/pages/general_page/index.js:95
+#: dist/presentation/preferences/pages/general_page/index.js:78
+#: dist/presentation/preferences/pages/general_page/index.js:99
 msgid "Show the day of the week in the clock"
 msgstr "Mostrar el día de la semana en el reloj"
 
-#: dist/presentation/preferences/pages/general_page/index.js:100
+#: dist/presentation/preferences/pages/general_page/index.js:104
 msgid "Time Format"
 msgstr "Formato de Hora"
 
-#: dist/presentation/preferences/pages/general_page/index.js:101
+#: dist/presentation/preferences/pages/general_page/index.js:105
 msgid "Choose the time display format"
 msgstr "Elegir el formato de visualización de la hora"
 
-#: dist/presentation/preferences/pages/general_page/index.js:105
+#: dist/presentation/preferences/pages/general_page/index.js:109
 msgid "Fuzziness"
 msgstr "Imprecisión"
 
-#: dist/presentation/preferences/pages/general_page/index.js:106
+#: dist/presentation/preferences/pages/general_page/index.js:110
 msgid "How precise the time displayed should be"
 msgstr "Qué tan precisa debe ser la hora mostrada"
 
-#: dist/presentation/preferences/pages/general_page/index.js:110
+#: dist/presentation/preferences/pages/general_page/index.js:114
 msgid "Divider Preset"
 msgstr "Separador Predefinido"
 
-#: dist/presentation/preferences/pages/general_page/index.js:111
+#: dist/presentation/preferences/pages/general_page/index.js:115
 msgid "Choose a preset divider or select custom"
 msgstr "Elegir un separador predefinido o seleccionar personalizado"
 
-#: dist/presentation/preferences/pages/general_page/index.js:113
+#: dist/presentation/preferences/pages/general_page/index.js:117
 msgid "Custom Divider Text"
 msgstr "Texto de Separador Personalizado"
 
-#: dist/presentation/preferences/components/preference_ui_factory.js:138
+#: dist/presentation/preferences/components/preference_ui_factory.js:71
 msgid "Custom Text"
 msgstr "Texto Personalizado"
 
-#: dist/prefs.js:45
+#: dist/prefs.js:38
 msgid "Text Clock Prefs"
 msgstr "Preferencias de Text Clock"
 
-#: dist/extension.js:251
+#: dist/extension.js:250
 msgid "Could not find clock display box"
 msgstr "No se pudo encontrar el cuadro de visualización del reloj"
+
+#, javascript-format
+#~ msgid "Features: %s Additional capabilities: %s"
+#~ msgstr "Funciones: %s Capacidades adicionales: %s"
+
+#, javascript-format
+#~ msgid "New: %s Additional improvements: %s"
+#~ msgstr "Nuevo: %s Mejoras adicionales: %s"
 
 #~ msgid "Comprehensive translations"
 #~ msgstr "Traducciones completas"

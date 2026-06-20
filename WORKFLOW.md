@@ -50,9 +50,9 @@ When your development work is complete on a version branch:
 
 ```bash
 # From your development branch (e.g., v1.0.7)
-make release-full        # Interactive - prompts for confirmation
+make release        # Interactive - prompts for confirmation
 # OR
-make release-full-auto   # Automated - no prompts, auto-accepts all
+make release-auto   # Automated - no prompts, auto-accepts all
 ```
 
 This orchestrates the entire release process by calling individual targets in sequence:
