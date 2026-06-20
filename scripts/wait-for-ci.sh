@@ -52,25 +52,38 @@ log_info "Found PR #$pr_number"
 # Use timeout command for cleaner implementation
 if timeout --signal=TERM "$TIMEOUT" bash -c '
     while true; do
-        status_rollup=$(gh pr view '"$pr_number"' --json statusCheckRollup --jq ".statusCheckRollup.state" 2>/dev/null || echo "")
-        if [[ -n "$status_rollup" ]]; then
-            case "$(echo "$status_rollup" | tr "[:upper:]" "[:lower:]")" in
-                success)
-                    echo "SUCCESS"
-                    exit 0
-                    ;;
-                failure)
-                    echo "FAILURE"
-                    exit 1
-                    ;;
-                pending)
-                    echo -n "."
-                    ;;
-                *)
-                    echo -n "?"
-                    ;;
-            esac
+        # Get check summary - handles both status and conclusion
+        checks_json=$(gh pr view '"$pr_number"' --json statusCheckRollup 2>/dev/null || echo "{}")
+        
+        # Check if we have any checks
+        num_checks=$(echo "$checks_json" | jq ".statusCheckRollup | length" 2>/dev/null || echo "0")
+        
+        if [[ "$num_checks" -eq 0 ]]; then
+            # No checks yet, keep waiting
+            echo -n "."
+            sleep 5
+            continue
         fi
+        
+        # Count checks by status
+        pending=$(echo "$checks_json" | jq "[.statusCheckRollup[] | select(.status != \"COMPLETED\")] | length")
+        failed=$(echo "$checks_json" | jq "[.statusCheckRollup[] | select(.status == \"COMPLETED\" and (.conclusion == \"FAILURE\" or .conclusion == \"TIMED_OUT\" or .conclusion == \"CANCELLED\" or .conclusion == \"STARTUP_FAILURE\" or .conclusion == \"ACTION_REQUIRED\"))] | length")
+        
+        # Check results
+        if [[ "$failed" -gt 0 ]]; then
+            echo ""
+            echo "FAILURE"
+            exit 1
+        elif [[ "$pending" -eq 0 ]]; then
+            # All completed and none failed = success
+            echo ""
+            echo "SUCCESS"
+            exit 0
+        else
+            # Still have pending checks
+            echo -n "."
+        fi
+        
         sleep 5
     done
 '; then
