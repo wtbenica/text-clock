@@ -23,7 +23,6 @@ import {
   TextClockLabel,
   CLOCK_LABEL_PROPERTIES,
 } from "./presentation/widgets/clock_widget.js";
-import { logWarn } from "./utils/error_utils.js";
 import {
   extensionGettext,
   initExtensionGettext,
@@ -62,11 +61,7 @@ export default class TextClock extends Extension {
     this.#notificationService = new NotificationService("Text Clock");
     this.#systemSettingsMonitor = new SystemSettingsMonitor(settings);
 
-    try {
-      this.#systemSettingsMonitor.start();
-    } catch (e) {
-      logWarn(`Failed to start SystemSettingsMonitor: ${e}`);
-    }
+    this.#systemSettingsMonitor.start();
 
     // Run notifications check
     maybeShowUpdateNotification({
@@ -74,11 +69,7 @@ export default class TextClock extends Extension {
       notificationService: this.#notificationService,
       metadata: this.metadata,
       openPreferences: () => {
-        try {
-          this.openPreferences();
-        } catch (e) {
-          logWarn(`${e}`);
-        }
+        this.openPreferences();
       },
     });
 

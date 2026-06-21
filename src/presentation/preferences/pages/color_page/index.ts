@@ -9,7 +9,7 @@ import Gtk from "gi://Gtk";
 import { PAGE_ICONS } from "../../../../constants/preferences.js";
 import SettingsKey from "../../../../models/settings_keys";
 import { StyleService } from "../../../../services/style_service.js";
-import { logErr, logWarn } from "../../../../utils/error_utils.js";
+import { logWarn } from "../../../../utils/error_utils.js";
 import { prefsGettext } from "../../../../utils/gettext/gettext_utils_prefs.js";
 import { ACCENT_STYLE_CONFIGS } from "../../../../services/preference_service.js";
 import { createAndAddPageToWindow } from "../../components/groups.js";
@@ -157,6 +157,13 @@ export function addColorModeRow(
   group.add(colorModeRow);
 
   const styleSvc = new StyleService(settings);
+
+  if (connectionIds) {
+    (group.get_root() as any).connect("close-request", () =>
+      styleSvc.destroy(),
+    );
+  }
+
   const accentStyleRow = addAccentStyleRow(group, settings);
   const clockColorRow = addClockColorRow(group, settings, styleSvc);
   const dividerColorRow = addDividerColorRow(group, settings, styleSvc);
@@ -177,13 +184,9 @@ export function addColorModeRow(
       schema: "org.gnome.desktop.interface",
     });
     ifaceSettings.connect("changed::accent-color", () => {
-      try {
-        if (clockUpdater) clockUpdater();
-        if (dividerUpdater) dividerUpdater();
-        if (dateUpdater) dateUpdater();
-      } catch (colorErr) {
-        logErr(colorErr, "Error updating accent color buttons");
-      }
+      if (clockUpdater) clockUpdater();
+      if (dividerUpdater) dividerUpdater();
+      if (dateUpdater) dateUpdater();
     });
   } catch (e) {
     logWarn(`Could not listen for accent-color changes: ${e}`);
@@ -204,19 +207,15 @@ export function addColorModeRow(
     dividerColorRow.visible = isCustom;
     dateColorRow.visible = isCustom;
 
-    try {
-      const showDate = settings.get_boolean(SettingsKey.SHOW_DATE);
-      const showWeekday = settings.get_boolean(SettingsKey.SHOW_WEEKDAY);
-      const showDateOrWeekday = showDate || showWeekday;
+    const showDate = settings.get_boolean(SettingsKey.SHOW_DATE);
+    const showWeekday = settings.get_boolean(SettingsKey.SHOW_WEEKDAY);
+    const showDateOrWeekday = showDate || showWeekday;
 
-      // Date and divider color controls should be visible when the user
-      // is showing either the date or the weekday (weekday may be shown
-      // independently of the full date).
-      dividerColorRow.visible = isCustom && showDateOrWeekday;
-      dateColorRow.visible = isCustom && showDateOrWeekday;
-    } catch (e) {
-      logErr(e, "Error updating color row visibility");
-    }
+    // Date and divider color controls should be visible when the user
+    // is showing either the date or the weekday (weekday may be shown
+    // independently of the full date).
+    dividerColorRow.visible = isCustom && showDateOrWeekday;
+    dateColorRow.visible = isCustom && showDateOrWeekday;
   };
 
   updateColorRowsVisibility();

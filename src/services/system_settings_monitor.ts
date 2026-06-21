@@ -6,7 +6,7 @@
 import Gio from "gi://Gio";
 
 import SettingsKey from "../models/settings_keys";
-import { logWarn, logErr } from "../utils/error_utils.js";
+import { logWarn } from "../utils/error_utils.js";
 
 /**
  * Mirrors GNOME desktop clock settings into extension settings.
@@ -50,19 +50,15 @@ export class SystemSettingsMonitor {
     this.#applySystemValues();
 
     // Subscribe to changes
-    try {
-      this.#connDate = this.#systemSettings.connect(
-        "changed::clock-show-date",
-        () => this.#applySystemValues(),
-      );
+    this.#connDate = this.#systemSettings.connect(
+      "changed::clock-show-date",
+      () => this.#applySystemValues(),
+    );
 
-      this.#connWeekday = this.#systemSettings.connect(
-        "changed::clock-show-weekday",
-        () => this.#applySystemValues(),
-      );
-    } catch (e) {
-      logWarn(`Failed to connect to system clock settings: ${e}`);
-    }
+    this.#connWeekday = this.#systemSettings.connect(
+      "changed::clock-show-weekday",
+      () => this.#applySystemValues(),
+    );
   }
 
   /** Stop syncing (disconnects signals). */
@@ -86,33 +82,16 @@ export class SystemSettingsMonitor {
   #applySystemValues() {
     if (!this.#systemSettings) return;
 
-    try {
-      const sysShowDate = this.#systemSettings.get_boolean("clock-show-date");
-      const sysShowWeekday =
-        this.#systemSettings.get_boolean("clock-show-weekday");
+    const sysShowDate = this.#systemSettings.get_boolean("clock-show-date");
+    const sysShowWeekday =
+      this.#systemSettings.get_boolean("clock-show-weekday");
 
-      // Write into extension settings; failures are non-fatal
-      try {
-        this.#extensionSettings.set_boolean(SettingsKey.SHOW_DATE, sysShowDate);
-      } catch (e) {
-        logErr(
-          `Failed to set extension setting ${SettingsKey.SHOW_DATE}: ${e}`,
-        );
-      }
+    this.#extensionSettings.set_boolean(SettingsKey.SHOW_DATE, sysShowDate);
 
-      try {
-        this.#extensionSettings.set_boolean(
-          SettingsKey.SHOW_WEEKDAY,
-          sysShowWeekday,
-        );
-      } catch (e) {
-        logErr(
-          `Failed to set extension setting ${SettingsKey.SHOW_WEEKDAY}: ${e}`,
-        );
-      }
-    } catch (e) {
-      logWarn(`Failed to read system clock settings: ${e}`);
-    }
+    this.#extensionSettings.set_boolean(
+      SettingsKey.SHOW_WEEKDAY,
+      sysShowWeekday,
+    );
   }
 }
 

@@ -9,7 +9,6 @@ import {
   TimeFormat,
 } from "../core/clock_formatter.js";
 import type { Color } from "../models/color.js";
-import { logWarn } from "../utils/error_utils.js";
 import type { GettextFunctions } from "../utils/gettext/gettext_utils";
 import { createTranslatePack } from "../utils/translate/translate_pack_utils.js";
 import {
@@ -33,29 +32,23 @@ import type {
 export function generateSampleTime(
   timeFormat: TimeFormat,
   translateFn: GettextFunctions,
-  fallback: string,
 ): string {
-  try {
-    // 9:05 will display as "five past nine" vs "nine oh five"
-    const demoTime = new Date();
-    demoTime.setHours(9, 5, 0, 0);
+  // 9:05 will display as "five past nine" vs "nine oh five"
+  const demoTime = new Date();
+  demoTime.setHours(9, 5, 0, 0);
 
-    const wordPack = createTranslatePack(translateFn);
-    const formatter = new ClockFormatter(wordPack);
+  const wordPack = createTranslatePack(translateFn);
+  const formatter = new ClockFormatter(wordPack);
 
-    const clockText = formatter.getClockText(
-      demoTime,
-      false, // showDate
-      false, // showWeekday
-      timeFormat,
-      Fuzziness.FIVE_MINUTES,
-    );
+  const clockText = formatter.getClockText(
+    demoTime,
+    false, // showDate
+    false, // showWeekday
+    timeFormat,
+    Fuzziness.FIVE_MINUTES,
+  );
 
-    return clockText;
-  } catch (err) {
-    logWarn(`Error generating sample time: ${err}`);
-    return fallback; // Use provided fallback instead of empty string
-  }
+  return clockText;
 }
 
 /**
@@ -70,11 +63,7 @@ export function getTimeFormatConfigsWithSamples(
   return TIME_FORMAT_CONFIGS.map((config, index) => {
     const timeFormat =
       index === 0 ? TimeFormat.FORMAT_ONE : TimeFormat.FORMAT_TWO;
-    const sample = generateSampleTime(
-      timeFormat,
-      translateFn,
-      config.displayName(translateFn),
-    );
+    const sample = generateSampleTime(timeFormat, translateFn);
 
     return {
       ...config,
