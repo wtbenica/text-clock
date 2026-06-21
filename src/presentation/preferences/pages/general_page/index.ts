@@ -73,14 +73,8 @@ export function createGeneralPage(
 
     try {
       const connId = systemSettings.connect("changed::clock-show-date", () => {
-        try {
-          const val = systemSettings.get_boolean("clock-show-date");
-          settings.set_boolean(SettingsKey.SHOW_DATE, val);
-        } catch (e) {
-          logWarn(
-            `Failed to apply org.gnome.desktop.interface.clock-show-date to extension setting: ${e}`,
-          );
-        }
+        const val = systemSettings.get_boolean("clock-show-date");
+        settings.set_boolean(SettingsKey.SHOW_DATE, val);
       });
       connectionIds.push(connId);
     } catch (e) {
@@ -115,14 +109,8 @@ export function createGeneralPage(
       const connId = systemSettings.connect(
         "changed::clock-show-weekday",
         () => {
-          try {
-            const val = systemSettings.get_boolean("clock-show-weekday");
-            settings.set_boolean(SettingsKey.SHOW_WEEKDAY, val);
-          } catch (e) {
-            logWarn(
-              `Failed to apply org.gnome.desktop.interface.clock-show-weekday to extension setting: ${e}`,
-            );
-          }
+          const val = systemSettings.get_boolean("clock-show-weekday");
+          settings.set_boolean(SettingsKey.SHOW_WEEKDAY, val);
         },
       );
       connectionIds.push(connId);

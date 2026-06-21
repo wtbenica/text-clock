@@ -93,7 +93,7 @@ export class StyleService {
     }
   }
 
-  /** Apply current styles to all registered targets (called automatically on settings changes). */
+  /** Apply current styles to all registered targets (should be called on settings changes). */
   applyToAllTargets(): void {
     const config = this.getCurrentStyles();
     for (const target of this.#targets) {
@@ -106,25 +106,17 @@ export class StyleService {
    * Maps named colors like 'blue' to hex. Fallback: white.
    */
   getAccentColor(): Color {
-    try {
-      const ifaceSettings =
-        this.#ifaceSettings ??
-        new Gio.Settings({
-          schema: "org.gnome.desktop.interface",
-        });
-
-      const accent = ifaceSettings.get_string("accent-color");
-      if (!accent) {
-        return new Color("#FFFFFF");
-      }
-
-      // Map named colors (e.g., "blue") to hex, or use accent value directly
-      const colorValue = accentNameToHex(accent) ?? accent;
-      return new Color(colorValue);
-    } catch (e) {
-      logWarn(`Could not read accent color: ${e}`);
+    if (!this.#ifaceSettings) {
       return new Color("#FFFFFF");
     }
+
+    const accent = this.#ifaceSettings.get_string("accent-color");
+    if (!accent) {
+      return new Color("#FFFFFF");
+    }
+
+    const colorValue = accentNameToHex(accent) ?? accent;
+    return new Color(colorValue);
   }
 
   /** Disconnect all signals and clear resources. Call when extension is disabled. */
@@ -135,14 +127,12 @@ export class StyleService {
     }
     this.#signalConnections = [];
 
-    // Disconnect interface settings signal (if any)
     if (this.#ifaceSettings !== null && this.#ifaceSignalConnection !== null) {
       this.#ifaceSettings.disconnect(this.#ifaceSignalConnection);
       this.#ifaceSignalConnection = null;
     }
     this.#ifaceSettings = null;
 
-    // Clear all targets
     this.#targets.clear();
   }
 
@@ -178,7 +168,7 @@ export class StyleService {
    */
   #connectToInterfaceSettings(): void {
     // Avoid reconnecting if already connected
-    if (this.#ifaceSettings !== null && this.#ifaceSignalConnection !== null) {
+    if (this.#ifaceSettings !== null) {
       return;
     }
 
@@ -191,8 +181,6 @@ export class StyleService {
       this.#ifaceSignalConnection = this.#ifaceSettings.connect(
         "changed::accent-color",
         () => {
-          // Only update if we're actually using accent color mode; applyToAllTargets
-          // will read the current color mode and act accordingly.
           this.applyToAllTargets();
         },
       );

@@ -48,14 +48,16 @@ export default class TextClockPrefs extends ExtensionPreferences {
 
     // Use extension-provided icons if a compiled gresource binary is present.
     // Fall back to system symbolic icons otherwise.
-    try {
-      const resourcePath = GLib.build_filenamev([
-        (this as any).path,
-        "preferences.gresource",
-      ]);
-      if (GLib.file_test(resourcePath, GLib.FileTest.EXISTS)) {
+    const resourcePath = GLib.build_filenamev([
+      (this as any).path,
+      "preferences.gresource",
+    ]);
+
+    if (GLib.file_test(resourcePath, GLib.FileTest.EXISTS)) {
+      try {
         const resource = Gio.Resource.load(resourcePath);
         Gio.resources_register(resource);
+
         const display = Gdk.Display.get_default();
         if (display !== null) {
           const iconTheme = Gtk.IconTheme.get_for_display(display);
@@ -63,12 +65,11 @@ export default class TextClockPrefs extends ExtensionPreferences {
             "/org/gnome/shell/extensions/text-clock/preferences/icons",
           );
         }
-      }
-    } catch (e) {
-      if (e instanceof Error) {
-        gjsLogger.logError(e, "prefs: could not load compiled gresource");
-      } else {
-        gjsLogger.log("prefs: could not load compiled gresource:", e);
+      } catch (e) {
+        gjsLogger.logError(
+          e instanceof Error ? e : new Error(String(e)),
+          "prefs: gresource file unreadable",
+        );
       }
     }
 

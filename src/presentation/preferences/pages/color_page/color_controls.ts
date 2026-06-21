@@ -16,7 +16,6 @@ export function createColorControlWidget(
   styleSvc: any,
   colorSettingsKey: string,
   accentSettingsKey: string,
-  errorContext: string,
 ): Gtk.Widget {
   const control = new Gtk.Box({
     orientation: Gtk.Orientation.HORIZONTAL,
@@ -100,17 +99,15 @@ export function createColorControlWidget(
         logErr(e, "Error setting accent color");
       }
     } else {
-      try {
-        const customColor = settings.get_string(colorSettingsKey);
-        const rgba = new Gdk.RGBA();
-        rgba.parse(customColor);
-        colorButton.set_rgba(rgba);
+      const customColor = settings.get_string(colorSettingsKey);
+      const rgba = new Gdk.RGBA();
 
-        // Switch to real button
-        colorStack.set_visible_child_name("real");
-      } catch (e) {
-        logErr(e, "Error setting custom color");
+      if (rgba.parse(customColor)) {
+        colorButton.set_rgba(rgba);
       }
+
+      // Switch to real button
+      colorStack.set_visible_child_name("real");
     }
   };
 
@@ -149,16 +146,12 @@ export function createColorControlWidget(
     });
   }
 
-  try {
-    settings.bind(
-      accentSettingsKey,
-      accentSwitch as any,
-      "active",
-      Gio.SettingsBindFlags.DEFAULT,
-    );
-  } catch (e) {
-    logErr(e, `Error binding ${errorContext}`);
-  }
+  settings.bind(
+    accentSettingsKey,
+    accentSwitch as any,
+    "active",
+    Gio.SettingsBindFlags.DEFAULT,
+  );
 
   // Update colors when accent switch is toggled
   accentSwitch.connect("state-set", () => {
@@ -197,14 +190,12 @@ export function createColorRow(
   title: string,
   colorKey: string,
   accentKey: string,
-  errorContext: string,
 ): Adw.ActionRow {
   const control = createColorControlWidget(
     settings,
     styleSvc,
     colorKey,
     accentKey,
-    errorContext,
   );
 
   const actionRow: Adw.ActionRow = new Adw.ActionRow({ title });
@@ -229,7 +220,6 @@ export function addClockColorRow(
     prefsGettext._("Time Color"),
     "clock-color",
     "clock-use-accent",
-    "clock-use-accent",
   );
 }
 
@@ -245,7 +235,6 @@ export function addDateColorRow(
     prefsGettext._("Date Color"),
     "date-color",
     "date-use-accent",
-    "date-use-accent",
   );
 }
 
@@ -260,7 +249,6 @@ export function addDividerColorRow(
     styleSvc,
     prefsGettext._("Divider Color"),
     "divider-color",
-    "divider-use-accent",
     "divider-use-accent",
   );
 }

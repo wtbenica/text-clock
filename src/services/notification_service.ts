@@ -7,7 +7,7 @@ import GLib from "gi://GLib";
 import * as Main from "resource:///org/gnome/shell/ui/main.js";
 import * as MessageTray from "resource:///org/gnome/shell/ui/messageTray.js";
 
-import { logErr, logWarn } from "../utils/error_utils.js";
+import { logErr } from "../utils/error_utils.js";
 import { extensionGettext } from "../utils/gettext/gettext_utils_ext.js";
 
 /** Configuration for creating notifications. */
@@ -93,12 +93,12 @@ export class NotificationService {
     try {
       const source = this.getOrCreateNotificationSource();
       const notification = this.createNotification(config);
-
       source.addNotification(notification);
     } catch (error) {
       logErr(`Failed to show notification: ${String(error)}`);
-      // Fallback to simple Main.notify if available
-      this.tryFallbackNotification(config.title, config.body);
+      if (typeof Main.notify === "function") {
+        Main.notify(config.title, config.body);
+      }
     }
   }
 
@@ -122,26 +122,22 @@ export class NotificationService {
    * ```
    */
   scheduleNotification(config: NotificationConfig, delaySeconds: number): void {
-    try {
-      // Wait for shell UI to be ready, then add additional delay
-      const idleId = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
-        const timeoutId = GLib.timeout_add_seconds(
-          GLib.PRIORITY_DEFAULT,
-          delaySeconds,
-          () => {
-            this.showNotification(config);
-            this.activeSourceIds.delete(timeoutId);
-            return GLib.SOURCE_REMOVE;
-          },
-        );
-        this.activeSourceIds.add(timeoutId);
-        this.activeSourceIds.delete(idleId);
-        return GLib.SOURCE_REMOVE;
-      });
-      this.activeSourceIds.add(idleId);
-    } catch (error) {
-      logWarn(`Failed to schedule notification: ${String(error)}`);
-    }
+    // Wait for shell UI to be ready, then add additional delay
+    const idleId = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+      const timeoutId = GLib.timeout_add_seconds(
+        GLib.PRIORITY_DEFAULT,
+        delaySeconds,
+        () => {
+          this.showNotification(config);
+          this.activeSourceIds.delete(timeoutId);
+          return GLib.SOURCE_REMOVE;
+        },
+      );
+      this.activeSourceIds.add(timeoutId);
+      this.activeSourceIds.delete(idleId);
+      return GLib.SOURCE_REMOVE;
+    });
+    this.activeSourceIds.add(idleId);
   }
 
   /** Clean up notification resources (message tray auto-cleans actual sources). */
@@ -240,18 +236,5 @@ export class NotificationService {
     }
 
     return notification;
-  }
-
-  /**
-   * Tries to show a fallback notification using Main.notify
-   */
-  private tryFallbackNotification(title: string, body: string): void {
-    try {
-      if (Main && typeof Main.notify === "function") {
-        Main.notify(title, body);
-      }
-    } catch (error) {
-      logWarn(`Fallback notification failed: ${String(error)}`);
-    }
   }
 }
