@@ -148,24 +148,24 @@ if [[ "$SKIP_AUR" == "true" ]]; then
 else
     log_step "Updating AUR package..."
     
-    AUR_SCRIPT="scripts/release-aur.sh"
+    AUR_SCRIPT="scripts/update-aur.sh"
     if [[ ! -f "$AUR_SCRIPT" ]]; then
-        log_error "AUR release script not found: $AUR_SCRIPT"
+        log_error "AUR update script not found: $AUR_SCRIPT"
         exit 1
     fi
     
-    AUR_FLAGS=""
+    AUR_FLAGS="--version=$NEW_VERSION"
     if [[ "$DRY_RUN" == "true" ]]; then
-        AUR_FLAGS="--dry-run"
+        AUR_FLAGS="$AUR_FLAGS --dry-run"
     fi
     if [[ "$AUR_AUTO_PUSH" == "true" ]]; then
         AUR_FLAGS="$AUR_FLAGS --auto-push"
     fi
     
     if [[ "$DRY_RUN" == "true" ]]; then
-        log_info "Would run: $AUR_SCRIPT $AUR_FLAGS $NEW_VERSION"
+        log_info "Would run: $AUR_SCRIPT $AUR_FLAGS"
     else
-        ./"$AUR_SCRIPT" $AUR_FLAGS "$NEW_VERSION"
+        ./"$AUR_SCRIPT" $AUR_FLAGS
     fi
 fi
 

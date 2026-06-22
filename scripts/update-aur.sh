@@ -48,41 +48,47 @@ log_step "Verifying GitHub release v$VERSION exists..."
 RELEASE_URL="https://github.com/wtbenica/text-clock/releases/download/v${VERSION}/text-clock@benica.dev.zip"
 if ! curl -sSf "$RELEASE_URL" -o /dev/null; then
     log_error "GitHub release v$VERSION not found"
-    log_error "Make sure you've run: make release-github"
+    log_error "Make sure you've run: make release-gh"
     exit 1
 fi
 log_info "✓ GitHub release v$VERSION exists"
 
-# Update AUR package files
-log_step "Updating AUR package files..."
+# Update PKGBUILD in aur/ directory
+log_step "Updating PKGBUILD in aur/ directory..."
+UPDATE_CMD="$SCRIPT_DIR/update-pkgbuild.sh --version=$VERSION"
 if [[ "$DRY_RUN" == true ]]; then
-    log_info "Would run: ./scripts/release-aur.sh --dry-run $VERSION"
-else
-    ./scripts/release-aur.sh --dry-run "$VERSION" || {
-        log_error "AUR package update failed"
-        exit 1
-    }
+    UPDATE_CMD="$UPDATE_CMD --dry-run"
 fi
 
-# Commit and push
-if [[ "$DRY_RUN" == false ]]; then
-    log_step "Committing AUR changes..."
-    ./scripts/release-aur.sh "$VERSION" || {
-        log_error "Failed to commit AUR changes"
-        exit 1
-    }
+if ! $UPDATE_CMD; then
+    log_error "Failed to update PKGBUILD"
+    exit 1
+fi
+log_info "✓ PKGBUILD updated"
 
-    if [[ "$AUTO_PUSH" == true ]] || confirm_action "Push AUR changes to remote?"; then
-        log_step "Pushing to AUR..."
-        ./scripts/release-aur.sh --auto-push "$VERSION" || {
-            log_error "Failed to push AUR changes"
-            exit 1
-        }
+# Sync to AUR repository
+if [[ "$DRY_RUN" == false ]]; then
+    log_step "Syncing to AUR repository..."
+    
+    SYNC_CMD="$SCRIPT_DIR/sync-to-aur.sh --update --version=$VERSION --commit"
+    
+    if [[ "$AUTO_PUSH" == true ]]; then
+        SYNC_CMD="$SYNC_CMD --push --yes"
+    fi
+    
+    if ! $SYNC_CMD; then
+        log_error "Failed to sync to AUR repository"
+        exit 1
+    fi
+    
+    if [[ "$AUTO_PUSH" == true ]]; then
         log_info "✅ AUR package updated and pushed"
     else
-        log_info "AUR changes committed but not pushed"
-        log_info "Push later with: ./scripts/release-aur.sh --auto-push $VERSION"
+        log_info "✅ AUR package updated and committed"
+        log_info "To push: cd ~/Development/gnome-shell-extension-text-clock && git push"
     fi
+else
+    log_info "Would sync to AUR repository with: $SCRIPT_DIR/sync-to-aur.sh"
 fi
 
 log_info "✅ AUR update complete"

@@ -177,7 +177,7 @@ po/text-clock@benica.dev.pot: $(DIST_DIR)/extension.js
 	find $(DIST_DIR) -type f -name '*.js' -print0 | xargs -0 xgettext --from-code=UTF-8 --keyword=_ --output=po/text-clock@benica.dev.pot >/dev/null 2>&1 || { echo "ERROR: Generating POT file failed" >&2; exit 1; }
 
 
-## Compile extension resources (strict)
+### Compile extension resources (strict)
 resources/preferences.gresource: resources/preferences.gresource.xml
 	@echo "Compiling extension resources (preferences.gresource)..."
 	@if [ ! -f resources/preferences.gresource.xml ]; then \

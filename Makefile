@@ -10,9 +10,7 @@ NAME=text-clock
 DOMAIN=benica.dev
 MO_FILES=$(wildcard po/*.mo)
 ZIP_FILE=$(NAME)@${DOMAIN}-$(CURRENT_VERSION).zip
-## Automatically discover all TypeScript source files. This avoids needing to
-## update the list by hand when files are added. Exclude common build/test
-## directories so Make doesn't try to rebuild for generated or test files.
+# Automatically discover all TypeScript source files. Exclude common build/test directories.
 TS_FILES := $(shell find src -name "*.ts" -type f 2>/dev/null | grep -v '/tests/' || echo "")
 DIST_DIR=dist
 LOCALE_DIR=locale
@@ -36,7 +34,7 @@ SHELL := /bin/bash
 MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 
-### === Help ===
+## === Help ===
 
 # Help (standalone) - first public help entry, not part of a section
 ## help                Show this help text
