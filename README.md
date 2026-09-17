@@ -3,7 +3,7 @@
         <img src="media/icon.png" alt="Text Clock Logo" style="height:6.5em; display:block;" />
     </div>
       <div style="display:table-cell; vertical-align:middle;">
-         <h2 style="margin:0; line-height:1;">Text Clock v1.1.3</h2>
+         <h2 style="margin:0; line-height:1;">Text Clock v1.1.4</h2>
          <div style="color:var(--secondary-text-color,#666);">A simple text clock for the GNOME Shell</div>
       </div>
 </div>
@@ -19,10 +19,9 @@
 
 <img src="media/screenshots.png" alt="Screenshot of Text Clock Extension"/>
 
-### New in v1.1.3
+### New in this version
 
-- Fixed incompatibility with Weather O'Clock extension
-- Minor bug fixes and refinements
+- Version bump: added GNOME Shell 51 support
 
 See the full release notes: [RELEASE_NOTES.md](RELEASE_NOTES.md)
 
@@ -83,7 +82,7 @@ This extension is available on [extensions.gnome.org](https://extensions.gnome.o
 
 You can download the latest release of the extension as a ZIP file from GitHub:
 
-1. Download this [ZIP file (v1.1.3)](https://github.com/wtbenica/text-clock/releases/download/v1.1.3/text-clock@benica.dev.zip) from Github.
+1. Download this [ZIP file (v1.1.4)](https://github.com/wtbenica/text-clock/releases/download/v1.1.4/text-clock@benica.dev.zip) from Github.
 2. Extract the ZIP file to the extension directory:
 
    ```bash
@@ -105,7 +104,7 @@ For added security, you can verify the integrity of the downloaded ZIP file usin
 1. Download the checksum file:
 
    ```bash
-   wget https://github.com/wtbenica/text-clock/releases/download/v1.1.3/text-clock@benica.dev.zip.sha256
+   wget https://github.com/wtbenica/text-clock/releases/download/v1.1.4/text-clock@benica.dev.zip.sha256
    ```
 
 2. Verify the ZIP file:
