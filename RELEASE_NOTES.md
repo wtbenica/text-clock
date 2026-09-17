@@ -1,8 +1,7 @@
-## Release Notes: Text Clock v1.1.3
+## Release Notes: Text Clock v1.1.4
 
-This is a patch release with bug fixes and refinements.
+This is a patch release adding support for GNOME Shell 51.
 
-### Bug Fixes & Refinements
+### Changes
 
-- Fixed incompatibility with Weather O'Clock extension
-- Fixed TypeError that occurred when enabling the extension
+- Added GNOME Shell 51 to supported versions
