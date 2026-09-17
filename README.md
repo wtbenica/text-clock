@@ -19,10 +19,9 @@
 
 <img src="media/screenshots.png" alt="Screenshot of Text Clock Extension"/>
 
-### New in v1.1.3
+### New in this version
 
-- Fixed incompatibility with Weather O'Clock extension
-- Minor bug fixes and refinements
+- Version bump: added GNOME Shell 51 support
 
 See the full release notes: [RELEASE_NOTES.md](RELEASE_NOTES.md)
 
