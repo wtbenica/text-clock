@@ -50,7 +50,7 @@
     "jest": "30.4.2",
     "jest-util": "^30.4.1",
     "lint-staged": "17.0.7",
-    "prettier": "3.8.4",
+    "prettier": "3.9.8",
     "ts-jest": "29.4.11",
     "typedoc": "0.28.19",
     "typescript": "5.9.3"
