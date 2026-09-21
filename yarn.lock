@@ -576,6 +576,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@girs/cairo-1.0@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "@girs/cairo-1.0@npm:5.2.0"
+  dependencies:
+    "@girs/gjs": "npm:^5.2.0"
+    "@girs/glib-2.0": "npm:^5.2.0"
+    "@girs/gobject-2.0": "npm:^5.2.0"
+  checksum: 10c0/18535c27ad04115d6210995918b1cbf2883fc0927fc4a894583ae7afaba4491222cb69572cdf703e360f438bb5678cdb435b14bbf22abb2c013b1516488bd046
+  languageName: node
+  linkType: hard
+
 "@girs/clutter-18@npm:18.0.0-4.0.0-rc.17, @girs/clutter-18@npm:^18.0.0-4.0.0-rc.9":
   version: 18.0.0-4.0.0-rc.17
   resolution: "@girs/clutter-18@npm:18.0.0-4.0.0-rc.17"
@@ -740,6 +751,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@girs/gio-2.0@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "@girs/gio-2.0@npm:5.2.0"
+  dependencies:
+    "@girs/gjs": "npm:^5.2.0"
+    "@girs/glib-2.0": "npm:^5.2.0"
+    "@girs/gmodule-2.0": "npm:^5.2.0"
+    "@girs/gobject-2.0": "npm:^5.2.0"
+  checksum: 10c0/1cbe089e295707aec833c71665a28c5faab992d3a69e21a757e7d8f51cf462da84a2375f3867dece8a743e6a68d5d619c875efa44664a89d57ae230fe4478903
+  languageName: node
+  linkType: hard
+
 "@girs/giounix-2.0@npm:2.0.0-4.0.0-rc.17, @girs/giounix-2.0@npm:^2.0.0-4.0.0-rc.9":
   version: 2.0.0-4.0.0-rc.17
   resolution: "@girs/giounix-2.0@npm:2.0.0-4.0.0-rc.17"
@@ -765,7 +788,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@girs/gjs@npm:4.0.4, @girs/gjs@npm:^4.0.0-rc.9, @girs/gjs@npm:^4.0.4":
+"@girs/gjs@npm:4.0.4, @girs/gjs@npm:^4.0.0-rc.9":
   version: 4.0.4
   resolution: "@girs/gjs@npm:4.0.4"
   dependencies:
@@ -774,6 +797,18 @@ __metadata:
     "@girs/glib-2.0": "npm:2.88.0-4.0.4"
     "@girs/gobject-2.0": "npm:2.88.0-4.0.4"
   checksum: 10c0/83a44a6c088e5a10548de512a5f129c7ce0a218615e4a094dc1e93d97693f3c2b86a267a09643b565788c7426ddc02cc2b90891c2c61fc5b866a3b24e0ecaf6e
+  languageName: node
+  linkType: hard
+
+"@girs/gjs@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "@girs/gjs@npm:5.2.0"
+  dependencies:
+    "@girs/cairo-1.0": "npm:^5.2.0"
+    "@girs/gio-2.0": "npm:^5.2.0"
+    "@girs/glib-2.0": "npm:^5.2.0"
+    "@girs/gobject-2.0": "npm:^5.2.0"
+  checksum: 10c0/404e969994ec8b2f7a8efe2cd6cf35c53cd48c7a83c32d2edc38a00596ddb8375c33e4c2bb470c2d5e0ea795a81d1e37046f5b666507b5f7a71ce113a8c4d5f3
   languageName: node
   linkType: hard
 
@@ -807,6 +842,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@girs/glib-2.0@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "@girs/glib-2.0@npm:5.2.0"
+  dependencies:
+    "@girs/gjs": "npm:^5.2.0"
+    "@girs/gobject-2.0": "npm:^5.2.0"
+  checksum: 10c0/482d19aa681c3f81b25ddff4697de4a7915dacf16d967741401aff5bb6c60bf9a9e50af1147a95eefb941bb8705c2c82f635b9aa8653351e2cb6b2b0480e77e6
+  languageName: node
+  linkType: hard
+
 "@girs/gmodule-2.0@npm:2.0.0-4.0.0-rc.17":
   version: 2.0.0-4.0.0-rc.17
   resolution: "@girs/gmodule-2.0@npm:2.0.0-4.0.0-rc.17"
@@ -826,6 +871,17 @@ __metadata:
     "@girs/glib-2.0": "npm:2.88.0-4.0.4"
     "@girs/gobject-2.0": "npm:2.88.0-4.0.4"
   checksum: 10c0/adea4df6c9511ab04854a1da4d776f889e1e0f1166029a174e621a107129227e28ac87a276861aac80a7b888911d15f9fb1e85c7ae787d2c0d47f4de5d3c28be
+  languageName: node
+  linkType: hard
+
+"@girs/gmodule-2.0@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "@girs/gmodule-2.0@npm:5.2.0"
+  dependencies:
+    "@girs/gjs": "npm:^5.2.0"
+    "@girs/glib-2.0": "npm:^5.2.0"
+    "@girs/gobject-2.0": "npm:^5.2.0"
+  checksum: 10c0/c5b6b812918be374f5081fac1a28a687dfffceac0775afa76c2cf5af661a8c42fd8cc0986b995b09f4ff7e895b80e4a1ba60f0d7ff97920ea4a17716236bd9d6
   languageName: node
   linkType: hard
 
@@ -928,6 +984,16 @@ __metadata:
     "@girs/gjs": "npm:4.0.4"
     "@girs/glib-2.0": "npm:2.88.0-4.0.4"
   checksum: 10c0/db5d34e90e00dffe97486e631ceb8941c4c76b67b567d73a85bc73763dc96976c8ab5620fef54311f4137a7276b4ebb6a230aa1dbe0bec634b67b9b4d0689fc2
+  languageName: node
+  linkType: hard
+
+"@girs/gobject-2.0@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "@girs/gobject-2.0@npm:5.2.0"
+  dependencies:
+    "@girs/gjs": "npm:^5.2.0"
+    "@girs/glib-2.0": "npm:^5.2.0"
+  checksum: 10c0/1ce659559e803961b5aed37de1077648392274fb6b9a0fa5336688bdff53ff76b5a690a06a26af2cfbe9a2c94b506635bf72f8a01bbd6e699f1114ed1e5c0ea0
   languageName: node
   linkType: hard
 
@@ -4828,7 +4894,7 @@ __metadata:
   resolution: "text-clock@workspace:."
   dependencies:
     "@eslint/js": "npm:^10.0.1"
-    "@girs/gjs": "npm:^4.0.4"
+    "@girs/gjs": "npm:^5.2.0"
     "@girs/gnome-shell": "npm:50.0.2"
     "@types/jest": "npm:^30.0.0"
     "@types/node": "npm:26.0.0"
